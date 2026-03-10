@@ -25,7 +25,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
-| 3. Order Flow | 0/? | Not started | - |
+| 3. Order Flow | 0/4 | Not started | - |
 | 4. KDS | 0/? | Not started | - |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
@@ -92,7 +92,13 @@ Plans:
 4. Staff can return to a table that already has an open order and add additional items without disrupting the existing ticket
 5. A Ramen-specific menu data (real categories, items, and at least one full modifier tree) is used throughout — no generic placeholder menu
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Install Sonner + order.store.ts type model + menu.ts A Ramen fixture (ORDER-01–07 data contracts)
+- [ ] 03-02-PLAN.md — OrderPage split-panel shell + MenuPanel category tabs + item list rows (ORDER-01)
+- [ ] 03-03-PLAN.md — ModifierSheet slide-up with all modifier groups + required validation + store integration (ORDER-02, ORDER-03)
+- [ ] 03-04-PLAN.md — TicketPanel + TicketLineItem + Send flow + void + add-on + TableBottomSheet wire + checkpoint (ORDER-03–07)
 
 ---
 
@@ -218,3 +224,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Roadmap created: 2026-03-10*
 *Updated: 2026-03-10 — Phase 1 plans created (5 plans, 4 waves)*
 *Updated: 2026-03-10 — Phase 2 plans created (4 plans, 4 waves)*
+*Updated: 2026-03-10 — Phase 3 plans created (4 plans, 3 waves)*
