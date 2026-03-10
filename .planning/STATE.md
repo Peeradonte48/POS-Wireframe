@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02-table-map-01-PLAN.md
-last_updated: "2026-03-10T11:15:12.387Z"
+stopped_at: Completed 02-table-map-02-PLAN.md
+last_updated: "2026-03-10T11:18:06.222Z"
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 9
-  completed_plans: 5
+  completed_plans: 6
   percent: 14
 ---
 
@@ -79,6 +79,8 @@ Progress: [██░░░░░░░░] 14% (1 of 7 phases)
 - [Phase 01-foundation]: disablePointerDismissal on Base UI Dialog Root prevents accidental dismissal during PIN entry (Radix onInteractOutside does not exist in Base UI)
 - [Phase 02-table-map]: tables.ts uses type-only import from table.store.ts to avoid circular value dependency
 - [Phase 02-table-map]: useDwellTimer initializes now with Date.now() so already-open tables display correct elapsed time on mount
+- [Phase 02-table-map]: STATUS_CONFIG defined inline in TableTile — 5 statuses small enough, no external file needed
+- [Phase 02-table-map]: selectedTable state held at page level — ephemeral UI selection, not domain state
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -117,11 +119,12 @@ None.
 | 01-foundation | 04 | 5min | 2 | 4 |
 | 01-foundation | 05 | —   | 2 | 0 |
 | Phase 02-table-map P01 | 4min | 2 tasks | 3 files |
+| Phase 02-table-map P02 | 5min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-03-10T11:15:12.384Z
-Stopped at: Completed 02-table-map-01-PLAN.md
+Last session: 2026-03-10T11:18:06.219Z
+Stopped at: Completed 02-table-map-02-PLAN.md
 Resume file: None
 
 To resume after any context loss:
