@@ -25,13 +25,13 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Order Flow
 
-- [ ] **ORDER-01**: Staff can browse menu by category tabs and add items to an active order
-- [ ] **ORDER-02**: Staff can configure item modifiers — required single-select (broth type, visual spice level 1–5 icon selector), optional multi-select (toppings, add-ons), and free text (special request)
-- [ ] **ORDER-03**: Staff can add, edit, or remove items from an open ticket before sending to the kitchen
-- [ ] **ORDER-04**: Staff can send order to the kitchen with a confirmation state
-- [ ] **ORDER-05**: Staff can void items pre-send (simple remove) and post-send (requires manager PIN override)
-- [ ] **ORDER-06**: Staff can add items to an existing open order (mid-meal add-on round)
-- [ ] **ORDER-07**: Table tile on floor map updates to reflect order stage (Ordered → Cooking → Ready → Billed)
+- [x] **ORDER-01**: Staff can browse menu by category tabs and add items to an active order
+- [x] **ORDER-02**: Staff can configure item modifiers — required single-select (broth type, visual spice level 1–5 icon selector), optional multi-select (toppings, add-ons), and free text (special request)
+- [x] **ORDER-03**: Staff can add, edit, or remove items from an open ticket before sending to the kitchen
+- [x] **ORDER-04**: Staff can send order to the kitchen with a confirmation state
+- [x] **ORDER-05**: Staff can void items pre-send (simple remove) and post-send (requires manager PIN override)
+- [x] **ORDER-06**: Staff can add items to an existing open order (mid-meal add-on round)
+- [x] **ORDER-07**: Table tile on floor map updates to reflect order stage (Ordered → Cooking → Ready → Billed)
 
 ### Kitchen Display System
 
@@ -112,13 +112,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FLOOR-03 | Phase 2 | Complete |
 | FLOOR-04 | Phase 2 | Complete |
 | FLOOR-05 | Phase 2 | Complete |
-| ORDER-01 | Phase 3 | Pending |
-| ORDER-02 | Phase 3 | Pending |
-| ORDER-03 | Phase 3 | Pending |
-| ORDER-04 | Phase 3 | Pending |
-| ORDER-05 | Phase 3 | Pending |
-| ORDER-06 | Phase 3 | Pending |
-| ORDER-07 | Phase 3 | Pending |
+| ORDER-01 | Phase 3 | Complete |
+| ORDER-02 | Phase 3 | Complete |
+| ORDER-03 | Phase 3 | Complete |
+| ORDER-04 | Phase 3 | Complete |
+| ORDER-05 | Phase 3 | Complete |
+| ORDER-06 | Phase 3 | Complete |
+| ORDER-07 | Phase 3 | Complete |
 | KDS-01 | Phase 4 | Pending |
 | KDS-02 | Phase 4 | Pending |
 | KDS-03 | Phase 4 | Pending |
