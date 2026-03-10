@@ -15,7 +15,7 @@ progress:
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-10
-**Session:** Phase 1 Plan 02 execution
+**Session:** Phase 1 Plan 03 execution
 
 ---
 
@@ -34,11 +34,11 @@ progress:
 ## Current Position
 
 **Phase:** Phase 1 — Foundation (in progress)
-**Plan:** 01-02 complete, next: 01-03
-**Status:** Plan 02 executed — PIN login flow (PinNumpad, RoleSelector, /login page) done
+**Plan:** 01-03 complete, next: 01-04
+**Status:** Plan 03 executed — AppShell (header + collapsible sidebar) and (app)/layout.tsx auth guard done
 
 ```
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 ```
 
 ---
@@ -47,7 +47,7 @@ Progress: [████░░░░░░] 40%
 
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 | Foundation | AUTH-01–05 | In Progress (2/5 plans done) |
+| 1 | Foundation | AUTH-01–05 | In Progress (3/5 plans done) |
 | 2 | Table Map | FLOOR-01–05 | Not started |
 | 3 | Order Flow | ORDER-01–07 | Not started |
 | 4 | KDS | KDS-01–04 | Not started |
@@ -86,7 +86,7 @@ Progress: [████░░░░░░] 40%
 
 - [x] Run `/gsd:plan-phase 1` to create Phase 1 execution plan
 - [x] Execute Phase 1 Plan 02 (login UI with PIN pad)
-- [ ] Execute Phase 1 Plan 03 (AppShell + auth guard)
+- [x] Execute Phase 1 Plan 03 (AppShell + auth guard)
 - [ ] Execute Phase 1 Plan 04 (shift-open form)
 - [ ] Execute Phase 1 Plan 05 (navigation)
 
