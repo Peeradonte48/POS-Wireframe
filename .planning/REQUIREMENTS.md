@@ -9,11 +9,11 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Authentication & Session
 
-- [ ] **AUTH-01**: Staff can log in via PIN with role routing to the appropriate view (Waiter / Cashier / Manager / Kitchen)
-- [ ] **AUTH-02**: One role-aware interface — permission-driven enabled/disabled/authorize states per action (not separate apps per role)
+- [x] **AUTH-01**: Staff can log in via PIN with role routing to the appropriate view (Waiter / Cashier / Manager / Kitchen)
+- [x] **AUTH-02**: One role-aware interface — permission-driven enabled/disabled/authorize states per action (not separate apps per role)
 - [ ] **AUTH-03**: Manager can authorize restricted actions (void, discount) via an in-app PIN override modal
-- [ ] **AUTH-04**: Staff can open a shift with branch selection and opening cash input before accessing the main POS
-- [ ] **AUTH-05**: Multi-branch context is visible in the persistent navigation header throughout the session
+- [x] **AUTH-04**: Staff can open a shift with branch selection and opening cash input before accessing the main POS
+- [x] **AUTH-05**: Multi-branch context is visible in the persistent navigation header throughout the session
 
 ### Floor Management
 
@@ -102,11 +102,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Complete |
+| AUTH-05 | Phase 1 | Complete |
 | FLOOR-01 | Phase 2 | Pending |
 | FLOOR-02 | Phase 2 | Pending |
 | FLOOR-03 | Phase 2 | Pending |
