@@ -10,7 +10,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation** — Scaffold, AppShell, PIN login, role routing, shift open
-- [ ] **Phase 2: Table Map** — Floor plan with full table lifecycle state machine
+- [x] **Phase 2: Table Map** — Floor plan with full table lifecycle state machine
 - [ ] **Phase 3: Order Flow** — Order entry, ramen modifier sheet, void flows
 - [ ] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode
 - [ ] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle
@@ -24,7 +24,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
-| 2. Table Map | 3/4 | In Progress|  |
+| 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 0/? | Not started | - |
 | 4. KDS | 0/? | Not started | - |
 | 5. Payment | 0/? | Not started | - |
@@ -70,13 +70,13 @@ Plans:
 4. Every occupied table displays a live dwell timer badge showing how long the party has been seated
 5. Staff can assign a waiter to a table and add a table-level note that persists for the full visit
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
-- [ ] 02-01-PLAN.md — Zustand table store (state machine) + 12-table mock fixture + useDwellTimer hook (FLOOR-01, FLOOR-04, FLOOR-05)
-- [ ] 02-02-PLAN.md — TableTile + TableGrid + table-map page render (FLOOR-01, FLOOR-04)
-- [ ] 02-03-PLAN.md — TableBottomSheet + OpenTableModal + page wiring — full interactive floor plan (FLOOR-02, FLOOR-03, FLOOR-05)
-- [ ] 02-04-PLAN.md — Final type check + next build + visual checkpoint: verify all 5 success criteria
+- [x] 02-01-PLAN.md — Zustand table store (state machine) + 12-table mock fixture + useDwellTimer hook (FLOOR-01, FLOOR-04, FLOOR-05)
+- [x] 02-02-PLAN.md — TableTile + TableGrid + table-map page render (FLOOR-01, FLOOR-04)
+- [x] 02-03-PLAN.md — TableBottomSheet + OpenTableModal + page wiring — full interactive floor plan (FLOOR-02, FLOOR-03, FLOOR-05)
+- [x] 02-04-PLAN.md — Final type check + next build + visual checkpoint: verify all 5 success criteria
 
 ---
 

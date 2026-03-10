@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-table-map-03-PLAN.md
-last_updated: "2026-03-10T11:21:20.952Z"
+status: ready
+stopped_at: Phase 2 complete — all 5 FLOOR criteria verified
+last_updated: "2026-03-10T12:00:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 0
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 7
-  percent: 14
+  completed_plans: 9
+  percent: 28
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-10
-**Session:** Phase 1 complete — verified and closed
+**Session:** Phase 2 complete — verified and closed
 
 ---
 
@@ -34,12 +34,12 @@ progress:
 
 ## Current Position
 
-**Phase:** Phase 2 — Table Map (not started)
-**Plan:** N/A — Phase 2 not yet planned
-**Status:** Phase 1 complete and verified ✓ — ready for Phase 2
+**Phase:** Phase 3 — Order Flow (not started)
+**Plan:** N/A — Phase 3 not yet planned
+**Status:** Phase 2 complete and verified ✓ — ready for Phase 3
 
 ```
-Progress: [██░░░░░░░░] 14% (1 of 7 phases)
+Progress: [████░░░░░░] 28% (2 of 7 phases)
 ```
 
 ---
@@ -49,7 +49,7 @@ Progress: [██░░░░░░░░] 14% (1 of 7 phases)
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
 | 1 | Foundation | AUTH-01–05 | Complete ✓ (2026-03-10) |
-| 2 | Table Map | FLOOR-01–05 | Not started |
+| 2 | Table Map | FLOOR-01–05 | Complete ✓ (2026-03-10) |
 | 3 | Order Flow | ORDER-01–07 | Not started |
 | 4 | KDS | KDS-01–04 | Not started |
 | 5 | Payment | PAY-01–05 | Not started |
@@ -98,7 +98,9 @@ Progress: [██░░░░░░░░] 14% (1 of 7 phases)
 - [x] Execute Phase 1 Plan 03 (AppShell + auth guard)
 - [x] Execute Phase 1 Plan 04 (shift-open form)
 - [x] Execute Phase 1 Plan 05 (final type check + browser verification)
-- [ ] Plan Phase 2 (Table Map)
+- [x] Plan Phase 2 (Table Map)
+- [x] Execute Phase 2 (Table Map) — all 5 FLOOR criteria verified
+- [ ] Plan Phase 3 (Order Flow)
 
 ### Blockers
 
@@ -123,11 +125,12 @@ None.
 | Phase 02-table-map P01 | 4min | 2 tasks | 3 files |
 | Phase 02-table-map P02 | 5min | 2 tasks | 3 files |
 | Phase 02-table-map P03 | 8min | 2 tasks | 3 files |
+| Phase 02-table-map P04 | — | 2 tasks | 0 files (verification) |
 
 ## Session Continuity
 
-Last session: 2026-03-10T11:21:20.950Z
-Stopped at: Completed 02-table-map-03-PLAN.md
+Last session: 2026-03-10T12:00:00.000Z
+Stopped at: Phase 2 complete — browser walkthrough approved
 Resume file: None
 
 To resume after any context loss:
@@ -135,7 +138,7 @@ To resume after any context loss:
 1. Read `.planning/ROADMAP.md` for phase structure and success criteria
 2. Read `.planning/REQUIREMENTS.md` for requirement details and traceability
 3. Read `.planning/STATE.md` (this file) for current position and decisions
-4. Run `/gsd:plan-phase 2` to begin Phase 2
+4. Run `/gsd:discuss-phase 3` or `/gsd:plan-phase 3` to begin Phase 3
 
 ---
 
