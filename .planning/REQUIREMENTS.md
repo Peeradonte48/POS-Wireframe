@@ -17,11 +17,11 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Floor Management
 
-- [ ] **FLOOR-01**: Staff can view a floor plan with color + icon status per table (Open, Occupied, Reserved, Check Requested, Cleaning)
+- [x] **FLOOR-01**: Staff can view a floor plan with color + icon status per table (Open, Occupied, Reserved, Check Requested, Cleaning)
 - [ ] **FLOOR-02**: Staff can tap a table to perform the status-appropriate action (Empty → seat modal, Occupied → open order, Check Requested → payment screen)
 - [ ] **FLOOR-03**: Staff can enter seat/cover count when seating a table via a "Seat Table" modal
-- [ ] **FLOOR-04**: Time-on-table dwell timer badge is visible on each occupied table tile
-- [ ] **FLOOR-05**: Staff can assign a waiter to a table and add a table-level notes field (persists for the full visit)
+- [x] **FLOOR-04**: Time-on-table dwell timer badge is visible on each occupied table tile
+- [x] **FLOOR-05**: Staff can assign a waiter to a table and add a table-level notes field (persists for the full visit)
 
 ### Order Flow
 
@@ -107,11 +107,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
-| FLOOR-01 | Phase 2 | Pending |
+| FLOOR-01 | Phase 2 | Complete |
 | FLOOR-02 | Phase 2 | Pending |
 | FLOOR-03 | Phase 2 | Pending |
-| FLOOR-04 | Phase 2 | Pending |
-| FLOOR-05 | Phase 2 | Pending |
+| FLOOR-04 | Phase 2 | Complete |
+| FLOOR-05 | Phase 2 | Complete |
 | ORDER-01 | Phase 3 | Pending |
 | ORDER-02 | Phase 3 | Pending |
 | ORDER-03 | Phase 3 | Pending |
