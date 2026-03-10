@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-10T16:34:51.803Z"
+status: completed
+stopped_at: "Paused at checkpoint: 03-04 Task 2 human-verify"
+last_updated: "2026-03-10T16:46:05.123Z"
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 85
 ---
 
@@ -90,6 +90,9 @@ Progress: [█████████░] 85% (11 of 13 plans)
 - [Phase 03-order-flow]: selectedMenuItemId and editingLineId declared in OrderPage but not wired — Plan 03 adds ModifierSheet
 - [Phase 03-order-flow]: Native checkbox with accent-primary used in ModifierSheet toppings — @radix-ui/react-checkbox not installed, project uses @base-ui/react
 - [Phase 03-order-flow]: ModifierSheet sticky footer uses fixed z-[51] so Add/Update button stays visible while panel content scrolls within 70vh constraint
+- [Phase 03-order-flow]: buildModifierSummary defined inline in TicketLineItem — single-file locality, not shared util
+- [Phase 03-order-flow]: computeTotal skips topping priceAdj since ModifierSelection lacks priceAdj field — basePrice x qty only for wireframe
+- [Phase 03-order-flow]: Add Items button is cosmetic — store addItem auto-creates new unsent round when all rounds are sent
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -136,11 +139,12 @@ None.
 | Phase 03-order-flow P01 | 5min | 2 tasks | 4 files |
 | Phase 03-order-flow P02 | 5min | 2 tasks | 3 files |
 | Phase 03-order-flow P03 | 2min | 1 task | 1 file |
+| Phase 03-order-flow P04 | 6min | 1 tasks | 4 files |
 
 ## Session Continuity
 
-Last session: 2026-03-10T16:34:51Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-10T16:46:05.120Z
+Stopped at: Paused at checkpoint: 03-04 Task 2 human-verify
 Resume file: None
 
 To resume after any context loss:
