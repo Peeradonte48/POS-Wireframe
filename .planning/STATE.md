@@ -2,20 +2,20 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-last_updated: "2026-03-10T05:16:52.319Z"
+status: completed
+last_updated: "2026-03-10T05:22:06.647Z"
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 3
+  percent: 40
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-10
-**Session:** Phase 1 Plan 01 execution
+**Session:** Phase 1 Plan 02 execution
 
 ---
 
@@ -34,11 +34,11 @@ progress:
 ## Current Position
 
 **Phase:** Phase 1 — Foundation (in progress)
-**Plan:** 01-01 complete, next: 01-02
-**Status:** Plan 01 executed — scaffold, Tailwind v4, shadcn/ui, Wave 0 type contracts done
+**Plan:** 01-02 complete, next: 01-03
+**Status:** Plan 02 executed — PIN login flow (PinNumpad, RoleSelector, /login page) done
 
 ```
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 ```
 
 ---
@@ -47,7 +47,7 @@ Progress: [██░░░░░░░░] 20%
 
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 | Foundation | AUTH-01–05 | In Progress (1/5 plans done) |
+| 1 | Foundation | AUTH-01–05 | In Progress (2/5 plans done) |
 | 2 | Table Map | FLOOR-01–05 | Not started |
 | 3 | Order Flow | ORDER-01–07 | Not started |
 | 4 | KDS | KDS-01–04 | Not started |
@@ -70,6 +70,10 @@ Progress: [██░░░░░░░░] 20%
 | Tailwind v3 vs v4 compatibility must be verified at init | Tailwind v4 introduced breaking changes to config format | Roadmap |
 | No Zustand persist middleware | Each page load starts fresh at login — intentional for wireframe simplicity | Phase 1 Plan 01 |
 | globals.css preserves shadcn CSS variable tokens + brand @theme block | Both coexist under Tailwind v4 CSS-first config | Phase 1 Plan 01 |
+- [Phase 01-foundation]: PinNumpad auto-clear timeout set to 600ms to match shake animation duration before resetting digits
+- [Phase 01-foundation]: PinNumpad reusable: no confirm button, 4th digit auto-submits via useEffect (not inline handler)
+- [Phase 01-foundation]: Disabled nav items use div elements (not Link) to prevent navigation while preserving visual presence in sidebar
+- [Phase 01-foundation]: Soft gate pattern: /shift-open excluded from shift-redirect so authenticated-but-no-shift staff see AppShell with locked sidebar
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -81,7 +85,7 @@ Progress: [██░░░░░░░░] 20%
 ### Active Todos
 
 - [x] Run `/gsd:plan-phase 1` to create Phase 1 execution plan
-- [ ] Execute Phase 1 Plan 02 (login UI with PIN pad)
+- [x] Execute Phase 1 Plan 02 (login UI with PIN pad)
 - [ ] Execute Phase 1 Plan 03 (AppShell + auth guard)
 - [ ] Execute Phase 1 Plan 04 (shift-open form)
 - [ ] Execute Phase 1 Plan 05 (navigation)
@@ -102,8 +106,8 @@ None.
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 01-foundation | 01 | 7min | 2 | 13 |
-
----
+| 01-foundation | 02 | 2min | 2 | 3 |
+| 01-foundation | 03 | 2min | 2 | 4 |
 
 ## Session Continuity
 
