@@ -1,0 +1,173 @@
+export interface MenuModifierOption {
+  id: string
+  label: string
+  priceAdj: number
+}
+
+export interface MenuModifierGroup {
+  id: string
+  label: string
+  type: 'single' | 'multi'
+  required: boolean
+  options: MenuModifierOption[]
+}
+
+export interface MenuItem {
+  id: string
+  categoryId: string
+  name: string
+  nameTh: string
+  basePrice: number
+  thumbnailPlaceholder: string
+  modifierGroups: MenuModifierGroup[]
+}
+
+export interface MenuCategory {
+  id: string
+  label: string
+  labelTh: string
+}
+
+// ---------------------------------------------------------------------------
+// Categories
+// ---------------------------------------------------------------------------
+
+export const MENU_CATEGORIES: MenuCategory[] = [
+  { id: 'ramen', label: 'Ramen', labelTh: 'ราเมน' },
+  { id: 'rice', label: 'Rice Bowls', labelTh: 'ข้าว' },
+  { id: 'sides', label: 'Sides', labelTh: 'เซ็ท/ของเสริม' },
+  { id: 'drinks', label: 'Drinks', labelTh: 'เครื่องดื่ม' },
+]
+
+// ---------------------------------------------------------------------------
+// Shared modifier group definitions
+// ---------------------------------------------------------------------------
+
+const BROTH_GROUP: MenuModifierGroup = {
+  id: 'broth',
+  label: 'Broth',
+  type: 'single',
+  required: true,
+  options: [
+    { id: 'tonkotsu', label: 'Tonkotsu', priceAdj: 0 },
+    { id: 'miso', label: 'Miso', priceAdj: 0 },
+    { id: 'shoyu', label: 'Shoyu', priceAdj: 0 },
+    { id: 'spicy-miso', label: 'Spicy Miso', priceAdj: 0 },
+  ],
+}
+
+const NOODLE_FIRMNESS_GROUP: MenuModifierGroup = {
+  id: 'noodle-firmness',
+  label: 'Noodle Firmness',
+  type: 'single',
+  required: true,
+  options: [
+    { id: 'katame', label: 'Firm — Katame', priceAdj: 0 },
+    { id: 'futsu', label: 'Regular — Futsu', priceAdj: 0 },
+    { id: 'yawaraka', label: 'Soft — Yawaraka', priceAdj: 0 },
+  ],
+}
+
+const TOPPINGS_GROUP: MenuModifierGroup = {
+  id: 'toppings',
+  label: 'Toppings',
+  type: 'multi',
+  required: false,
+  options: [
+    { id: 'chashu', label: 'Extra Chashu', priceAdj: 30 },
+    { id: 'egg', label: 'Soft-boiled Egg', priceAdj: 20 },
+    { id: 'corn', label: 'Corn', priceAdj: 15 },
+    { id: 'bamboo', label: 'Bamboo Shoots', priceAdj: 10 },
+    { id: 'butter', label: 'Butter', priceAdj: 10 },
+    { id: 'nori', label: 'Nori', priceAdj: 10 },
+  ],
+}
+
+const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
+  BROTH_GROUP,
+  NOODLE_FIRMNESS_GROUP,
+  TOPPINGS_GROUP,
+]
+
+// ---------------------------------------------------------------------------
+// Menu items
+// ---------------------------------------------------------------------------
+
+export const MENU_ITEMS: MenuItem[] = [
+  // Ramen
+  {
+    id: 'tonkotsu-ramen',
+    categoryId: 'ramen',
+    name: 'Tonkotsu Ramen',
+    nameTh: 'โทนโกตสึราเมน',
+    basePrice: 290,
+    thumbnailPlaceholder: '🍜',
+    modifierGroups: RAMEN_MODIFIER_GROUPS,
+  },
+  {
+    id: 'miso-ramen',
+    categoryId: 'ramen',
+    name: 'Miso Ramen',
+    nameTh: 'มิโซราเมน',
+    basePrice: 280,
+    thumbnailPlaceholder: '🍜',
+    modifierGroups: RAMEN_MODIFIER_GROUPS,
+  },
+  {
+    id: 'spicy-miso-ramen',
+    categoryId: 'ramen',
+    name: 'Spicy Miso Ramen',
+    nameTh: 'ราเมนมิโซเผ็ด',
+    basePrice: 300,
+    thumbnailPlaceholder: '🌶️',
+    modifierGroups: RAMEN_MODIFIER_GROUPS,
+  },
+  {
+    id: 'shoyu-ramen',
+    categoryId: 'ramen',
+    name: 'Shoyu Ramen',
+    nameTh: 'โชยุราเมน',
+    basePrice: 270,
+    thumbnailPlaceholder: '🍜',
+    modifierGroups: RAMEN_MODIFIER_GROUPS,
+  },
+  // Rice Bowls
+  {
+    id: 'chashu-rice',
+    categoryId: 'rice',
+    name: 'Chashu Rice Bowl',
+    nameTh: 'ข้าวหมูชาชู',
+    basePrice: 180,
+    thumbnailPlaceholder: '🍚',
+    modifierGroups: [],
+  },
+  {
+    id: 'gyudon',
+    categoryId: 'rice',
+    name: 'Gyudon',
+    nameTh: 'กิวดง',
+    basePrice: 200,
+    thumbnailPlaceholder: '🥩',
+    modifierGroups: [],
+  },
+  // Sides
+  {
+    id: 'gyoza',
+    categoryId: 'sides',
+    name: 'Gyoza (6 pcs)',
+    nameTh: 'เกี๊ยวซ่า',
+    basePrice: 120,
+    thumbnailPlaceholder: '🥟',
+    modifierGroups: [],
+  },
+  // Drinks
+  {
+    id: 'green-tea',
+    categoryId: 'drinks',
+    name: 'Green Tea',
+    nameTh: 'ชาเขียว',
+    basePrice: 60,
+    thumbnailPlaceholder: '🍵',
+    modifierGroups: [],
+  },
+]
