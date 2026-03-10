@@ -3,19 +3,19 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-last_updated: "2026-03-10T05:22:06.647Z"
+last_updated: "2026-03-10T06:55:22.717Z"
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 40
+  completed_plans: 4
+  percent: 60
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-10
-**Session:** Phase 1 Plan 03 execution
+**Session:** Phase 1 Plan 04 execution
 
 ---
 
@@ -34,11 +34,11 @@ progress:
 ## Current Position
 
 **Phase:** Phase 1 — Foundation (in progress)
-**Plan:** 01-03 complete, next: 01-04
-**Status:** Plan 03 executed — AppShell (header + collapsible sidebar) and (app)/layout.tsx auth guard done
+**Plan:** 01-04 complete, next: 01-05
+**Status:** Plan 04 executed — ShiftOpenForm, shift-open page, and ManagerPinModal complete
 
 ```
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 ```
 
 ---
@@ -47,7 +47,7 @@ Progress: [██████░░░░] 60%
 
 | Phase | Name | Requirements | Status |
 |-------|------|--------------|--------|
-| 1 | Foundation | AUTH-01–05 | In Progress (3/5 plans done) |
+| 1 | Foundation | AUTH-01–05 | In Progress (4/5 plans done) |
 | 2 | Table Map | FLOOR-01–05 | Not started |
 | 3 | Order Flow | ORDER-01–07 | Not started |
 | 4 | KDS | KDS-01–04 | Not started |
@@ -74,6 +74,8 @@ Progress: [██████░░░░] 60%
 - [Phase 01-foundation]: PinNumpad reusable: no confirm button, 4th digit auto-submits via useEffect (not inline handler)
 - [Phase 01-foundation]: Disabled nav items use div elements (not Link) to prevent navigation while preserving visual presence in sidebar
 - [Phase 01-foundation]: Soft gate pattern: /shift-open excluded from shift-redirect so authenticated-but-no-shift staff see AppShell with locked sidebar
+- [Phase 01-foundation]: ManagerPinModal verifies PIN internally via verifyPin('Manager', pin) keeping parent API minimal
+- [Phase 01-foundation]: disablePointerDismissal on Base UI Dialog Root prevents accidental dismissal during PIN entry (Radix onInteractOutside does not exist in Base UI)
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -87,7 +89,7 @@ Progress: [██████░░░░] 60%
 - [x] Run `/gsd:plan-phase 1` to create Phase 1 execution plan
 - [x] Execute Phase 1 Plan 02 (login UI with PIN pad)
 - [x] Execute Phase 1 Plan 03 (AppShell + auth guard)
-- [ ] Execute Phase 1 Plan 04 (shift-open form)
+- [x] Execute Phase 1 Plan 04 (shift-open form)
 - [ ] Execute Phase 1 Plan 05 (navigation)
 
 ### Blockers
@@ -108,6 +110,7 @@ None.
 | 01-foundation | 01 | 7min | 2 | 13 |
 | 01-foundation | 02 | 2min | 2 | 3 |
 | 01-foundation | 03 | 2min | 2 | 4 |
+| 01-foundation | 04 | 5min | 2 | 4 |
 
 ## Session Continuity
 

@@ -23,7 +23,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/5 | In Progress|  |
+| 1. Foundation | 4/5 | In Progress|  |
 | 2. Table Map | 0/? | Not started | - |
 | 3. Order Flow | 0/? | Not started | - |
 | 4. KDS | 0/? | Not started | - |
@@ -47,7 +47,7 @@
 4. The branch name and role badge are visible in the persistent navigation header on every screen throughout the session
 5. A second staff member logging in with a different role sees a meaningfully different set of enabled/disabled actions within the same interface — not a different app
 
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 - [ ] 01-01-PLAN.md — Scaffold + Tailwind v4 config + route groups + Zustand store + role-permissions + mock data
