@@ -23,7 +23,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/5 | In progress | - |
 | 2. Table Map | 0/? | Not started | - |
 | 3. Order Flow | 0/? | Not started | - |
 | 4. KDS | 0/? | Not started | - |
@@ -47,7 +47,14 @@
 4. The branch name and role badge are visible in the persistent navigation header on every screen throughout the session
 5. A second staff member logging in with a different role sees a meaningfully different set of enabled/disabled actions within the same interface — not a different app
 
-**Plans:** TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold + Tailwind v4 config + route groups + Zustand store + role-permissions + mock data
+- [ ] 01-02-PLAN.md — PinNumpad component + RoleSelector + login page (AUTH-01)
+- [ ] 01-03-PLAN.md — AppShell: AppHeader + AppSidebar + (app)/layout.tsx auth guard (AUTH-02, AUTH-05)
+- [ ] 01-04-PLAN.md — ShiftOpenForm + shift-open page + ManagerPinModal (AUTH-04, AUTH-03)
+- [ ] 01-05-PLAN.md — Final type check + visual checkpoint: verify all 5 success criteria in browser
 
 ---
 
@@ -203,4 +210,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 ---
 
 *Roadmap created: 2026-03-10*
-*Next: `/gsd:plan-phase 1`*
+*Updated: 2026-03-10 — Phase 1 plans created (5 plans, 4 waves)*
