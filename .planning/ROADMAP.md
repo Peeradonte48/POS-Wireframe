@@ -9,7 +9,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** — Scaffold, AppShell, PIN login, role routing, shift open
+- [x] **Phase 1: Foundation** — Scaffold, AppShell, PIN login, role routing, shift open
 - [ ] **Phase 2: Table Map** — Floor plan with full table lifecycle state machine
 - [ ] **Phase 3: Order Flow** — Order entry, ramen modifier sheet, void flows
 - [ ] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode
@@ -23,8 +23,8 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 4/5 | In Progress|  |
-| 2. Table Map | 0/? | Not started | - |
+| 1. Foundation | 5/5 | Complete | 2026-03-10 |
+| 2. Table Map | 0/4 | In progress | - |
 | 3. Order Flow | 0/? | Not started | - |
 | 4. KDS | 0/? | Not started | - |
 | 5. Payment | 0/? | Not started | - |
@@ -47,14 +47,14 @@
 4. The branch name and role badge are visible in the persistent navigation header on every screen throughout the session
 5. A second staff member logging in with a different role sees a meaningfully different set of enabled/disabled actions within the same interface — not a different app
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans executed
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold + Tailwind v4 config + route groups + Zustand store + role-permissions + mock data
-- [ ] 01-02-PLAN.md — PinNumpad component + RoleSelector + login page (AUTH-01)
-- [ ] 01-03-PLAN.md — AppShell: AppHeader + AppSidebar + (app)/layout.tsx auth guard (AUTH-02, AUTH-05)
-- [ ] 01-04-PLAN.md — ShiftOpenForm + shift-open page + ManagerPinModal (AUTH-04, AUTH-03)
-- [ ] 01-05-PLAN.md — Final type check + visual checkpoint: verify all 5 success criteria in browser
+- [x] 01-01-PLAN.md — Scaffold + Tailwind v4 config + route groups + Zustand store + role-permissions + mock data
+- [x] 01-02-PLAN.md — PinNumpad component + RoleSelector + login page (AUTH-01)
+- [x] 01-03-PLAN.md — AppShell: AppHeader + AppSidebar + (app)/layout.tsx auth guard (AUTH-02, AUTH-05)
+- [x] 01-04-PLAN.md — ShiftOpenForm + shift-open page + ManagerPinModal (AUTH-04, AUTH-03)
+- [x] 01-05-PLAN.md — Final type check + visual checkpoint: verify all 5 success criteria in browser
 
 ---
 
@@ -70,7 +70,13 @@ Plans:
 4. Every occupied table displays a live dwell timer badge showing how long the party has been seated
 5. Staff can assign a waiter to a table and add a table-level note that persists for the full visit
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Zustand table store (state machine) + 12-table mock fixture + useDwellTimer hook (FLOOR-01, FLOOR-04, FLOOR-05)
+- [ ] 02-02-PLAN.md — TableTile + TableGrid + table-map page render (FLOOR-01, FLOOR-04)
+- [ ] 02-03-PLAN.md — TableBottomSheet + OpenTableModal + page wiring — full interactive floor plan (FLOOR-02, FLOOR-03, FLOOR-05)
+- [ ] 02-04-PLAN.md — Final type check + next build + visual checkpoint: verify all 5 success criteria
 
 ---
 
@@ -211,3 +217,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 
 *Roadmap created: 2026-03-10*
 *Updated: 2026-03-10 — Phase 1 plans created (5 plans, 4 waves)*
+*Updated: 2026-03-10 — Phase 2 plans created (4 plans, 4 waves)*
