@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02-table-map-02-PLAN.md
-last_updated: "2026-03-10T11:18:06.222Z"
+stopped_at: Completed 02-table-map-03-PLAN.md
+last_updated: "2026-03-10T11:21:20.952Z"
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 9
-  completed_plans: 6
+  completed_plans: 7
   percent: 14
 ---
 
@@ -81,6 +81,8 @@ Progress: [██░░░░░░░░] 14% (1 of 7 phases)
 - [Phase 02-table-map]: useDwellTimer initializes now with Date.now() so already-open tables display correct elapsed time on mount
 - [Phase 02-table-map]: STATUS_CONFIG defined inline in TableTile — 5 statuses small enough, no external file needed
 - [Phase 02-table-map]: selectedTable state held at page level — ephemeral UI selection, not domain state
+- [Phase 02-table-map]: Bottom sheet implemented as CSS-only slide-up (no library) — translate-y-full/translate-y-0 with fixed positioning sufficient for mobile POS
+- [Phase 02-table-map]: Blur-update pattern: local controlled input, onBlur writes to Zustand store to avoid reactive cascade on every keystroke
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -120,11 +122,12 @@ None.
 | 01-foundation | 05 | —   | 2 | 0 |
 | Phase 02-table-map P01 | 4min | 2 tasks | 3 files |
 | Phase 02-table-map P02 | 5min | 2 tasks | 3 files |
+| Phase 02-table-map P03 | 8min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-03-10T11:18:06.219Z
-Stopped at: Completed 02-table-map-02-PLAN.md
+Last session: 2026-03-10T11:21:20.950Z
+Stopped at: Completed 02-table-map-03-PLAN.md
 Resume file: None
 
 To resume after any context loss:
