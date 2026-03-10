@@ -25,7 +25,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
-| 3. Order Flow | 1/4 | In Progress|  |
+| 3. Order Flow | 2/4 | In Progress|  |
 | 4. KDS | 0/? | Not started | - |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
@@ -92,7 +92,7 @@ Plans:
 4. Staff can return to a table that already has an open order and add additional items without disrupting the existing ticket
 5. A Ramen-specific menu data (real categories, items, and at least one full modifier tree) is used throughout — no generic placeholder menu
 
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 03-01-PLAN.md — Install Sonner + order.store.ts type model + menu.ts A Ramen fixture (ORDER-01–07 data contracts)
