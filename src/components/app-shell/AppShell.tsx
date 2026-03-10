@@ -1,0 +1,44 @@
+'use client'
+
+import { useState } from 'react'
+import { AppHeader } from './AppHeader'
+import { AppSidebar } from './AppSidebar'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  return (
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* Top header — full width */}
+      <AppHeader />
+
+      {/* Body: sidebar + main content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="relative flex">
+          <AppSidebar collapsed={sidebarCollapsed} />
+          {/* Collapse toggle button — sits at the bottom of sidebar */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarCollapsed((prev) => !prev)}
+            className="absolute bottom-3 right-2 h-7 w-7"
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {sidebarCollapsed
+              ? <PanelLeftOpen size={14} />
+              : <PanelLeftClose size={14} />
+            }
+          </Button>
+        </div>
+
+        {/* Main content area */}
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
