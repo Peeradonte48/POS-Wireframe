@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ export function TableBottomSheet({
   onOpenTableModal,
 }: TableBottomSheetProps) {
   const open = table !== null
+  const router = useRouter()
   const { markReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
 
   // Local editable state for waiter name and note (Occupied sheet)
@@ -141,9 +143,12 @@ export function TableBottomSheet({
 
                 {/* Action buttons */}
                 <div className="flex gap-2">
-                  <Button variant="outline" disabled className="flex-1">
-                    View Order{' '}
-                    <span className="text-[10px] ml-1 text-muted-foreground">(Phase 3)</span>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => router.push(`/order/${table.id}`)}
+                  >
+                    View Order
                   </Button>
                   <Button
                     variant="outline"
