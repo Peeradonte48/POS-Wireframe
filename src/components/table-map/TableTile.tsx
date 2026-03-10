@@ -1,0 +1,66 @@
+'use client'
+import { CircleDot, Users, CalendarClock, CreditCard, Sparkles, Clock } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import type { TableRecord, TableStatus } from '@/stores/table.store'
+import { useDwellTimer } from './useDwellTimer'
+
+const STATUS_CONFIG: Record<TableStatus, {
+  borderClass: string
+  textClass: string
+  label: string
+  Icon: LucideIcon
+}> = {
+  Open:           { borderClass: 'border-l-green-500',  textClass: 'text-green-600',  label: 'Open',            Icon: CircleDot     },
+  Occupied:       { borderClass: 'border-l-red-500',    textClass: 'text-red-600',    label: 'Occupied',        Icon: Users         },
+  Reserved:       { borderClass: 'border-l-blue-500',   textClass: 'text-blue-600',   label: 'Reserved',        Icon: CalendarClock },
+  CheckRequested: { borderClass: 'border-l-amber-500',  textClass: 'text-amber-600',  label: 'Check Requested', Icon: CreditCard    },
+  Cleaning:       { borderClass: 'border-l-gray-400',   textClass: 'text-gray-500',   label: 'Cleaning',        Icon: Sparkles      },
+}
+
+interface TableTileProps {
+  table: TableRecord
+  onTap: (table: TableRecord) => void
+}
+
+export function TableTile({ table, onTap }: TableTileProps) {
+  const { borderClass, textClass, label, Icon } = STATUS_CONFIG[table.status]
+  // Always call useDwellTimer unconditionally (React hooks rule)
+  const dwellTime = useDwellTimer(table.openedAt)
+
+  return (
+    <button
+      onClick={() => onTap(table)}
+      className={`relative flex flex-col gap-1 rounded-xl border border-border bg-card p-3 border-l-4 ${borderClass} min-h-[88px] touch-manipulation active:scale-[0.97] transition-transform w-full text-left`}
+    >
+      {/* Table label */}
+      <span className="text-xs font-semibold text-foreground">{table.label}</span>
+
+      {/* Status row */}
+      <span className={`text-xs ${textClass} flex items-center gap-1`}>
+        <Icon size={12} />
+        {label}
+      </span>
+
+      {/* Guest count — Occupied only */}
+      {table.status === 'Occupied' && table.guestCount !== null && (
+        <span className="text-xs text-muted-foreground">{table.guestCount} guests</span>
+      )}
+
+      {/* Dwell timer — Occupied only */}
+      {table.status === 'Occupied' && dwellTime && (
+        <span className="text-xs font-mono text-muted-foreground flex items-center gap-0.5">
+          <Clock size={10} />
+          {dwellTime}
+        </span>
+      )}
+
+      {/* Order stage badge */}
+      {table.orderStage !== null && (
+        <Badge variant="outline" className="absolute top-2 right-2 text-[10px] py-0">
+          {table.orderStage}
+        </Badge>
+      )}
+    </button>
+  )
+}
