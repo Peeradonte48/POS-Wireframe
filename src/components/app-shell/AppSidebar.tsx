@@ -50,7 +50,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
       {/* Shift-open lock banner (shown when shift is not open) */}
       {!shiftOpen && (
         <div className={cn(
-          'flex items-center gap-2 px-3 py-2 bg-amber-50 border-b border-amber-200 text-amber-700 text-xs',
+          'flex items-center gap-2 px-3 py-2 bg-status-check-requested-bg border-b border-status-check-requested/30 text-status-check-requested text-xs',
           collapsed && 'justify-center px-0'
         )}>
           <LockPasswordLinear size={12} className="shrink-0" />
