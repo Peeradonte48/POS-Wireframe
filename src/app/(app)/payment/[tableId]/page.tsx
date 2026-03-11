@@ -103,6 +103,14 @@ export default function PaymentPage() {
     paymentMethod === null ||
     (paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal)
 
+  const confirmHint = !canDoAction(role, 'confirm-payment')
+    ? `Role "${role}" cannot confirm payment — switch to Cashier or Manager`
+    : paymentMethod === null
+      ? 'Select a payment method above to continue'
+      : paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal
+        ? 'Cash received is less than the total'
+        : null
+
   // ---- Empty order guard ----
   if (!order || billItems.length === 0) {
     return (
@@ -200,7 +208,7 @@ export default function PaymentPage() {
 
         {/* Sticky bottom bar */}
         <div className="sticky bottom-0 bg-background border-t p-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto space-y-2">
             <Button
               className="w-full h-12 text-base"
               disabled={confirmDisabled}
@@ -208,6 +216,9 @@ export default function PaymentPage() {
             >
               Confirm Payment — ฿{grandTotal.toLocaleString()}
             </Button>
+            {confirmHint && (
+              <p className="text-xs text-center text-muted-foreground">{confirmHint}</p>
+            )}
           </div>
         </div>
       </div>
