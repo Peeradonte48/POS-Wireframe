@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useOrderStore } from '@/stores/order.store'
 import { useKdsStore, KdsStage, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
@@ -18,21 +19,23 @@ export function KdsBoard() {
   const { tickets, addTicket } = useKdsStore()
   const tables = useTableStore((s) => s.tables)
 
-  // Auto-register tickets for tables that have sent rounds but no KDS ticket yet
-  const tablesWithSentOrders = Object.values(allOrders).filter((order) =>
-    order.rounds.some((r) => r.sentAt !== null),
-  )
-
-  tablesWithSentOrders.forEach((order) => {
-    const alreadyRegistered = Object.values(tickets).some(
-      (t) => t.tableId === order.tableId,
+  // Auto-register tickets for tables that have sent rounds but no KDS ticket yet.
+  // useEffect is required — calling store actions during render is a React violation.
+  useEffect(() => {
+    const tablesWithSentOrders = Object.values(allOrders).filter((order) =>
+      order.rounds.some((r) => r.sentAt !== null),
     )
-    if (!alreadyRegistered) {
-      const tableRecord = tables[order.tableId]
-      const tableLabel = tableRecord?.label ?? order.tableId
-      addTicket(order.tableId, tableLabel)
-    }
-  })
+    tablesWithSentOrders.forEach((order) => {
+      const alreadyRegistered = Object.values(tickets).some(
+        (t) => t.tableId === order.tableId,
+      )
+      if (!alreadyRegistered) {
+        const tableRecord = tables[order.tableId]
+        const tableLabel = tableRecord?.label ?? order.tableId
+        addTicket(order.tableId, tableLabel)
+      }
+    })
+  }, [allOrders, tickets, tables, addTicket])
 
   // Helper: get sent+voided items for a ticket (flatten all sent rounds, exclude unsent)
   // Falls back to demoItemsMap for demo-injected tickets that are not in order.store
