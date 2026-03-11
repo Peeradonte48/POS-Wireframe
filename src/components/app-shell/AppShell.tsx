@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { AppSidebar } from './AppSidebar'
+import { ThemedToaster } from './ThemedToaster'
 import { SidebarMinimalisticLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 
@@ -12,6 +13,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
+      <ThemedToaster />
       {/* Top header — full width */}
       <AppHeader />
 

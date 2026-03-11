@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AltArrowLeftLinear } from 'solar-icon-set'
-import { toast, Toaster } from 'sonner'
+import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
@@ -117,7 +117,6 @@ export default function PaymentPage() {
   if (viewState === 'receipt' && receiptData) {
     return (
       <>
-        <Toaster position="top-center" />
         <ReceiptScreen
           tableId={tableId}
           grandTotal={receiptData.grandTotal}
@@ -133,8 +132,6 @@ export default function PaymentPage() {
   // ---- Payment view ----
   return (
     <>
-      <Toaster position="top-center" />
-
       <div className="flex flex-col h-screen">
         {/* Header */}
         <header className="h-14 border-b flex items-center justify-between px-4 shrink-0">

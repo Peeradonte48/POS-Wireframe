@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AltArrowLeftLinear } from 'solar-icon-set'
-import { Toaster } from 'sonner'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
 import { MenuPanel } from '@/components/order/MenuPanel'
@@ -51,8 +50,6 @@ export default function OrderPage() {
 
   return (
     <>
-      <Toaster position="top-center" />
-
       <div className="flex flex-col h-screen bg-background">
         {/* Header */}
         <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
