@@ -13,12 +13,12 @@ export default function KdsPage() {
   const { role } = useSessionStore()
   const { demoActive, toggleDemoActive, injectDemoTicket } = useKdsStore()
 
-  // Auth guard: Kitchen staff only
+  // Auth guard: Kitchen and Manager only
   useEffect(() => {
     if (role === null) {
       router.replace('/login')
-    } else if (role !== 'Kitchen') {
-      // Non-kitchen roles routed away — send to table-map as their home
+    } else if (role !== 'Kitchen' && role !== 'Manager') {
+      // Non-kitchen/manager roles routed away — send to table-map as their home
       router.replace('/table-map')
     }
   }, [role, router])
@@ -44,8 +44,8 @@ export default function KdsPage() {
     return () => clearTimeout(timeoutId)
   }, [demoActive, injectDemoTicket])
 
-  // Don't render until auth state is known
-  if (role === null) return null
+  // Don't render until auth state is known, and block content flash for unpermitted roles
+  if (role === null || (role !== 'Kitchen' && role !== 'Manager')) return null
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
