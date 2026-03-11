@@ -204,3 +204,12 @@
     font-size: max(16px, 1em);
   }
 }
+
+/* Section label utility — shared caps pattern for section headings across all screens */
+@utility caps {
+  font-size: theme(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: theme(--tracking-wide);
+  color: var(--muted-foreground);
+}
