@@ -71,7 +71,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
                 <Link
                   href={href}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors',
                     collapsed && 'justify-center px-2',
                     isActive
                       ? 'bg-primary text-primary-foreground'
@@ -84,7 +84,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
               ) : (
                 <div
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium',
+                    'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium',
                     collapsed && 'justify-center px-2',
                     'text-muted-foreground/40 cursor-not-allowed select-none'
                   )}

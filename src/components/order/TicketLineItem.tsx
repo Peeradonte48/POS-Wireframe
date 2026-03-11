@@ -114,7 +114,7 @@ export function TicketLineItem({
             <div className="flex items-center gap-1">
               <button
                 onClick={() => onQtyChange(item.lineId, -1)}
-                className="w-6 h-6 flex items-center justify-center rounded border border-border text-sm hover:bg-accent transition-colors"
+                className="w-6 h-6 -m-2 p-2 flex items-center justify-center rounded border border-border text-sm hover:bg-accent transition-colors"
                 aria-label="Decrease quantity"
               >
                 −
@@ -122,7 +122,7 @@ export function TicketLineItem({
               <span className="w-5 text-center text-sm tabular-nums">{item.quantity}</span>
               <button
                 onClick={() => onQtyChange(item.lineId, 1)}
-                className="w-6 h-6 flex items-center justify-center rounded border border-border text-sm hover:bg-accent transition-colors"
+                className="w-6 h-6 -m-2 p-2 flex items-center justify-center rounded border border-border text-sm hover:bg-accent transition-colors"
                 aria-label="Increase quantity"
               >
                 +
@@ -132,7 +132,7 @@ export function TicketLineItem({
             <button
               onClick={() => canRemove && onRemove(item.lineId)}
               disabled={!canRemove}
-              className="w-7 h-7 flex items-center justify-center rounded text-destructive hover:bg-destructive/10 transition-colors ml-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-destructive hover:bg-destructive/10 transition-colors ml-1 disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Remove item"
             >
               <TrashBinTrashLinear size={15} />
@@ -144,7 +144,7 @@ export function TicketLineItem({
           <button
             onClick={() => canRemove && onVoidTap(item.lineId)}
             disabled={!canRemove}
-            className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors shrink-0 mt-0.5 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors shrink-0 mt-0.5 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Void item"
           >
             <TrashBinTrashLinear size={15} />

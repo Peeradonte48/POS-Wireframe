@@ -140,7 +140,7 @@ export default function PaymentPage() {
         <header className="h-14 border-b flex items-center justify-between px-4 shrink-0">
           <button
             onClick={() => router.push('/table-map')}
-            className="flex items-center justify-center w-8 h-8 -ml-1 rounded-md hover:bg-accent transition-colors"
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] -ml-1 rounded-md hover:bg-accent transition-colors"
             aria-label="Back to floor plan"
           >
             <AltArrowLeftLinear size={20} />

@@ -37,23 +37,25 @@ export function EightySixTab() {
                 key={item.id}
                 className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0"
               >
-                <input
-                  type="checkbox"
-                  id={`86d-${item.id}`}
-                  checked={is86d}
-                  onChange={() => {
-                    if (!canDoAction(role, 'eighty-six-toggle')) return
-                    const willBe86d = !is86d
-                    toggleEightySix(item.id)
-                    if (willBe86d) {
-                      toast.success(`${item.name} 86'd`)
-                    } else {
-                      toast(`${item.name} available`)
-                    }
-                  }}
-                  disabled={!canDoAction(role, 'eighty-six-toggle')}
-                  className="accent-primary h-4 w-4 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
+                <label className="flex items-center justify-center p-3 -m-3 cursor-pointer shrink-0">
+                  <input
+                    type="checkbox"
+                    id={`86d-${item.id}`}
+                    checked={is86d}
+                    onChange={() => {
+                      if (!canDoAction(role, 'eighty-six-toggle')) return
+                      const willBe86d = !is86d
+                      toggleEightySix(item.id)
+                      if (willBe86d) {
+                        toast.success(`${item.name} 86'd`)
+                      } else {
+                        toast(`${item.name} available`)
+                      }
+                    }}
+                    disabled={!canDoAction(role, 'eighty-six-toggle')}
+                    className="accent-primary h-4 w-4 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </label>
                 <label
                   htmlFor={`86d-${item.id}`}
                   className="flex-1 text-sm cursor-pointer select-none"

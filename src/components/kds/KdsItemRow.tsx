@@ -51,14 +51,16 @@ export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }:
   return (
     <div className={`py-2 border-b border-border/20 last:border-b-0 ${isChecked ? 'opacity-50' : ''}`}>
       <div className="flex items-start gap-2">
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={() => (isChecked ? onUncheck() : onCheck())}
-          disabled={!interactive}
-          className={`mt-0.5 h-4 w-4 shrink-0 accent-primary ${interactive ? 'cursor-pointer' : 'cursor-default opacity-30'}`}
-          aria-label={`Mark ${item.menuItemName} done`}
-        />
+        <label className="flex items-center justify-center p-3 -m-3 cursor-pointer shrink-0">
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={() => (isChecked ? onUncheck() : onCheck())}
+            disabled={!interactive}
+            className={`h-4 w-4 accent-primary ${interactive ? 'cursor-pointer' : 'cursor-default opacity-30'}`}
+            aria-label={`Mark ${item.menuItemName} done`}
+          />
+        </label>
         <div className="flex-1 min-w-0">
           <span className={`text-sm font-medium ${isChecked ? 'line-through' : ''}`}>
             {item.menuItemName}
