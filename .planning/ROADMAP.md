@@ -37,7 +37,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 
 - [x] **Phase 8: Bug Fixes** — Resolve all five navigation, permissions, and toast defects before any CSS changes land (completed 2026-03-11)
 - [x] **Phase 9: Flow Alignment** — Wire the five user-facing interactions missing from v1.0 (guest count, served state, camera coupon scan, dynamic QR, loyalty receipt) (completed 2026-03-12)
-- [ ] **Phase 10: Brand Token Refresh** — Strengthen the crimson primary token, define semantic status and elevation tokens, and eliminate all hardcoded palette classes
+- [x] **Phase 10: Brand Token Refresh** — Strengthen the crimson primary token, define semantic status and elevation tokens, and eliminate all hardcoded palette classes (completed 2026-03-11)
 - [ ] **Phase 11: Component Polish** — Apply the bold brand expression to buttons, badges, cards, price readouts, and typography throughout all screens
 
 ---
@@ -122,7 +122,7 @@ Plans:
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
 | 8. Bug Fixes | v1.1 | 5/5 | Complete ✅ | 2026-03-11 |
 | 9. Flow Alignment | v1.1 | 3/3 | Complete ✅ | 2026-03-12 |
-| 10. Brand Token Refresh | 1/2 | In Progress|  | - |
+| 10. Brand Token Refresh | 2/2 | Complete   | 2026-03-11 | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
 
 ---

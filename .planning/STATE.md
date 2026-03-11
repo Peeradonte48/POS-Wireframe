@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: completed
-last_updated: "2026-03-12T18:46:33Z"
-last_activity: 2026-03-12 — 10-01 TOKEN-01 + TOKEN-02 + TOKEN-03 (crimson chroma bump, status tokens, elevation shadows)
+last_updated: "2026-03-12T19:17:45Z"
+last_activity: 2026-03-12 — 10-02 TOKEN-04 (component palette class migration — TableTile, KdsTicketCard, AppSidebar)
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 10
-  completed_plans: 10
-  percent: 95
+  completed_plans: 11
+  percent: 97
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** Completed 10-01 (TOKEN-01, TOKEN-02, TOKEN-03) — Phase 10 Plan 01 executed
+**Session:** Completed 10-02 (TOKEN-04) — Phase 10 Plan 02 executed; all four TOKEN requirements satisfied
 
 ---
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 ## Current Position
 
-Phase: 10 of 11 (Brand Token Refresh) — v1.1 Phase 3 — Plan 01 COMPLETE
-Plan: 10-01 done (TOKEN-01, TOKEN-02, TOKEN-03) — globals.css token foundation complete
-Status: Phase 10 Plan 01 complete — token definitions done, ready for Plan 02 component polish
-Last activity: 2026-03-12 — 10-01 TOKEN-01 + TOKEN-02 + TOKEN-03 (crimson chroma bump, status tokens, elevation shadows)
+Phase: 10 of 11 (Brand Token Refresh) — v1.1 Phase 3 — Plan 02 COMPLETE (Phase 10 COMPLETE)
+Plan: 10-02 done (TOKEN-04) — all component files migrated to semantic token classes
+Status: Phase 10 complete — all four TOKEN requirements satisfied, Phase 11 unblocked
+Last activity: 2026-03-12 — 10-02 TOKEN-04 (component palette class migration — TableTile, KdsTicketCard, AppSidebar)
 
 ```
-Progress: [█████████░] 95% (10/10 plans complete in active phases)
+Progress: [██████████] 97% (11/11 plans complete in active phases)
 ```
 
 ---
@@ -93,6 +93,11 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Dark mode status tokens independently tuned (higher L for fg, lower L for bg) not opacity-reduced — opacity reduction on OKLCH in dark backgrounds creates muddy washed-out colors
 - TOKEN-01 RESOLVED: --primary chroma now 0.26 in both :root and .dark; @theme brand-red aliases updated to match
 
+### Key Decisions (10-02)
+
+- border-l-status-* works natively in Tailwind v4 without arbitrary value fallback — directional border colors auto-generated from @theme inline --color-status-* aliases
+- BUMP button uses opacity modifier syntax (bg-status-open/80, ring-status-open/60) — avoids adding dedicated hover-state tokens; TOKEN-04 complete
+
 ### Key Patterns from v1.0
 
 - OKLCH primary: `oklch(0.52 0.26 27)` — chroma bumped to 0.26 in Phase 10-01 (TOKEN-01 complete)
@@ -103,7 +108,7 @@ See `.planning/PROJECT.md` for full key decisions log.
 
 ### Blockers / Concerns
 
-- `STATUS_CONFIG` shape in `TableTile.tsx` not yet read — read before writing badge pill refactor plan in Phase 11
+- `STATUS_CONFIG` shape in `TableTile.tsx` RESOLVED (10-02) — read and migrated to status tokens; shape confirmed for Phase 11 badge pill refactor
 - KDS `(kds)/layout.tsx` Toaster RESOLVED (08-03) — ThemedToaster mounted in KDS layout
 
 ---
