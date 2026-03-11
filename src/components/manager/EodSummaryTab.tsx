@@ -4,6 +4,7 @@ import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
 import { useManagerStore } from '@/stores/manager.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -21,7 +22,7 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
 export function EodSummaryTab() {
   const orders = useOrderStore((s) => s.orders)
   const tables = useTableStore((s) => s.tables)
-  const { openingCash, logout } = useSessionStore()
+  const { openingCash, logout, role } = useSessionStore()
   const { shiftClosed, closeShift } = useManagerStore()
 
   const [closingCash, setClosingCash] = useState(0)
@@ -74,7 +75,13 @@ export function EodSummaryTab() {
       )}
 
       {!shiftClosed && (
-        <Button variant="destructive" size="sm" className="w-full" onClick={() => setConfirmOpen(true)}>
+        <Button
+          variant="destructive"
+          size="sm"
+          className="w-full"
+          onClick={() => setConfirmOpen(true)}
+          disabled={!role || !canDoAction(role, 'close-shift')}
+        >
           Close Shift
         </Button>
       )}

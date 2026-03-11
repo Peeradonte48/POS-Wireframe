@@ -3,10 +3,13 @@
 import { useMemo } from 'react'
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
 import { useManagerStore } from '@/stores/manager.store'
+import { useSessionStore } from '@/stores/session.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { Badge } from '@/components/ui/badge'
 
 export function EightySixTab() {
   const { eightySixedIds, toggleEightySix } = useManagerStore()
+  const role = useSessionStore((s) => s.role)!
 
   const grouped = useMemo(() => {
     return MENU_CATEGORIES.map((cat) => ({
@@ -37,8 +40,9 @@ export function EightySixTab() {
                   type="checkbox"
                   id={`86d-${item.id}`}
                   checked={is86d}
-                  onChange={() => toggleEightySix(item.id)}
-                  className="accent-primary h-4 w-4 shrink-0"
+                  onChange={() => canDoAction(role, 'eighty-six-toggle') && toggleEightySix(item.id)}
+                  disabled={!canDoAction(role, 'eighty-six-toggle')}
+                  className="accent-primary h-4 w-4 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <label
                   htmlFor={`86d-${item.id}`}

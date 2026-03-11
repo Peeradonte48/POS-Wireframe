@@ -6,6 +6,8 @@ import { AltArrowLeftLinear } from 'solar-icon-set'
 import { toast, Toaster } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
+import { useSessionStore } from '@/stores/session.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { Button } from '@/components/ui/button'
 import { BillLineItem } from '@/components/payment/BillLineItem'
 import { TotalsSection } from '@/components/payment/TotalsSection'
@@ -32,6 +34,7 @@ export default function PaymentPage() {
 
   // ---- Stores ----
   const order = useOrderStore((s) => s.getOrder(tableId))
+  const role = useSessionStore((s) => s.role)!
 
   // ---- View state machine ----
   const [viewState, setViewState] = useState<'payment' | 'receipt'>('payment')
@@ -95,6 +98,7 @@ export default function PaymentPage() {
 
   // ---- Confirm button disabled logic ----
   const confirmDisabled =
+    !canDoAction(role, 'confirm-payment') ||
     paymentMethod === null ||
     (paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal)
 

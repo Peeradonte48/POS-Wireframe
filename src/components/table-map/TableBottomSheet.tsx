@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useTableStore } from '@/stores/table.store'
+import { useSessionStore } from '@/stores/session.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { useDwellTimer } from '@/components/table-map/useDwellTimer'
 import type { TableRecord } from '@/stores/table.store'
 
@@ -23,6 +25,7 @@ export function TableBottomSheet({
 }: TableBottomSheetProps) {
   const open = table !== null
   const router = useRouter()
+  const role = useSessionStore((s) => s.role)!
   const { markReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
 
   // Local editable state for waiter name and note (Occupied sheet)
@@ -79,7 +82,11 @@ export function TableBottomSheet({
             {/* Content by status */}
             {table.status === 'Open' && (
               <div className="px-4 pb-6 flex flex-col gap-3">
-                <Button className="w-full" onClick={onOpenTableModal}>
+                <Button
+                  className="w-full"
+                  onClick={onOpenTableModal}
+                  disabled={!canDoAction(role, 'open-table')}
+                >
                   Open Table
                 </Button>
                 <Button
@@ -89,6 +96,7 @@ export function TableBottomSheet({
                     markReserved(table.id)
                     onClose()
                   }}
+                  disabled={!canDoAction(role, 'mark-reserved')}
                 >
                   Mark Reserved
                 </Button>
@@ -154,6 +162,7 @@ export function TableBottomSheet({
                     variant="outline"
                     className="flex-1"
                     onClick={() => markServed(table.id)}
+                    disabled={!canDoAction(role, 'mark-served')}
                   >
                     Served
                   </Button>
@@ -163,6 +172,7 @@ export function TableBottomSheet({
                       requestCheck(table.id)
                       onClose()
                     }}
+                    disabled={!canDoAction(role, 'request-check')}
                   >
                     Request Check
                   </Button>

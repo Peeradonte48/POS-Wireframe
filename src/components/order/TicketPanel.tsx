@@ -5,6 +5,8 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
+import { useSessionStore } from '@/stores/session.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { ManagerPinModal } from '@/components/auth/ManagerPinModal'
 import { TicketLineItem } from '@/components/order/TicketLineItem'
 import type { OrderLineItem } from '@/stores/order.store'
@@ -46,6 +48,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   const order = useOrderStore((s) => s.orders[tableId])
   const { removeItem } = useOrderStore()
   const { updateTable } = useTableStore()
+  const role = useSessionStore((s) => s.role)!
 
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
 
@@ -120,6 +123,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
                   onQtyChange={handleQtyChange}
                   onEditTap={onEditLineItem}
                   onVoidTap={(lineId) => setVoidingLineId(lineId)}
+                  canRemove={canDoAction(role, 'void-pre-send')}
                 />
               ))}
             </div>
@@ -131,7 +135,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
         <span className="text-sm font-semibold">฿{runningTotal.toFixed(0)}</span>
         <Button
           onClick={handleSend}
-          disabled={!hasUnsentItems}
+          disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
           className="h-10 px-4"
         >
           Send to Kitchen

@@ -48,6 +48,7 @@ interface TicketLineItemProps {
   onQtyChange: (lineId: string, delta: number) => void
   onEditTap: (lineId: string) => void
   onVoidTap: (lineId: string) => void
+  canRemove?: boolean  // role-gated: false disables the pre-send trash and void buttons
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +61,7 @@ export function TicketLineItem({
   onQtyChange,
   onEditTap,
   onVoidTap,
+  canRemove = true,
 }: TicketLineItemProps) {
   const modifierSummary = buildModifierSummary(item)
 
@@ -128,8 +130,9 @@ export function TicketLineItem({
             </div>
             {/* Trash */}
             <button
-              onClick={() => onRemove(item.lineId)}
-              className="w-7 h-7 flex items-center justify-center rounded text-destructive hover:bg-destructive/10 transition-colors ml-1"
+              onClick={() => canRemove && onRemove(item.lineId)}
+              disabled={!canRemove}
+              className="w-7 h-7 flex items-center justify-center rounded text-destructive hover:bg-destructive/10 transition-colors ml-1 disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Remove item"
             >
               <TrashBinTrashLinear size={15} />
@@ -139,8 +142,9 @@ export function TicketLineItem({
 
         {item.status === 'sent' && (
           <button
-            onClick={() => onVoidTap(item.lineId)}
-            className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors shrink-0 mt-0.5"
+            onClick={() => canRemove && onVoidTap(item.lineId)}
+            disabled={!canRemove}
+            className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors shrink-0 mt-0.5 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Void item"
           >
             <TrashBinTrashLinear size={15} />

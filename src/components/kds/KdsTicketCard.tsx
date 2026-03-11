@@ -2,6 +2,8 @@
 
 import { KdsTicket } from '@/stores/kds.store'
 import { useKdsStore } from '@/stores/kds.store'
+import { useSessionStore } from '@/stores/session.store'
+import { canDoAction } from '@/lib/role-permissions'
 import { useKdsTimer } from '@/components/kds/useKdsTimer'
 import { KdsItemRow } from '@/components/kds/KdsItemRow'
 import { OrderLineItem } from '@/stores/order.store'
@@ -13,6 +15,7 @@ interface KdsTicketCardProps {
 
 export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
   const { bumpTicket, checkItem, uncheckItem } = useKdsStore()
+  const role = useSessionStore((s) => s.role)!
   const { display, elapsedSeconds } = useKdsTimer(ticket.addedAt)
 
   const timerColorClass =
@@ -31,8 +34,8 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
     nonVoidedItems.length > 0 &&
     nonVoidedItems.every((item) => ticket.checkedItems.has(item.lineId))
 
-  // BUMP is blocked while InProgress until all non-voided items are checked
-  const bumpBlocked = ticket.stage === 'InProgress' && !allNonVoidedChecked
+  // BUMP is blocked while InProgress until all non-voided items are checked, or by role
+  const bumpBlocked = (ticket.stage === 'InProgress' && !allNonVoidedChecked) || !canDoAction(role, 'kds-bump')
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
