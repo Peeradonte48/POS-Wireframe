@@ -27,9 +27,20 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - ✓ Bold crimson brand tokens (chroma 0.26), semantic status tokens for 5 table states, 3-tier elevation shadow system — v1.1
 - ✓ CTA buttons with press scale + glow, filled status pill badges, hero price readouts, caps utility labels, elevation hierarchy — v1.1
 
+## Current Milestone: v1.2 Bill Management + Order Tracking
+
+**Goal:** Add split bill, merge bill, and real-time digital order tracking to complete the payment and service monitoring story.
+
+**Target features:**
+- Split bill by equal division (÷ N guests) or per-seat item assignment
+- Merge bill across multiple tables (party seating) and unsplit previously separated seats
+- Digital order tracking — live order stage badge on table tiles + per-item timeline detail view
+
 ### Active
 
-(None — ship to validate. Define new requirements with `/gsd:new-milestone`.)
+- [ ] Split bill by equal division or per-seat item assignment at checkout
+- [ ] Merge bill across multiple tables and unsplit previously separated seats
+- [ ] Digital order tracking — live stage badge on table tiles + per-item timeline detail
 
 ### Out of Scope
 
@@ -39,7 +50,6 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - Kitchen hardware integration — KDS is a screen wireframe, not hardware spec
 - Admin back office management system — separate deliverable
 - Customer POS / receipt tracker — separate deliverable
-- Split bill by seat (v2) — deferred, placeholder annotated in payment screen
 - Loyalty Type 1 (standalone manual) — deferred to v2, Type 2 (smart CRM QR) shipped in v1.1
 
 ## Context
@@ -85,4 +95,4 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 | ThemedToaster thin client wrapper | Enables useTheme in server layout tree; mount once per layout | ✓ Good — sonner works correctly with resolvedTheme |
 
 ---
-*Last updated: 2026-03-12 after v1.1 milestone*
+*Last updated: 2026-03-12 — Milestone v1.2 started*
