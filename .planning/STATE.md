@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-payment-03-PLAN.md — Phase 5 complete, ready for Phase 6
-last_updated: "2026-03-11T06:31:00.774Z"
+stopped_at: Phase 6 context gathered
+last_updated: "2026-03-11T06:52:38.872Z"
 progress:
   total_phases: 7
   completed_phases: 4
@@ -163,9 +163,9 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-11T07:00:00.000Z
-Stopped at: Completed 05-payment-03-PLAN.md — Phase 5 complete, ready for Phase 6
-Resume file: None
+Last session: 2026-03-11T06:52:38.864Z
+Stopped at: Phase 6 context gathered
+Resume file: .planning/phases/06-manager-layer/06-CONTEXT.md
 
 To resume after any context loss:
 
@@ -173,6 +173,7 @@ To resume after any context loss:
 2. Read `.planning/REQUIREMENTS.md` for requirement details and traceability
 3. Read `.planning/STATE.md` (this file) for current position and decisions
 4. Run `/gsd:discuss-phase 3` or `/gsd:plan-phase 3` to begin Phase 3
+5. Read `.claude/CLAUDE.md` for high-level user flow
 
 ---
 
