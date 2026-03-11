@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 4 planned — ready to execute
-last_updated: "2026-03-11T00:00:00.000Z"
+stopped_at: Completed 04-01-PLAN.md — KDS store, timer hook, route group, auth redirect done
+last_updated: "2026-03-11T04:20:29.696Z"
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 13
-  completed_plans: 12
+  total_plans: 16
+  completed_plans: 13
   percent: 92
 ---
 
@@ -93,6 +93,8 @@ Progress: [█████████░] 92% (13 of 13 plans)
 - [Phase 03-order-flow]: buildModifierSummary defined inline in TicketLineItem — single-file locality, not shared util
 - [Phase 03-order-flow]: computeTotal skips topping priceAdj since ModifierSelection lacks priceAdj field — basePrice x qty only for wireframe
 - [Phase 03-order-flow]: Add Items button is cosmetic — store addItem auto-creates new unsent round when all rounds are sent
+- [Phase 04-kds]: Kitchen role null-guard in (app)/layout.tsx prevents AppShell flash before /kds redirect fires
+- [Phase 04-kds]: (kds) route group uses separate server-component layout with no AppShell — full-screen canvas for KDS
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -141,12 +143,13 @@ None.
 | Phase 03-order-flow P02 | 5min | 2 tasks | 3 files |
 | Phase 03-order-flow P03 | 2min | 1 task | 1 file |
 | Phase 03-order-flow P04 | 6min | 2 tasks | 4 files |
+| Phase 04-kds P01 | 10min | 2 tasks | 5 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11
-Stopped at: Phase 4 planned — 3 plans created (04-01, 04-02, 04-03), verification passed, ready to execute
-Resume file: .planning/phases/04-kds/04-01-PLAN.md
+Last session: 2026-03-11T04:20:29.694Z
+Stopped at: Completed 04-01-PLAN.md — KDS store, timer hook, route group, auth redirect done
+Resume file: None
 
 To resume after any context loss:
 

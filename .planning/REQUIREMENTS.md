@@ -35,8 +35,8 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Kitchen Display System
 
-- [ ] **KDS-01**: Kitchen staff can view a full-screen KDS (no sidebar, high-contrast) with ticket columns (New / In Progress / Ready)
-- [ ] **KDS-02**: Kitchen staff can bump items and tickets, recall tickets, with elapsed timer per ticket
+- [x] **KDS-01**: Kitchen staff can view a full-screen KDS (no sidebar, high-contrast) with ticket columns (New / In Progress / Ready)
+- [x] **KDS-02**: Kitchen staff can bump items and tickets, recall tickets, with elapsed timer per ticket
 - [ ] **KDS-03**: Allergy/special request flags and post-send voided items (struck-through) are visible on KDS tickets
 - [ ] **KDS-04**: KDS auto-updates with mock new tickets in demo mode via setInterval
 
@@ -119,8 +119,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORDER-05 | Phase 3 | Complete |
 | ORDER-06 | Phase 3 | Complete |
 | ORDER-07 | Phase 3 | Complete |
-| KDS-01 | Phase 4 | Pending |
-| KDS-02 | Phase 4 | Pending |
+| KDS-01 | Phase 4 | Complete |
+| KDS-02 | Phase 4 | Complete |
 | KDS-03 | Phase 4 | Pending |
 | KDS-04 | Phase 4 | Pending |
 | PAY-01 | Phase 5 | Pending |
