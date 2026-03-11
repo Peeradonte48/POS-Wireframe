@@ -85,7 +85,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 h-full min-h-0">
 
       {/* Ticket header */}
       <div className="px-4 py-3.5 border-b">

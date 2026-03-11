@@ -55,7 +55,7 @@ export function KdsBoard() {
         const stageTickets = Object.values(tickets).filter((t) => t.stage === stage)
 
         return (
-          <div key={stage} className="flex flex-col flex-1 min-w-0">
+          <div key={stage} className="flex flex-col flex-1 min-w-0 min-h-0">
             {/* Column header */}
             <div className="caps mb-2 px-1">
               {label}
