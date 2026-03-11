@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { X, Flame } from 'lucide-react'
+import { CloseCircleLinear, FireBold } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { MenuItem } from '@/lib/mock-data/menu'
@@ -218,7 +218,7 @@ export function ModifierSheet({
                 className="p-1 rounded-md hover:bg-muted transition-colors"
                 aria-label="Close"
               >
-                <X size={20} />
+                <CloseCircleLinear size={20} />
               </button>
             </div>
 
@@ -399,7 +399,7 @@ export function ModifierSheet({
                         )}
                         aria-label={`Spice level ${level}`}
                       >
-                        <Flame size={22} />
+                        <FireBold size={22} />
                       </button>
                     ))}
                   </div>

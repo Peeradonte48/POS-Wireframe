@@ -1,7 +1,8 @@
 'use client'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
-// Use sun/moon text labels for now — Solar icons added in Plan 02
+import { SunLinear, MoonLinear } from 'solar-icon-set'
+
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   return (
@@ -12,8 +13,8 @@ export function ThemeToggle() {
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       aria-label="Toggle theme"
     >
-      <span className="text-sm select-none dark:hidden">&#9728;</span>
-      <span className="text-sm select-none hidden dark:inline">&#9790;</span>
+      <SunLinear size={16} className="dark:hidden" />
+      <MoonLinear size={16} className="hidden dark:block" />
     </Button>
   )
 }

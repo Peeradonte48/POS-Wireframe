@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
+import { AltArrowLeftLinear } from 'solar-icon-set'
 import { Toaster } from 'sonner'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
@@ -52,7 +52,7 @@ export default function OrderPage() {
             className="flex items-center justify-center w-8 h-8 -ml-1 rounded-md hover:bg-accent transition-colors"
             aria-label="Back to floor map"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <AltArrowLeftLinear size={20} />
           </button>
 
           <span className="text-sm font-medium">{headerLabel}</span>

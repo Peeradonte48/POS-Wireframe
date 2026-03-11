@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
+import { AltArrowLeftLinear } from 'solar-icon-set'
 import { toast, Toaster } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -138,7 +138,7 @@ export default function PaymentPage() {
             className="flex items-center justify-center w-8 h-8 -ml-1 rounded-md hover:bg-accent transition-colors"
             aria-label="Back to floor plan"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <AltArrowLeftLinear size={20} />
           </button>
 
           <span className="text-sm font-medium">Table {tableId} — Bill</span>

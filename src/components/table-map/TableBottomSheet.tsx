@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock } from 'lucide-react'
+import { ClockCircleLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -103,7 +103,7 @@ export function TableBottomSheet({
                     {table.guestCount} guests
                   </span>
                   <span className="flex items-center gap-1 text-sm font-mono text-muted-foreground">
-                    <Clock size={14} />
+                    <ClockCircleLinear size={14} />
                     {dwellTimer}
                   </span>
                 </div>

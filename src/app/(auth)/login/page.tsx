@@ -7,7 +7,7 @@ import { PinNumpad } from '@/components/auth/PinNumpad'
 import { verifyPin } from '@/lib/mock-data/staff'
 import { useSessionStore } from '@/stores/session.store'
 import type { Role } from '@/stores/session.store'
-import { ChevronLeft } from 'lucide-react'
+import { AltArrowLeftLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 
 type LoginStep = 'role' | 'pin'
@@ -58,7 +58,7 @@ export default function LoginPage() {
               onClick={() => { setStep('role'); setSelectedRole(null); setPinError(false) }}
               className="gap-1"
             >
-              <ChevronLeft size={16} />
+              <AltArrowLeftLinear size={16} />
               Back
             </Button>
           </div>

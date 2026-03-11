@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { PinNumpad } from '@/components/auth/PinNumpad'
 import { verifyPin } from '@/lib/mock-data/staff'
-import { Shield } from 'lucide-react'
+import { ShieldCheckBold } from 'solar-icon-set'
 
 export interface ManagerPinModalProps {
   open: boolean
@@ -58,7 +58,7 @@ export function ManagerPinModal({
         <DialogHeader>
           <div className="flex flex-col items-center gap-2 pb-2">
             <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-              <Shield size={20} className="text-amber-600" />
+              <ShieldCheckBold size={20} className="text-amber-600" />
             </div>
             <DialogTitle className="text-center text-base">Manager Authorization</DialogTitle>
             <p className="text-sm text-muted-foreground text-center">{actionLabel}</p>

@@ -1,21 +1,29 @@
 'use client'
-import { CircleDot, Users, CalendarClock, CreditCard, Sparkles, Clock } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import {
+  RadioLinear,
+  UsersGroupRoundedLinear,
+  CalendarDateLinear,
+  WalletLinear,
+  StarLinear,
+  ClockCircleLinear,
+} from 'solar-icon-set'
 import { Badge } from '@/components/ui/badge'
 import type { TableRecord, TableStatus } from '@/stores/table.store'
 import { useDwellTimer } from './useDwellTimer'
+
+type SolarIcon = React.ComponentType<{ size?: number; className?: string }>
 
 const STATUS_CONFIG: Record<TableStatus, {
   borderClass: string
   textClass: string
   label: string
-  Icon: LucideIcon
+  Icon: SolarIcon
 }> = {
-  Open:           { borderClass: 'border-l-green-500',  textClass: 'text-green-600',  label: 'Open',            Icon: CircleDot     },
-  Occupied:       { borderClass: 'border-l-red-500',    textClass: 'text-red-600',    label: 'Occupied',        Icon: Users         },
-  Reserved:       { borderClass: 'border-l-blue-500',   textClass: 'text-blue-600',   label: 'Reserved',        Icon: CalendarClock },
-  CheckRequested: { borderClass: 'border-l-amber-500',  textClass: 'text-amber-600',  label: 'Check Requested', Icon: CreditCard    },
-  Cleaning:       { borderClass: 'border-l-gray-400',   textClass: 'text-gray-500',   label: 'Cleaning',        Icon: Sparkles      },
+  Open:           { borderClass: 'border-l-green-500',  textClass: 'text-green-600',  label: 'Open',            Icon: RadioLinear              },
+  Occupied:       { borderClass: 'border-l-red-500',    textClass: 'text-red-600',    label: 'Occupied',        Icon: UsersGroupRoundedLinear  },
+  Reserved:       { borderClass: 'border-l-blue-500',   textClass: 'text-blue-600',   label: 'Reserved',        Icon: CalendarDateLinear       },
+  CheckRequested: { borderClass: 'border-l-amber-500',  textClass: 'text-amber-600',  label: 'Check Requested', Icon: WalletLinear             },
+  Cleaning:       { borderClass: 'border-l-gray-400',   textClass: 'text-gray-500',   label: 'Cleaning',        Icon: StarLinear               },
 }
 
 interface TableTileProps {
@@ -50,7 +58,7 @@ export function TableTile({ table, onTap }: TableTileProps) {
       {/* Dwell timer — Occupied only */}
       {table.status === 'Occupied' && dwellTime && (
         <span className="text-xs font-mono text-muted-foreground flex items-center gap-0.5">
-          <Clock size={10} />
+          <ClockCircleLinear size={10} />
           {dwellTime}
         </span>
       )}

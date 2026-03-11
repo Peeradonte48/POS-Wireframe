@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2 } from 'lucide-react'
+import { TrashBinTrashLinear } from 'solar-icon-set'
 import { Badge } from '@/components/ui/badge'
 import type { OrderLineItem } from '@/stores/order.store'
 
@@ -132,7 +132,7 @@ export function TicketLineItem({
               className="w-7 h-7 flex items-center justify-center rounded text-destructive hover:bg-destructive/10 transition-colors ml-1"
               aria-label="Remove item"
             >
-              <Trash2 size={15} />
+              <TrashBinTrashLinear size={15} />
             </button>
           </div>
         )}
@@ -143,7 +143,7 @@ export function TicketLineItem({
             className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors shrink-0 mt-0.5"
             aria-label="Void item"
           >
-            <Trash2 size={15} />
+            <TrashBinTrashLinear size={15} />
           </button>
         )}
 
