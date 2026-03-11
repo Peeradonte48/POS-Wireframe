@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 04-01-PLAN.md — KDS store, timer hook, route group, auth redirect done
-last_updated: "2026-03-11T04:20:29.696Z"
+stopped_at: Completed 04-02-PLAN.md — KDS board UI, item rows, recall tray wired and TypeScript-clean
+last_updated: "2026-03-11T04:24:27.442Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 16
-  completed_plans: 13
+  completed_plans: 14
   percent: 92
 ---
 
@@ -95,6 +95,8 @@ Progress: [█████████░] 92% (13 of 13 plans)
 - [Phase 03-order-flow]: Add Items button is cosmetic — store addItem auto-creates new unsent round when all rounds are sent
 - [Phase 04-kds]: Kitchen role null-guard in (app)/layout.tsx prevents AppShell flash before /kds redirect fires
 - [Phase 04-kds]: (kds) route group uses separate server-component layout with no AppShell — full-screen canvas for KDS
+- [Phase 04-kds]: Modifier summary built inline in KdsItemRow — mirrors TicketLineItem pattern from Phase 3, no shared util needed
+- [Phase 04-kds]: KdsBoard auto-registers tickets in render body (not useEffect) to avoid one-render delay when orders are sent
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -144,11 +146,12 @@ None.
 | Phase 03-order-flow P03 | 2min | 1 task | 1 file |
 | Phase 03-order-flow P04 | 6min | 2 tasks | 4 files |
 | Phase 04-kds P01 | 10min | 2 tasks | 5 files |
+| Phase 04-kds P02 | 8min | 2 tasks | 5 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T04:20:29.694Z
-Stopped at: Completed 04-01-PLAN.md — KDS store, timer hook, route group, auth redirect done
+Last session: 2026-03-11T04:24:27.441Z
+Stopped at: Completed 04-02-PLAN.md — KDS board UI, item rows, recall tray wired and TypeScript-clean
 Resume file: None
 
 To resume after any context loss:

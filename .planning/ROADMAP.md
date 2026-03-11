@@ -26,7 +26,7 @@
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
-| 4. KDS | 1/3 | In Progress|  |
+| 4. KDS | 2/3 | In Progress|  |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
@@ -113,7 +113,7 @@ Plans:
 3. Every ticket displays an elapsed timer; allergy flags and special requests are visually distinct from regular item lines; post-send voided items appear struck-through
 4. In demo mode, new mock tickets appear automatically at a realistic cadence via setInterval without any manual input
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 04-01-PLAN.md — (kds) route group layout + kds.store.ts + useKdsTimer hook + Kitchen role auth routing (KDS-01, KDS-02)
