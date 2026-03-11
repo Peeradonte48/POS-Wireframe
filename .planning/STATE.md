@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 07-polish-02-PLAN.md
-last_updated: "2026-03-11T09:03:32.606Z"
+stopped_at: Completed 07-polish-03-PLAN.md
+last_updated: "2026-03-11T09:11:51.998Z"
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 28
-  completed_plans: 24
+  completed_plans: 25
   percent: 95
 ---
 
@@ -111,6 +111,9 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 07-polish]: Brand colors use OKLCH named tokens (--color-brand-red family) with --primary overridden to oklch(0.52 0.22 27)
 - [Phase 07-polish]: Solar icon set uses flat named exports with style in name (e.g. SidebarMinimalisticLinear) — not iconStyle prop as originally documented
 - [Phase 07-polish]: lucide-react removed from package.json after complete zero-import migration — plan 07-02 uninstall complete
+- [Phase 07-polish]: Open Table toast placed in OpenTableModal not TableBottomSheet — openTable() store call happens in OpenTableModal.handleConfirm
+- [Phase 07-polish]: void-pre-send gating passed as canRemove prop to TicketLineItem — TicketPanel owns role, TicketLineItem stays role-agnostic
+- [Phase 07-polish]: voidAuthorizedRef + setTimeout(0) for void cancel toast — ManagerPinModal fires onOpenChange(false) before onAuthorize(); ref check deferred one tick
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -167,11 +170,12 @@ None.
 | Phase 05-payment P03 | 10min | 2 tasks | 2 files |
 | Phase 07-polish P01 | 2min | 2 tasks | 7 files |
 | Phase 07-polish P02 | 7min | 2 tasks | 19 files |
+| Phase 07-polish P03 | 6min | 2 tasks | 11 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T09:03:32.604Z
-Stopped at: Completed 07-polish-02-PLAN.md
+Last session: 2026-03-11T09:11:51.976Z
+Stopped at: Completed 07-polish-03-PLAN.md
 Resume file: None
 
 To resume after any context loss:

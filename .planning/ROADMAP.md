@@ -29,7 +29,7 @@
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
 | 6. Manager Layer | 4/4 | Complete   | 2026-03-11 |
-| 7. Polish | 2/5 | In Progress|  |
+| 7. Polish | 3/5 | In Progress|  |
 
 ---
 
@@ -174,7 +174,7 @@ Plans:
 3. Sonner toast notifications appear for key actions ("Order sent to kitchen", "Payment received") on every applicable screen
 4. Every major screen has a defined loading state and empty state — no screen ever shows a blank or broken layout when data is absent
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 - [ ] 07-01-PLAN.md — Brand tokens (OKLCH crimson), font swap (Inter + Noto JP), dark mode infra (next-themes + ThemeProvider), Unsplash remotePatterns (POLISH-01–04 foundation)
