@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: executing
-last_updated: "2026-03-11T11:17:44.626Z"
-last_activity: 2026-03-11 — completed 08-02 KDS role guard fix
+last_updated: "2026-03-11T11:17:20Z"
+last_activity: 2026-03-11 — completed 08-04 void-post-send permission gate
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 5
-  completed_plans: 3
-  percent: 40
+  completed_phases: 1
+  total_plans: 33
+  completed_plans: 32
+  percent: 97
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-11
-**Session:** Completed 08-02-PLAN.md — KDS Manager role guard fixed
+**Session:** Completed 08-03-PLAN.md — ThemedToaster mounted globally, BUG-03 (silent toasts) resolved
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 ## Current Position
 
 Phase: 8 of 11 (Bug Fixes) — v1.1 Phase 1
-Plan: 08-02 complete, awaiting next plan
+Plan: 08-04 complete, awaiting next plan
 Status: In progress
-Last activity: 2026-03-11 — completed 08-02 KDS role guard fix
+Last activity: 2026-03-11 — completed 08-04 void-post-send permission gate
 
 ```
-Progress: [████░░░░░░] 40%  (v1.1: plans 2/5 complete)
+Progress: [██████████] 97%  (v1.1: plans 32/33 complete)
 ```
 
 ---
@@ -59,6 +59,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Phase 10 depends on Phase 8 (Toaster dark-mode verification requires Bug 3 fixed first)
 - Phase 11 depends on Phase 10 (component polish against correct token baseline)
 - Phase 9 (Flow Alignment) depends on Phase 8 but can run before or in parallel with Phase 10
+
+### Key Decisions (08-03)
+
+- ThemedToaster pattern: thin 'use client' wrapper around sonner Toaster to enable useTheme in server layout tree — mount once per layout, never on individual pages
+- Use resolvedTheme (not theme) from useTheme — sonner does not handle 'system' string correctly; resolvedTheme is always 'light' or 'dark'
+- KDS layout confirmed to need its own Toaster (separate route group from (app))
 
 ### Key Decisions (08-02)
 
@@ -75,7 +81,7 @@ See `.planning/PROJECT.md` for full key decisions log.
 ### Blockers / Concerns
 
 - `STATUS_CONFIG` shape in `TableTile.tsx` not yet read — read before writing badge pill refactor plan in Phase 11
-- KDS `(kds)/layout.tsx` Toaster need unconfirmed — decide during Phase 8 planning whether KDS route group needs its own `<Toaster>`
+- KDS `(kds)/layout.tsx` Toaster RESOLVED (08-03) — ThemedToaster mounted in KDS layout
 
 ---
 

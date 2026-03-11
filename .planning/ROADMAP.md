@@ -35,7 +35,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 
 **Milestone Goal:** Close all known v1.0 tech debt and elevate the UI to a bold, energetic brand expression with polished components throughout.
 
-- [ ] **Phase 8: Bug Fixes** — Resolve all five navigation, permissions, and toast defects before any CSS changes land
+- [x] **Phase 8: Bug Fixes** — Resolve all five navigation, permissions, and toast defects before any CSS changes land (completed 2026-03-11)
 - [ ] **Phase 9: Flow Alignment** — Wire the five user-facing interactions missing from v1.0 (guest count, served state, camera coupon scan, dynamic QR, loyalty receipt)
 - [ ] **Phase 10: Brand Token Refresh** — Strengthen the crimson primary token, define semantic status and elevation tokens, and eliminate all hardcoded palette classes
 - [ ] **Phase 11: Component Polish** — Apply the bold brand expression to buttons, badges, cards, price readouts, and typography throughout all screens
@@ -111,7 +111,7 @@ Plans:
 | 5. Payment | v1.0 | 3/3 | Complete ✅ | 2026-03-11 |
 | 6. Manager Layer | v1.0 | 4/4 | Complete ✅ | 2026-03-11 |
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
-| 8. Bug Fixes | 3/5 | In Progress|  | - |
+| 8. Bug Fixes | 5/5 | Complete   | 2026-03-11 | - |
 | 9. Flow Alignment | v1.1 | 0/TBD | Not started | - |
 | 10. Brand Token Refresh | v1.1 | 0/TBD | Not started | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
