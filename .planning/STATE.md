@@ -3,19 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: executing
-last_updated: "2026-03-11T17:45:37.566Z"
-last_activity: 2026-03-12 — Phase 9 planned (3 plans, verification passed)
+last_updated: "2026-03-12T08:11:00.000Z"
+last_activity: 2026-03-12 — 09-01 FLOW-01 + FLOW-02 complete (OpenTableModal empty start, TableBottomSheet served-at)
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 8
-  completed_plans: 7
+  completed_phases: 2
+  total_plans: 9
+  completed_plans: 9
+  percent: 97
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** Planned Phase 9 (Flow Alignment) — 3 plans in 1 wave, verification passed, ready to execute
+**Session:** Completed 09-01 (FLOW-01 + FLOW-02) — Phase 9 all 3 plans now executed
 
 ---
 
@@ -37,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 ## Current Position
 
-Phase: 9 of 11 (Flow Alignment) — v1.1 Phase 2 — IN PROGRESS
-Plan: 09-03 tasks done — checkpoint:human-verify awaiting visual sign-off on all five FLOW flows
-Status: Phase 9 executing — all 3 plans implemented, pending final browser checkpoint
-Last activity: 2026-03-12 — 09-03 FLOW-05 loyalty section added to ReceiptScreen
+Phase: 9 of 11 (Flow Alignment) — v1.1 Phase 2 — ALL 3 PLANS COMPLETE
+Plan: 09-01 done (FLOW-01, FLOW-02) — Phase 9 fully executed
+Status: Phase 9 complete — all 3 plans implemented (09-01, 09-02, 09-03)
+Last activity: 2026-03-12 — 09-01 FLOW-01 + FLOW-02 (OpenTableModal forced-entry, served-at display)
 
 ```
-Progress: [█████████░] 94% (34/36 plans complete)
+Progress: [██████████] 97% (35/36 plans complete)
 ```
 
 ---
@@ -58,6 +59,17 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Phase 10 depends on Phase 8 (Toaster dark-mode verification requires Bug 3 fixed first)
 - Phase 11 depends on Phase 10 (component polish against correct token baseline)
 - Phase 9 (Flow Alignment) depends on Phase 8 but can run before or in parallel with Phase 10
+
+### Key Decisions (09-01)
+
+- useState<number | ''> union for numeric inputs that must start empty — empty string sentinel enforces forced-entry via disabled prop; typeof guard at callsite ensures number type flows to store
+- Served-at paragraph placed after orderStage badge, before action buttons — natural reading order in Occupied sheet; guards on servedAt !== null (null by default until markServed() fires)
+
+### Key Decisions (09-02)
+
+- CameraSheet useEffect cleanup: cancels 1.5s scan timer when user taps X before auto-close fires — prevents phantom coupon application on dismissed sheet
+- setCouponApplied propagated as prop to TotalsSection: required for scan callback; onApplyCoupon kept for interface compat
+- QrPanel discountApplied prop: optional number, conditionally renders "(after ฿X discount)" when > 0; naming differs from page-local discountAmount intentionally
 
 ### Key Decisions (08-05)
 

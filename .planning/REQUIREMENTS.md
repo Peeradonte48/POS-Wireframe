@@ -20,8 +20,8 @@ Requirements for v1.1 release. Each maps to roadmap phases.
 
 - [ ] **FLOW-01**: Open Table sheet captures guest count to start table usage tracking
 - [ ] **FLOW-02**: Staff can tap "Served" on the tablet after delivering food + invoice to record actual service start time
-- [ ] **FLOW-03**: Payment screen lets staff scan customer QR coupon with back camera, within the POS app (no app switching)
-- [ ] **FLOW-04**: After coupon scan, system displays a Dynamic QR Code with net amount for customer to scan and pay
+- [x] **FLOW-03**: Payment screen lets staff scan customer QR coupon with back camera, within the POS app (no app switching)
+- [x] **FLOW-04**: After coupon scan, system displays a Dynamic QR Code with net amount for customer to scan and pay
 - [x] **FLOW-05**: Receipt state shows a smart QR code (CRM loyalty Type 2); POS displays member tier + point balance during checkout
 
 ### Brand Tokens
@@ -77,8 +77,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUG-05 | Phase 8 | Complete |
 | FLOW-01 | Phase 9 | Pending |
 | FLOW-02 | Phase 9 | Pending |
-| FLOW-03 | Phase 9 | Pending |
-| FLOW-04 | Phase 9 | Pending |
+| FLOW-03 | Phase 9 | Complete |
+| FLOW-04 | Phase 9 | Complete |
 | FLOW-05 | Phase 9 | Complete |
 | TOKEN-01 | Phase 10 | Pending |
 | TOKEN-02 | Phase 10 | Pending |
