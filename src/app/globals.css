@@ -64,16 +64,16 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   /* Status color aliases — enables bg-status-open, text-status-occupied, etc. */
-  --color-status-open:               var(--color-status-open);
-  --color-status-open-bg:            var(--color-status-open-bg);
-  --color-status-occupied:           var(--color-status-occupied);
-  --color-status-occupied-bg:        var(--color-status-occupied-bg);
-  --color-status-reserved:           var(--color-status-reserved);
-  --color-status-reserved-bg:        var(--color-status-reserved-bg);
-  --color-status-check-requested:    var(--color-status-check-requested);
-  --color-status-check-requested-bg: var(--color-status-check-requested-bg);
-  --color-status-cleaning:           var(--color-status-cleaning);
-  --color-status-cleaning-bg:        var(--color-status-cleaning-bg);
+  --color-status-open:               var(--status-open);
+  --color-status-open-bg:            var(--status-open-bg);
+  --color-status-occupied:           var(--status-occupied);
+  --color-status-occupied-bg:        var(--status-occupied-bg);
+  --color-status-reserved:           var(--status-reserved);
+  --color-status-reserved-bg:        var(--status-reserved-bg);
+  --color-status-check-requested:    var(--status-check-requested);
+  --color-status-check-requested-bg: var(--status-check-requested-bg);
+  --color-status-cleaning:           var(--status-cleaning);
+  --color-status-cleaning-bg:        var(--status-cleaning-bg);
 }
 
 :root {
@@ -111,16 +111,16 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Status tokens — fg (text/border) + bg (pill background) per table state */
-  --color-status-open:               oklch(0.50 0.18 145);
-  --color-status-open-bg:            oklch(0.95 0.05 145);
-  --color-status-occupied:           oklch(0.52 0.20 10);
-  --color-status-occupied-bg:        oklch(0.95 0.05 10);
-  --color-status-reserved:           oklch(0.50 0.18 240);
-  --color-status-reserved-bg:        oklch(0.95 0.05 240);
-  --color-status-check-requested:    oklch(0.60 0.18 75);
-  --color-status-check-requested-bg: oklch(0.97 0.05 75);
-  --color-status-cleaning:           oklch(0.55 0.06 50);
-  --color-status-cleaning-bg:        oklch(0.95 0.03 50);
+  --status-open:               oklch(0.50 0.18 145);
+  --status-open-bg:            oklch(0.95 0.05 145);
+  --status-occupied:           oklch(0.52 0.20 10);
+  --status-occupied-bg:        oklch(0.95 0.05 10);
+  --status-reserved:           oklch(0.50 0.18 240);
+  --status-reserved-bg:        oklch(0.95 0.05 240);
+  --status-check-requested:    oklch(0.60 0.18 75);
+  --status-check-requested-bg: oklch(0.97 0.05 75);
+  --status-cleaning:           oklch(0.55 0.06 50);
+  --status-cleaning-bg:        oklch(0.95 0.03 50);
 
   /* Elevation shadows — 3 tiers: flat, raised, floating */
   --shadow-card:     0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.06);
@@ -162,16 +162,16 @@
   --sidebar-ring: oklch(0.556 0 0);
 
   /* Status tokens — independently tuned for dark surfaces */
-  --color-status-open:               oklch(0.70 0.16 145);
-  --color-status-open-bg:            oklch(0.25 0.06 145);
-  --color-status-occupied:           oklch(0.70 0.18 10);
-  --color-status-occupied-bg:        oklch(0.25 0.07 10);
-  --color-status-reserved:           oklch(0.70 0.16 240);
-  --color-status-reserved-bg:        oklch(0.22 0.06 240);
-  --color-status-check-requested:    oklch(0.75 0.16 75);
-  --color-status-check-requested-bg: oklch(0.28 0.07 75);
-  --color-status-cleaning:           oklch(0.70 0.05 50);
-  --color-status-cleaning-bg:        oklch(0.25 0.03 50);
+  --status-open:               oklch(0.70 0.16 145);
+  --status-open-bg:            oklch(0.25 0.06 145);
+  --status-occupied:           oklch(0.70 0.18 10);
+  --status-occupied-bg:        oklch(0.25 0.07 10);
+  --status-reserved:           oklch(0.70 0.16 240);
+  --status-reserved-bg:        oklch(0.22 0.06 240);
+  --status-check-requested:    oklch(0.75 0.16 75);
+  --status-check-requested-bg: oklch(0.28 0.07 75);
+  --status-cleaning:           oklch(0.70 0.05 50);
+  --status-cleaning-bg:        oklch(0.25 0.03 50);
 
   /* Elevation shadows — dark mode uses glow/border instead of drop shadows */
   --shadow-card:     0 0 0 1px oklch(1 0 0 / 0.06);
