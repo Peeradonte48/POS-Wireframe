@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
-status: in_progress
-stopped_at: ~
-last_updated: "2026-03-11T00:00:00.000Z"
+status: executing
+last_updated: "2026-03-11T11:17:44.626Z"
+last_activity: 2026-03-11 — completed 08-02 KDS role guard fix
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 5
+  completed_plans: 3
+  percent: 40
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-11
-**Session:** v1.1 roadmap created — ready to plan Phase 8
+**Session:** Completed 08-02-PLAN.md — KDS Manager role guard fixed
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 ## Current Position
 
 Phase: 8 of 11 (Bug Fixes) — v1.1 Phase 1
-Plan: —
-Status: Ready to plan
-Last activity: 2026-03-11 — v1.1 roadmap written, phases 8–11 defined
+Plan: 08-02 complete, awaiting next plan
+Status: In progress
+Last activity: 2026-03-11 — completed 08-02 KDS role guard fix
 
 ```
-Progress: [░░░░░░░░░░] 0%  (v1.1: 0/4 phases)
+Progress: [████░░░░░░] 40%  (v1.1: plans 2/5 complete)
 ```
 
 ---
@@ -59,6 +59,10 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Phase 10 depends on Phase 8 (Toaster dark-mode verification requires Bug 3 fixed first)
 - Phase 11 depends on Phase 10 (component polish against correct token baseline)
 - Phase 9 (Flow Alignment) depends on Phase 8 but can run before or in parallel with Phase 10
+
+### Key Decisions (08-02)
+
+- KDS role guard uses explicit allowlist `role !== 'Kitchen' && role !== 'Manager'` — prevents accidental access by other roles when new roles are added in future
 
 ### Key Patterns from v1.0
 

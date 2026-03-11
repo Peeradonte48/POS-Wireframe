@@ -11,7 +11,7 @@ Requirements for v1.1 release. Each maps to roadmap phases.
 ### Bug Fixes
 
 - [ ] **BUG-01**: Staff can navigate to `/orders` without hitting a 404
-- [ ] **BUG-02**: Manager role can access the `/kds` route
+- [x] **BUG-02**: Manager role can access the `/kds` route
 - [ ] **BUG-03**: Toast notifications appear on all pages (floor map, manager, KDS)
 - [ ] **BUG-04**: `void-post-send` action respects role permissions before showing UI
 - [ ] **BUG-05**: Direct URL access to `/manager` is blocked for non-Manager roles
@@ -71,7 +71,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | BUG-01 | Phase 8 | Pending |
-| BUG-02 | Phase 8 | Pending |
+| BUG-02 | Phase 8 | Complete |
 | BUG-03 | Phase 8 | Pending |
 | BUG-04 | Phase 8 | Pending |
 | BUG-05 | Phase 8 | Pending |
