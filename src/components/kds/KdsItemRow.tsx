@@ -5,11 +5,12 @@ import { OrderLineItem } from '@/stores/order.store'
 interface KdsItemRowProps {
   item: OrderLineItem
   isChecked: boolean
+  interactive: boolean
   onCheck: () => void
   onUncheck: () => void
 }
 
-export function KdsItemRow({ item, isChecked, onCheck, onUncheck }: KdsItemRowProps) {
+export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }: KdsItemRowProps) {
   const isVoided = item.status === 'voided'
 
   // Build modifier summary: broth (first modifier), spice level, remaining modifiers
@@ -54,7 +55,8 @@ export function KdsItemRow({ item, isChecked, onCheck, onUncheck }: KdsItemRowPr
           type="checkbox"
           checked={isChecked}
           onChange={() => (isChecked ? onUncheck() : onCheck())}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-primary cursor-pointer"
+          disabled={!interactive}
+          className={`mt-0.5 h-4 w-4 shrink-0 accent-primary ${interactive ? 'cursor-pointer' : 'cursor-default opacity-30'}`}
           aria-label={`Mark ${item.menuItemName} done`}
         />
         <div className="flex-1 min-w-0">

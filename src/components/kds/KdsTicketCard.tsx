@@ -22,6 +22,9 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
         ? 'text-amber-500'
         : 'text-green-500'
 
+  // Checkboxes are only interactive when the ticket is In Progress
+  const checkboxesActive = ticket.stage === 'InProgress'
+
   // Check if all non-voided items are checked
   const nonVoidedItems = orderItems.filter((item) => item.status !== 'voided')
   const allNonVoidedChecked =
@@ -43,6 +46,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
             key={item.lineId}
             item={item}
             isChecked={ticket.checkedItems.has(item.lineId)}
+            interactive={checkboxesActive}
             onCheck={() => checkItem(ticket.ticketId, item.lineId)}
             onUncheck={() => uncheckItem(ticket.ticketId, item.lineId)}
           />
