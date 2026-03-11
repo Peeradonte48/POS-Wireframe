@@ -105,7 +105,12 @@ Plans:
   3. Menu cards, the ticket panel, and info panels each use a visibly different elevation tier — flat, raised, or floating — creating clear spatial hierarchy
   4. Price totals throughout the app (ticket footer, payment summary) render as large, bold, primary-colored hero text
   5. Section labels across all screens use the caps utility pattern consistently — visually lighter than body text and clearly delineated from content beneath
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Button cta variant + glow, filled status pill badges (COMP-01, COMP-02)
+- [ ] 11-02-PLAN.md — Hero price totals, caps utility + full 13-file audit (COMP-04, COMP-05)
+- [ ] 11-03-PLAN.md — Three-tier elevation system on cards, panels, sheets (COMP-03)
 
 ---
 
@@ -123,7 +128,7 @@ Plans:
 | 8. Bug Fixes | v1.1 | 5/5 | Complete ✅ | 2026-03-11 |
 | 9. Flow Alignment | v1.1 | 3/3 | Complete ✅ | 2026-03-12 |
 | 10. Brand Token Refresh | 2/2 | Complete    | 2026-03-11 | - |
-| 11. Component Polish | v1.1 | 0/TBD | Not started | - |
+| 11. Component Polish | v1.1 | 0/3 | Not started | - |
 
 ---
 
