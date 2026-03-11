@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
-import { Toaster } from 'sonner'
+import { toast, Toaster } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,7 @@ import { PaymentMethodSelector } from '@/components/payment/PaymentMethodSelecto
 import { CashPanel } from '@/components/payment/CashPanel'
 import { QrPanel } from '@/components/payment/QrPanel'
 import { CardPanel } from '@/components/payment/CardPanel'
+import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,6 +83,11 @@ export default function PaymentPage() {
     setViewState('receipt')
   }
 
+  // ---- Reprint receipt ----
+  function handleReprint() {
+    toast('Receipt sent to printer')
+  }
+
   // ---- Confirm button disabled logic ----
   const confirmDisabled =
     paymentMethod === null ||
@@ -97,16 +103,20 @@ export default function PaymentPage() {
     )
   }
 
-  // ---- Receipt view (stub — Plan 02 builds this out) ----
+  // ---- Receipt view ----
   if (viewState === 'receipt' && receiptData) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center">
-        <p className="text-2xl font-bold">Payment Received</p>
-        <p className="text-muted-foreground">
-          ฿{receiptData.grandTotal.toLocaleString()} via {receiptData.paymentMethod}
-        </p>
-        <Button onClick={() => router.push('/table-map')}>Back to Floor Plan</Button>
-      </div>
+      <>
+        <Toaster position="top-center" />
+        <ReceiptScreen
+          tableId={tableId}
+          grandTotal={receiptData.grandTotal}
+          paymentMethod={receiptData.paymentMethod}
+          paidAt={receiptData.paidAt}
+          onReprint={handleReprint}
+          onBackToFloor={() => router.push('/table-map')}
+        />
+      </>
     )
   }
 

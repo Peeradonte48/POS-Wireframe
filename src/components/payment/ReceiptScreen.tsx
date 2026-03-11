@@ -1,0 +1,89 @@
+'use client'
+
+import { CheckCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface ReceiptScreenProps {
+  tableId: string
+  grandTotal: number
+  paymentMethod: 'Cash' | 'QR PromptPay' | 'Card'
+  paidAt: Date
+  onReprint: () => void
+  onBackToFloor: () => void
+}
+
+// ---------------------------------------------------------------------------
+// ReceiptScreen
+// ---------------------------------------------------------------------------
+
+export function ReceiptScreen({
+  tableId,
+  grandTotal,
+  paymentMethod,
+  paidAt,
+  onReprint,
+  onBackToFloor,
+}: ReceiptScreenProps) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-6">
+      {/* Success icon block */}
+      <div className="flex flex-col items-center gap-2">
+        <CheckCircle className="w-16 h-16 text-green-500" />
+        <h1 className="text-2xl font-bold">Payment Received</h1>
+      </div>
+
+      {/* Details card */}
+      <div className="rounded-xl border bg-card p-6 w-full max-w-sm space-y-3">
+        {/* Table row */}
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Table</span>
+          <span className="text-sm font-medium">{tableId}</span>
+        </div>
+
+        {/* Total paid row */}
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Total Paid</span>
+          <span className="text-sm font-bold">฿{grandTotal.toLocaleString()}</span>
+        </div>
+
+        {/* Method row */}
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Method</span>
+          <span className="text-sm font-medium">{paymentMethod}</span>
+        </div>
+
+        {/* Time row */}
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-muted-foreground">Time</span>
+          <span className="text-xs font-medium">{paidAt.toLocaleString('th-TH')}</span>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t" />
+
+        {/* Auto-print annotation */}
+        <p className="text-xs text-muted-foreground text-center">
+          🖶 Invoice auto-printed <span className="italic">[annotated]</span>
+        </p>
+      </div>
+
+      {/* Actions block */}
+      <div className="w-full max-w-sm space-y-3">
+        <Button variant="outline" className="w-full" onClick={onReprint}>
+          Reprint Receipt
+        </Button>
+        <p className="text-xs text-muted-foreground text-center -mt-2">
+          (annotated — no printer)
+        </p>
+
+        <Button className="w-full" onClick={onBackToFloor}>
+          Back to Floor Plan
+        </Button>
+      </div>
+    </div>
+  )
+}
