@@ -15,7 +15,7 @@ interface MenuPanelProps {
 
 function MenuCardSkeleton() {
   return (
-    <div className="bg-card rounded-xl overflow-hidden border border-border">
+    <div className="bg-card rounded-xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
       <Skeleton className="aspect-[4/3] w-full rounded-none" />
       <div className="p-3 space-y-1.5">
         <Skeleton className="h-4 w-3/4" />
@@ -72,6 +72,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
                 ? 'opacity-50 cursor-not-allowed border-border'
                 : 'border-border hover:border-primary/50 hover:shadow-lg cursor-pointer active:scale-[0.98]'
             )}
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
             {/* Photo */}
             <div className="aspect-[4/3] relative bg-muted overflow-hidden">
