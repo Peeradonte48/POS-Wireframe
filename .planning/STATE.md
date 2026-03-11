@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: executing
-last_updated: "2026-03-11T11:17:20Z"
+last_updated: "2026-03-11T11:19:22.791Z"
 last_activity: 2026-03-11 — completed 08-04 void-post-send permission gate
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 33
-  completed_plans: 32
+  total_plans: 5
+  completed_plans: 5
   percent: 97
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-11
-**Session:** Completed 08-03-PLAN.md — ThemedToaster mounted globally, BUG-03 (silent toasts) resolved
+**Session:** Completed 08-04-PLAN.md — void-post-send permission gate, Manager-only void on sent items
 
 ---
 
@@ -59,6 +59,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Phase 10 depends on Phase 8 (Toaster dark-mode verification requires Bug 3 fixed first)
 - Phase 11 depends on Phase 10 (component polish against correct token baseline)
 - Phase 9 (Flow Alignment) depends on Phase 8 but can run before or in parallel with Phase 10
+
+### Key Decisions (08-04)
+
+- void-post-send is Manager-only; sent-branch void button uses conditional render not disabled state — removes phantom touch targets for Waiter/Cashier
+- canVoidSent defaults to false in TicketLineItem — safe by default, must be explicitly granted
+- Per-state permission props pattern: canRemove (unsent) vs canVoidSent (sent) for granular control per item state
 
 ### Key Decisions (08-03)
 
