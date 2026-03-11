@@ -28,7 +28,7 @@
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
-| 6. Manager Layer | 0/? | Not started | - |
+| 6. Manager Layer | 0/4 | Not started | - |
 | 7. Polish | 0/? | Not started | - |
 
 ---
@@ -153,7 +153,13 @@ Plans:
 3. Manager can toggle item availability (mark as 86'd) from within the Staff POS app — change is immediately reflected in the order-taking menu
 4. Manager can view all open tickets across all tables and a staff/user list for the current shift
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — manager.store.ts (86'd + shiftClosed) + extend TableRecord with payment fields + PaymentPage wire + AppSidebar hide (SHIFT-01 data, SHIFT-03)
+- [ ] 06-02-PLAN.md — /manager page 4-tab shell + EodSummaryTab + SalesSnapshotTab (SHIFT-01, SHIFT-02)
+- [ ] 06-03-PLAN.md — EightySixTab + OpenTicketsTab + MenuPanel 86'd integration (SHIFT-03, SHIFT-04)
+- [ ] 06-04-PLAN.md — Build verify + browser checkpoint: all 4 SHIFT criteria (SHIFT-01–04)
 
 ---
 
@@ -238,3 +244,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Updated: 2026-03-11 — Phase 4 plans created (3 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 5 plans created (3 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 5 complete — all 5 PAY criteria browser-verified*
+*Updated: 2026-03-11 — Phase 6 plans created (4 plans, 3 waves)*
