@@ -73,7 +73,12 @@ Plans:
   3. Staff can initiate a camera scan for a customer coupon QR code from within the payment screen — no app switching required
   4. After a valid coupon scan, the payment screen displays a Dynamic QR code showing the net amount for the customer to scan
   5. The receipt state shows a smart loyalty QR code and displays the customer's member tier and point balance to staff during checkout
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Fix guest count empty state and Served-at display (FLOW-01, FLOW-02)
+- [ ] 09-02-PLAN.md — Camera scan coupon flow and QrPanel discount note (FLOW-03, FLOW-04)
+- [ ] 09-03-PLAN.md — Add loyalty section to ReceiptScreen (FLOW-05)
 
 ### Phase 10: Brand Token Refresh
 **Goal**: The design token layer in globals.css is authoritative, complete, and correct — stronger crimson primary, full semantic status palette, elevation depth system, and zero hardcoded color classes remaining in the three flagged files
@@ -111,8 +116,8 @@ Plans:
 | 5. Payment | v1.0 | 3/3 | Complete ✅ | 2026-03-11 |
 | 6. Manager Layer | v1.0 | 4/4 | Complete ✅ | 2026-03-11 |
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
-| 8. Bug Fixes | 5/5 | Complete    | 2026-03-11 | - |
-| 9. Flow Alignment | v1.1 | 0/TBD | Not started | - |
+| 8. Bug Fixes | v1.1 | 5/5 | Complete ✅ | 2026-03-11 |
+| 9. Flow Alignment | v1.1 | 0/3 | Not started | - |
 | 10. Brand Token Refresh | v1.1 | 0/TBD | Not started | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
 
