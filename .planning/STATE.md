@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-payment-01-PLAN.md
-last_updated: "2026-03-11T06:04:11.415Z"
+stopped_at: Completed 05-payment-02-PLAN.md
+last_updated: "2026-03-11T06:07:48.303Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
   percent: 92
 ---
 
@@ -103,6 +103,8 @@ Progress: [█████████░] 92% (13 of 13 plans)
 - [Phase 05-payment]: VAT applied to post-discount subtotal: Math.round((subtotal - discountAmount) * 0.07) — coupon reduces tax base before VAT calculation
 - [Phase 05-payment]: Confirm button disabled: null payment method OR Cash entered but insufficient; cashReceived===0 (untouched) does not block
 - [Phase 05-payment]: PaymentPage receipt view is a stub in Plan 01 — Plan 02 builds the full receipt screen
+- [Phase 05-payment]: toast import kept in PaymentPage (not ReceiptScreen) — keeps ReceiptScreen a pure display component with callbacks only
+- [Phase 05-payment]: useRouter already imported in TableBottomSheet from Phase 2 — no duplicate import needed for Go to Payment activation
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -155,11 +157,12 @@ None.
 | Phase 04-kds P02 | 8min | 2 tasks | 5 files |
 | Phase 04-kds P03 | 20min | 2 tasks | 4 files |
 | Phase 05-payment P01 | 2min | 2 tasks | 7 files |
+| Phase 05-payment P02 | 2min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T06:04:11.413Z
-Stopped at: Completed 05-payment-01-PLAN.md
+Last session: 2026-03-11T06:07:48.300Z
+Stopped at: Completed 05-payment-02-PLAN.md
 Resume file: None
 
 To resume after any context loss:
