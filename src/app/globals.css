@@ -124,6 +124,9 @@
   --status-cleaning:           oklch(0.55 0.06 50);
   --status-cleaning-bg:        oklch(0.95 0.03 50);
 
+  /* Glow shadow for primary CTA buttons — two-layer: ring + blur */
+  --shadow-glow-primary: 0 0 0 2px color-mix(in oklch, var(--primary) 35%, transparent), 0 0 14px 4px color-mix(in oklch, var(--primary) 30%, transparent);
+
   /* Elevation shadows — 3 tiers: flat, raised, floating */
   --shadow-card:     0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.06);
   --shadow-panel:    0 4px 6px -1px oklch(0 0 0 / 0.08), 0 2px 4px -2px oklch(0 0 0 / 0.05);

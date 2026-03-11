@@ -139,13 +139,14 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
       </div>
 
       {/* Footer */}
-      <div className="border-t px-4 py-3 flex items-center justify-between gap-3 shrink-0">
-        <div>
+      <div className="border-t px-4 py-3 flex flex-col gap-2.5 shrink-0">
+        <div className="flex items-center justify-between">
           <p className="caps">Total</p>
-          <p className="text-xl font-black text-primary leading-tight">฿{runningTotal.toFixed(0)}</p>
+          <p className="text-xl font-black text-primary">฿{runningTotal.toFixed(0)}</p>
         </div>
         <Button
           size="cta"
+          className="w-full"
           onClick={handleSend}
           disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
         >
