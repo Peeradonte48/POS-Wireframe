@@ -10,6 +10,22 @@ The wireframe covers the full staff-facing transaction loop: authentication, flo
 
 A restaurant staff member can walk in, open a shift, seat a table, take a full ramen order with modifiers, send it to the kitchen, and close the bill — all in a single, scannable interface that feels fast enough for real service conditions.
 
+## Current Milestone: v1.1 Bug Fixes + Brand Polish
+
+**Goal:** Close all known v1.0 tech debt and elevate the UI to a bold, energetic brand expression with polished components throughout.
+
+**Target features:**
+- Fix `/orders` sidebar dead link → route to `/order/[tableId]`
+- Fix Manager blocked from `/kds` route
+- Mount `<Toaster>` in AppShell for global toast coverage
+- Add `void-post-send` to ACTION_PERMISSIONS for role-gated visibility
+- Add page-level role guard to `/manager` route
+- Bold & energetic brand refresh (stronger crimson, punchy character)
+- Buttons & actions — primary CTA, icon buttons, destructive redesigned
+- Status badges — table and order state indicators redesigned
+- Cards & panels — menu cards, ticket panel, info panels refined
+- Typography & hierarchy — clearer visual weight across all text levels
+
 ## Requirements
 
 ### Validated (v1.0)
@@ -23,13 +39,18 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - ✓ Shift & session management — open shift (branch + opening cash), role routing, shift close — v1.0
 - ✓ Hi-Fi brand — A Ramen OKLCH tokens, Solar icons, dark mode, 44px touch targets, toasts, empty/loading states — v1.0
 
-### Active (v1.1 candidates)
+### Active (v1.1)
 
 - [ ] Fix `/orders` sidebar dead link — route to `/order/[tableId]` correctly or add index redirect
 - [ ] Fix Manager locked out of `/kds` — update KDS page guard to allow Manager role
 - [ ] Mount `<Toaster>` in AppShell so toasts work across all pages
 - [ ] Add `void-post-send` action key to ACTION_PERMISSIONS for role-gated pre-modal visibility
 - [ ] Add page-level role guard to `/manager` route
+- [ ] Bold & energetic brand refresh across all screens
+- [ ] Buttons & actions redesigned with more character
+- [ ] Status badges (table + order) redesigned
+- [ ] Cards & panels refined
+- [ ] Typography & hierarchy clarified throughout
 
 ### Out of Scope
 
@@ -77,4 +98,4 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 | Demo tickets into kds.store only (not order.store) | Avoids polluting floor map during stakeholder demos | ✓ Good — clean demo UX |
 
 ---
-*Last updated: 2026-03-11 after v1.0 milestone completion*
+*Last updated: 2026-03-11 — Milestone v1.1 started*

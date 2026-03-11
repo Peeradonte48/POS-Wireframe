@@ -1,32 +1,32 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Staff App Wireframe
-status: completed
-stopped_at: v1.0 milestone complete — all 7 phases shipped, archived, git tagged
+milestone: v1.1
+milestone_name: Bug Fixes + Brand Polish
+status: in_progress
+stopped_at: ~
 last_updated: "2026-03-11T00:00:00.000Z"
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 28
-  completed_plans: 28
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-11
-**Session:** v1.0 milestone complete — audit passed (gaps accepted), archived
+**Session:** v1.1 milestone started — defining requirements
 
 ---
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-11 after v1.0 milestone)
+See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 **Core value:** A restaurant staff member can open a shift, seat a table, take a full ramen order with modifiers, send it to the kitchen, and close the bill — all from a mobile PWA that feels fast enough for real service conditions.
 
-**Current focus:** v1.0 shipped. Planning v1.1 (bug fixes) or new milestone.
+**Current focus:** v1.1 — Bug Fixes + Brand Polish
 
 **Stack:** Next.js 15 (App Router) + TypeScript 5 (strict) + Tailwind CSS 4 + shadcn/ui (Base UI) + Zustand 5 (persist) + Solar icon set
 
@@ -38,11 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 after v1.0 milestone)
 
 ## Current Position
 
-**Milestone:** v1.0 Staff App Wireframe — COMPLETE
-**Status:** Archived. Ready for next milestone.
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-11 — Milestone v1.1 started
 
 ```
-Progress: [██████████] 100% (28/28 plans)
+Progress: [░░░░░░░░░░] 0%
 ```
 
 ---
