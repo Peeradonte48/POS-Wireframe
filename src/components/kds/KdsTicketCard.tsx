@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { KdsTicket } from '@/stores/kds.store'
 import { useKdsStore } from '@/stores/kds.store'
 import { useSessionStore } from '@/stores/session.store'
@@ -7,6 +8,12 @@ import { canDoAction } from '@/lib/role-permissions'
 import { useKdsTimer } from '@/components/kds/useKdsTimer'
 import { KdsItemRow } from '@/components/kds/KdsItemRow'
 import { OrderLineItem } from '@/stores/order.store'
+
+const KDS_STAGE_CONFIG = {
+  New:        { bgClass: 'bg-status-open-bg',            textClass: 'text-status-open' },
+  InProgress: { bgClass: 'bg-status-check-requested-bg', textClass: 'text-status-check-requested' },
+  Ready:      { bgClass: 'bg-status-reserved-bg',        textClass: 'text-status-reserved' },
+} as const
 
 interface KdsTicketCardProps {
   ticket: KdsTicket
@@ -41,7 +48,12 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
     <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
       {/* Header */}
       <div className="px-3 py-2 bg-muted/30 flex justify-between items-center border-b border-border/40">
-        <span className="font-bold text-base">{ticket.tableLabel}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-base">{ticket.tableLabel}</span>
+          <Badge className={`${KDS_STAGE_CONFIG[ticket.stage].bgClass} ${KDS_STAGE_CONFIG[ticket.stage].textClass} border-0 text-xs`}>
+            {ticket.stage === 'InProgress' ? 'In Progress' : ticket.stage}
+          </Badge>
+        </div>
         <span className={`font-mono text-sm tabular-nums ${timerColorClass}`}>{display}</span>
       </div>
 

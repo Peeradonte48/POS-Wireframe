@@ -16,14 +16,15 @@ type SolarIcon = React.ComponentType<{ size?: number; className?: string }>
 const STATUS_CONFIG: Record<TableStatus, {
   borderClass: string
   textClass: string
+  bgClass: string
   label: string
   Icon: SolarIcon
 }> = {
-  Open:           { borderClass: 'border-l-status-open',            textClass: 'text-status-open',            label: 'Open',            Icon: RadioLinear              },
-  Occupied:       { borderClass: 'border-l-status-occupied',        textClass: 'text-status-occupied',        label: 'Occupied',        Icon: UsersGroupRoundedLinear  },
-  Reserved:       { borderClass: 'border-l-status-reserved',        textClass: 'text-status-reserved',        label: 'Reserved',        Icon: CalendarDateLinear       },
-  CheckRequested: { borderClass: 'border-l-status-check-requested', textClass: 'text-status-check-requested', label: 'Check Requested', Icon: WalletLinear             },
-  Cleaning:       { borderClass: 'border-l-status-cleaning',        textClass: 'text-status-cleaning',        label: 'Cleaning',        Icon: StarLinear               },
+  Open:           { borderClass: 'border-l-status-open',            textClass: 'text-status-open',            bgClass: 'bg-status-open-bg',             label: 'Open',            Icon: RadioLinear              },
+  Occupied:       { borderClass: 'border-l-status-occupied',        textClass: 'text-status-occupied',        bgClass: 'bg-status-occupied-bg',         label: 'Occupied',        Icon: UsersGroupRoundedLinear  },
+  Reserved:       { borderClass: 'border-l-status-reserved',        textClass: 'text-status-reserved',        bgClass: 'bg-status-reserved-bg',         label: 'Reserved',        Icon: CalendarDateLinear       },
+  CheckRequested: { borderClass: 'border-l-status-check-requested', textClass: 'text-status-check-requested', bgClass: 'bg-status-check-requested-bg',  label: 'Check Requested', Icon: WalletLinear             },
+  Cleaning:       { borderClass: 'border-l-status-cleaning',        textClass: 'text-status-cleaning',        bgClass: 'bg-status-cleaning-bg',         label: 'Cleaning',        Icon: StarLinear               },
 }
 
 interface TableTileProps {
@@ -32,7 +33,7 @@ interface TableTileProps {
 }
 
 export function TableTile({ table, onTap }: TableTileProps) {
-  const { borderClass, textClass, label, Icon } = STATUS_CONFIG[table.status]
+  const { borderClass, textClass, bgClass, label, Icon } = STATUS_CONFIG[table.status]
   // Always call useDwellTimer unconditionally (React hooks rule)
   const dwellTime = useDwellTimer(table.openedAt)
 
@@ -45,10 +46,10 @@ export function TableTile({ table, onTap }: TableTileProps) {
       <span className="text-xs font-semibold text-foreground">{table.label}</span>
 
       {/* Status row */}
-      <span className={`text-xs ${textClass} flex items-center gap-1`}>
+      <Badge className={`${bgClass} ${textClass} flex items-center gap-1 border-0`}>
         <Icon size={12} />
         {label}
-      </span>
+      </Badge>
 
       {/* Guest count — Occupied only */}
       {table.status === 'Occupied' && table.guestCount !== null && (
