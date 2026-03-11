@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 07-polish-01-PLAN.md
-last_updated: "2026-03-11T08:54:10.488Z"
+stopped_at: Completed 07-polish-02-PLAN.md
+last_updated: "2026-03-11T09:03:32.606Z"
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 28
-  completed_plans: 23
+  completed_plans: 24
   percent: 95
 ---
 
@@ -109,6 +109,8 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 07-polish]: @custom-variant dark uses where(.dark, .dark *) so next-themes class on html element matches correctly
 - [Phase 07-polish]: ThemeToggle uses text symbol placeholders — Plan 02 replaces with Solar Sun/Moon SVG icons
 - [Phase 07-polish]: Brand colors use OKLCH named tokens (--color-brand-red family) with --primary overridden to oklch(0.52 0.22 27)
+- [Phase 07-polish]: Solar icon set uses flat named exports with style in name (e.g. SidebarMinimalisticLinear) — not iconStyle prop as originally documented
+- [Phase 07-polish]: lucide-react removed from package.json after complete zero-import migration — plan 07-02 uninstall complete
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -164,11 +166,12 @@ None.
 | Phase 05-payment P02 | 2min | 2 tasks | 3 files |
 | Phase 05-payment P03 | 10min | 2 tasks | 2 files |
 | Phase 07-polish P01 | 2min | 2 tasks | 7 files |
+| Phase 07-polish P02 | 7min | 2 tasks | 19 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T08:54:10.485Z
-Stopped at: Completed 07-polish-01-PLAN.md
+Last session: 2026-03-11T09:03:32.604Z
+Stopped at: Completed 07-polish-02-PLAN.md
 Resume file: None
 
 To resume after any context loss:
