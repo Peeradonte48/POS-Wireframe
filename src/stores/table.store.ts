@@ -1,5 +1,6 @@
 'use client'
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { INITIAL_TABLES } from '@/lib/mock-data/tables'
 
 export type TableStatus =
@@ -40,7 +41,9 @@ interface TableStore {
   updateTable: (id: string, patch: Partial<Pick<TableRecord, 'waiterName' | 'note' | 'orderStage'>>) => void
 }
 
-export const useTableStore = create<TableStore>((set) => ({
+export const useTableStore = create<TableStore>()(
+  persist(
+    (set) => ({
   tables: INITIAL_TABLES,
 
   openTable: (id, guestCount) =>
@@ -131,4 +134,7 @@ export const useTableStore = create<TableStore>((set) => ({
         },
       },
     })),
-}))
+    }),
+    { name: 'table-store' },
+  ),
+)

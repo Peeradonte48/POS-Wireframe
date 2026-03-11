@@ -1,5 +1,6 @@
 'use client'
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 export type LineItemStatus = 'unsent' | 'sent' | 'voided'
 
@@ -48,7 +49,9 @@ const newUUID = (): string =>
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2)
 
-export const useOrderStore = create<OrderStore>((set, get) => ({
+export const useOrderStore = create<OrderStore>()(
+  persist(
+    (set, get) => ({
   orders: {},
 
   addItem: (tableId, item) =>
@@ -187,4 +190,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }),
 
   getOrder: (tableId) => get().orders[tableId],
-}))
+    }),
+    { name: 'order-store' },
+  ),
+)
