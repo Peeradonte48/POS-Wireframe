@@ -14,6 +14,9 @@ function makeTable(num: number): TableRecord {
     note: null,
     orderStage: null,
     servedAt: null,
+    paidAmount: null,
+    paymentMethod: null,
+    discountApplied: null,
   }
 }
 

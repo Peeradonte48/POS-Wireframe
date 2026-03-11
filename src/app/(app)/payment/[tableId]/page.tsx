@@ -79,6 +79,11 @@ export default function PaymentPage() {
     const { markCleaning, updateTable } = useTableStore.getState()
     markCleaning(tableId)
     updateTable(tableId, { orderStage: 'Billed' })
+    updateTable(tableId, {
+      paidAmount: grandTotal,
+      paymentMethod: paymentMethod,
+      discountApplied: discountAmount,
+    })
     setReceiptData({ grandTotal, paymentMethod, paidAt: new Date() })
     setViewState('receipt')
   }

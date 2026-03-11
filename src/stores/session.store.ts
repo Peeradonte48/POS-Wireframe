@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useManagerStore } from '@/stores/manager.store'
 
 export type Role = 'Waiter' | 'Cashier' | 'Manager' | 'Kitchen'
 
@@ -32,7 +33,8 @@ export const useSessionStore = create<SessionState>((set) => ({
   openShift: (branch, branchName, openingCash) =>
     set({ branch, branchName, openingCash, shiftOpen: true }),
 
-  logout: () =>
+  logout: () => {
+    useManagerStore.getState().resetShift()
     set({
       role: null,
       staffName: null,
@@ -41,5 +43,6 @@ export const useSessionStore = create<SessionState>((set) => ({
       branchName: null,
       openingCash: null,
       shiftOpen: false,
-    }),
+    })
+  },
 }))

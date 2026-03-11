@@ -28,6 +28,9 @@ export interface TableRecord {
   note: string | null
   orderStage: OrderStage | null
   servedAt: number | null
+  paidAmount: number | null
+  paymentMethod: 'Cash' | 'QR PromptPay' | 'Card' | null
+  discountApplied: number | null
 }
 
 interface TableStore {
@@ -38,7 +41,7 @@ interface TableStore {
   markCleaning: (id: string) => void
   markClean: (id: string) => void
   markServed: (id: string) => void
-  updateTable: (id: string, patch: Partial<Pick<TableRecord, 'waiterName' | 'note' | 'orderStage'>>) => void
+  updateTable: (id: string, patch: Partial<Pick<TableRecord, 'waiterName' | 'note' | 'orderStage' | 'paidAmount' | 'paymentMethod' | 'discountApplied'>>) => void
 }
 
 export const useTableStore = create<TableStore>()(
@@ -57,6 +60,9 @@ export const useTableStore = create<TableStore>()(
           openedAt: Date.now(),
           orderStage: null,
           servedAt: null,
+          paidAmount: null,
+          paymentMethod: null,
+          discountApplied: null,
         },
       },
     })),
@@ -108,6 +114,9 @@ export const useTableStore = create<TableStore>()(
           note: null,
           orderStage: null,
           servedAt: null,
+          paidAmount: null,
+          paymentMethod: null,
+          discountApplied: null,
         },
       },
     })),
