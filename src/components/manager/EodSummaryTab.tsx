@@ -107,7 +107,7 @@ export function EodSummaryTab() {
 
       {/* Sales Summary */}
       <div className="rounded-lg border bg-card p-4 space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Sales Summary</p>
+        <p className="caps">Sales Summary</p>
         <div className="space-y-1.5">
           <Row label="Gross Revenue" value={`฿${grossRevenue.toLocaleString()}`} />
           <Row label="VAT (7%)" value={`฿${vatAmount.toLocaleString()}`} />
@@ -118,7 +118,7 @@ export function EodSummaryTab() {
 
       {/* Payment Method Breakdown */}
       <div className="rounded-lg border bg-card p-4 space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Payment Breakdown</p>
+        <p className="caps">Payment Breakdown</p>
         <div className="space-y-1.5">
           <Row label="Cash" value={`฿${cashTotal.toLocaleString()}`} />
           <Row label="QR PromptPay" value={`฿${qrTotal.toLocaleString()}`} />
@@ -128,7 +128,7 @@ export function EodSummaryTab() {
 
       {/* Adjustments */}
       <div className="rounded-lg border bg-card p-4 space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Adjustments</p>
+        <p className="caps">Adjustments</p>
         <div className="space-y-1.5">
           <Row label="Void Count" value={`${voidCount} items`} />
           <Row label="Discount Total" value={`฿${discountTotal.toLocaleString()}`} />
@@ -137,7 +137,7 @@ export function EodSummaryTab() {
 
       {/* Cash Reconciliation */}
       <div className="rounded-lg border bg-card p-4 space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Cash Reconciliation</p>
+        <p className="caps">Cash Reconciliation</p>
         <div className="space-y-1">
           <label className="text-xs text-muted-foreground">Closing Cash (฿)</label>
           <Input

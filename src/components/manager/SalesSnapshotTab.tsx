@@ -50,7 +50,7 @@ export function SalesSnapshotTab() {
 
       {/* Top Items */}
       <div className="rounded-lg border bg-card p-4 space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        <p className="caps">
           Top Items
         </p>
         {topItems.length === 0 ? (

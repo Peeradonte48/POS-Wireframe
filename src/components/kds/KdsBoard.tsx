@@ -57,7 +57,7 @@ export function KdsBoard() {
         return (
           <div key={stage} className="flex flex-col flex-1 min-w-0">
             {/* Column header */}
-            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 px-1">
+            <div className="caps mb-2 px-1">
               {label}
             </div>
 

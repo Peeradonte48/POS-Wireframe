@@ -15,7 +15,7 @@ export function KdsRecallTray() {
 
   return (
     <div className="h-14 shrink-0 border-t bg-muted/20 flex items-center gap-2 px-3 overflow-x-auto">
-      <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase mr-1 shrink-0">
+      <span className="caps mr-1 shrink-0">
         RECALLED
       </span>
       {recallTray.map((entry) => (

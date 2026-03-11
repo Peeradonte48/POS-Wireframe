@@ -93,8 +93,8 @@ export function TotalsSection({
 
       {/* Total row */}
       <div className="flex justify-between border-t pt-3">
-        <span className="font-bold text-base">Total</span>
-        <span className="font-bold text-base">฿{grandTotal.toLocaleString()}</span>
+        <span className="caps">Total</span>
+        <span className="text-2xl font-black text-primary">฿{grandTotal.toLocaleString()}</span>
       </div>
 
       {/* PAY-05: Split Bill placeholder */}

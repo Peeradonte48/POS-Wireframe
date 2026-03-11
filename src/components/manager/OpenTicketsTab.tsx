@@ -39,7 +39,7 @@ export function OpenTicketsTab() {
       {/* Open Tickets Section */}
       <div>
         <div className="px-4 py-2 bg-muted/40 flex items-center justify-between">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <p className="caps">
             Open Tickets
           </p>
           <span className="text-xs text-muted-foreground">{occupiedTables.length} tables</span>
@@ -92,7 +92,7 @@ export function OpenTicketsTab() {
       {/* Staff List Section */}
       <div>
         <div className="px-4 py-2 bg-muted/40">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <p className="caps">
             On Shift
           </p>
         </div>

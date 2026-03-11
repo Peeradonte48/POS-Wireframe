@@ -25,7 +25,7 @@ export function EightySixTab() {
         <div key={category.id}>
           {/* Category header */}
           <div className="px-4 py-2 bg-muted/40">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <p className="caps">
               {category.label}
             </p>
           </div>

@@ -162,7 +162,7 @@ export default function PaymentPage() {
           <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
           {/* Items section */}
           <section>
-            <p className="text-sm font-medium text-muted-foreground uppercase mb-2 tracking-wide">
+            <p className="caps mb-2">
               Items
             </p>
             <div className="divide-y">
