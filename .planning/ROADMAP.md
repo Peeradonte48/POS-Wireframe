@@ -89,7 +89,11 @@ Plans:
   2. All five table states (Open, Occupied, Reserved, Check Requested, Cleaning) each resolve to a distinct semantic token — no raw palette classes in TableTile, KdsTicketCard, or AppSidebar
   3. Three elevation tiers (flat, raised, floating) are defined as CSS tokens and consistently applied to cards and panels across all screens
   4. Dark mode toggles correctly throughout — no token resolves to an unresolved var() string and no surface retains light-mode colors in dark mode
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Define all new tokens in globals.css (TOKEN-01, TOKEN-02, TOKEN-03)
+- [ ] 10-02-PLAN.md — Replace hardcoded palette classes in TableTile, KdsTicketCard, AppSidebar (TOKEN-04)
 
 ### Phase 11: Component Polish
 **Goal**: Every interactive surface across the POS wireframe expresses the bold, energetic A Ramen brand — correct touch targets, semantic status colors on badges, elevation on cards, hero price readouts, and consistent typographic hierarchy
@@ -118,7 +122,7 @@ Plans:
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
 | 8. Bug Fixes | v1.1 | 5/5 | Complete ✅ | 2026-03-11 |
 | 9. Flow Alignment | v1.1 | 3/3 | Complete ✅ | 2026-03-12 |
-| 10. Brand Token Refresh | v1.1 | 0/TBD | Not started | - |
+| 10. Brand Token Refresh | v1.1 | 0/2 | Not started | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
