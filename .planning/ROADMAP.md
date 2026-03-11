@@ -26,7 +26,7 @@
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
-| 4. KDS | 0/? | Not started | - |
+| 4. KDS | 0/3 | Not started | - |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
@@ -113,7 +113,12 @@ Plans:
 3. Every ticket displays an elapsed timer; allergy flags and special requests are visually distinct from regular item lines; post-send voided items appear struck-through
 4. In demo mode, new mock tickets appear automatically at a realistic cadence via setInterval without any manual input
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — (kds) route group layout + kds.store.ts + useKdsTimer hook + Kitchen role auth routing (KDS-01, KDS-02)
+- [ ] 04-02-PLAN.md — KdsBoard (3-column) + KdsTicketCard + KdsItemRow + KdsRecallTray + page wiring (KDS-01, KDS-02, KDS-03)
+- [ ] 04-03-PLAN.md — Demo mode ticket injection + browser checkpoint: all 4 KDS criteria (KDS-04)
 
 ---
 
@@ -225,3 +230,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Updated: 2026-03-10 — Phase 1 plans created (5 plans, 4 waves)*
 *Updated: 2026-03-10 — Phase 2 plans created (4 plans, 4 waves)*
 *Updated: 2026-03-10 — Phase 3 plans created (4 plans, 3 waves)*
+*Updated: 2026-03-11 — Phase 4 plans created (3 plans, 3 waves)*
