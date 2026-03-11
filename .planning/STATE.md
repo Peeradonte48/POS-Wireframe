@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 7 context gathered — Hi-Fi & Brand
-last_updated: "2026-03-11T08:29:30.616Z"
+stopped_at: Phase 6 context gathered
+last_updated: "2026-03-11T06:52:38.872Z"
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 23
-  completed_plans: 22
+  completed_phases: 4
+  total_plans: 19
+  completed_plans: 18
   percent: 95
 ---
 
@@ -106,14 +106,6 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 05-payment]: toast import kept in PaymentPage (not ReceiptScreen) — keeps ReceiptScreen a pure display component with callbacks only
 - [Phase 05-payment]: useRouter already imported in TableBottomSheet from Phase 2 — no duplicate import needed for Go to Payment activation
 - [Phase 05-payment]: Zustand persist middleware adopted (reversed Phase 1 decision) — required for state to survive (app)/(kds) route group navigation on role switch; localStorage storage with named keys per store
-- [Phase 06-manager-layer]: AppSidebar hides manager item with early null return (not greyed-out div) for non-Manager roles
-- [Phase 06-manager-layer]: Cross-store reset on logout: session.store imports manager.store and calls getState().resetShift() — no 'use client' needed on session.store since call is runtime-only
-- [Phase 06-manager-layer]: Payment capture fields (paidAmount, paymentMethod, discountApplied) initialized as null in openTable and markClean to prevent stale data on re-seat
-- [Phase 06-manager-layer]: Estimated total computed inline in OpenTicketsTab rather than helper function to avoid complex ReturnType annotation
-- [Phase 06-manager-layer]: EightySixTab and OpenTicketsTab stubs from Plan 02 replaced with full implementations
-- [Phase 06-manager-layer]: EightySixTab and OpenTicketsTab stubs replaced by linter with real implementations — both tsc-verified and accepted as beneficial enhancements
-- [Phase 06-manager-layer]: Variance formula uses cashTotal from paidTables (not grossRevenue) — only Cash method affects physical drawer balance
-- [Phase 06-manager-layer]: /payment index page added as Rule 3 fix — redirects to /table-map when no tableId present in URL
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -168,16 +160,12 @@ None.
 | Phase 05-payment P01 | 2min | 2 tasks | 7 files |
 | Phase 05-payment P02 | 2min | 2 tasks | 3 files |
 | Phase 05-payment P03 | 10min | 2 tasks | 2 files |
-| Phase 06-manager-layer P01 | 2min | 2 tasks | 6 files |
-| Phase 06-manager-layer P03 | 2min | 2 tasks | 3 files |
-| Phase 06-manager-layer P02 | 8min | 2 tasks | 5 files |
-| Phase 06-manager-layer P04 | 10min | 2 tasks | 2 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T08:29:30.613Z
-Stopped at: Phase 7 context gathered — Hi-Fi & Brand
-Resume file: .planning/phases/07-polish/07-CONTEXT.md
+Last session: 2026-03-11T06:52:38.864Z
+Stopped at: Phase 6 context gathered
+Resume file: .planning/phases/06-manager-layer/06-CONTEXT.md
 
 To resume after any context loss:
 
@@ -185,7 +173,7 @@ To resume after any context loss:
 2. Read `.planning/REQUIREMENTS.md` for requirement details and traceability
 3. Read `.planning/STATE.md` (this file) for current position and decisions
 4. Run `/gsd:discuss-phase 3` or `/gsd:plan-phase 3` to begin Phase 3
-5. Read `.claude/CLAUDE.md` for high-level user flow
+5. Read `.claude/CLAUDE.md` for high-level user flow as guidance
 
 ---
 
