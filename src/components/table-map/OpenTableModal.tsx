@@ -20,15 +20,15 @@ interface OpenTableModalProps {
 
 export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
   const { openTable, tables } = useTableStore()
-  const [guestCount, setGuestCount] = useState(1)
+  const [guestCount, setGuestCount] = useState<number | ''>('')
 
   // Reset guest count when tableId changes (different table opened)
   useEffect(() => {
-    setGuestCount(1)
+    setGuestCount('')
   }, [tableId])
 
   const handleConfirm = () => {
-    if (guestCount >= 1 && tableId) {
+    if (typeof guestCount === 'number' && guestCount >= 1 && tableId) {
       openTable(tableId, guestCount)
       const tableLabel = tables[tableId]?.label ?? tableId
       toast(`${tableLabel} opened — ${guestCount} guests`)
@@ -53,7 +53,7 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
             pattern="[0-9]*"
             min={1}
             value={guestCount}
-            onChange={(e) => setGuestCount(Number(e.target.value))}
+            onChange={(e) => setGuestCount(e.target.value === '' ? '' : Number(e.target.value))}
             placeholder="e.g. 2"
             autoFocus
           />
@@ -63,7 +63,7 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={guestCount < 1}>
+          <Button onClick={handleConfirm} disabled={guestCount === '' || (typeof guestCount === 'number' && guestCount < 1)}>
             Open Table
           </Button>
         </DialogFooter>

@@ -71,6 +71,27 @@ export function ReceiptScreen({
         </p>
       </div>
 
+      {/* Loyalty Section — CRM Type 2 (Smart Loyalty) */}
+      <div className="rounded-xl border bg-card p-4 w-full max-w-sm space-y-3">
+        {/* Member tier and point balance */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-amber-500">Gold Member</span>
+          <span className="text-sm text-muted-foreground">1,240 pts</span>
+        </div>
+
+        {/* QR placeholder — customer scans to earn points */}
+        <div className="border-2 border-dashed rounded-lg h-24 flex items-center justify-center bg-muted/30">
+          <span className="text-xs text-muted-foreground text-center px-2">
+            Customer scans to earn points
+          </span>
+        </div>
+
+        {/* Wireframe annotation */}
+        <p className="text-xs text-muted-foreground text-center">
+          [Smart loyalty QR — unique per bill, baked with spend + branch]
+        </p>
+      </div>
+
       {/* Actions block */}
       <div className="w-full max-w-sm space-y-3">
         <Button variant="outline" className="w-full" onClick={onReprint}>
