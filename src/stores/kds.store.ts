@@ -29,6 +29,7 @@ interface KdsStore {
 
   // Actions
   addTicket: (tableId: string, tableLabel: string) => void
+  injectDemoTicket: (ticket: KdsTicket) => void
   bumpTicket: (ticketId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
   uncheckItem: (ticketId: string, lineId: string) => void
@@ -61,6 +62,11 @@ export const useKdsStore = create<KdsStore>((set) => ({
         tickets: { ...state.tickets, [ticketId]: ticket },
       }
     }),
+
+  injectDemoTicket: (ticket) =>
+    set((state) => ({
+      tickets: { ...state.tickets, [ticket.ticketId]: ticket },
+    })),
 
   bumpTicket: (ticketId) =>
     set((state) => {

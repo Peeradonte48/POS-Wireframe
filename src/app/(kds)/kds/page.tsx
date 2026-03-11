@@ -6,11 +6,12 @@ import { useSessionStore } from '@/stores/session.store'
 import { useKdsStore } from '@/stores/kds.store'
 import { KdsBoard } from '@/components/kds/KdsBoard'
 import { KdsRecallTray } from '@/components/kds/KdsRecallTray'
+import { buildMockDemoTicket } from '@/lib/mock-data/kds-demo'
 
 export default function KdsPage() {
   const router = useRouter()
   const { role } = useSessionStore()
-  const { demoActive, toggleDemoActive } = useKdsStore()
+  const { demoActive, toggleDemoActive, injectDemoTicket } = useKdsStore()
 
   // Auth guard: Kitchen staff only
   useEffect(() => {
@@ -21,6 +22,27 @@ export default function KdsPage() {
       router.replace('/table-map')
     }
   }, [role, router])
+
+  // Demo injection: setTimeout re-schedule loop fires every 8–12 s when demoActive
+  useEffect(() => {
+    if (!demoActive) return
+
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    function scheduleNext() {
+      const delay = 8000 + Math.random() * 4000 // 8–12 seconds
+      timeoutId = setTimeout(() => {
+        const mockTicket = buildMockDemoTicket()
+        // injectDemoTicket writes the ticket into kds.store using the same ticketId
+        // that buildMockDemoTicket used to key demoItemsMap — so getDemoOrderItems can look it up.
+        injectDemoTicket(mockTicket)
+        scheduleNext()
+      }, delay)
+    }
+
+    scheduleNext()
+    return () => clearTimeout(timeoutId)
+  }, [demoActive, injectDemoTicket])
 
   // Don't render until auth state is known
   if (role === null) return null

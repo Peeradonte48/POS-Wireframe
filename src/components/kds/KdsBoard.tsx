@@ -1,10 +1,11 @@
 'use client'
 
 import { useOrderStore } from '@/stores/order.store'
-import { useKdsStore, KdsStage } from '@/stores/kds.store'
+import { useKdsStore, KdsStage, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
 import { KdsTicketCard } from '@/components/kds/KdsTicketCard'
 import { OrderLineItem } from '@/stores/order.store'
+import { getDemoOrderItems } from '@/lib/mock-data/kds-demo'
 
 const STAGES: { stage: KdsStage; label: string }[] = [
   { stage: 'New', label: 'New' },
@@ -33,13 +34,16 @@ export function KdsBoard() {
     }
   })
 
-  // Helper: get sent+voided items for a tableId (flatten all sent rounds, exclude unsent)
-  function getOrderItems(tableId: string): OrderLineItem[] {
-    const order = allOrders[tableId]
-    if (!order) return []
-    return order.rounds
-      .filter((r) => r.sentAt !== null)
-      .flatMap((r) => r.items.filter((item) => item.status !== 'unsent'))
+  // Helper: get sent+voided items for a ticket (flatten all sent rounds, exclude unsent)
+  // Falls back to demoItemsMap for demo-injected tickets that are not in order.store
+  function getOrderItems(ticket: KdsTicket): OrderLineItem[] {
+    const order = allOrders[ticket.tableId]
+    if (order) {
+      return order.rounds
+        .filter((r) => r.sentAt !== null)
+        .flatMap((r) => r.items.filter((item) => item.status !== 'unsent'))
+    }
+    return getDemoOrderItems(ticket)
   }
 
   return (
@@ -65,7 +69,7 @@ export function KdsBoard() {
                   <KdsTicketCard
                     key={ticket.ticketId}
                     ticket={ticket}
-                    orderItems={getOrderItems(ticket.tableId)}
+                    orderItems={getOrderItems(ticket)}
                   />
                 ))
               )}
