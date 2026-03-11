@@ -4,31 +4,15 @@
 
 An interactive Hi-Fi wireframe for a restaurant POS system, built with Next.js 15 + Tailwind CSS 4 + shadcn/ui. Serves dual purposes: a dev-handoff spec for the engineering team building the actual POS, and a stakeholder presentation artifact for business sign-off. This POS is the first module of the Food Intelligent Platform (FIP) — a broader restaurant operating system being developed by TBC x ICWeb.
 
-The wireframe covers the full staff-facing transaction loop: authentication, floor management, order entry with ramen-specific modifiers, kitchen display, payment, and manager oversight — all in one cohesive interface running in the browser.
+The wireframe covers the full staff-facing transaction loop: authentication, floor management, order entry with ramen-specific modifiers, kitchen display, payment with camera coupon scanning and dynamic QR, loyalty integration, and manager oversight — all in one cohesive interface running in the browser with a bold A Ramen brand expression.
 
 ## Core Value
 
 A restaurant staff member can walk in, open a shift, seat a table, take a full ramen order with modifiers, send it to the kitchen, and close the bill — all in a single, scannable interface that feels fast enough for real service conditions.
 
-## Current Milestone: v1.1 Bug Fixes + Brand Polish
-
-**Goal:** Close all known v1.0 tech debt and elevate the UI to a bold, energetic brand expression with polished components throughout.
-
-**Target features:**
-- Fix `/orders` sidebar dead link → route to `/order/[tableId]`
-- Fix Manager blocked from `/kds` route
-- Mount `<Toaster>` in AppShell for global toast coverage
-- Add `void-post-send` to ACTION_PERMISSIONS for role-gated visibility
-- Add page-level role guard to `/manager` route
-- Bold & energetic brand refresh (stronger crimson, punchy character)
-- Buttons & actions — primary CTA, icon buttons, destructive redesigned
-- Status badges — table and order state indicators redesigned
-- Cards & panels — menu cards, ticket panel, info panels refined
-- Typography & hierarchy — clearer visual weight across all text levels
-
 ## Requirements
 
-### Validated (v1.0)
+### Validated
 
 - ✓ Table map / floor plan with real-time status (Open, Occupied, Reserved, Check Requested, Cleaning) + dwell timers — v1.0
 - ✓ Order-taking screen with category navigation, photo grid, ramen modifier sheet (broth, spice level 1–5, toppings, special request) — v1.0
@@ -38,19 +22,14 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - ✓ Manager tools — EOD summary, sales snapshot, 86'd item toggle, open tickets view — v1.0
 - ✓ Shift & session management — open shift (branch + opening cash), role routing, shift close — v1.0
 - ✓ Hi-Fi brand — A Ramen OKLCH tokens, Solar icons, dark mode, 44px touch targets, toasts, empty/loading states — v1.0
+- ✓ Fix `/orders` sidebar dead link, Manager KDS access, global toasts, void-post-send permissions, manager route guard — v1.1
+- ✓ Guest count capture on Open Table, Served-at tracking, camera coupon scan, dynamic QR payment, CRM loyalty receipt — v1.1
+- ✓ Bold crimson brand tokens (chroma 0.26), semantic status tokens for 5 table states, 3-tier elevation shadow system — v1.1
+- ✓ CTA buttons with press scale + glow, filled status pill badges, hero price readouts, caps utility labels, elevation hierarchy — v1.1
 
-### Active (v1.1)
+### Active
 
-- [ ] Fix `/orders` sidebar dead link — route to `/order/[tableId]` correctly or add index redirect
-- [ ] Fix Manager locked out of `/kds` — update KDS page guard to allow Manager role
-- [ ] Mount `<Toaster>` in AppShell so toasts work across all pages
-- [ ] Add `void-post-send` action key to ACTION_PERMISSIONS for role-gated pre-modal visibility
-- [ ] Add page-level role guard to `/manager` route
-- [ ] Bold & energetic brand refresh across all screens
-- [ ] Buttons & actions redesigned with more character
-- [ ] Status badges (table + order) redesigned
-- [ ] Cards & panels refined
-- [ ] Typography & hierarchy clarified throughout
+(None — ship to validate. Define new requirements with `/gsd:new-milestone`.)
 
 ### Out of Scope
 
@@ -61,21 +40,24 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - Admin back office management system — separate deliverable
 - Customer POS / receipt tracker — separate deliverable
 - Split bill by seat (v2) — deferred, placeholder annotated in payment screen
+- Loyalty Type 1 (standalone manual) — deferred to v2, Type 2 (smart CRM QR) shipped in v1.1
 
 ## Context
 
 - Part of FIP (Food Intelligent Platform): POS is the transactional core connecting to CRM, Inventory, Cost Management, Accounting, and Analytics in future milestones
 - Early adopter: A Ramen restaurant group (scaling, multi-branch)
 - v1.0 shipped in 2 days: 7 phases, 28 plans, 5,583 LOC TypeScript/TSX
+- v1.1 shipped in 2 days: 4 phases, 13 plans — codebase now 5,762 LOC TypeScript/TSX
 - Tech stack finalized: Next.js 15 + Tailwind CSS 4 + shadcn/ui (Base UI dialogs) + Zustand 5 (with persist) + Solar icon set
 - Design tooling: shadcn MCP + UI-UX-Pro-Max skill + Figma MCP for reference designs
-- A Ramen brand applied: OKLCH crimson `oklch(0.52 0.22 27)` as `--primary`, dark mode via next-themes
+- A Ramen brand applied: OKLCH crimson `oklch(0.52 0.26 27)` as `--primary`, dark mode via next-themes
+- Bold brand expression: semantic status tokens, 3-tier elevation, filled pill badges, hero price readouts, caps utility typography
 
 ## Constraints
 
 - **Tech Stack**: Next.js + Tailwind CSS 4 + shadcn/ui — aligns with FIP's eventual production stack
 - **Design Tools**: shadcn MCP + UI-UX-Pro-Max skill — must use these for component decisions
-- **Visual Style**: A Ramen brand (crimson + warm tones) on clean minimal base — professional SaaS aesthetic
+- **Visual Style**: A Ramen brand (crimson + warm tones) on clean minimal base — professional SaaS aesthetic with bold, energetic character
 - **Deliverable Format**: Browser-based interactive wireframes (not Figma, not static images)
 - **Audience**: Dual-use — dev handoff quality AND stakeholder presentation quality
 
@@ -96,6 +78,11 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 | Base UI dialogs over Radix | shadcn/ui in this project uses @base-ui/react not @radix-ui/react | ✓ Good — correct for this project's dependency tree |
 | BUMP blocked from InProgress until all items checked | Enforces cook confirmation workflow; prevents premature Ready state | ✓ Good — matches kitchen workflow intent |
 | Demo tickets into kds.store only (not order.store) | Avoids polluting floor map during stakeholder demos | ✓ Good — clean demo UX |
+| Shadow tokens via inline style prop | Multi-value CSS strings incompatible with Tailwind v4 @theme inline | ✓ Good — `style={{ boxShadow: 'var(--shadow-*)' }}` pattern consistent |
+| OKLCH status tokens independently tuned for dark mode | Opacity reduction on OKLCH in dark backgrounds creates muddy colors | ✓ Good — crisp distinct colors in both modes |
+| @utility caps via @apply | theme() function not resolvable in Tailwind v4/PostCSS pipeline | ✓ Good — @apply produces identical compiled output |
+| useState<number \| ''> for forced-entry numerics | Empty string sentinel enforces guest count entry via disabled prop | ✓ Good — natural UX pattern for mandatory fields |
+| ThemedToaster thin client wrapper | Enables useTheme in server layout tree; mount once per layout | ✓ Good — sonner works correctly with resolvedTheme |
 
 ---
-*Last updated: 2026-03-11 — Milestone v1.1 started*
+*Last updated: 2026-03-12 after v1.1 milestone*

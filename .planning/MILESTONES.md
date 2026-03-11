@@ -1,5 +1,24 @@
 # Milestones
 
+## v1.1 Bug Fixes + Brand Polish (Shipped: 2026-03-12)
+
+**Phases completed:** 4 phases (8–11), 13 plans
+**Timeline:** 2026-03-10 → 2026-03-12 (2 days)
+**Codebase:** 5,762 lines TypeScript/TSX
+**Files modified:** 68
+
+**Key accomplishments:**
+1. Bug Fixes — 5 navigation, permission, and toast defects resolved (dead links, role guards, toast infrastructure)
+2. Flow Alignment — Guest count capture, Served-at tracking, camera coupon scan, dynamic QR payment, and CRM loyalty receipt wired
+3. Brand Token Refresh — OKLCH crimson at 0.26 chroma, 10 semantic status tokens, 3-tier elevation shadows, all dark-mode-safe
+4. Component Polish — CTA buttons with press scale + glow, filled status pill badges, hero price readouts, caps utility labels, elevation hierarchy across all screens
+
+**Archive:**
+- Roadmap: `.planning/milestones/v1.1-ROADMAP.md`
+- Requirements: `.planning/milestones/v1.1-REQUIREMENTS.md`
+
+---
+
 ## v1.0 Staff App Wireframe (Shipped: 2026-03-11)
 
 **Phases completed:** 7 phases, 28 plans
