@@ -19,11 +19,11 @@ const STATUS_CONFIG: Record<TableStatus, {
   label: string
   Icon: SolarIcon
 }> = {
-  Open:           { borderClass: 'border-l-green-500',  textClass: 'text-green-600',  label: 'Open',            Icon: RadioLinear              },
-  Occupied:       { borderClass: 'border-l-red-500',    textClass: 'text-red-600',    label: 'Occupied',        Icon: UsersGroupRoundedLinear  },
-  Reserved:       { borderClass: 'border-l-blue-500',   textClass: 'text-blue-600',   label: 'Reserved',        Icon: CalendarDateLinear       },
-  CheckRequested: { borderClass: 'border-l-amber-500',  textClass: 'text-amber-600',  label: 'Check Requested', Icon: WalletLinear             },
-  Cleaning:       { borderClass: 'border-l-gray-400',   textClass: 'text-gray-500',   label: 'Cleaning',        Icon: StarLinear               },
+  Open:           { borderClass: 'border-l-status-open',            textClass: 'text-status-open',            label: 'Open',            Icon: RadioLinear              },
+  Occupied:       { borderClass: 'border-l-status-occupied',        textClass: 'text-status-occupied',        label: 'Occupied',        Icon: UsersGroupRoundedLinear  },
+  Reserved:       { borderClass: 'border-l-status-reserved',        textClass: 'text-status-reserved',        label: 'Reserved',        Icon: CalendarDateLinear       },
+  CheckRequested: { borderClass: 'border-l-status-check-requested', textClass: 'text-status-check-requested', label: 'Check Requested', Icon: WalletLinear             },
+  Cleaning:       { borderClass: 'border-l-status-cleaning',        textClass: 'text-status-cleaning',        label: 'Cleaning',        Icon: StarLinear               },
 }
 
 interface TableTileProps {

@@ -20,10 +20,10 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
 
   const timerColorClass =
     elapsedSeconds >= 900
-      ? 'text-red-500'
+      ? 'text-status-occupied'
       : elapsedSeconds >= 600
-        ? 'text-amber-500'
-        : 'text-green-500'
+        ? 'text-status-check-requested'
+        : 'text-status-open'
 
   // Checkboxes are only interactive when the ticket is In Progress
   const checkboxesActive = ticket.stage === 'InProgress'
@@ -70,7 +70,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
           className={`w-full font-bold text-sm py-2 rounded text-white transition-all ${
             bumpBlocked
               ? 'bg-muted-foreground/30 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-500 active:scale-95 ring-2 ring-green-400'
+              : 'bg-status-open hover:bg-status-open/80 active:scale-95 ring-2 ring-status-open/60'
           }`}
         >
           {bumpBlocked ? `Check all items (${ticket.checkedItems.size}/${nonVoidedItems.length})` : 'BUMP'}
