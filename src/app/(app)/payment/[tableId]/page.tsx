@@ -173,6 +173,7 @@ export default function PaymentPage() {
             setCouponAmount={setCouponAmount}
             couponApplied={couponApplied}
             onApplyCoupon={handleApplyCoupon}
+            setCouponApplied={setCouponApplied}
             vatAmount={vatAmount}
             grandTotal={grandTotal}
             discountAmount={discountAmount}

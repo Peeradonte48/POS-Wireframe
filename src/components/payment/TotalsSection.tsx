@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
+import { CameraLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { CameraSheet } from './CameraSheet'
 
 // ---------------------------------------------------------------------------
 // Props
@@ -16,6 +17,7 @@ interface TotalsSectionProps {
   setCouponAmount: (v: number) => void
   couponApplied: boolean
   onApplyCoupon: () => void
+  setCouponApplied: (v: boolean) => void
   vatAmount: number
   grandTotal: number
   discountAmount: number
@@ -32,10 +34,12 @@ export function TotalsSection({
   couponAmount,
   setCouponAmount,
   couponApplied,
-  onApplyCoupon,
+  setCouponApplied,
   vatAmount,
   grandTotal,
 }: TotalsSectionProps) {
+  const [scannerOpen, setScannerOpen] = useState(false)
+
   return (
     <div className="space-y-3 pt-4">
       {/* Subtotal row */}
@@ -51,48 +55,35 @@ export function TotalsSection({
           <span className="text-muted-foreground">Coupon {couponCode}</span>
           <span className="text-green-600 font-medium">−฿{couponAmount.toLocaleString()}</span>
         </div>
-      ) : (
-        /* Coupon input row */
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <Label htmlFor="coupon-code" className="text-xs text-muted-foreground mb-1 block">
-              Coupon Code
-            </Label>
-            <Input
-              id="coupon-code"
-              type="text"
-              placeholder="e.g. RAMEN10"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              className="h-8 text-sm"
-            />
-          </div>
-          <div className="w-28">
-            <Label htmlFor="coupon-amount" className="text-xs text-muted-foreground mb-1 block">
-              Discount (฿)
-            </Label>
-            <Input
-              id="coupon-amount"
-              type="number"
-              min="0"
-              step="1"
-              placeholder="0"
-              value={couponAmount === 0 ? '' : couponAmount}
-              onChange={(e) => setCouponAmount(Number(e.target.value) || 0)}
-              className="h-8 text-sm"
-            />
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 shrink-0"
-            onClick={onApplyCoupon}
-            disabled={!couponCode.trim() || couponAmount <= 0}
-          >
-            Apply
-          </Button>
-        </div>
+      ) : null}
+
+      {/* Scan Coupon QR button — active when not yet applied */}
+      {!couponApplied && (
+        <Button variant="outline" className="w-full" onClick={() => setScannerOpen(true)}>
+          <CameraLinear size={16} className="mr-2" />
+          Scan Coupon QR
+        </Button>
       )}
+
+      {/* Scan Coupon QR button — disabled when coupon already applied */}
+      {couponApplied && (
+        <Button variant="outline" className="w-full" disabled>
+          <CameraLinear size={16} className="mr-2" />
+          Scan Coupon QR
+        </Button>
+      )}
+
+      {/* Camera sheet */}
+      <CameraSheet
+        open={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onCouponScanned={(code, amount) => {
+          setCouponCode(code)
+          setCouponAmount(amount)
+          setCouponApplied(true)
+          setScannerOpen(false)
+        }}
+      />
 
       {/* VAT row */}
       <div className="flex justify-between text-sm">
