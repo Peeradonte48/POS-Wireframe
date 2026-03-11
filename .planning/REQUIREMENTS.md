@@ -70,31 +70,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | — | Pending |
-| BUG-02 | — | Pending |
-| BUG-03 | — | Pending |
-| BUG-04 | — | Pending |
-| BUG-05 | — | Pending |
-| FLOW-01 | — | Pending |
-| FLOW-02 | — | Pending |
-| FLOW-03 | — | Pending |
-| FLOW-04 | — | Pending |
-| FLOW-05 | — | Pending |
-| TOKEN-01 | — | Pending |
-| TOKEN-02 | — | Pending |
-| TOKEN-03 | — | Pending |
-| TOKEN-04 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
-| COMP-03 | — | Pending |
-| COMP-04 | — | Pending |
-| COMP-05 | — | Pending |
+| BUG-01 | Phase 8 | Pending |
+| BUG-02 | Phase 8 | Pending |
+| BUG-03 | Phase 8 | Pending |
+| BUG-04 | Phase 8 | Pending |
+| BUG-05 | Phase 8 | Pending |
+| FLOW-01 | Phase 9 | Pending |
+| FLOW-02 | Phase 9 | Pending |
+| FLOW-03 | Phase 9 | Pending |
+| FLOW-04 | Phase 9 | Pending |
+| FLOW-05 | Phase 9 | Pending |
+| TOKEN-01 | Phase 10 | Pending |
+| TOKEN-02 | Phase 10 | Pending |
+| TOKEN-03 | Phase 10 | Pending |
+| TOKEN-04 | Phase 10 | Pending |
+| COMP-01 | Phase 11 | Pending |
+| COMP-02 | Phase 11 | Pending |
+| COMP-03 | Phase 11 | Pending |
+| COMP-04 | Phase 11 | Pending |
+| COMP-05 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19 ⚠️
+- Mapped to phases: 19
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-11*
-*Last updated: 2026-03-11 after initial definition*
+*Last updated: 2026-03-11 — traceability mapped to phases 8–11*
