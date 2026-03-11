@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-11T06:52:38.872Z"
+stopped_at: Completed 07-polish-01-PLAN.md
+last_updated: "2026-03-11T08:54:10.488Z"
 progress:
   total_phases: 7
-  completed_phases: 4
-  total_plans: 19
-  completed_plans: 18
+  completed_phases: 5
+  total_plans: 28
+  completed_plans: 23
   percent: 95
 ---
 
@@ -106,6 +106,9 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 05-payment]: toast import kept in PaymentPage (not ReceiptScreen) — keeps ReceiptScreen a pure display component with callbacks only
 - [Phase 05-payment]: useRouter already imported in TableBottomSheet from Phase 2 — no duplicate import needed for Go to Payment activation
 - [Phase 05-payment]: Zustand persist middleware adopted (reversed Phase 1 decision) — required for state to survive (app)/(kds) route group navigation on role switch; localStorage storage with named keys per store
+- [Phase 07-polish]: @custom-variant dark uses where(.dark, .dark *) so next-themes class on html element matches correctly
+- [Phase 07-polish]: ThemeToggle uses text symbol placeholders — Plan 02 replaces with Solar Sun/Moon SVG icons
+- [Phase 07-polish]: Brand colors use OKLCH named tokens (--color-brand-red family) with --primary overridden to oklch(0.52 0.22 27)
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -160,12 +163,13 @@ None.
 | Phase 05-payment P01 | 2min | 2 tasks | 7 files |
 | Phase 05-payment P02 | 2min | 2 tasks | 3 files |
 | Phase 05-payment P03 | 10min | 2 tasks | 2 files |
+| Phase 07-polish P01 | 2min | 2 tasks | 7 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T06:52:38.864Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-manager-layer/06-CONTEXT.md
+Last session: 2026-03-11T08:54:10.485Z
+Stopped at: Completed 07-polish-01-PLAN.md
+Resume file: None
 
 To resume after any context loss:
 

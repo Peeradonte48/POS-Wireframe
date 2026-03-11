@@ -57,10 +57,10 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Polish & Demo Readiness
 
-- [ ] **POLISH-01**: Role gating audit — all actions have correct disabled/enabled/authorize states per role across every screen
-- [ ] **POLISH-02**: All interactive elements meet 44px+ touch targets; app tested at mobile (375px) and tablet (1024×768) viewports
-- [ ] **POLISH-03**: Sonner toast notifications appear for key actions ("Order sent to kitchen", "Payment received")
-- [ ] **POLISH-04**: Loading and empty states are defined for all major screens (no blank screens)
+- [x] **POLISH-01**: Role gating audit — all actions have correct disabled/enabled/authorize states per role across every screen
+- [x] **POLISH-02**: All interactive elements meet 44px+ touch targets; app tested at mobile (375px) and tablet (1024×768) viewports
+- [x] **POLISH-03**: Sonner toast notifications appear for key actions ("Order sent to kitchen", "Payment received")
+- [x] **POLISH-04**: Loading and empty states are defined for all major screens (no blank screens)
 
 ## v2 Requirements
 
@@ -132,10 +132,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHIFT-02 | Phase 6 | Complete |
 | SHIFT-03 | Phase 6 | Complete |
 | SHIFT-04 | Phase 6 | Complete |
-| POLISH-01 | Phase 7 | Pending |
-| POLISH-02 | Phase 7 | Pending |
-| POLISH-03 | Phase 7 | Pending |
-| POLISH-04 | Phase 7 | Pending |
+| POLISH-01 | Phase 7 | Complete |
+| POLISH-02 | Phase 7 | Complete |
+| POLISH-03 | Phase 7 | Complete |
+| POLISH-04 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 34 total
