@@ -58,6 +58,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
 
       <ul className="flex flex-col gap-1 p-2 flex-1">
         {NAV_ITEMS.map(({ slug, label, href, icon: Icon }) => {
+          if (slug === 'manager' && role !== 'Manager') return null
           const hasRoleAccess = role ? canAccess(role, slug) : false
           const isAccessible = hasRoleAccess && shiftOpen
           const isActive = pathname === href || pathname.startsWith(href + '/')
