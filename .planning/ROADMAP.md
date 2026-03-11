@@ -54,7 +54,14 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
   3. A toast notification fired from the table map, manager page, or KDS screen appears on screen
   4. The void-after-send action is visible only to roles with permission — non-permitted roles see no void UI
   5. Navigating directly to `/manager` in the URL bar while logged in as a non-Manager role redirects to the table map
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Create /orders stub redirect page (BUG-01)
+- [ ] 08-02-PLAN.md — Expand KDS role guard to allow Manager (BUG-02)
+- [ ] 08-03-PLAN.md — Mount ThemedToaster in AppShell and KDS layout (BUG-03)
+- [ ] 08-04-PLAN.md — Add void-post-send to permissions and wire to TicketLineItem (BUG-04)
+- [ ] 08-05-PLAN.md — Add role guard to manager page (BUG-05)
 
 ### Phase 9: Flow Alignment
 **Goal**: The five staff-facing interactions described in the v1.1 user flow spec are wired and visible in the wireframe
@@ -104,7 +111,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 | 5. Payment | v1.0 | 3/3 | Complete ✅ | 2026-03-11 |
 | 6. Manager Layer | v1.0 | 4/4 | Complete ✅ | 2026-03-11 |
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
-| 8. Bug Fixes | v1.1 | 0/TBD | Not started | - |
+| 8. Bug Fixes | v1.1 | 0/5 | Not started | - |
 | 9. Flow Alignment | v1.1 | 0/TBD | Not started | - |
 | 10. Brand Token Refresh | v1.1 | 0/TBD | Not started | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
