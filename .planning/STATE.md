@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-03-11T07:22:26.859Z"
+stopped_at: Completed 06-04-PLAN.md — Phase 6 complete, all 4 SHIFT requirements browser-verified
+last_updated: "2026-03-11T07:44:18.515Z"
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 23
-  completed_plans: 21
+  completed_plans: 22
   percent: 95
 ---
 
@@ -113,6 +113,7 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 06-manager-layer]: EightySixTab and OpenTicketsTab stubs from Plan 02 replaced with full implementations
 - [Phase 06-manager-layer]: EightySixTab and OpenTicketsTab stubs replaced by linter with real implementations — both tsc-verified and accepted as beneficial enhancements
 - [Phase 06-manager-layer]: Variance formula uses cashTotal from paidTables (not grossRevenue) — only Cash method affects physical drawer balance
+- [Phase 06-manager-layer]: /payment index page added as Rule 3 fix — redirects to /table-map when no tableId present in URL
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -170,11 +171,12 @@ None.
 | Phase 06-manager-layer P01 | 2min | 2 tasks | 6 files |
 | Phase 06-manager-layer P03 | 2min | 2 tasks | 3 files |
 | Phase 06-manager-layer P02 | 8min | 2 tasks | 5 files |
+| Phase 06-manager-layer P04 | 10min | 2 tasks | 2 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T07:22:26.857Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-11T07:44:18.513Z
+Stopped at: Completed 06-04-PLAN.md — Phase 6 complete, all 4 SHIFT requirements browser-verified
 Resume file: None
 
 To resume after any context loss:

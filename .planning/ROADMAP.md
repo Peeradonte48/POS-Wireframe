@@ -14,7 +14,7 @@
 - [x] **Phase 3: Order Flow** — Order entry, ramen modifier sheet, void flows (completed 2026-03-10)
 - [x] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode (completed 2026-03-11)
 - [x] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle (completed 2026-03-11)
-- [ ] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools
+- [x] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools (completed 2026-03-11)
 - [ ] **Phase 7: Polish** — Role gating audit, touch targets, toasts, empty/loading states
 
 ---
@@ -28,7 +28,7 @@
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
-| 6. Manager Layer | 3/4 | In Progress|  |
+| 6. Manager Layer | 4/4 | Complete   | 2026-03-11 |
 | 7. Polish | 0/? | Not started | - |
 
 ---
@@ -153,7 +153,7 @@ Plans:
 3. Manager can toggle item availability (mark as 86'd) from within the Staff POS app — change is immediately reflected in the order-taking menu
 4. Manager can view all open tickets across all tables and a staff/user list for the current shift
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 06-01-PLAN.md — manager.store.ts (86'd + shiftClosed) + extend TableRecord with payment fields + PaymentPage wire + AppSidebar hide (SHIFT-01 data, SHIFT-03)
