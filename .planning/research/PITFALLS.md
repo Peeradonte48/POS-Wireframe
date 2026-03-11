@@ -1,277 +1,267 @@
-# Pitfalls Research
+# Domain Pitfalls: Split Bill, Merge Bill, and Digital Order Tracking
 
-**Domain:** Brand polish pass on existing Tailwind CSS 4 + shadcn/ui + Base UI app (v1.1 milestone)
-**Researched:** 2026-03-11
-**Confidence:** HIGH (codebase read directly; findings verified against official Tailwind 4 docs, GitHub discussions, and Sonner docs)
+**Domain:** Adding bill management and order tracking to an existing restaurant POS wireframe
+**Researched:** 2026-03-12
+**Confidence:** HIGH (based on direct codebase analysis of all five stores + payment page + table tile component)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Mutating `@theme inline` Tokens Breaks the Dark Mode Variable Chain
+Mistakes that cause rewrites, data corruption, or broken flows across the existing system.
 
-**What goes wrong:**
-`globals.css` uses a two-layer pattern: raw OKLCH values live in `:root` / `.dark` as CSS custom properties (e.g. `--primary: oklch(0.52 0.22 27)`), and `@theme inline` maps them to Tailwind color tokens (`--color-primary: var(--primary)`). If a brand-polish change writes literal OKLCH values directly into `@theme inline` instead of keeping them as `var(--*)` references, the runtime dark-mode override on `.dark` no longer reaches the generated utilities. The crimson updates in light mode; dark mode keeps the old value because the `var()` chain is severed.
+### Pitfall 1: ActiveOrder keyed solely by tableId becomes invalid on merge
 
-**Why it happens:**
-Developers copy an OKLCH value from a color picker and paste it directly into `@theme inline` for convenience. In Tailwind 4, `@theme inline` generates utilities that resolve at build time — not at CSS variable runtime. The `:root` / `.dark` swap only works when the utility references a CSS custom property via `var()`.
+**What goes wrong:** The entire `order.store` is `Record<string, ActiveOrder>` where the key is `tableId`. Every action (`addItem`, `sendRound`, `voidItem`, `editItem`, `removeItem`) takes `tableId` as the primary key. The payment page resolves its order via `useParams<{ tableId: string }>()` then `getOrder(tableId)`. When two tables merge their bills, you need a single order that spans two tableIds. Naively copying items from table B into table A's order loses the association -- table B's tile still shows "Occupied" with an `orderStage` but its order data now lives under table A. Worse, navigating to `/payment/B` returns "No order data found" because `orders[B]` was deleted or emptied.
 
-**How to avoid:**
-Never write literal OKLCH values in `@theme inline`. Change brand values only in `:root` and `.dark` blocks. The `@theme inline` section must always say `--color-primary: var(--primary)` — not `--color-primary: oklch(0.52 0.22 27)`. After every token change, toggle dark mode in the browser and confirm the color changes.
+**Why it happens:** The 1:1 relationship between `tableId` and `ActiveOrder` is the foundational assumption of the store. It was correct for v1.0/v1.1 where every table has exactly one order. Merge breaks this assumption at every layer.
 
-**Warning signs:**
-- Primary buttons look correct in light mode but use the wrong shade in dark mode.
-- Toggling the theme switch shows no color change on primary-colored elements.
-- DevTools computed value for `--color-primary` shows a literal OKLCH string rather than a resolved variable reference.
+**Consequences:**
+- Payment page for merged table B shows empty state
+- `handleConfirmPayment` only calls `markCleaning(tableId)` for one table, leaving merged tables in incorrect status
+- KDS tickets reference a single `tableId` -- kitchen sees two separate tickets for what staff considers one party
+- If you duplicate the order under both keys to "fix" routing, confirming payment on one does not settle the other
 
-**Phase to address:** Phase 1 (Token Refresh) — establish the rule before touching any value.
+**Prevention:**
+- Introduce an `orderId` as the primary key, decoupled from `tableId`. `ActiveOrder` gains `tableIds: string[]`. The `orders` record becomes `Record<orderId, ActiveOrder>`. A lookup index `tableToOrder: Record<tableId, orderId>` provides O(1) access from the table-centric UI.
+- The payment route should resolve via the lookup index: `tableId -> orderId -> order`.
+- All existing store actions remain `tableId`-first for the UI layer but internally resolve to `orderId`. This preserves backward compatibility.
+- **This is the single most important data model change. Do it before building any merge/split UI.**
 
----
+**Detection:** If your merge implementation copies items between two `orders[tableId]` entries rather than linking them to a shared order, you have this bug.
 
-### Pitfall 2: OKLCH Chroma Exceeds sRGB Gamut, Causing Silent Browser Clipping
-
-**What goes wrong:**
-The existing `--primary` is `oklch(0.52 0.22 27)` — chroma 0.22 is near the sRGB gamut boundary for red hues (approximately 0.22–0.23 at L=0.52). Pushing "bolder" by raising chroma to 0.25+ produces an out-of-gamut color on non-P3 displays. Browsers silently clip it to the nearest in-gamut sRGB equivalent, which may differ in hue and saturation from the intended value. The design looks one way in a P3-capable browser (Safari on M-series Mac) and differently on the stakeholder's Windows machine — the exact device used for final sign-off.
-
-**Why it happens:**
-OKLCH's gamut is not a uniform shape. The chroma ceiling for red (hue ~27) at L=0.52 is ~0.23 in sRGB. Design tools that display OKLCH values may not warn about gamut exceedance. Designers push chroma for vibrancy without a gamut check.
-
-**How to avoid:**
-Use the OKLCH gamut-check tool at oklch.com to plot all new token values before committing. The point must fall inside the sRGB gamut triangle. For dark-mode primary `oklch(0.63 0.22 27)`, verify the higher L value does not push chroma past the sRGB ceiling at that lightness. Safe rule: if changing chroma, verify on oklch.com; do not rely on a wide-gamut monitor to catch this.
-
-**Warning signs:**
-- A color looks vivid in Chrome/Safari on Mac but washed-out or hue-shifted on Windows Chrome.
-- DevTools shows the browser's computed `color` value differs from the declared OKLCH literal.
-- The plotted point on oklch.com's sRGB triangle sits outside or on the boundary.
-
-**Phase to address:** Phase 1 (Token Refresh) — verify every new token against sRGB gamut before applying.
+**Phase:** Must be addressed in the very first implementation phase, before any UI work.
 
 ---
 
-### Pitfall 3: Hardcoded Tailwind Palette Classes Bypass the Token System and Are Dark-Mode Blind
+### Pitfall 2: Split bill without a persistent "sub-bill" entity creates rounding errors and lost partial payments
 
-**What goes wrong:**
-Status color logic in `TableTile.tsx`, timer urgency logic in `KdsTicketCard.tsx`, and the shift-open lock banner in `AppSidebar.tsx` all use hardcoded Tailwind palette classes: `border-l-green-500`, `text-red-600`, `bg-amber-50`, `bg-green-600`, `text-amber-700`. These classes are not connected to any CSS custom property. When the brand token values change, or when dark mode is active, these palette classes do not adapt. The KDS BUMP button (`bg-green-600 ring-2 ring-green-400`) becomes visually jarring against a refined dark card surface. The sidebar lock banner (`bg-amber-50 border-amber-200`) becomes nearly invisible in dark mode because `amber-50` is almost white.
+**What goes wrong:** Splitting a bill by doing `grandTotal / N` in the payment component (local React state, no store representation) causes multiple failures:
+1. **Rounding:** 350 / 3 = 116.667. `Math.round` gives 117 * 3 = 351. Who absorbs the extra baht? `Math.floor` gives 116 * 3 = 348, losing 2 baht.
+2. **Partial payment loss:** If guest 1 pays their split and the staff navigates away (route change destroys React state), the payment status is lost -- Zustand has no split data, and the `persist` middleware cannot save what was never in the store.
+3. **Per-seat split with no seat field:** `OrderLineItem` has no `seatNumber`. Items cannot be assigned to guests.
+4. **VAT ambiguity:** Splitting before or after VAT calculation produces different numbers.
 
-**Why it happens:**
-Status indicators are added with semantic intent ("green = available") using raw palette because there is no `--color-status-open` token. This is fast and works well in light-mode-only development. The problem only surfaces when dark mode is tested or when a brand pass introduces new surface colors that create contrast clashes.
+**Why it happens:** The current payment page computes `subtotal`, `vatAmount`, `grandTotal` entirely in `useMemo` with local `useState` for `couponAmount`, `cashReceived`, etc. There is zero store-level concept of partial payment or bill portions.
 
-**How to avoid:**
-Before the brand polish pass, grep `src/` for raw Tailwind palette classes that carry semantic meaning. Decide on one of two approaches: (a) introduce `--color-status-*` semantic tokens in `:root` / `.dark` and map through `@theme inline` — more scalable but requires touching `globals.css`; or (b) add `dark:` variants explicitly to each hardcoded class — faster for a wireframe. Either approach must be applied consistently across all instances of each semantic color. Do not mix (a) and (b) for the same semantic concept.
+**Consequences:**
+- Cannot resume a partially-paid split bill after navigating away
+- Staff cannot see which splits are settled and which are outstanding
+- Per-seat assignment is a UI-only illusion with no data backing
+- Receipt for each split guest requires ad-hoc math
 
-**Warning signs:**
-- Status badges and BUMP button look dramatically different brightness between light and dark mode.
-- Brand audit in dark mode reveals green/amber elements that appear neon or nearly invisible against the refined palette.
-- `grep -r "text-green-\|bg-amber-\|border-l-red-\|bg-green-" src/` returns more than 5 files.
+**Prevention:**
+- Create a `BillSplit` type in the store:
+  ```typescript
+  interface SplitPortion {
+    portionId: string
+    guestLabel: string       // "Guest 1", "Guest 2", or seat name
+    lineIds: string[] | null // null = equal split, string[] = per-seat
+    amount: number
+    vatAmount: number
+    status: 'unpaid' | 'paid'
+    paymentMethod: PaymentMethod | null
+  }
+  interface BillSplit {
+    splitId: string
+    orderId: string
+    type: 'equal' | 'per-seat'
+    portions: SplitPortion[]
+  }
+  ```
+- Equal split rounding: use `Math.floor(grandTotal / N)` for all portions except the last, which gets `grandTotal - (floor * (N-1))`. This is the standard POS pattern -- the last guest absorbs the rounding difference (always 0 to N-1 satang).
+- Persist `BillSplit` in the order store so partial payment survives navigation.
 
-**Phase to address:** Phase 1 (Token Refresh) — audit and catalogue all hardcoded palette usage. Phase 2 (Component Polish) — fix during component redesign.
+**Detection:** If your split logic lives entirely in the payment page component state (`useState`), you have this bug.
 
----
-
-### Pitfall 4: CVA Base Class Additions During Polish Silently Override Call-Site `className` Props
-
-**What goes wrong:**
-Button and Badge are CVA-based components using `cn(buttonVariants({ variant, size, className }))`. `tailwind-merge` resolves conflicts by keeping the last class controlling each CSS property. When `TicketPanel.tsx` passes `className="h-11 px-5"` on `<Button>`, this correctly overrides the variant's `h-8`. However, if the brand polish pass adds `font-bold` to the CVA base string while the call site passes `font-semibold`, `tailwind-merge` picks `font-bold` (last wins by property group) and silently drops the caller's intent. This is invisible at the TypeScript level and only manifests as a visual regression that is easy to miss in review.
-
-**Why it happens:**
-Adding a new utility class to a shared CVA base feels like a safe system-wide change. Developers do not think to check all call sites for conflicting props on the same CSS property because the component still compiles and renders.
-
-**How to avoid:**
-When adding any class to a CVA base string during polish, grep all call sites of that component for `className` props containing utilities in the same CSS property group (font weight, height, padding, color, border). If a conflict exists, use a CVA variant instead of a base class modification. Example: add a `weight` variant (`bold: "font-bold"`) rather than hardcoding `font-bold` in the base.
-
-**Warning signs:**
-- Removing a `className` prop from a call site makes no visual difference — the prop was silently overridden.
-- A new CVA base class looks correct in isolation but overrides existing call-site intent on specific screens.
-- Grepping call sites after a CVA base change reveals the same CSS property appearing in both the base and a `className` prop.
-
-**Phase to address:** Phase 2 (Component Polish) — every CVA base change must be accompanied by a grep of all call sites.
-
----
-
-### Pitfall 5: Sonner `<Toaster>` Does Not Inherit Dark Mode from the `html.dark` Class Without Explicit Configuration
-
-**What goes wrong:**
-The v1.1 goal is to mount `<Toaster>` in `AppShell`. Sonner's `<Toaster>` has its own `theme` prop (`"light" | "dark" | "system"`). Without this prop it defaults to `"light"`, rendering toasts with a white background even when the rest of the app is in dark mode. Sonner's toast portal is injected at the document body level and may appear outside the `.dark` ancestor scope that `@custom-variant dark (&:where(.dark, .dark *))` relies on — making the `dark:` utilities in Sonner's built-in styles inactive.
-
-**Why it happens:**
-Developers mount `<Toaster />` without reading the next-themes `resolvedTheme` value because the component looks correct during light-mode development. Dark mode is only tested afterward, sometimes never during a wireframe project.
-
-**How to avoid:**
-Pass the resolved theme explicitly: `<Toaster theme={resolvedTheme as "light" | "dark" | "system"} />`. Use `useTheme()` from `next-themes` to read `resolvedTheme` in the component that mounts `<Toaster>`. Do not use `theme="system"` — this reads `prefers-color-scheme` from the OS and can desynchronize from the manual toggle in `ThemeToggle`. The explicit `resolvedTheme` pass is the correct approach for a next-themes-controlled dark mode.
-
-**Warning signs:**
-- Toasts appear with a white background in dark mode.
-- Toggling the theme switch does not change toast appearance without a page reload.
-- Sonner's built-in `dark:` classes are present in the rendered DOM but have no effect.
-
-**Phase to address:** Phase 1 (Bug Fixes) — mount `<Toaster>` with the correct `theme` prop from the start. Do not add it as a follow-up.
+**Phase:** Must be designed alongside the orderId refactor. UI can come later, but the data model must be settled first.
 
 ---
 
-### Pitfall 6: Changing `--radius` or `--font-sans` Globally Changes Every Component Simultaneously
+### Pitfall 3: Order tracking status desync between table.store and kds.store
 
-**What goes wrong:**
-`@theme inline` maps `--radius-sm` through `--radius-4xl` from the single `--radius: 0.625rem` base using `calc()`. Button sm/xs sizes use `rounded-[min(var(--radius-md),12px)]`. Badge uses `rounded-4xl`. KDS cards use `rounded-lg`. Dialog and Select use derived radius tokens in their shadcn/ui internals. Changing `--radius` from `0.625rem` to `0.75rem` for "punchier" brand expression simultaneously changes the shape of 30+ components across 8 route paths. Similarly, prepending a display typeface to `--font-sans` changes every body text element globally — including the PIN numpad, manager tab labels, and payment receipt text.
+**What goes wrong:** The app has two independent sources of truth for order progress:
+- `table.store` has `orderStage: OrderStage | null` per table (Ordered / Cooking / Ready / Served / Billed)
+- `kds.store` has `KdsTicket.stage` per ticket (New / InProgress / Ready)
 
-**Why it happens:**
-Global tokens are powerful precisely because they cascade everywhere. During a brand polish pass, the temptation is to make one global change and see the entire UI update. The problem is "the entire UI" is larger than expected after 5,583 LOC.
+These are **never automatically synchronized**. `orderStage` is set manually via `updateTable()` and `markServed()`. KDS stage advances via `bumpTicket()`. Adding "digital order tracking" that shows live stage badges on table tiles requires these to agree -- but they are structurally independent stores with no event bridge.
 
-**How to avoid:**
-For radius changes: Rather than changing `--radius`, add targeted `rounded-*` overrides directly to the specific component's CVA base or via a scoped CSS rule. Only change `--radius` if the intent is a true global radius shift, and budget time to review all 8 route paths. For typography: Introduce a `--font-display` token and apply it only to heading elements that need it. Never replace `--font-sans` with a display typeface — it will break Thai/Japanese script rendering which requires `Noto Sans Thai` / `Noto Sans JP` as font-stack fallbacks.
+**Why it happens:** The KDS store was intentionally designed without `persist` (to avoid polluting floor data with demo tickets). The table store's `orderStage` was designed as a manual staff-set field. There is no pub/sub or event system connecting the two.
 
-**Warning signs:**
-- After changing `--radius`, Dialogs, Selects, Badges, and KDS cards all change shape together.
-- After changing `--font-sans`, all body labels shift appearance including the KDS timer and PIN numpad.
-- Thai and Japanese characters (menu item names, table labels) render with incorrect font-stack after a `--font-sans` change.
+**Consequences:**
+- Kitchen bumps a ticket to "Ready" but the table tile still shows "Cooking" until staff manually calls `updateTable`
+- Per-item timeline requires knowing when each item changed stage, but neither store tracks stage transition timestamps
+- Multi-round orders (ramen + add-on rounds) mean one table can have items at different stages simultaneously, but `orderStage` is a **single value** per table -- which stage does it show?
 
-**Phase to address:** Phase 1 (Token Refresh) — document which tokens are safe for global change vs. which require scoped application before any edits are made.
+**Prevention:**
+- **Sync on action:** When `bumpTicket()` is called, also dispatch `updateTable(tableId, { orderStage: mappedStage })`. Map KDS stages: New -> Ordered, InProgress -> Cooking, Ready -> Ready. This is pragmatic for a wireframe -- no event bus needed, just call both stores in the component's click handler.
+- **Multi-item resolution:** When a table has items at different stages, the tile badge should show the "furthest behind" stage. If 3 items are Ready but 1 is Cooking, the table shows "Cooking." This is the standard restaurant POS convention (the table is not ready until everything is ready).
+- **Per-item history:** Add `stageHistory: Array<{ stage: string; at: number }>` to `OrderLineItem`. Append an entry each time the item's stage changes. Keep entries minimal (2 fields per transition) to avoid localStorage bloat.
+- **Do NOT try to derive table stage from KDS state at render time** -- KDS tickets get removed when bumped past Ready, so the historical data is lost.
 
----
+**Detection:** If bumping a ticket on KDS does not change anything on the table map, you have this desync.
 
-### Pitfall 7: Line-Height Changes Break Thai and Japanese Script Rendering
-
-**What goes wrong:**
-The project loads three Google Fonts: Inter, Noto Sans JP, and Noto Sans Thai. Adding `leading-tight` globally to improve visual density — a common brand-polish move — clips Thai descenders and stacks Japanese characters awkwardly. Thai script has tonal marks and vowel symbols that extend significantly above and below the baseline. A `line-height` below 1.5 for Thai text causes visual overlap between lines.
-
-**Why it happens:**
-Designers set line-height for Latin text readability, then apply it globally without testing multilingual content. The POS has Thai content throughout (menu item names, table labels, manager notes) that is easy to miss when developing in English.
-
-**How to avoid:**
-Never set `leading-tight` or any `line-height < 1.5` globally via `@layer base` or a body rule. Apply tighter leading only to specific elements that are guaranteed to render Latin text only: currency amounts (`text-xl font-bold` price fields), section headers like "New Items" / "Round 1". Test any leading change by rendering an actual Thai-language menu item name and checking for clipping.
-
-**Warning signs:**
-- Thai vowel marks (sara, mai, wunagu) visually overlap with the line above after a line-height change.
-- Japanese characters appear cramped or overlapping in multi-line contexts.
-- The effect is invisible during English-only development and only appears with real menu data.
-
-**Phase to address:** Phase 2 (Typography Hierarchy) — apply leading only to scoped Latin-only elements.
+**Phase:** Order tracking phase. Must decide the sync mechanism before building the table tile badge UI.
 
 ---
 
-## Technical Debt Patterns
+### Pitfall 4: Merge bill without provenance tracking makes unmerge impossible
 
-Shortcuts that seem reasonable but create long-term problems.
+**What goes wrong:** Once orders from table A and B are merged into a single order, there is no clean way to unmerge if the staff made a mistake. Items from table B are now mixed into table A's rounds. Which items were originally from B? Without provenance tracking, unmerge requires the staff to void the merged order and re-enter everything manually.
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Hardcoded palette classes for status colors (`text-green-600`, `border-l-red-500`) | Fast semantic clarity | Does not adapt to dark mode; breaks if brand palette shifts; bypasses token system | v1.0 wireframe only; must be resolved before stakeholder dark-mode demo |
-| Inline `className` overrides on Button instances (`h-11 px-5`) instead of CVA variants | One-off sizing without touching shared code | Silent merge conflicts when CVA base is later modified | One-off instances; never for patterns repeated 3+ times across the codebase |
-| `font-bold` vs `font-semibold` scattered inconsistently across same text roles | Quick visual hierarchy decisions | Typography hierarchy breaks under a global font weight audit; hard to normalize | Never — lock a role-to-weight map during the polish phase |
-| `opacity-30` / `opacity-40` for disabled/empty states with no shared token | Rapid implementation | Muted states look different brightness in dark mode depending on the background surface | v1.0 wireframe only; define a shared muted-state pattern during polish |
-| `bg-muted/30` on KDS card header as a surface treatment | Avoids over-engineering | Opacity over dark backgrounds produces different effective colors than intended; check contrast | Acceptable for v1.0; verify contrast ratio during dark-mode polish pass |
+**Why it happens:** Merge is conceptually simple (combine two item lists). But the `OrderRound` structure groups items by send-time, not by origin table. After merge, the round boundaries reflect chronological order across both tables, not table identity.
 
----
+**Consequences:**
+- Staff error on merge (wrong table) requires full manual re-entry during active service
+- Manager void + re-entry creates orphaned records in payment/table history
+- Customer frustration from the delay
 
-## Integration Gotchas
+**Prevention:**
+- Every `OrderRound` should retain an `originTableId` field. When merging, rounds from table B keep `originTableId: 'B'`. Unmerge = filter rounds by `originTableId`, create a new order for the departing table, move matching rounds, update the lookup index.
+- Alternatively, tag at the `OrderLineItem` level with `originTableId`. This is more granular but also more complex. Round-level is sufficient for v1.2.
+- Do NOT allow merge of tables that are in different payment states (e.g., one already has a partially-paid split).
 
-Common mistakes when connecting the styling system to external components.
+**Detection:** If your merge implementation flattens all items into new rounds without preserving origin, unmerge will require a rewrite.
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| Sonner `<Toaster>` | Mount without `theme` prop; toasts default to light regardless of app theme | Pass `theme={resolvedTheme}` from `useTheme()` from next-themes; verify by toggling dark mode and firing a toast |
-| next-themes `ThemeProvider` | Removing `suppressHydrationWarning` from `<html>` during a layout refactor | `suppressHydrationWarning` is already present in `layout.tsx` and must be retained — next-themes modifies the html element's `class` attribute server-to-client |
-| Base UI dialog portals | Assuming portal inherits `.dark` class from ancestor tree automatically | Base UI and Sonner portals mount at the document body level; they inherit `.dark` only if the `<html>` element carries the class, which next-themes (attribute="class") correctly provides — do not move the `ThemeProvider` below the body level |
-| Tailwind 4 `@theme inline` | Writing literal OKLCH values instead of `var()` references | Always `var(--token-name)` in `@theme inline`; write actual OKLCH values only in `:root` and `.dark` |
-| Solar icons in STATUS_CONFIG | Hardcoding icon `size` as a pixel integer in the config object | Already using `size={12}` / `size={18}` consistently — do not change to dynamic sizing without updating all call sites |
+**Phase:** Same phase as merge bill. Design the data model to support both directions from day one.
 
 ---
 
-## Performance Traps
+## Moderate Pitfalls
 
-In a browser wireframe, "performance" during a polish pass means development velocity and review accuracy, not runtime performance.
+### Pitfall 5: Payment page hardcoded to single-table, single-payer flow
 
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| Changing a global CSS variable and checking all screens by eye only | Missing one screen; stakeholder finds the regression | Enumerate all 8 route paths as a checklist; check each one after every global token change | Every global token change |
-| Template literal class construction for conditional styles | Tailwind JIT fails to detect dynamically constructed class names; classes disappear from compiled CSS | `STATUS_CONFIG` in `TableTile.tsx` already uses the correct full-class-name constant map pattern — do not change to template literals during polish | Any time dynamic class string construction is introduced |
-| Adding `transition-all` to elements with OKLCH color changes | Janky animation on tablet; transitions trigger on layout properties | Use `transition-colors` for color-only; `transition-transform` for scale; never `transition-all` on interactive POS elements | During fast, repeated tablet interactions |
-| Adding `font-bold` or heavier font weights to Google Font declarations without updating the `weight` array in `layout.tsx` | The bold weight silently falls back to the next available weight; the intended visual impact does not appear | When adding a new font weight to a component, verify the weight is declared in the `Noto_Sans_Thai`, `Noto_Sans_JP`, or `Inter` config in `layout.tsx` | Any new font weight reference in the codebase |
+**What goes wrong:** The current `PaymentPage` at `/payment/[tableId]/page.tsx` is built around one flow: one table, one total, one payment method, one confirmation. Split bill requires multiple totals, multiple payment selections (one per portion), multiple confirm actions, and a "partially paid" intermediate state. Merge bill requires the page to work for orders spanning multiple tables. Bolting these onto the existing 228-line component creates an unmanageable state machine.
 
----
+**Specific code issues:**
+- `billItems` is derived from `order.rounds.flatMap(r => r.items)` -- no concept of portions
+- `handleConfirmPayment` calls `markCleaning(tableId)` for a single table
+- `paymentMethod` is a single `useState` -- split needs one per portion
+- `viewState` is binary (`'payment' | 'receipt'`) -- split needs a per-portion flow
 
-## UX Pitfalls
+**Prevention:**
+- Refactor the payment page to be order-driven (resolve orderId from tableId).
+- Extract bill calculation into a shared utility: `calculateBill(items) -> { subtotal, vat, total }`. Both full-bill and split-portion views need this.
+- Build split as a separate mode/sub-route within the payment flow, not as conditional branches in the existing component.
+- Keep the "full bill" path working unchanged. Split is opt-in, activated from the existing placeholder button.
 
-Common user experience mistakes during a brand polish pass on a POS interface.
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Increasing primary button font size for visual boldness | May break the 44px touch target if height is not also adjusted; text can overflow on short button labels | Increase weight (`font-extrabold`) and letter-spacing (`tracking-wide`) instead of font-size to add character without changing layout |
-| Using crimson fill at L < 0.45 for primary button background | White foreground text contrast drops below 4.5:1 — WCAG AA failure on a POS device that must be readable at arm's length under restaurant lighting | Stay at L ≥ 0.48 for primary fill backgrounds; current `oklch(0.52 0.22 27)` is safe; verify any change with a contrast checker |
-| Animating status badge transitions between table states | Distracts staff reading the floor map during active service; animated changes create motion noise | Keep status badge updates instant; reserve CSS transitions for user-initiated interactions like button press or sheet open |
-| Making destructive (void) buttons more visually prominent during polish | Increases risk of accidental void taps on a touchscreen POS | Destructive actions must be visually distinct but not dominant; use outline/ghost style with destructive color, not filled primary-weight style |
-| Applying `leading-tight` globally to improve typographic density | Thai tonal marks and Japanese characters clip or overlap with adjacent lines | Apply tight leading only to confirmed Latin-only contexts: price fields, section counters, Latin-only labels |
+**Phase:** Payment refactoring should happen after the data model phase but before split UI.
 
 ---
 
-## "Looks Done But Isn't" Checklist
+### Pitfall 6: Per-seat split requires seat identity that does not exist in the data model
 
-Things that appear complete in light mode or in isolation but have hidden failures.
+**What goes wrong:** "Split by seat" implies each guest has a seat number and items are assigned to seats. But `OrderLineItem` has no `seatNumber` field. The `guestCount` on `TableRecord` is just a number (captured at table open), not a list of seat identifiers.
 
-- [ ] **Token dark mode pair:** Every new OKLCH token in `:root` must have a corresponding value in `.dark` — the dark-mode value is the one most often forgotten.
-- [ ] **Toaster dark mode:** After mounting `<Toaster>`, fire a `toast()` call in dark mode — background must be dark, not white.
-- [ ] **Sidebar lock banner:** The shift-not-open banner uses `bg-amber-50 border-amber-200 text-amber-700` with no `dark:` variant — must be checked in dark mode; currently near-invisible against a dark background.
-- [ ] **Table status colors in dark mode:** `text-green-600`, `text-red-600`, `text-blue-600`, `text-amber-600` in `TableTile.tsx` — check contrast against the dark card background for each status.
-- [ ] **KDS BUMP button in dark mode:** `bg-green-600 ring-2 ring-green-400` in `KdsTicketCard.tsx` — check whether the green ring appears garish against a refined dark card in the new brand.
-- [ ] **Touch targets:** After any button height change, measure rendered height in DevTools — all primary CTAs (Send to Kitchen, BUMP, payment confirm) must remain ≥ 44px.
-- [ ] **Font weight loading:** After referencing a new font weight, verify it is listed in the `weight` array of the appropriate `next/font/google` config in `layout.tsx`.
-- [ ] **Dialog and Select radius:** After any `--radius` token change, open the Manager PIN modal (Dialog) and the Branch selector (Select in ShiftOpen) to confirm shape changes are acceptable.
-- [ ] **`@theme inline` chain integrity:** After any token change, open DevTools and inspect the computed `--color-primary` value — it should resolve to an OKLCH color, not show `var(--primary)` as an unresolved string.
-- [ ] **Thai/Japanese text rendering:** After any `leading-*` change, render a Thai-language menu item name and confirm no character clipping.
+**Prevention:**
+- Add optional `seatNumber: number | null` to `OrderLineItem`. Items without a seat are "shared" and split equally across all seats in per-seat mode.
+- Seat assignment happens at the split screen (drag/tap items to seat columns), not during order entry. This avoids changing the ordering workflow.
+- Define seats as `1..guestCount` derived from the table's `guestCount`. No need for a separate seat entity.
+- If `guestCount` was not set (legacy tables opened before v1.1), prompt for guest count before allowing per-seat split.
+
+**Phase:** Split bill UI phase. The `seatNumber` field can be added to the type early, with assignment UI built later.
 
 ---
 
-## Recovery Strategies
+### Pitfall 7: Zustand persist with growing order data risks localStorage bloat and serialization bugs
 
-When pitfalls occur despite prevention, how to recover.
+**What goes wrong:** The order store uses `persist` middleware with `localStorage`. Adding `stageHistory`, `originTableId`, `seatNumber`, and `BillSplit` structures increases the serialized payload per order. A busy service with 20 tables and multi-round orders could accumulate significant data. Additionally, `kds.store` uses `Set<string>` for `checkedItems`, which does not serialize to JSON natively (`JSON.stringify(new Set(['a'])) === '{}' `).
 
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| OKLCH chroma exceeds sRGB gamut | LOW | Open oklch.com, reduce chroma until point is inside the sRGB triangle, update `:root` and `.dark`, re-verify across displays |
-| `@theme inline` literal value severs dark mode chain | LOW | Replace literal with `var(--token-name)` in `@theme inline`; confirm corresponding property exists in `.dark`; hard-refresh browser to clear Tailwind dev cache |
-| Global `--radius` change reshaped all components unexpectedly | MEDIUM | Revert `--radius` in `globals.css`; apply the targeted radius change directly to the specific component's CVA base string instead |
-| Sonner `<Toaster>` renders wrong theme | LOW | Add `theme={resolvedTheme}` prop; use `useTheme()` from next-themes to read `resolvedTheme`; verify by toggling dark mode and firing a toast |
-| Hardcoded palette classes fail contrast in dark mode | MEDIUM | Grep all instances; apply `dark:` variants consistently across all matching components; or introduce semantic tokens in `:root` / `.dark` if the same semantic color appears in 5+ places |
-| `leading-tight` applied globally clips Thai text | LOW | Remove the global leading rule from `@layer base`; re-apply `leading-tight` only to scoped Latin-only selectors |
-| New font weight referenced in a component but missing from `layout.tsx` weight array | LOW | Add the weight string to the corresponding font config object in `layout.tsx`; Next.js will reload with the correct weight |
+**Prevention:**
+- Keep `stageHistory` arrays short (2-3 fields per entry, typically 3-5 transitions per item).
+- Clear completed orders from the store after payment confirmation + a short grace period for receipt reprint. Currently, orders are never cleaned up.
+- The KDS store correctly avoids `persist` already -- do not add persist to it for tracking purposes.
+- If adding persist to any new structure, use Zustand's `partialize` option to exclude transient computed fields.
+- Test serialization by calling `JSON.parse(JSON.stringify(state))` on any new data structure that will be persisted.
+
+**Phase:** Ongoing concern. Set cleanup policy in the data model phase.
 
 ---
 
-## Pitfall-to-Phase Mapping
+### Pitfall 8: Table tile badge shows stale orderStage after merge
 
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| `@theme inline` literal vs `var()` chain | Phase 1: Token Refresh | DevTools computed value shows resolved color, not an unresolved `var()` string |
-| OKLCH gamut exceedance | Phase 1: Token Refresh | All new tokens plotted on oklch.com and confirmed inside sRGB triangle |
-| Hardcoded palette classes — audit | Phase 1: Token Refresh | `grep -r "text-green-\|bg-amber-\|border-l-" src/` catalogued and plan decided |
-| Hardcoded palette classes — fix | Phase 2: Component Polish | Each hardcoded semantic color has either a `dark:` variant or a semantic token; visual check in dark mode per component |
-| CVA base class conflict with call-site props | Phase 2: Component Polish | After each CVA base change, grep call sites; no silent property conflicts |
-| Sonner `theme` prop missing | Phase 1: Bug Fixes | Mount Toaster, toggle dark mode, fire toast, verify background color matches theme |
-| Global radius blast radius | Phase 1: Token Refresh | After any `--radius` change, open all 8 route paths; screenshot before/after |
-| Touch target regression | Phase 2: Component Polish | DevTools measured height ≥ 44px on all primary CTAs after any padding/size change |
-| Thai/JP line-height clipping | Phase 2: Typography Hierarchy | Render Thai menu item name after any `leading-` change; confirm no descender clipping |
-| Sidebar lock banner dark mode | Phase 2: Component Polish | Open with shift closed, toggle dark mode, verify banner is readable |
-| Font weight not loaded | Phase 2: Typography Hierarchy | Check `layout.tsx` `weight` array includes any new weight after referencing it in a component |
+**What goes wrong:** When table B merges into table A, table B's `orderStage` field might still show "Cooking" even though its items are now tracked under table A's order. The `TableTile` component renders `table.orderStage` unconditionally (line 67-70 of `TableTile.tsx`). It does not check whether the table still has an active order.
+
+**Prevention:**
+- When merging, explicitly set the secondary table's `orderStage` to `null` and decide its table status:
+  - Option A: Set status back to "Open" (table is physically vacated because guests moved).
+  - Option B: Keep "Occupied" but add a visual "Merged into T3" indicator.
+- The table tile should conditionally show the stage badge only when the table has an active order in the lookup index.
+
+**Phase:** Merge bill implementation phase.
+
+---
+
+### Pitfall 9: KDS ticket labels become misleading after merge
+
+**What goes wrong:** `KdsTicket` has `tableId` and `tableLabel` fields. After merge, the kitchen still sees "Table B" on tickets that the front-of-house considers part of table A's order. The kitchen prepares the food, calls out "Table B ready!" but the food should go to table A's service hatch.
+
+**Prevention:**
+- When merging, update existing KDS tickets for the secondary table to show the primary table label (e.g., "T5 (was T3)") or add a note field.
+- New tickets created after merge should use the primary table's label.
+- Add `orderId` to `KdsTicket` so the kitchen can track by order rather than by table alone.
+
+**Phase:** Merge bill phase, concurrent with KDS linkage work.
+
+---
+
+## Minor Pitfalls
+
+### Pitfall 10: Coupon applied to full bill then split -- discount distribution unclear
+
+**What goes wrong:** If a coupon discount is applied to the full bill and then the bill is split, which portion gets the discount? Equal split can divide it proportionally, but per-seat split creates ambiguity if only one guest's items benefited from the coupon.
+
+**Prevention:** Apply coupon to the full bill total before splitting. Each portion reflects a proportional share of the discount. Document this as a business rule. Do not allow coupons to be applied to individual split portions in v1.2. This matches how most POS systems handle the edge case.
+
+**Phase:** Split bill UI phase. Business rule decision, not technical complexity.
+
+---
+
+### Pitfall 11: "Unsplit" after partial payment is a state machine trap
+
+**What goes wrong:** If 2 of 4 split portions are paid and staff wants to unsplit (recombine into a single bill), the system must handle the already-paid portions. Refund them? Keep them as credits? This edge case has no clean answer and real POS systems handle it differently.
+
+**Prevention:** For v1.2 wireframe: **disable unsplit once any portion has been paid.** Show a message: "Cannot unsplit -- 2 of 4 portions already paid. Complete remaining payments or void split." This is the simplest correct behavior. Production POS can add refund-and-recombine later.
+
+**Phase:** Split bill UI phase. Constraint decision, not complex implementation.
+
+---
+
+### Pitfall 12: Order tracking timeline assumes linear stage progression but real orders are not linear
+
+**What goes wrong:** The stage sequence Ordered -> Cooking -> Ready -> Served assumes each item moves forward in a straight line. But items can be recalled (Ready -> back to InProgress in the KDS), voided mid-cooking, or partially served (3 of 4 bowls delivered). A linear timeline UI breaks when stages go backwards or skip.
+
+**Prevention:**
+- The `stageHistory` array naturally handles non-linear progression (it is append-only, so a recall just adds a new entry with the earlier stage).
+- The timeline UI should render all entries chronologically, not assume forward-only movement.
+- For the wireframe, a recall is visually shown as a step backward in the timeline -- no special handling needed if the data model is append-only.
+
+**Phase:** Order tracking UI phase.
+
+---
+
+## Phase-Specific Warnings
+
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Data model refactor (orderId decoupling) | Breaking every existing store action that takes `tableId` as the order key | Create the `tableToOrder` lookup index first. Update actions to resolve through it. Keep `tableId` as the access pattern in the UI layer. Run existing payment flow end-to-end after refactor to verify no regressions. |
+| Split bill (equal) | Rounding errors in division, partial payment lost on navigation | Use floor division + remainder-on-last pattern. Persist `BillSplit` in store, not in component state. |
+| Split bill (per-seat) | No seat identity on existing items, retroactive assignment awkward | Add optional `seatNumber` to `OrderLineItem`. Assign at split-time, not order-time. |
+| Merge bill | Losing item provenance (originTableId), secondary table stuck in wrong status | Tag rounds with `originTableId` on merge. Clean up secondary table status immediately. |
+| Unsplit / Unmerge | No undo path if provenance was not tracked | Design merge data model to support both directions from day one. Block unsplit after partial payment. |
+| Order tracking badges | Desync between KDS stage and table orderStage | Sync on KDS bump action. Use "worst item stage" as table-level badge. |
+| Per-item timeline | No stage transition timestamps in current OrderLineItem | Add `stageHistory` array. Keep entries minimal (stage + timestamp only) to avoid localStorage bloat. |
+| Payment page refactor | Sprawling state machine trying to handle full/split/merged in one component | Separate into modes/views. Extract bill calculation into shared utility. Keep full-bill path working unchanged. |
 
 ---
 
 ## Sources
 
-- Tailwind CSS v4 official docs, Theme variables: https://tailwindcss.com/docs/theme
-- Tailwind CSS v4 official docs, Dark mode: https://tailwindcss.com/docs/dark-mode
-- GitHub Discussion: `@theme` vs `@theme inline` semantics (v4): https://github.com/tailwindlabs/tailwindcss/discussions/18560
-- GitHub Discussion: CSS variables for dark/light mode in v4: https://github.com/tailwindlabs/tailwindcss/discussions/15083
-- GitHub Issue: Dark mode browser preference override in Tailwind v4: https://github.com/tailwindlabs/tailwindcss/discussions/17810
-- Evil Martians: OKLCH in CSS — gamut mapping, sRGB ceiling explanation: https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl
-- LogRocket: OKLCH accessibility, consistent palettes, contrast: https://blog.logrocket.com/oklch-css-consistent-accessible-color-palettes
-- Sonner styling and theming docs: https://sonner.emilkowal.ski/styling
-- Sonner Toaster component docs: https://sonner.emilkowal.ski/toaster
-- shadcn/ui Tailwind v4 integration: https://ui.shadcn.com/docs/tailwind-v4
-- Vercel Academy — Overriding Tailwind styles in shadcn components: https://vercel.com/academy/shadcn-ui/overriding-styles-with-tailwind
-- next-themes repository — suppressHydrationWarning, theme prop behavior: https://github.com/pacocoursey/next-themes
-- Paul Serban — 5 Critical shadcn/ui Pitfalls: https://www.paulserban.eu/blog/post/5-critical-shadcnui-pitfalls-that-break-production-apps-and-how-to-avoid-them/
-- Codebase direct read: `globals.css`, `button.tsx`, `badge.tsx`, `TableTile.tsx`, `KdsTicketCard.tsx`, `AppSidebar.tsx`, `TicketPanel.tsx`, `AppShell.tsx`, `layout.tsx`, `ThemeProvider.tsx`
+- Direct codebase analysis: `order.store.ts` (196 lines), `table.store.ts` (149 lines), `kds.store.ts` (155 lines), `payment/[tableId]/page.tsx` (228 lines), `TotalsSection.tsx` (109 lines), `TableTile.tsx` (75 lines)
+- Established POS domain patterns for split/merge bill handling (industry standard rounding, provenance tracking, stage synchronization)
+- Zustand persist middleware serialization behavior with complex types (Set, Map)
 
 ---
 
-*Pitfalls research for: brand polish pass on Tailwind CSS 4 + shadcn/ui + Base UI + OKLCH token system*
-*Researched: 2026-03-11*
+*Pitfalls research for: split bill, merge bill, and digital order tracking on existing POS wireframe*
+*Researched: 2026-03-12*

@@ -1,196 +1,178 @@
-# Feature Research — UI Brand Polish (v1.1)
+# Feature Landscape
 
-**Domain:** Bold & Energetic Restaurant POS — Dark-Mode UI Polish for A Ramen
-**Researched:** 2026-03-11
-**Confidence:** MEDIUM-HIGH — primary evidence from codebase audit + UI design research; competitor POS UI patterns from industry knowledge (Toast, Square, Lightspeed); web search verified for dark-mode semantics, OKLCH, badge/button design patterns.
-
----
-
-## Research Scope
-
-This file answers the v1.1 milestone question: **what UI component treatments make a restaurant POS feel "bold and energetic" vs. generic?**
-
-The focus is **four component categories**:
-1. Button design (primary CTA, icon buttons, destructive)
-2. Status badges (table state, order stage)
-3. Cards and panels (menu cards, ticket panel, KDS card, info panels)
-4. Typography and hierarchy
-
-All findings are anchored to the existing A Ramen brand tokens:
-- Primary crimson: `oklch(0.52 0.22 27)` (light) / `oklch(0.63 0.22 27)` (dark)
-- Dark mode base: `oklch(0.145 0 0)` background, `oklch(0.205 0 0)` card
-- Radius: `0.625rem` base (`--radius`)
-- Icon set: Solar (flat, linear style)
-- Font: Inter + Noto Sans Thai/JP
+**Domain:** Restaurant POS - Split Bill, Merge Bill, Digital Order Tracking (v1.2)
+**Researched:** 2026-03-12
+**Confidence:** HIGH (patterns well-established across Lightspeed, Square, Toast, MobiPOS)
 
 ---
 
-## Feature Landscape
+## Table Stakes
 
-### Table Stakes (Users Expect These)
+Features staff and stakeholders expect. Missing any of these makes the bill management feel incomplete.
 
-Features staff and stakeholders will immediately notice are missing. These are the floor of "competent POS UI" — not having them reads as unfinished or amateurish.
+### Split Bill
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Primary CTA button uses brand color at full saturation | Every premium POS (Toast, Square, Lightspeed) uses their primary brand color — not muted — for the key action. Missing this = the UI feels like a gray generic SaaS template. | LOW | Current `bg-primary` is correct; the gap is no shadow, no pressed-state depth, no 44px enforcement on CTAs |
-| Status badges use semantic color (not just border-left accent) | Staff need to read table status at a glance under bright restaurant lighting. Semantic color fill (green/amber/red/blue) in the badge chip itself — not just a border stripe — is expected in any POS floor plan. | LOW | Current TableTile uses `border-l-4` colored stripe + muted icon. Badge chip needs colored bg fill |
-| Pressed / active feedback on touch targets | Tablet POS staff tap fast and repeatedly. Active scale (`active:scale-95`, `active:scale-97`) is the tactile signal the tap registered. Missing it = the UI feels unresponsive. | LOW | Already present on MenuPanel cards (`active:scale-[0.98]`). Missing on primary Button, KDS BUMP, ticket qty stepper |
-| 44px minimum touch target on ALL interactive elements | iOS HIG and Material Design both mandate 44–48px for touch targets. POS use case (fast service, gloves possible) makes this even more critical. | LOW | Current Button `h-8` (32px) default is under spec. Send to Kitchen has `h-11` — inconsistent |
-| Consistent border-radius language | Premium POS systems use one clear radius philosophy. Mixing `rounded-lg`, `rounded-xl`, `rounded-4xl` (current badge) without a rule looks accidental. | LOW | Need to define: CTAs = `rounded-lg`, badges = `rounded-full`, cards = `rounded-xl`, modals = `rounded-2xl` |
-| Text hierarchy: 3 clear weight levels | At a glance scannable. Price > item name > modifier detail. Missing clear weight differentiation = staff reads more slowly. | LOW | Current: mix of `font-semibold`, `font-bold`, `font-medium` but not systematized. Prices are inconsistently sized |
-| Muted/disabled states visually distinct | Staff must not accidentally tap disabled actions. Opacity alone is insufficient — color shift needed. | LOW | Current `disabled:opacity-50` is the only cue. No color shift or cursor: not-allowed visibility |
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| Equal split (divide by N) | Most common split request; fast for groups of friends. Every major POS supports this. | Low | Payment screen, `guestCount` from `TableRecord` | Pre-fill N from `guestCount`; allow manual override. Display per-person amount prominently. Maximum 99 splits (Lightspeed pattern). |
+| Per-seat / per-item assignment | Expected in any dine-in POS. Lightspeed, Square, Toast all offer it. Staff assigns each item to a guest number. | Med | `OrderLineItem` needs `seatNumber` field, split state structure | Tap-to-assign UI: tap item, then tap guest number. Each assigned group becomes an independent "check." Show running subtotal per guest in real time. |
+| Independent payment per split | Each sub-bill must accept its own payment method (Cash/QR/Card). Cannot force all splits to same method. | Med | Existing `PaymentMethodSelector`, `CashPanel`, `QrPanel`, `CardPanel` | Track payment status per split: unpaid / paid. Block table close until ALL splits are paid. Reuse existing payment components -- render once per active split. |
+| VAT proportional to split | Tax must distribute correctly per sub-bill, not recalculate on the full total. Rounding errors are the #1 accounting issue with split bills. | Low | `TotalsSection` logic | Calculate VAT on each sub-bill subtotal independently. Rounding strategy: assign remainder satang to the last split so sum always equals original total. Use integer math (satang) throughout. |
+| Coupon applies before split | Staff applies coupon to the whole bill, THEN splits. This is the 90% case for casual dining. | Low | Coupon flow already built | Apply coupon BEFORE split reduces total, then divide. This avoids the question of "whose coupon is it?" Default and recommended behavior. |
 
-### Differentiators (Competitive Advantage)
+### Merge Bill
 
-Features that elevate A Ramen's POS from "competent" to "brand-distinctive." These are what make stakeholders say "this looks like our restaurant" rather than "this looks like a template."
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| Merge two tables into one bill | Party seated across tables (overflow, large group) needs single check. Standard in Lightspeed K-Series, Odoo, MobiPOS. | Med | `order.store` (combine rounds from two `ActiveOrder`s), `table.store` | Select source table, confirm merge into target. Source items append as new rounds on target order. Source table resets to Open/Cleaning. |
+| Unsplit (recombine splits back to one bill) | Staff error correction: splits created by mistake need reversal. Lightspeed and MobiPOS both support this. | Low | Split state structure | Collapse all sub-bills back into single bill. ONLY allowed if NO sub-bill has been paid yet. Once any split is paid, unsplit is blocked -- this is the universal constraint. |
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Crimson shadow / glow on primary CTA | The single highest-impact brand expression in dark mode. A `box-shadow: 0 0 12px oklch(0.63 0.22 27 / 40%)` under the "Send to Kitchen" button ties the action to the A Ramen brand viscerally. No generic POS does this. | LOW | Pure CSS — one line per button variant. Tailwind: `shadow-[0_0_12px_oklch(0.63_0.22_27/40%)]` in dark mode. Applies to primary variant only |
-| Status badges as filled pills with brand palette | Rather than bare `border-left` stripes, filled color pills (`bg-green-500/20 text-green-400 border border-green-500/30`) for each table status communicate state instantly and look intentional. Industry-standard in premium POS (Square for Restaurants uses colored tiles; Toast uses colored section headers). | LOW | Replace `border-l-4` stripe + text-color pattern in TableTile with a proper badge chip. 5 semantic colors needed: green (Open), crimson (Occupied), blue (Reserved), amber (CheckRequested), gray (Cleaning) |
-| Uppercase tracking on section labels | The `text-[10px] font-bold tracking-widest uppercase` pattern in TicketPanel is a premium typographic micro-treatment. Extending this consistently to ALL section headers (KDS card header, manager tabs, payment sections) creates a cohesive brand voice. | LOW | Currently only in TicketPanel round labels. Should be a named pattern: `label-caps` utility |
-| KDS BUMP button: full-width, high-contrast, brand green | The BUMP button is the kitchen staff's most-tapped element. Currently uses raw `bg-green-600`. Should be styled with consistent `rounded-lg`, `font-bold`, `active:scale-[0.97]`, and on-brand sizing. "Check all items" blocked state needs a visually distinct treatment (not just grayed out). | LOW | Currently a raw `<button>` with no shadcn variant. Migrate to `<Button>` variant or custom CTA pattern |
-| Card elevation tiers: 1-flat / 2-raised / 3-floating | Bold UIs use z-depth to communicate hierarchy. Flat = info display. Raised = interactive element. Floating = active/selected. In dark mode, this is achieved with background lightness steps (`--card` vs `--muted` vs explicit highlight bg), not drop shadows. | MEDIUM | Define 3 tiers: (1) `bg-card` no shadow — base display; (2) `bg-card border-primary/20 shadow-sm` — interactive hover; (3) `bg-primary/10 border-primary/40` — active/selected state |
-| Brand-colored nav active state with indicator line | Current sidebar active state is `bg-primary text-primary-foreground` (solid fill). A more refined treatment: thin left-side `border-l-2 border-primary` + `bg-primary/10 text-primary` — more energetic and modern than the flat pill. | LOW | One class change in AppSidebar. Matches Lightspeed's side-nav pattern |
-| Price as hero text in ticket/bill | The running total in TicketPanel (`text-xl font-bold`) should be `text-2xl font-black` in dark mode with brand crimson color. Price is the most important number a staff member looks at. Making it look like body text undersells the design. | LOW | Only applies to the "Total" readout in TicketPanel footer and payment totals |
-| Spice level selector with colored flame icons | Current implementation exists — this differentiator is about ensuring the flame icons use a gradient from green (1) to crimson (5), making the selector feel branded and intuitive simultaneously. | LOW | The selector exists; add color graduation: L1 `text-green-400` → L3 `text-amber-400` → L5 `text-brand-red` |
+### Digital Order Tracking
 
-### Anti-Features (Commonly Requested, Often Problematic)
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| Order stage badge on table tile | Staff needs at-a-glance status without opening each table. Industry standard on Toast, Square, Lightspeed floor plans. | Low | `TableRecord.orderStage` already exists (Ordered/Cooking/Ready/Served/Billed) | Badge already renders in `TableTile.tsx` as `variant="outline"`. Upgrade to filled color-coded badge: Ordered=blue, Cooking=amber, Ready=green, Served=gray, Billed=muted. |
+| Auto-sync stage from KDS bumps | When kitchen bumps New->InProgress->Ready on KDS, the table tile must reflect it automatically. Without this, tracking badges are stale. | Med | `kds.store` bump actions, `table.store.updateTable` | KDS `bumpTicket` must cross-store update `table.store.orderStage`. Stage mapping: KDS New = Ordered, InProgress = Cooking, Ready = Ready. Zustand cross-store call (no WebSocket needed -- same process). |
 
-Patterns that seem like "making it more bold" but create UX problems in a working POS context.
+---
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Gradient background on main app shell | "Energetic" brands use gradients. Popular on marketing sites. | Under bright restaurant lighting and on lower-quality tablet screens, gradients on backgrounds make text hard to read and create visual noise during fast-paced service. Dark flat surfaces work better for information density. | Use gradient ONLY on the login/shift-open screen (low-density, one-time view). Keep app shell backgrounds flat `--background`. |
-| Animated shimmer / glow pulse on all CTAs | Draws attention. "Feels premium." | On a working POS, continuous animation on buttons distracts staff mid-service. Animation should only appear as a response to interaction (pressed, loading), not ambient. | Use `active:scale` and `transition-transform` for pressed feedback. Reserve pulsing animation for loading states. |
-| Full crimson fill on ALL interactive surfaces | Brand consistency. | Saturated crimson everywhere destroys hierarchy — if everything is primary color, nothing is primary color. Staff can't locate the key action. | Reserve `bg-primary` fill for ONE CTA per screen (the next logical action). Secondary actions use `variant="outline"` or `variant="ghost"`. |
-| Dense icon decorations on every card | "Character" and brand energy. | Menu cards already have food photos. Adding icon decorations to every card increases visual noise and slows scan speed. | Use icons purposefully: status icons in status rows (already correct), action icons in action buttons, no decorative icons. |
-| Heavy drop shadows everywhere (neumorphism) | Depth and premium feel. | In dark mode, neumorphic shadows require light source simulation that is computationally expensive and rarely renders well on tablet GPU. Also physically inconsistent with flat Solar icon style. | Use background lightness steps for elevation, not shadows. `bg-muted/30` vs `bg-card` vs `bg-background` communicates depth without shadows. Reserve `shadow-sm` for floating panels (modifier sheet, modal). |
-| Multiple font weights (Thin, Regular, Medium, Semibold, Bold, Black) simultaneously | Rich typographic palette. | More than 3 effective weight levels on one screen creates visual noise, not hierarchy. | Limit to: `font-medium` (body/secondary), `font-semibold` (labels/item names), `font-bold` / `font-black` (prices, primary heading). That is the full hierarchy needed. |
+## Differentiators
+
+Features that elevate the wireframe beyond basic expectations. High demo impact for stakeholders.
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| Per-item timeline detail view | Tap a table tile to see each item's journey: Ordered 12:01 -> Cooking 12:05 -> Ready 12:11 -> Served 12:14. Visually impressive, shows operational intelligence. | Med | New `timestamps[]` on `OrderLineItem` or parallel tracking structure | Store timestamp per stage transition per item. Render as vertical timeline with stage icons and elapsed deltas. Strongest demo feature for stakeholders. |
+| Visual split assignment UI with color coding | Items color-coded by guest assignment (Guest 1 = blue, Guest 2 = green, etc). Running subtotal per guest updates live. | Med | Split state, color token mapping per guest | More intuitive than dropdown-based assignment. Tap item -> cycles through guest colors. Clear visual grouping. |
+| Split progress indicator | "2 of 3 splits paid" with checkmarks on payment screen | Low | Split payment tracking state | Prevents "did guest 2 already pay?" confusion. Simple counter + checkmark list. |
+| Merge confirmation preview | Before merging, show combined bill preview with items from both tables side by side | Low | Read-only access to both orders | Prevents "merged wrong table" errors. Show item count + total from each source before confirming. |
+| Elapsed time color escalation on stage badge | Badge color shifts green -> amber -> red based on time-in-stage thresholds (e.g., >15min cooking = red alert) | Low | `useDwellTimer`-like hook on order stage timestamps | Already have `useDwellTimer` pattern in codebase. Apply same concept to order stage duration. Configurable thresholds per stage. |
+
+---
+
+## Anti-Features
+
+Features to explicitly NOT build for this milestone.
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Customer-facing order tracker (public URL/QR) | Out of scope per PROJECT.md ("Customer POS / receipt tracker -- separate deliverable"). Adds authentication, public routes, mobile responsive concerns that blow up scope. | Keep tracking staff-only on POS tablets. Note as future FIP module. |
+| Percentage-based split (e.g., 60/40) | Rarely used in ramen/casual dining. Adds UI complexity for a niche scenario. Even Lightspeed buries this option. | Equal split and per-seat split cover 95%+ of real cases. |
+| Custom arbitrary amount split | Creates reconciliation problems: what if amounts don't sum to total? Requires overage/underage handling, partial payment logic. | Per-seat item assignment handles "I only want to pay for mine" cleanly without math ambiguity. |
+| Automatic seat detection during order entry | Would require rearchitecting order entry flow to assign seat numbers when items are added. Too invasive for v1.2 -- touches the entire order entry UX. | Allow seat assignment at split time only (retroactive). Seat numbers assigned when cashier initiates split, not when waiter takes order. |
+| Real-time push (WebSocket/SSE) for order tracking | This is a wireframe with Zustand stores, not a live backend. Over-engineering for a demo artifact. | Use Zustand cross-store subscription. KDS bump synchronously updates table store. Same JS process, zero network overhead. |
+| Split shared item across multiple guests (fractional) | "Split this one ramen across 3 people" creates fraction math, confusing UI, and cent-rounding nightmares. Major POS systems handle this poorly or not at all. | If an item is shared, assign it to one guest and use equal split for the whole bill instead. Keep it simple. |
+| Transfer individual items between tables (without full merge) | Distinct from merge -- requires partial order moves with void/re-add semantics. Complex state for rare edge case. | Use full table merge, or void item on source and re-enter on target. |
+| Split bill after partial payment | If someone already paid part of the bill, then splitting the remainder adds complex partial-payment tracking. | Require split decision BEFORE any payment. Once split, each sub-bill pays independently. No "split the leftovers" flow. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-Bold & energetic brand expression
-    |
-    ├── Brand tokens (ALREADY EXISTS)
-    │     --primary: oklch(0.63 0.22 27)  [dark mode]
-    │     --card, --muted, --background   [surface hierarchy]
-    │     --radius: 0.625rem              [radius base]
-    │
-    ├── Button system redesign
-    │     └── requires: Token audit (confirm --primary contrast in dark mode)
-    │     └── enables: CTA shadow/glow, pressed feedback, 44px enforcement
-    │     └── downstream: All screens that use Button component
-    │
-    ├── Badge system redesign
-    │     └── requires: Semantic color token decisions (green/amber/red/blue/gray)
-    │     └── enables: TableTile status pills, order stage indicators
-    │     └── note: Do NOT conflict with existing `destructive` semantic in token system
-    │
-    ├── Card/panel elevation tiers
-    │     └── requires: Background token hierarchy exists (bg-card, bg-muted, bg-primary/10)
-    │     └── enables: MenuPanel card hover, KDS card active, selected table highlight
-    │     └── complexity: MEDIUM — must audit all card usages across 6+ screens
-    │
-    ├── Typography system
-    │     └── requires: Nothing — pure CSS weight/size decisions
-    │     └── enables: Section label caps pattern, price hero text, heading scale
-    │     └── risk: Changing font weights may break existing line-clamp layouts
-    │
-    └── Spice selector color graduation
-          └── requires: Spice selector component to exist (ALREADY EXISTS)
-          └── enables: Branded modifier experience
-          └── complexity: LOW — 5 color class assignments
+guestCount on TableRecord -----------> Equal split (pre-fill N)
+                                         |
+OrderLineItem[] per table ------------> Per-seat split (assign items to guests)
+                                         |
+Per-seat split -----------------------> Independent payment per split
+                                         |
+Independent payment per split --------> Split progress indicator
+                                         |
+Coupon flow (existing) ---------------> Coupon pre-split application
+
+ActiveOrder from two tables ----------> Merge bill
+Split state structure ----------------> Unsplit (recombine)
+Unsplit blocked if any split paid ----> depends on payment tracking per split
+
+KDS bumpTicket -----------------------> Auto-sync stage to table.store
+TableRecord.orderStage ---------------> Order stage badge (partially exists)
+New per-item timestamp tracking ------> Per-item timeline detail view
+useDwellTimer pattern ----------------> Elapsed time color escalation
 ```
 
-### Dependency Notes
+### Critical Path
 
-- **Button system requires token audit first:** The dark-mode `--primary` at `oklch(0.63 0.22 27)` is lighter than the light-mode version. Before adding shadow/glow, confirm contrast ratio of `--primary-foreground: oklch(0.10 0 0)` against this value passes WCAG AA. If it does not, adjust lightness before adding visual embellishment.
-- **Badge system must not conflict with destructive token:** `--destructive: oklch(0.704 0.191 22.216)` in dark mode is already a warm red-orange. The "Occupied" table badge (intended as crimson/red) must be distinct from the destructive token visually. Use `text-red-400 bg-red-500/15` rather than `text-destructive` to avoid semantic confusion.
-- **Card elevation tiers enhance all screens:** This is a global pattern change. Apply after button and badge systems are confirmed — so elevation can reference primary-colored borders correctly.
-- **Typography changes are lowest risk, highest perceived-polish impact:** Do typography last — it has no component dependencies and produces visible improvement with minimal code surface.
-
----
-
-## MVP Definition
-
-### This milestone's "launch with" (v1.1 brand polish)
-
-- [ ] Button: primary variant gets `h-11` (44px), crimson glow/shadow in dark mode, `active:scale-[0.97]` pressed feedback
-- [ ] Button: destructive variant gets filled treatment (`bg-destructive text-white`) — current 10% opacity is too subtle for a POS void action
-- [ ] Status badges: TableTile uses filled pill chips with 5 semantic colors, replacing the `border-l-4` stripe approach
-- [ ] KDS BUMP button: migrated to consistent Button component, full-width, 44px, `active:scale` feedback
-- [ ] Cards: MenuPanel cards get consistent hover state (`hover:border-primary/40 hover:shadow-sm`) + `active:scale-[0.97]`
-- [ ] Typography: Section headers get `label-caps` utility (`text-[10px] font-bold tracking-widest uppercase text-muted-foreground`) applied consistently across all screens
-- [ ] Typography: Price readouts (`฿XXXX`) promoted to `text-2xl font-black text-primary` in ticket footer and payment summary
-
-### Add after core is stable (v1.1.x)
-
-- [ ] Nav sidebar: active state refined to indicator-line pattern (`border-l-2 border-primary bg-primary/10 text-primary`)
-- [ ] Spice selector: color graduation green → amber → crimson across 5 levels
-- [ ] Card elevation: 3-tier system audited and applied across all info panels
-
-### Future consideration (v2+)
-
-- [ ] Animated entrance states for KDS tickets (slide-in from right on new order)
-- [ ] Login screen gradient background (brand moment at start of shift)
-- [ ] Haptic feedback on bump/send (requires native PWA capabilities)
+1. **Split state structure** must be designed first -- it underpins equal split, per-seat split, payment tracking, and unsplit. This is the foundational data model decision.
+2. **KDS-to-table sync** must exist before order tracking badges show meaningful data. Without it, badges remain static/manual.
+3. **Per-item timestamps** are additive and can be built independently of split bill work.
 
 ---
 
-## Feature Prioritization Matrix
+## MVP Recommendation
 
-| Feature | Staff Value | Implementation Cost | Priority |
-|---------|-------------|---------------------|----------|
-| CTA button 44px + crimson glow | HIGH — core action clarity | LOW — CSS tokens | P1 |
-| Destructive button filled | HIGH — void action legibility | LOW — variant change | P1 |
-| TableTile status badge pills | HIGH — floor plan scan speed | LOW-MEDIUM — TableTile + STATUS_CONFIG refactor | P1 |
-| KDS BUMP consistency | HIGH — kitchen staff ergonomics | LOW — component migration | P1 |
-| Section header caps pattern | MEDIUM — polish, not function | LOW — utility class | P1 |
-| Price hero text promotion | MEDIUM — billing moment clarity | LOW — text class change | P1 |
-| MenuPanel card hover/active | MEDIUM — order entry fluidity | LOW — class additions | P2 |
-| Nav sidebar indicator-line state | LOW-MEDIUM — wayfinding polish | LOW — class change | P2 |
-| Spice selector color graduation | MEDIUM — brand moment | LOW — 5 color classes | P2 |
-| Card elevation tier system | MEDIUM — depth and hierarchy | MEDIUM — audit all screens | P2 |
+### Must ship (table stakes):
 
-**Priority key:**
-- P1: Must have for v1.1 — directly addresses the "bold & energetic" milestone goal
-- P2: Should have — elevates from good to great
-- P3: Nice to have — defer to v1.1.x or v2
+1. **Equal split** -- Low complexity, highest frequency use case. Pre-fill from guestCount. Build first as simplest split mode.
+2. **Per-seat item assignment** -- Medium complexity but expected. Tap-to-assign UI. Each `OrderLineItem` gets optional `seatNumber`.
+3. **Independent payment per split** -- Reuse existing payment components per sub-bill. New: paid/unpaid tracking per split.
+4. **VAT per split with rounding** -- Integer math (satang). Remainder to last split. Non-negotiable for accounting correctness.
+5. **Merge bill (two tables)** -- Append source rounds to target order. Reset source table state.
+6. **Unsplit** -- Guard rail. Only when no splits paid. Low effort.
+7. **KDS-to-table stage sync** -- Cross-store side-effect in `bumpTicket`.
+8. **Color-coded order stage badge** -- Upgrade existing outline badge to filled semantic colors on `TableTile`.
+
+### Should ship (demo differentiators):
+
+9. **Per-item timeline view** -- Strongest stakeholder demo feature. Requires new timestamp tracking on items.
+10. **Split progress indicator** -- "2/3 paid" display. Minimal effort, high clarity for cashier workflow.
+11. **Elapsed time color escalation** -- Reuse `useDwellTimer` pattern with stage-aware thresholds.
+
+### Defer to polish pass:
+
+- **Merge confirmation preview** -- Nice but not blocking functionality.
+- **Visual color-coded split assignment** -- Tap-toggle with text labels is sufficient. Color coding can layer on top later.
+- **Coupon-to-specific-split** -- Pre-split application covers 90%+ of real scenarios.
 
 ---
 
-## Competitor Feature Analysis — UI Design Patterns
+## Existing Code Touchpoints
 
-| UI Pattern | Toast POS | Square for Restaurants | Lightspeed Restaurant | A Ramen v1.0 (current) | A Ramen v1.1 target |
-|------------|-----------|------------------------|----------------------|------------------------|----------------------|
-| Primary CTA size | Large (44-52px), brand-colored, full-width on mobile | Large, brand green, full-width | Brand orange, full-width | `h-8` (32px) default — undersized | `h-11` (44px), brand crimson |
-| Status badge type | Colored icon chips with text label | Full colored tile (green/red/gray) | Colored border + label | Border-left stripe only | Filled pill with semantic color |
-| Dark mode surface depth | 2-3 elevation levels via card bg | Light-dominant, limited dark support | 2-tier (list bg vs card bg) | 2-tier correct, not brand-expressed | 3-tier: flat / raised / floating |
-| Section label style | Uppercase, muted, small tracking | Bold, dark, larger | Tab-style, active underline | `tracking-widest uppercase` in ticket only | Consistent caps utility everywhere |
-| Price display | Large, bold, right-aligned, prominent | Large amount, total highlighted | Clear hierarchy, total prominent | `text-xl font-bold` — undersized | `text-2xl font-black text-primary` |
-| Pressed/active feedback | `active:scale` or background flash | Color darken on press | Subtle background darken | Present on menu cards only | Applied to all interactive elements |
-| Icon button size | 44px minimum | 44px+ | 44px+ | `size-8` (32px) — undersized | `size-11` for primary actions |
+| Existing Asset | How It's Affected | What Changes |
+|---------------|-------------------|--------------|
+| `order.store.ts` (`ActiveOrder`, `OrderLineItem`) | Add `seatNumber?: number` to `OrderLineItem`. Add `mergeOrder(sourceTableId, targetTableId)` action. | New fields, new actions, existing interface shape preserved. |
+| `table.store.ts` (`TableRecord`, `orderStage`) | `orderStage` already exists with 5 stages. Add optional `linkedTableId` for merge tracking. | KDS sync writes to `orderStage` via existing `updateTable`. |
+| `kds.store.ts` (`bumpTicket`) | Must trigger `table.store.updateTable({ orderStage })` on stage transitions. | Add cross-store call inside `bumpTicket` or via Zustand `subscribe`. |
+| `TableTile.tsx` | Upgrade `orderStage` badge from `variant="outline"` to filled semantic with color-per-stage. | Styling + optional elapsed-time color escalation hook. |
+| `payment/[tableId]/page.tsx` | Major changes: split mode selector, per-split payment flow, split progress tracking. This is the largest UI change. | New split state, conditional rendering per mode, multi-payment orchestration. |
+| `PaymentMethodSelector`, `CashPanel`, `QrPanel`, `CardPanel` | Reused per sub-bill. No internal changes needed to these components. | Rendered N times (once per active split), each with independent state. |
+| `TotalsSection` | Must accept filtered item set (split portion) instead of full bill. | Props change: receives items for one split, not all items. |
+| `BillLineItem` | Show seat/guest indicator when in split mode. | Conditional badge rendering when split is active. |
+
+---
+
+## Complexity Budget
+
+| Feature Group | Estimated Complexity | Rationale |
+|--------------|---------------------|-----------|
+| Split Bill (equal + per-seat + payment) | **High** (collectively) | New state structure, assignment UI, multi-payment orchestration, rounding math. Largest effort in milestone. |
+| Merge Bill + Unsplit | **Medium** | State manipulation is straightforward (append rounds, reset source). UI is table picker + confirmation. Guard rails for unsplit. |
+| Digital Order Tracking (badges + sync + timeline) | **Low-Medium** | Badge color upgrade is trivial. KDS cross-store sync is one subscriber. Timeline view is medium only if per-item timestamps are added. |
+
+**Total milestone: Medium-High.** Split bill is the dominant effort (~60% of work). Recommend building split first (foundational state model), then tracking (demos independently on table map), then merge last (least visible in demo, simplest state changes).
 
 ---
 
 ## Sources
 
-- Codebase audit: `/src/components/ui/button.tsx`, `badge.tsx`, `table-map/TableTile.tsx`, `order/TicketPanel.tsx`, `kds/KdsTicketCard.tsx`, `order/MenuPanel.tsx`, `app-shell/AppSidebar.tsx` — HIGH confidence
-- Brand token audit: `/src/app/globals.css` — HIGH confidence
-- OKLCH accessibility: [OKLCH in CSS — Evil Martians](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl), [LogRocket OKLCH guide](https://blog.logrocket.com/oklch-css-consistent-accessible-color-palettes) — MEDIUM confidence
-- Dark mode typography: [Dark Mode UX 2025](https://www.influencers-time.com/dark-mode-ux-in-2025-design-tips-for-comfort-and-control/), [Dark Mode Best Practices 2026](https://www.tech-rz.com/blog/dark-mode-design-best-practices-in-2026/) — MEDIUM confidence
-- Badge design semantics: [Badge UI Design — Cieden](https://cieden.com/book/atoms/badge/badge-ui-design), [Semantic Color System — DEV Community](https://dev.to/ynab/a-semantic-color-system-the-theory-hk7) — MEDIUM confidence
-- Toast POS button color API: [Toast Dev Guide — POS Button Colors](https://doc.toasttab.com/doc/devguide/apiPosButtonColorHexCodesForLightAndDarkMode.html) — MEDIUM confidence (confirms dark mode button theming as a real system concern)
-- CTA design best practices: [LogRocket CTA Button Design](https://blog.logrocket.com/ux-design/cta-button-design-best-practices/) — MEDIUM confidence
-- POS UI design: [BPA POS — User Interface Design of POS](https://www.bpapos.com/blog/post/2024/10/10/User-Interface-Design-of-POS), [Lightspeed design your POS look](https://o-series-support.lightspeedhq.com/hc/en-us/articles/31329442916891-Design-your-POS-look-and-layout) — MEDIUM confidence
-- Training data: Toast, Square for Restaurants, Lightspeed Restaurant UI patterns — MEDIUM confidence (knowledge through mid-2025)
+- [Lightspeed L-Series: Splitting a bill](https://resto-support.lightspeedhq.com/hc/en-us/articles/226405708-Splitting-a-bill) -- split modes, equal parts, max 99 splits
+- [Lightspeed L-Series: Assigning items to seats](https://resto-support.lightspeedhq.com/hc/en-us/articles/226306227-Assigning-order-items-to-seats) -- seat-based ordering and splitting
+- [Lightspeed K-Series: Check splitting](https://k-series-support.lightspeedhq.com/hc/en-us/articles/360051089493-Check-splitting) -- seat vs cover split distinction
+- [Lightspeed K-Series: Merging split checks](https://k-series-support.lightspeedhq.com/hc/en-us/articles/1260804445869-Merging-split-checks-together) -- merge workflow, error correction
+- [Square: Split a bill by item or seat](https://squareup.com/help/gb/en/article/8165-split-a-payment-and-check-with-square-for-restaurants) -- per-seat and per-item modes
+- [MobiPOS: Split Merge Bill](https://www.mobi-pos.com/web/guide/settings/split-merge-bill) -- unsplit/void workflow
+- [ConnectPOS: Merge Checks](https://www.connectpos.com/glossary/merge-checks/) -- merge use cases, cross-area limitations
+- [Clover: Restaurant split check policy](https://blog.clover.com/creating-your-own-restaurant-split-check-policy/) -- policy considerations
+- [Bright Inventions: Decimals in POS bill splitting](https://brightinventions.pl/blog/decimals-pos-bill-splitting-restaurants/) -- rounding strategies, BigDecimal recommendation
+- [Davo Sales Tax: POS rounding differences](https://www.davosalestax.com/why-does-my-point-of-sale-report-two-different-sales-tax-amounts/) -- per-transaction rounding edge cases
+- [Splitability: POS Split Bills](https://www.splitability.com/pos-split-bills/) -- shared item division patterns
+- [Menumium: Restaurant Order Tracking System](https://menumium.com/blog/restaurant-order-tracking-system/) -- order stage lifecycle
+- [Menumium: Restaurant Order Workflow](https://menumium.com/blog/restaurant-order-workflow/) -- end-to-end order flow stages
+- [WaiterOne: Order Status Board](https://www.waiterone.net/blog/2024/11/04/order-status-board/) -- real-time status display patterns
+- [Quantic: 44 Restaurant POS Features 2026](https://getquantic.com/restaurant-pos-system-features/) -- feature expectations landscape
+- [Eats365: Split/Share table](https://support.eats365pos.com/order-handling/split-a-table-for-different-party-groups) -- table split vs share distinction
+- [Odoo: POS Split & Merge module](https://apps.odoo.com/apps/modules/17.0/pos_split_merge) -- combined split/merge functionality
 
 ---
 
-*Feature research for: A Ramen POS v1.1 — Bold & Energetic UI Brand Polish*
-*Researched: 2026-03-11*
+*Feature research for: A Ramen POS v1.2 -- Split Bill, Merge Bill, Digital Order Tracking*
+*Researched: 2026-03-12*

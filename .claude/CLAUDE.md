@@ -1,63 +1,120 @@
-# High-Level User Flow
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+```bash
+npm run dev      # Start dev server (localhost:3000)
+npm run build    # Production build (catches type errors)
+npm run lint     # ESLint
+```
+
+No test framework is configured. Use `npm run build` to verify TypeScript correctness.
+
+## What This Is
+
+Interactive Hi-Fi wireframe for an A Ramen restaurant POS system. Dual-purpose: dev-handoff spec + stakeholder presentation artifact. Browser-based, no backend — all data is mock/in-memory or localStorage-persisted via Zustand.
+
+Part of the FIP (Food Intelligent Platform) ecosystem. This wireframe covers: authentication, floor management, order entry with ramen modifiers, KDS, payment with camera coupon scan + dynamic QR, loyalty, and manager tools.
+
+## Tech Stack
+
+- **Next.js 16** (App Router) + **React 19** + **TypeScript 5** (strict)
+- **Tailwind CSS 4** — config lives in `globals.css` via `@theme` block (no tailwind.config.js)
+- **shadcn/ui** using **@base-ui/react** (NOT Radix) as headless primitives
+- **Zustand 5** with `persist` middleware for cross-route-group state survival
+- **CVA** (class-variance-authority) for component variants
+- **Solar icon set** — `import { IconNameLinear } from 'solar-icon-set'`
+- **sonner** for toast notifications via `ThemedToaster` wrapper
+- **next-themes** for dark mode
+- Path alias: `@/*` → `./src/*`
+
+## Architecture
+
+### Route Groups
+
+Three Next.js route groups with separate layouts:
+
+- `(auth)` — `/login` — Centered minimal layout, no shell
+- `(app)` — Staff POS interface — `AppShell` with header + collapsible sidebar. Auth guard checks role + shiftOpen, redirects Kitchen to `/kds`
+- `(kds)` — `/kds` — Full-screen kitchen display, separate layout with its own `ThemedToaster`
+
+Each route group has its own `layout.tsx`. The `(app)` and `(kds)` groups destroy each other's React tree on navigation — this is why Zustand `persist` middleware is required.
+
+### State Management (src/stores/)
+
+| Store | Persisted | Purpose |
+|-------|-----------|---------|
+| `session.store` | No | Role, staff identity, shift state |
+| `table.store` | Yes | Table status lifecycle (Open→Occupied→CheckRequested→Cleaning), guest count, servedAt |
+| `order.store` | Yes | Order rounds, line items with modifiers, void tracking |
+| `manager.store` | Yes | 86'd items, shift close state |
+| `kds.store` | No | Kitchen ticket board, bump/recall, demo mode |
+
+### Permission System (src/lib/role-permissions.ts)
+
+Two-level access control:
+- `canAccess(role, navSlug)` — Navigation visibility (sidebar items)
+- `canDoAction(role, actionKey)` — Action-level gating (buttons, workflows)
+
+Roles: `Waiter | Cashier | Manager | Kitchen`
+
+### Design Tokens (src/app/globals.css)
+
+All tokens use **OKLCH color space**. Key token families:
+
+- **Brand:** `--color-brand-red: oklch(0.52 0.26 27)` (crimson primary)
+- **Status:** `--color-status-{open|occupied|reserved|check-requested|cleaning}-{fg|bg}` — independently tuned for dark mode (not opacity-reduced)
+- **Elevation:** `--shadow-card` (flat), `--shadow-panel` (raised), `--shadow-floating` (modal-level)
+- **Glow:** `--shadow-glow-primary` uses `color-mix(in oklch, ...)` for button hover
+
+Dark mode has independently tuned OKLCH values in `.dark` — never just opacity modifications.
+
+### Critical Patterns
+
+**Shadow tokens must use inline style, not Tailwind classes:**
+```tsx
+style={{ boxShadow: 'var(--shadow-card)' }}
+```
+Multi-value CSS strings are incompatible with Tailwind v4 `@theme inline`.
+
+**CVA variants in `button.tsx` and `badge.tsx`:** Extend variants in place, never wrap these components.
+
+**ThemedToaster:** Thin `'use client'` wrapper around sonner `Toaster` — uses `resolvedTheme` (not `theme`) because sonner doesn't handle `'system'`. Mount once per layout, never per page.
+
+**`@theme inline` must use `var(--token)` only** — never literal OKLCH values (dark mode breaks silently).
+
+**`@utility caps`** — defined in globals.css via `@apply`. Use the utility class, don't duplicate the pattern inline.
+
+## High-Level User Flow
+
 *Use this as a blueprint for designing the POS system.*
 
-## 1. Pre-Dining Phase (Queue & Table Management)
-- Customer: Walks to the kiosk at the storefront to get a queue ticket and waits in the designated area for their number to be called.
+### 1. Pre-Dining Phase (Queue & Table Management)
+- Customer walks to kiosk for queue ticket, waits for number to be called
+- Staff monitors real-time table occupancy via Digital Floor Plan
+- Staff selects available table → "Open Table" with guest count input → session tracking begins
 
-- Staff (on POS): Monitors real-time table occupancy via the Digital Floor Plan interface.
+### 2. Ordering Phase (The "Exam Paper" System)
+- Customer fills out Main Menu and Customization sheet forms
+- Customer presses table call bell (standalone, not POS)
+- Staff collects forms, verifies selections, performs read-back
+- Staff inputs data via POS using Forced Modifiers (spiciness, noodle texture)
+- Staff confirms order → auto inventory depletion → transmitted to KDS/printer
 
-- Staff (on POS): Selects an available table to "Open Table" and inputs the number of guests to initiate session tracking and occupancy analytics.
+### 3. Receiving Phase (Service & Fulfillment)
+- Customer receives meal through service hatch
+- Staff tracks order status by checking service counter (no digital tracking yet)
+- Staff taps "Served" on tablet to log actual service start time for KPIs
 
-## 2. Ordering Phase (The "Exam Paper" System)
-- Customer: Fills out two "Exam Paper" forms (the Main Menu and the Customization sheet) to specify their preferences.
+### 4. Payment Phase (Integrated Checkout)
+- Customer provides table number + discount QR code at counter
+- Staff uses tablet rear camera to scan coupon within POS app (no app switching)
+- System calculates discount, displays Dynamic QR Code for customer "Scan to Pay"
 
-- Customer: Presses the table call bell (a standalone system independent of the POS).
+### 5. Loyalty Phase (Member Points)
 
-- Staff (on POS): Collects the forms at the table, verifies the selections, and performs a read-back to ensure accuracy.
+**Scenario A: Standalone (No CRM)** — Receipt has static QR → customer opens web portal → manually enters phone/receipt ID to claim points. Staff cannot see member data.
 
-- Staff (on POS): Inputs data into the POS using Forced Modifiers (mandatory selections such as spiciness level and noodle texture) to ensure the digital order matches the physical form perfectly.
-
-- Staff (on POS): Confirms the order; the system triggers automatic inventory depletion and instantly transmits the order to the Kitchen Display System (KDS) or printer.
-
-## 3. Receiving Phase (Service & Fulfillment)
-- Customer: Waits for and receives the meal served through the service hatch directly in front of their seat.
-
-- Staff (on POS): Tracks order status by manually checking the service counter (in the absence of a Digital Order Tracking system).
-
-- Staff (on POS): Once the meal is served and the invoice is placed, the staff taps "Served" on the tablet to log the actual service start time for operational KPIs.
-
-## 4. Payment Phase (Integrated Checkout)
-- Customer: Proceeds to the counter, provides the table number, and presents a discount QR code from their mobile app.
-
-- Staff (on POS): Locates the table on the POS and uses the tablet’s rear camera to scan the coupon directly within the POS app, eliminating the need to switch apps or manually input codes.
-
-- Staff (on POS): The system calculates the discount automatically and displays a Dynamic QR Code on the tablet screen, allowing the customer to "Scan to Pay" the net amount instantly.
-
-## 5. Loyalty Phase (Member Points Accumulation)
-###5.1 Scenario A: Standalone / Manual Loyalty (No CRM Integration)
-In this model, the POS and Loyalty systems are siloed. Data does not flow between them.
-
-- Customer: Verifies the payment amount and receives a physical receipt.
-
-- Staff (on POS): The system prints a receipt containing a static QR code (a simple URL link).
-
-- Customer: Scans the QR code to open a separate web portal or app.
-
-- Customer: Must manually input additional details (e.g., phone number or receipt ID) to verify the transaction and claim points.
-
-- System Gap: Member data is not visible to staff on the POS, preventing personalized greetings or targeted upselling based on member status.
-
-### 5.2 Scenario B: Integrated CRM (Smart Loyalty)
-- In this model, the POS and CRM are unified, creating a frictionless data flow.
-
-- Customer: Verifies the payment amount and receives the receipt.
-
-- Staff (on POS): The POS displays member insights (e.g., Tier level, current points) to the staff during the checkout process.
-
-- Staff (on POS): The system prints a receipt with a Unique Dynamic QR Code that already contains the transaction value, branch ID, and timestamp.
-
-- Customer: Scans the QR code once with their smartphone.
-
-- System: Points are credited instantly because the QR code is already linked to the specific transaction and member profile—no manual data entry required.
-
-- System: Sends an automated Push Notification thanking the customer and updating them on their new points balance immediately after the scan.
+**Scenario B: Integrated CRM (Smart Loyalty)** — POS shows member tier + points during checkout. Receipt has Dynamic QR with transaction value + branch ID + timestamp. Customer scans once → points credited instantly → push notification sent.
