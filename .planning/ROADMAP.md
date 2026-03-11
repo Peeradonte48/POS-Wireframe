@@ -26,7 +26,7 @@
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
-| 4. KDS | 3/3 | Complete   | 2026-03-11 |
+| 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
