@@ -27,7 +27,7 @@
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
-| 5. Payment | 0/? | Not started | - |
+| 5. Payment | 0/3 | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
 
@@ -133,7 +133,12 @@ Plans:
 3. After payment, staff can access a receipt action state (print annotation visible; no real printer required) and reprint from a closed order
 4. The payment screen contains a clearly annotated placeholder indicating where split bill functionality will attach in v2
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Payment sub-components (BillLineItem, TotalsSection, PaymentMethodSelector, CashPanel, QrPanel, CardPanel) + PaymentPage payment view (PAY-01, PAY-02, PAY-05)
+- [ ] 05-02-PLAN.md — ReceiptScreen + PaymentPage receipt view-state + markCleaning wiring + TableBottomSheet Go to Payment activation (PAY-03, PAY-04)
+- [ ] 05-03-PLAN.md — Build verify + browser checkpoint: all 5 PAY criteria (PAY-01–05)
 
 ---
 
@@ -231,3 +236,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Updated: 2026-03-10 — Phase 2 plans created (4 plans, 4 waves)*
 *Updated: 2026-03-10 — Phase 3 plans created (4 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 4 plans created (3 plans, 3 waves)*
+*Updated: 2026-03-11 — Phase 5 plans created (3 plans, 3 waves)*
