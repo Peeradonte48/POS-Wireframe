@@ -50,9 +50,14 @@ export function KdsBoard() {
   }
 
   return (
-    <div className="flex flex-1 gap-2 p-3 overflow-hidden">
+    <div className="flex flex-1 h-full gap-2 p-3 overflow-hidden">
       {STAGES.map(({ stage, label }) => {
-        const stageTickets = Object.values(tickets).filter((t) => t.stage === stage)
+        const stageTickets = Object.values(tickets).filter((t) => {
+          if (t.stage !== stage) return false
+          // Hide tickets where every item is voided
+          const items = getOrderItems(t)
+          return items.some((item) => item.status !== 'voided')
+        })
 
         return (
           <div key={stage} className="flex flex-col flex-1 min-w-0 min-h-0">

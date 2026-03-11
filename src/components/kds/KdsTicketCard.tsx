@@ -45,7 +45,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
   const bumpBlocked = (ticket.stage === 'InProgress' && !allNonVoidedChecked) || !canDoAction(role, 'kds-bump')
 
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
+    <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shrink-0">
       {/* Header */}
       <div className="px-3 py-2 bg-muted/30 flex justify-between items-center border-b border-border/40">
         <div className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       </div>
 
       {/* Body — item rows */}
-      <div className="px-3 py-1 flex-1">
+      <div className="px-3 py-1">
         {orderItems.map((item) => (
           <KdsItemRow
             key={item.lineId}

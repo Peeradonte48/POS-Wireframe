@@ -50,7 +50,7 @@ export default function OrderPage() {
 
   return (
     <>
-      <div className="flex flex-col h-screen bg-background">
+      <div className="flex flex-col flex-1 min-h-0 bg-background">
         {/* Header */}
         <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
           <button
@@ -67,7 +67,7 @@ export default function OrderPage() {
         </header>
 
         {/* 3-column body */}
-        <div className="flex flex-row flex-1 overflow-hidden">
+        <div className="flex flex-row flex-1 min-h-0 overflow-hidden">
 
           {/* Column 1: Category sidebar */}
           <aside className="w-32 md:w-36 lg:w-44 border-r border-border bg-card flex flex-col shrink-0 overflow-y-auto py-2">

@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <AppHeader />
 
       {/* Body: sidebar + main content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Sidebar */}
         <div className="relative flex">
           <AppSidebar collapsed={sidebarCollapsed} />
@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Main content area */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
           {children}
         </main>
       </div>

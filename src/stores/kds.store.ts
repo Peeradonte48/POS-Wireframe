@@ -91,18 +91,10 @@ export const useKdsStore = create<KdsStore>((set) => ({
         }
       }
 
-      // Ready → remove from tickets, push snapshot to recallTray (capped at 5)
+      // Ready → done: remove from board permanently
       const { [ticketId]: _removed, ...remainingTickets } = state.tickets
-      const recalled: RecalledTicket = { ticket, recalledAt: Date.now() }
-      const updatedTray = [...state.recallTray, recalled]
-      const cappedTray =
-        updatedTray.length > RECALL_TRAY_CAP
-          ? updatedTray.slice(updatedTray.length - RECALL_TRAY_CAP)
-          : updatedTray
-
       return {
         tickets: remainingTickets,
-        recallTray: cappedTray,
       }
     }),
 

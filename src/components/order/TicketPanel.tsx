@@ -88,7 +88,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
     <div className="flex flex-col flex-1 h-full min-h-0">
 
       {/* Ticket header */}
-      <div className="px-4 py-3.5 border-b">
+      <div className="px-4 py-3.5 border-b shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <NotesLinear size={18} className="text-primary" />
@@ -103,7 +103,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
       </div>
 
       {/* Scrollable body — round sections */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {!order || allItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
             <NotesLinear size={28} className="opacity-30" />
