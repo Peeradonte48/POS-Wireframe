@@ -7,27 +7,29 @@ import { canAccess } from '@/lib/role-permissions'
 import type { NavSlug } from '@/lib/role-permissions'
 import { cn } from '@/lib/utils'
 import {
-  LayoutGrid,
-  ClipboardList,
-  Monitor,
-  CreditCard,
-  BarChart3,
-  Lock,
-} from 'lucide-react'
+  Widget5Linear,
+  NotesLinear,
+  MonitorSmartphoneLinear,
+  CardTransferLinear,
+  ChartSquareLinear,
+  LockPasswordLinear,
+} from 'solar-icon-set'
+
+type SolarIcon = React.ComponentType<{ size?: number; className?: string; color?: string }>
 
 interface NavItem {
   slug: NavSlug
   label: string
   href: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: SolarIcon
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { slug: 'table-map', label: 'Table Map',  href: '/table-map', icon: LayoutGrid },
-  { slug: 'orders',    label: 'Orders',     href: '/orders',    icon: ClipboardList },
-  { slug: 'kds',       label: 'KDS',        href: '/kds',       icon: Monitor },
-  { slug: 'payment',   label: 'Payment',    href: '/payment',   icon: CreditCard },
-  { slug: 'manager',   label: 'Manager',    href: '/manager',   icon: BarChart3 },
+  { slug: 'table-map', label: 'Table Map',  href: '/table-map', icon: Widget5Linear },
+  { slug: 'orders',    label: 'Orders',     href: '/orders',    icon: NotesLinear },
+  { slug: 'kds',       label: 'KDS',        href: '/kds',       icon: MonitorSmartphoneLinear },
+  { slug: 'payment',   label: 'Payment',    href: '/payment',   icon: CardTransferLinear },
+  { slug: 'manager',   label: 'Manager',    href: '/manager',   icon: ChartSquareLinear },
 ]
 
 interface AppSidebarProps {
@@ -51,7 +53,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
           'flex items-center gap-2 px-3 py-2 bg-amber-50 border-b border-amber-200 text-amber-700 text-xs',
           collapsed && 'justify-center px-0'
         )}>
-          <Lock size={12} className="shrink-0" />
+          <LockPasswordLinear size={12} className="shrink-0" />
           {!collapsed && <span>Open a shift first</span>}
         </div>
       )}

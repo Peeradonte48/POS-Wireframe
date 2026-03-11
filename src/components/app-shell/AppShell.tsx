@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { AppSidebar } from './AppSidebar'
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { SidebarMinimalisticLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -24,13 +24,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarCollapsed((prev) => !prev)}
-            className="absolute bottom-3 right-2 h-7 w-7"
+            className="absolute bottom-3 right-2 h-10 w-10"
             aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {sidebarCollapsed
-              ? <PanelLeftOpen size={14} />
-              : <PanelLeftClose size={14} />
-            }
+            <SidebarMinimalisticLinear size={18} />
           </Button>
         </div>
 

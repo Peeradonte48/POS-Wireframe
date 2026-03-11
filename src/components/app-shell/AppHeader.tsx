@@ -2,8 +2,9 @@
 
 import { useSessionStore } from '@/stores/session.store'
 import { Badge } from '@/components/ui/badge'
-import { LogOut } from 'lucide-react'
+import { Logout3Linear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useRouter } from 'next/navigation'
 
 const ROLE_BADGE_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -24,10 +25,13 @@ export function AppHeader() {
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-3 shrink-0">
-      {/* Branch name */}
-      <span className="font-semibold text-sm truncate flex-1">
-        {branchName ?? 'A Ramen POS'}
-      </span>
+      {/* A Ramen wordmark */}
+      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        <span className="font-bold text-lg tracking-tight text-primary">A</span>
+        <span className="font-semibold text-base text-foreground truncate">
+          {branchName ?? 'Ramen'}
+        </span>
+      </div>
 
       {/* Role badge */}
       {role && (
@@ -43,6 +47,9 @@ export function AppHeader() {
         </span>
       )}
 
+      {/* Theme toggle */}
+      <ThemeToggle />
+
       {/* Logout */}
       <Button
         variant="ghost"
@@ -51,7 +58,7 @@ export function AppHeader() {
         className="shrink-0"
         aria-label="Log out"
       >
-        <LogOut size={16} />
+        <Logout3Linear size={16} />
       </Button>
     </header>
   )
