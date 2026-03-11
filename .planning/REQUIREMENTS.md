@@ -51,7 +51,7 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 ### Shift & Manager (Staff POS Layer)
 
 - [x] **SHIFT-01**: Manager can close shift and view an end-of-day summary (revenue, payment method breakdown, voids, discounts, net sales, cash reconciliation input)
-- [ ] **SHIFT-02**: Manager can view a sales snapshot dashboard (revenue, covers, top items — numbers view, not charts)
+- [x] **SHIFT-02**: Manager can view a sales snapshot dashboard (revenue, covers, top items — numbers view, not charts)
 - [x] **SHIFT-03**: Manager can toggle item availability (86'd) from within the Staff POS app
 - [x] **SHIFT-04**: Manager can view all open tickets across tables and a staff/user list
 
@@ -129,7 +129,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PAY-04 | Phase 5 | Complete |
 | PAY-05 | Phase 5 | Complete |
 | SHIFT-01 | Phase 6 | Complete |
-| SHIFT-02 | Phase 6 | Pending |
+| SHIFT-02 | Phase 6 | Complete |
 | SHIFT-03 | Phase 6 | Complete |
 | SHIFT-04 | Phase 6 | Complete |
 | POLISH-01 | Phase 7 | Pending |
