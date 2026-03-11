@@ -1,49 +1,63 @@
 # High-Level User Flow
 *Use this as a blueprint for designing the POS system.*
 
-## 1. ระยะ Pre-Dining (การจัดการคิวและโต๊ะ)
+## 1. Pre-Dining Phase (Queue & Table Management)
+- Customer: Walks to the kiosk at the storefront to get a queue ticket and waits in the designated area for their number to be called.
 
-- **ลูกค้า:** เดินไปกดรับคิวที่ตู้หน้าร้านและนั่งรอฟังเสียงเรียกคิวในพื้นที่ที่จัดไว้
-- **พนักงาน (บน POS):** ตรวจสอบสถานะโต๊ะที่ว่างผ่านหน้าจอ Digital Floor Plan (ผังร้านแบบดิจิทัล) ที่แสดงผลแบบ Real-time
-- **พนักงาน (บน POS):** แตะเลือกโต๊ะที่ว่างเพื่อทำการ "Open Table" พร้อมระบุจำนวนลูกค้าลงในระบบ เพื่อเริ่มเก็บสถิติการใช้งานโต๊ะ
+- Staff (on POS): Monitors real-time table occupancy via the Digital Floor Plan interface.
 
-## 2. ระยะ Ordering (การสั่งอาหารผ่านใบข้อสอบ)
+- Staff (on POS): Selects an available table to "Open Table" and inputs the number of guests to initiate session tracking and occupancy analytics.
 
-- **ลูกค้า:** หยิบใบข้อสอบ 2 ใบ (ใบเลือกเมนู และใบ Customization) มาเขียนรายละเอียดที่ต้องการ
-- **ลูกค้า:** กดกริ่งเรียกพนักงานที่โต๊ะ (ระบบกริ่งทำงานแยกกับ POS)
-- **พนักงาน (บน POS):** เดินไปรับใบข้อสอบที่โต๊ะพร้อมตรวจสอบความถูกต้องและทวนรายการให้ลูกค้าฟัง
-- **พนักงาน (บน POS):** คีย์ข้อมูลเข้า POS โดยใช้ระบบ Forced Modifiers (ตัวเลือกที่บังคับต้องระบุ) เช่น ระดับความเผ็ดและความนุ่มของเส้น เพื่อให้ข้อมูลครบถ้วนตามใบข้อสอบ
-- **พนักงาน (บน POS):** กดยืนยันออเดอร์ ระบบจะทำการ **ตัดสต็อกวัตถุดิบอัตโนมัติ** และ **ส่งรายการคำสั่งซื้อเข้าสู่ครัวทันที**
+## 2. Ordering Phase (The "Exam Paper" System)
+- Customer: Fills out two "Exam Paper" forms (the Main Menu and the Customization sheet) to specify their preferences.
 
-## 3. ระยะ Receiving (การรับอาหารและการบริการ)
+- Customer: Presses the table call bell (a standalone system independent of the POS).
 
-- **ลูกค้า:** นั่งรอและรับอาหารที่เสิร์ฟผ่านช่องบริการด้านหน้าโต๊ะ
-- **พนักงาน (บน POS):** ติดตามสถานะออเดอร์ด้วยการตรวจสอบความเรียบร้อยที่หน้าคอก (เนื่องจากยังไม่มีระบบ Digital Order Tracking)
-- **พนักงาน (บน POS):** เมื่อเสิร์ฟอาหารพร้อมวางใบแจ้งหนี้ (Invoice) เรียบร้อยแล้ว ให้กดปุ่ม "Served" บนหน้าจอ Tablet เพื่อบันทึกเวลาที่เริ่มให้บริการจริง
+- Staff (on POS): Collects the forms at the table, verifies the selections, and performs a read-back to ensure accuracy.
 
-## 4. ระยะ Payment (การชำระเงินแบบเบ็ดเสร็จ)
+- Staff (on POS): Inputs data into the POS using Forced Modifiers (mandatory selections such as spiciness level and noodle texture) to ensure the digital order matches the physical form perfectly.
 
-- **ลูกค้า:** เดินไปที่เคาน์เตอร์ แจ้งหมายเลขโต๊ะ และแสดง QR คูปองส่วนลดจากแอปให้พนักงาน
-- **พนักงาน (บน POS):** ค้นหาหมายเลขโต๊ะบน POS และใช้กล้องหลังของ Tablet สแกนคูปองผ่านแอป POS ได้ทันที โดยไม่ต้องสลับไปใช้แอปอื่น หรือจดรหัสมาคีย์ซ้ำ
-- **พนักงาน (บน POS):** ระบบคำนวณส่วนลดให้อัตโนมัติและแสดง Dynamic QR Code ที่ระบุยอดเงินสุทธิบนหน้าจอ Tablet ให้ลูกค้าสแกนจ่ายได้ทันที
+- Staff (on POS): Confirms the order; the system triggers automatic inventory depletion and instantly transmits the order to the Kitchen Display System (KDS) or printer.
 
-## 5. ระยะ Loyalty (การสะสมแต้มสมาชิก)
+## 3. Receiving Phase (Service & Fulfillment)
+- Customer: Waits for and receives the meal served through the service hatch directly in front of their seat.
 
-### 5.1 แบบที่ 1: ไม่มีระบบ CRM (Standalone / Manual Loyalty)
-> ในรูปแบบนี้ ระบบ POS และระบบสมาชิกทำงานแยกจากกัน ข้อมูลไม่เชื่อมโยงกันโดยตรง
+- Staff (on POS): Tracks order status by manually checking the service counter (in the absence of a Digital Order Tracking system).
 
-- **ลูกค้า:** ตรวจสอบยอดเงินชำระและรับใบเสร็จจากพนักงานหลังการจ่ายเงินเสร็จสิ้น
-- **พนักงาน (บน POS):** ระบบพิมพ์ใบเสร็จอัตโนมัติ โดยท้ายบิลจะมี QR Code ที่เป็นเพียง "Link"
-- **ลูกค้า:** ใช้มือถือสแกน QR Code ท้ายใบเสร็จเพื่อเข้าสู่หน้าเว็บหรือแอปแยก
-- **ลูกค้า:** ต้องกรอกข้อมูลเพิ่มเติม เช่น เบอร์โทรศัพท์ หรือเลขที่ใบเสร็จด้วยตนเอง เพื่อยืนยันตัวตนและบันทึกแต้ม
-- **ระบบ:** ข้อมูลสมาชิกไม่แสดงผลบนหน้าจอ POS ของพนักงาน ทำให้พนักงานไม่สามารถทักทายชื่อลูกค้าหรือเสนอสิทธิพิเศษเฉพาะบุคคลได้
+- Staff (on POS): Once the meal is served and the invoice is placed, the staff taps "Served" on the tablet to log the actual service start time for operational KPIs.
 
-### 5.2 แบบที่ 2: มีระบบ CRM (Integrated CRM / Smart Loyalty)
-> ในรูปแบบนี้ ระบบ POS และ CRM เชื่อมต่อเป็นเนื้อเดียวกัน ข้อมูลไหลลื่นและลดขั้นตอนการทำงาน
+## 4. Payment Phase (Integrated Checkout)
+- Customer: Proceeds to the counter, provides the table number, and presents a discount QR code from their mobile app.
 
-- **ลูกค้า:** ตรวจสอบยอดเงินชำระและรับใบเสร็จจากพนักงาน
-- **พนักงาน (บน POS):** ระบบพิมพ์ใบเสร็จอัตโนมัติที่มี Unique Dynamic QR Code ซึ่งบรรจุข้อมูลยอดใช้จ่ายและสาขาไว้ในตัวเรียบร้อยแล้ว
-- **พนักงาน (บน POS):** หน้าจอ POS แสดงข้อมูลสมาชิก (เช่น ระดับสมาชิก, แต้มสะสม) ให้พนักงานเห็นได้ทันทีตั้งแต่ขั้นตอนการชำระเงิน
-- **ลูกค้า:** ใช้มือถือสแกน QR Code ท้ายใบเสร็จเพียงครั้งเดียว
-- **ระบบ:** บันทึกแต้มเข้าบัญชีโดยอัตโนมัติ (Instant Credit) เนื่องจากระบบจำได้ว่า QR นี้เชื่อมกับยอดเงินและบัญชีสมาชิกที่เข้าใช้งานอยู่ ไม่ต้องกรอกเบอร์โทรซ้ำ
-- **ระบบ:** ส่งการแจ้งเตือน (Push Notification) ขอบคุณลูกค้าพร้อมบอกแต้มสะสมใหม่ทันทีหลังจากสแกน
+- Staff (on POS): Locates the table on the POS and uses the tablet’s rear camera to scan the coupon directly within the POS app, eliminating the need to switch apps or manually input codes.
+
+- Staff (on POS): The system calculates the discount automatically and displays a Dynamic QR Code on the tablet screen, allowing the customer to "Scan to Pay" the net amount instantly.
+
+## 5. Loyalty Phase (Member Points Accumulation)
+###5.1 Scenario A: Standalone / Manual Loyalty (No CRM Integration)
+In this model, the POS and Loyalty systems are siloed. Data does not flow between them.
+
+- Customer: Verifies the payment amount and receives a physical receipt.
+
+- Staff (on POS): The system prints a receipt containing a static QR code (a simple URL link).
+
+- Customer: Scans the QR code to open a separate web portal or app.
+
+- Customer: Must manually input additional details (e.g., phone number or receipt ID) to verify the transaction and claim points.
+
+- System Gap: Member data is not visible to staff on the POS, preventing personalized greetings or targeted upselling based on member status.
+
+### 5.2 Scenario B: Integrated CRM (Smart Loyalty)
+- In this model, the POS and CRM are unified, creating a frictionless data flow.
+
+- Customer: Verifies the payment amount and receives the receipt.
+
+- Staff (on POS): The POS displays member insights (e.g., Tier level, current points) to the staff during the checkout process.
+
+- Staff (on POS): The system prints a receipt with a Unique Dynamic QR Code that already contains the transaction value, branch ID, and timestamp.
+
+- Customer: Scans the QR code once with their smartphone.
+
+- System: Points are credited instantly because the QR code is already linked to the specific transaction and member profile—no manual data entry required.
+
+- System: Sends an automated Push Notification thanking the customer and updating them on their new points balance immediately after the scan.

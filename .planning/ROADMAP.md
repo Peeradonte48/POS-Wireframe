@@ -122,7 +122,7 @@ Plans:
 | 7. Polish | v1.0 | 5/5 | Complete ✅ | 2026-03-11 |
 | 8. Bug Fixes | v1.1 | 5/5 | Complete ✅ | 2026-03-11 |
 | 9. Flow Alignment | v1.1 | 3/3 | Complete ✅ | 2026-03-12 |
-| 10. Brand Token Refresh | v1.1 | 0/2 | Not started | - |
+| 10. Brand Token Refresh | 1/2 | In Progress|  | - |
 | 11. Component Polish | v1.1 | 0/TBD | Not started | - |
 
 ---

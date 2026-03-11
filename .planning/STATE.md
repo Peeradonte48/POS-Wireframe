@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: completed
-last_updated: "2026-03-11T18:39:33.758Z"
-last_activity: 2026-03-12 — 09-01 FLOW-01 + FLOW-02 (OpenTableModal forced-entry, served-at display)
+last_updated: "2026-03-12T18:46:33Z"
+last_activity: 2026-03-12 — 10-01 TOKEN-01 + TOKEN-02 + TOKEN-03 (crimson chroma bump, status tokens, elevation shadows)
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 97
+  total_plans: 10
+  completed_plans: 10
+  percent: 95
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** Completed 09-01 (FLOW-01 + FLOW-02) — Phase 9 all 3 plans now executed
+**Session:** Completed 10-01 (TOKEN-01, TOKEN-02, TOKEN-03) — Phase 10 Plan 01 executed
 
 ---
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 ## Current Position
 
-Phase: 9 of 11 (Flow Alignment) — v1.1 Phase 2 — ALL 3 PLANS COMPLETE
-Plan: 09-01 done (FLOW-01, FLOW-02) — Phase 9 fully executed
-Status: Phase 9 complete — all 3 plans implemented (09-01, 09-02, 09-03)
-Last activity: 2026-03-12 — 09-01 FLOW-01 + FLOW-02 (OpenTableModal forced-entry, served-at display)
+Phase: 10 of 11 (Brand Token Refresh) — v1.1 Phase 3 — Plan 01 COMPLETE
+Plan: 10-01 done (TOKEN-01, TOKEN-02, TOKEN-03) — globals.css token foundation complete
+Status: Phase 10 Plan 01 complete — token definitions done, ready for Plan 02 component polish
+Last activity: 2026-03-12 — 10-01 TOKEN-01 + TOKEN-02 + TOKEN-03 (crimson chroma bump, status tokens, elevation shadows)
 
 ```
-Progress: [██████████] 97% (35/36 plans complete)
+Progress: [█████████░] 95% (10/10 plans complete in active phases)
 ```
 
 ---
@@ -86,9 +86,16 @@ See `.planning/PROJECT.md` for full key decisions log.
 
 - KDS role guard uses explicit allowlist `role !== 'Kitchen' && role !== 'Manager'` — prevents accidental access by other roles when new roles are added in future
 
+### Key Decisions (10-01)
+
+- Shadow tokens excluded from @theme inline — multi-value CSS strings incompatible with Tailwind color utility generation; consumed via `style={{ boxShadow: 'var(--shadow-card)' }}` in TSX
+- Status occupied uses hue 10 (semantic red) distinct from brand crimson hue 27 — prevents visual collision between brand primary and error-state table indicator
+- Dark mode status tokens independently tuned (higher L for fg, lower L for bg) not opacity-reduced — opacity reduction on OKLCH in dark backgrounds creates muddy washed-out colors
+- TOKEN-01 RESOLVED: --primary chroma now 0.26 in both :root and .dark; @theme brand-red aliases updated to match
+
 ### Key Patterns from v1.0
 
-- OKLCH primary: `oklch(0.52 0.22 27)` — chroma increase target is 0.26, verify sRGB gamut at oklch.com
+- OKLCH primary: `oklch(0.52 0.26 27)` — chroma bumped to 0.26 in Phase 10-01 (TOKEN-01 complete)
 - `@theme inline` must use `var(--token)` only — never literal OKLCH values (dark mode breaks silently)
 - Solar icon imports: `import { IconNameLinear } from 'solar-icon-set'`
 - CVA variants in `button.tsx` and `badge.tsx` — extend in place, never wrap

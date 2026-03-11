@@ -26,9 +26,9 @@ Requirements for v1.1 release. Each maps to roadmap phases.
 
 ### Brand Tokens
 
-- [ ] **TOKEN-01**: `--primary` chroma increased and gamut-verified for bold crimson
-- [ ] **TOKEN-02**: Semantic status tokens (`--color-status-*`) defined for all 5 table states
-- [ ] **TOKEN-03**: Elevation tokens (`--shadow-card`, `--shadow-panel`) defined for 3-tier depth
+- [x] **TOKEN-01**: `--primary` chroma increased and gamut-verified for bold crimson
+- [x] **TOKEN-02**: Semantic status tokens (`--color-status-*`) defined for all 5 table states
+- [x] **TOKEN-03**: Elevation tokens (`--shadow-card`, `--shadow-panel`) defined for 3-tier depth
 - [ ] **TOKEN-04**: Hardcoded Tailwind palette classes in TableTile, KdsTicketCard, AppSidebar replaced with token references
 
 ### Component Polish
@@ -80,9 +80,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FLOW-03 | Phase 9 | Complete |
 | FLOW-04 | Phase 9 | Complete |
 | FLOW-05 | Phase 9 | Complete |
-| TOKEN-01 | Phase 10 | Pending |
-| TOKEN-02 | Phase 10 | Pending |
-| TOKEN-03 | Phase 10 | Pending |
+| TOKEN-01 | Phase 10 | Complete |
+| TOKEN-02 | Phase 10 | Complete |
+| TOKEN-03 | Phase 10 | Complete |
 | TOKEN-04 | Phase 10 | Pending |
 | COMP-01 | Phase 11 | Pending |
 | COMP-02 | Phase 11 | Pending |
