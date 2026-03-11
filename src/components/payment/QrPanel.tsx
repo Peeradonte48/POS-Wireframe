@@ -6,17 +6,23 @@
 
 interface QrPanelProps {
   grandTotal: number
+  discountApplied?: number
 }
 
 // ---------------------------------------------------------------------------
 // QrPanel
 // ---------------------------------------------------------------------------
 
-export function QrPanel({ grandTotal }: QrPanelProps) {
+export function QrPanel({ grandTotal, discountApplied }: QrPanelProps) {
   return (
     <div className="flex flex-col items-center gap-3 pt-2">
       {/* Total amount */}
       <p className="font-bold text-xl">฿{grandTotal.toLocaleString()}</p>
+      {discountApplied && discountApplied > 0 && (
+        <p className="text-sm text-muted-foreground">
+          (after ฿{discountApplied.toLocaleString()} discount)
+        </p>
+      )}
 
       {/* Static mock QR — purely decorative */}
       <svg

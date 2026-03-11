@@ -190,7 +190,10 @@ export default function PaymentPage() {
               setCashReceived={setCashReceived}
             />
           )}
-          {paymentMethod === 'QR PromptPay' && <QrPanel grandTotal={grandTotal} />}
+          {/* discountApplied = discountAmount (page state) → QrPanel prop naming differs intentionally */}
+          {paymentMethod === 'QR PromptPay' && (
+            <QrPanel grandTotal={grandTotal} discountApplied={discountAmount} />
+          )}
           {paymentMethod === 'Card' && <CardPanel grandTotal={grandTotal} />}
           </div>
         </main>
