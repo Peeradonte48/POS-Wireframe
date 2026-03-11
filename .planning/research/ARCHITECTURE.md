@@ -1,356 +1,449 @@
-# Architecture Patterns
+# Architecture Research
 
-**Domain:** Browser-based interactive restaurant POS wireframe
-**Project:** A Ramen / FIP Ecosystem — POS Module
-**Researched:** 2026-03-10
-**Confidence:** HIGH (established Next.js App Router + shadcn/ui patterns, well-defined POS domain)
-
----
-
-## Recommended Architecture
-
-The wireframe is a **role-aware, route-driven SPA shell** built on Next.js App Router. Each major POS workflow maps to a top-level route. A persistent shell layout wraps all views with a sidebar/topbar for role switching, branch context, and session state. All data is mock (in-memory), managed via Zustand stores — no API calls.
-
-### High-Level Structure
-
-```
-Shell Layout (AppShell)
-├── Sidebar: role indicator, branch selector, nav links, session actions
-├── Topbar: current shift info, clock, user/role badge
-└── Page Content Area (slot)
-    ├── /floor          → TableMapView
-    ├── /order/[tableId] → OrderScreen
-    ├── /kds            → KitchenDisplayView
-    ├── /payment/[orderId] → PaymentScreen
-    ├── /shift          → ShiftManagementView
-    └── /login          → RoleSelectorView (entry point)
-```
+**Domain:** Next.js POS Wireframe — v1.1 Bug Fixes + Brand Polish
+**Researched:** 2026-03-11
+**Confidence:** HIGH (all findings derived from direct source code inspection — no assumptions)
 
 ---
 
-## Route / Page Structure
+## Standard Architecture
 
-| Route | View Name | Primary Role(s) | Purpose |
-|-------|-----------|-----------------|---------|
-| `/login` | RoleSelectorView | All | Role + branch selection entry point. Sets session context. No auth — wireframe only. |
-| `/floor` | TableMapView | Waiter, Manager | Animated floor plan. Table cards show status (open, occupied, reserved). Click to open order. |
-| `/order/[tableId]` | OrderScreen | Waiter, Cashier | Full order-taking UI: menu categories, item list, selected order, modifier sheet. |
-| `/kds` | KitchenDisplayView | Kitchen Staff | Live ticket board (mock). Cards show items, table, time elapsed. Status controls per ticket. |
-| `/payment/[orderId]` | PaymentScreen | Cashier, Manager | Bill summary, split bill UI, payment method selection (cash/QR/card). |
-| `/shift` | ShiftManagementView | Manager, Cashier | Open/close shift, staff clock-in list, end-of-day summary. |
-| `/manager` | ManagerDashboard | Manager | Overview: open tables count, active orders, shift summary cards. Optional — can be Phase 2. |
+### System Overview
 
-**Route notes:**
-- `/login` is the wireframe's entry point. It should set role + branch in global store, then redirect to `/floor`.
-- `[tableId]` and `[orderId]` are mock IDs matching fixture data. Navigation passes them via URL params so browser back works correctly — critical for demo realism.
-- KDS (`/kds`) is a separate full-screen view, intentionally isolated from the main flow (mirrors real hardware positioning).
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Browser / Tablet                              │
+├──────────────────────────────────────────────────────────────────┤
+│  Route Groups (Next.js App Router)                                │
+│  ┌──────────────────┐  ┌────────────────────┐  ┌──────────────┐ │
+│  │   (auth)         │  │   (app)            │  │   (kds)      │ │
+│  │  /login          │  │  /table-map        │  │  /kds        │ │
+│  │  layout: bare    │  │  /order/[tableId]  │  │  layout:     │ │
+│  └──────────────────┘  │  /payment/[tableId]│  │  full-screen │ │
+│                         │  /manager          │  │  server comp │ │
+│                         │  /shift-open       │  └──────────────┘ │
+│                         │  layout: AppShell  │                    │
+│                         │  + role/shift guard│                    │
+│                         └────────────────────┘                    │
+├──────────────────────────────────────────────────────────────────┤
+│  UI Layer                                                         │
+│  ┌──────────────────┐  ┌────────────────┐  ┌─────────────────┐  │
+│  │  AppShell        │  │  shadcn/ui     │  │ Feature         │  │
+│  │  AppHeader       │  │  button.tsx    │  │ Components      │  │
+│  │  AppSidebar      │  │  badge.tsx     │  │ TableTile,      │  │
+│  │  (Toaster MISSING│  │  dialog.tsx    │  │ KdsBoard,       │  │
+│  │   — Bug 3)       │  │  @base-ui/react│  │ TicketPanel...  │  │
+│  └──────────────────┘  └────────────────┘  └─────────────────┘  │
+├──────────────────────────────────────────────────────────────────┤
+│  Permissions Layer                                                │
+│  src/lib/role-permissions.ts                                      │
+│  ROLE_NAV_ACCESS  →  canAccess(role, navSlug)                    │
+│  ACTION_PERMISSIONS → canDoAction(role, actionKey)                │
+│  (void-post-send ActionKey MISSING — Bug 4)                      │
+├──────────────────────────────────────────────────────────────────┤
+│  State Layer (Zustand 5 — in-memory, no persist middleware)       │
+│  ┌─────────────────┐  ┌──────────────┐  ┌────────────────────┐  │
+│  │  session.store  │  │  table.store │  │  order.store       │  │
+│  │  role           │  │  tables{}    │  │  orders{}          │  │
+│  │  shiftOpen      │  │  updateTable │  │  rounds[]          │  │
+│  └─────────────────┘  └──────────────┘  └────────────────────┘  │
+│  ┌─────────────────┐  ┌──────────────┐                           │
+│  │  kds.store      │  │ manager.store│                           │
+│  │  tickets{}      │  │  eightySixed │                           │
+│  │  bumped[]       │  │  resetShift  │                           │
+│  └─────────────────┘  └──────────────┘                           │
+├──────────────────────────────────────────────────────────────────┤
+│  Token Layer                                                      │
+│  src/app/globals.css                                              │
+│  @theme { brand colors, animations }                              │
+│  @theme inline { maps CSS vars to Tailwind utilities }            │
+│  :root { shadcn semantic tokens in OKLCH }                        │
+│  .dark { dark mode overrides }                                    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Component Responsibilities
+
+| Component | Responsibility | File |
+|-----------|----------------|------|
+| `RootLayout` | Font variables, ThemeProvider, viewport lock (no zoom) | `src/app/layout.tsx` |
+| `AppLayout` | Role guard, shift guard, AppShell wrapper for all `(app)` routes | `src/app/(app)/layout.tsx` |
+| `KdsLayout` | Full-screen canvas, server component, no sidebar, for `(kds)` routes | `src/app/(kds)/layout.tsx` |
+| `AppShell` | Fixed chrome: AppHeader + AppSidebar + main content slot | `src/components/app-shell/AppShell.tsx` |
+| `AppSidebar` | Role-filtered nav links, shift-lock banner, collapsed/expanded state | `src/components/app-shell/AppSidebar.tsx` |
+| `role-permissions.ts` | ROLE_NAV_ACCESS, ACTION_PERMISSIONS, canAccess, canDoAction | `src/lib/role-permissions.ts` |
+| `globals.css` | All design tokens: brand OKLCH values, shadcn semantic tokens, dark mode | `src/app/globals.css` |
+| `button.tsx` | CVA variant map over `@base-ui/react` Button primitive | `src/components/ui/button.tsx` |
+| `badge.tsx` | CVA variant map over `@base-ui/react` useRender | `src/components/ui/badge.tsx` |
+| `ThemeProvider` | next-themes wrapper, `attribute="class"` for dark mode | `src/providers/ThemeProvider.tsx` |
 
 ---
 
-## Component Hierarchy
-
-### 1. Shell (Layout Layer)
+## Recommended Project Structure
 
 ```
-src/app/layout.tsx                  ← Root Next.js layout, providers only
-src/app/(pos)/layout.tsx            ← POS shell layout (AppShell)
-  └── components/shell/
-        ├── AppShell.tsx            ← Flex container: sidebar + main slot
-        ├── Sidebar.tsx             ← Nav links, role badge, branch selector, session button
-        ├── Topbar.tsx              ← Shift status, clock, current user display
-        └── BranchSelector.tsx     ← Dropdown: branch A / branch B (mock)
+src/
+├── app/
+│   ├── layout.tsx              # Root: fonts, ThemeProvider, viewport lock
+│   ├── globals.css             # ALL brand + shadcn tokens live here — single source
+│   ├── page.tsx                # Root redirect
+│   ├── (auth)/
+│   │   ├── layout.tsx          # Bare canvas layout
+│   │   └── login/page.tsx
+│   ├── (app)/
+│   │   ├── layout.tsx          # AppLayout: auth + shift guard + AppShell
+│   │   ├── table-map/page.tsx
+│   │   ├── order/[tableId]/page.tsx  # Has own Toaster — BUG 3
+│   │   ├── payment/[tableId]/page.tsx
+│   │   ├── shift-open/page.tsx
+│   │   └── manager/page.tsx    # No role guard — BUG 5
+│   └── (kds)/
+│       ├── layout.tsx          # Full-screen server component layout
+│       └── kds/page.tsx        # Role guard blocks Manager — BUG 2
+├── components/
+│   ├── app-shell/
+│   │   ├── AppShell.tsx        # Toaster missing here — BUG 3
+│   │   ├── AppHeader.tsx
+│   │   └── AppSidebar.tsx      # /orders href is dead — BUG 1
+│   ├── ui/                     # shadcn components — extend via CVA, never replace
+│   │   ├── button.tsx          # @base-ui/react Button primitive + CVA
+│   │   ├── badge.tsx           # @base-ui/react useRender + CVA
+│   │   ├── dialog.tsx
+│   │   └── ...
+│   ├── order/
+│   │   └── TicketPanel.tsx     # Uses void-pre-send; needs void-post-send check
+│   └── [feature]/
+├── lib/
+│   └── role-permissions.ts     # void-post-send ActionKey missing — BUG 4
+├── stores/
+│   ├── session.store.ts        # role, shiftOpen — read by all guards
+│   ├── table.store.ts
+│   ├── order.store.ts
+│   ├── kds.store.ts
+│   └── manager.store.ts
+└── providers/
+    └── ThemeProvider.tsx
 ```
 
-The `(pos)` route group applies the shell to all POS views except `/login`, which gets its own isolated layout.
+### Structure Rationale
 
-### 2. Page Views (Feature Layer)
-
-Each page is a thin orchestrator — it reads from the store, composes section components, handles no business logic itself.
-
-```
-src/app/(pos)/floor/page.tsx
-  └── views/TableMapView.tsx
-        ├── FloorGrid.tsx           ← CSS grid of table zones
-        ├── TableCard.tsx           ← Single table: status badge, table num, pax count, action
-        └── StatusLegend.tsx        ← Open / Occupied / Reserved color key
-
-src/app/(pos)/order/[tableId]/page.tsx
-  └── views/OrderScreen.tsx
-        ├── MenuPanel.tsx           ← Left: category tabs + item list
-        │     ├── CategoryTabs.tsx
-        │     └── MenuItemCard.tsx
-        ├── OrderPanel.tsx          ← Right: line items, quantities, subtotal
-        │     ├── OrderLineItem.tsx
-        │     └── OrderSummaryBar.tsx
-        └── ModifierSheet.tsx       ← shadcn Sheet: broth, spice, add-ons for selected item
-
-src/app/(pos)/kds/page.tsx
-  └── views/KitchenDisplayView.tsx
-        ├── KDSHeader.tsx           ← Current time, ticket count
-        ├── TicketBoard.tsx         ← Columns: New / In Progress / Ready
-        └── TicketCard.tsx          ← Table ref, items, elapsed timer badge
-
-src/app/(pos)/payment/[orderId]/page.tsx
-  └── views/PaymentScreen.tsx
-        ├── BillSummary.tsx         ← Line items, subtotal, tax, total
-        ├── SplitBillPanel.tsx      ← Split modes: equal / by item / custom
-        └── PaymentMethodSelector.tsx ← Cash / QR / Card tabs with confirm action
-
-src/app/(pos)/shift/page.tsx
-  └── views/ShiftManagementView.tsx
-        ├── ShiftStatusCard.tsx     ← Current shift: start time, cashier name, open/close CTA
-        ├── StaffClockList.tsx      ← Table of staff clock-in/out records
-        └── EndOfDaySummary.tsx     ← Revenue total, table count, order count cards
-```
-
-### 3. Shared Components (Design System Layer)
-
-```
-src/components/ui/                  ← shadcn/ui generated components (do not edit)
-src/components/shared/
-  ├── StatusBadge.tsx               ← Reusable: open/occupied/reserved/new/ready variants
-  ├── RoleBadge.tsx                 ← Waiter / Cashier / Manager chip
-  ├── PriceDisplay.tsx              ← Currency formatting wrapper (THB)
-  ├── QuantityControl.tsx           ← + / - stepper for order quantities
-  ├── EmptyState.tsx                ← Generic "no items" placeholder
-  └── ConfirmDialog.tsx             ← shadcn AlertDialog wrapper for destructive actions
-```
-
-### 4. Mock Data Layer
-
-```
-src/lib/mock/
-  ├── tables.ts                     ← 12–16 table records: id, zone, capacity, status
-  ├── menu.ts                       ← Categories + items: ramen, sides, drinks, extras
-  ├── orders.ts                     ← Sample orders with line items + modifiers
-  ├── staff.ts                      ← Staff roster: roles, names, branch assignments
-  └── branches.ts                   ← Branch A (Silom), Branch B (Ekkamai) fixture data
-
-src/lib/mock/index.ts               ← Re-exports all fixtures
-```
+- **`globals.css` as single token source:** Tailwind CSS 4 has no `tailwind.config.js`. All design tokens live in `@theme {}` (brand values) and `:root {}` (semantic aliases) in `globals.css`. Brand refresh = edit one file; Tailwind regenerates all utilities automatically.
+- **Route groups for layout isolation:** `(app)` uses AppShell, `(kds)` uses full-screen canvas, `(auth)` uses bare canvas. Each route group has its own `layout.tsx` with its own guards. This is correct and should not change.
+- **`src/components/ui/` as override surface:** shadcn components are owned code (not a node_modules package). Variant changes go into the CVA `cva()` call in each file. No wrapper components, no new files — edit in place.
+- **`role-permissions.ts` as single permissions source:** Both nav access (sidebar) and action access (UI buttons) route through one file. New action keys are added here, TypeScript enforces exhaustiveness, then consumed in components via `canDoAction()`.
 
 ---
 
-## State Management Approach
+## Architectural Patterns
 
-**Tool: Zustand** (single dependency, no boilerplate, ideal for wireframe complexity).
+### Pattern 1: Tailwind CSS 4 Token Layering
 
-Do not use React Context for cross-cutting state. Do not use Redux — overkill. Zustand slices map directly to POS domains.
+**What:** Three-layer token system — brand values in `@theme`, semantic aliases mapped via `@theme inline`, light/dark values in `:root` and `.dark`.
 
-### Store Slices
+**When to use:** All color and spacing changes. Never hardcode OKLCH values in component classNames.
 
+**Trade-offs:** Single edit point for entire-UI color changes. Dark mode handled at the token layer — components need zero conditional logic.
+
+**Example:**
+```css
+/* Layer 1: Named brand values in @theme */
+@theme {
+  --color-brand-red: oklch(0.52 0.22 27);
+  --color-brand-red-hover: oklch(0.46 0.22 27);
+}
+
+/* Layer 2: Semantic tokens in :root (shadcn convention) */
+:root {
+  --primary: oklch(0.52 0.22 27);
+}
+
+/* Layer 3: @theme inline maps CSS var to Tailwind utility class */
+@theme inline {
+  --color-primary: var(--primary);
+}
+
+/* Layer 4: Dark mode overrides — same keys, different values */
+.dark {
+  --primary: oklch(0.63 0.22 27);
+}
+```
+
+**For brand polish:** Increase chroma on `--primary` (e.g., from `0.22` to `0.26`), raise `--destructive` contrast, add `--color-brand-*` entries in `@theme` for new accent roles if needed. No component files need changing for pure color strength changes.
+
+### Pattern 2: CVA Variant Extension for shadcn Components
+
+**What:** shadcn components in `src/components/ui/` use `class-variance-authority` for variant maps. The component file is owned code. Extending means adding or modifying variant keys inside the `cva()` call. The `@base-ui/react` primitive underneath does not change.
+
+**When to use:** Any time a UI primitive needs a new visual variant or an existing variant needs stronger styling for brand polish.
+
+**Trade-offs:** Direct mutation is fast and type-safe. The risk of shadcn CLI overwriting is irrelevant here — the wireframe stack is frozen, no CLI upgrades.
+
+**Example (strengthening the default button variant in `button.tsx`):**
 ```typescript
-// src/store/sessionStore.ts
-// Who is using the app right now
-interface SessionStore {
-  role: 'waiter' | 'cashier' | 'manager' | null
-  staffName: string
-  branchId: string
-  shiftOpen: boolean
-  shiftStartedAt: string | null
-  setSession: (role, staffName, branchId) => void
-  openShift: () => void
-  closeShift: () => void
-}
-
-// src/store/tableStore.ts
-// Floor map state
-interface TableStore {
-  tables: Table[]
-  setTableStatus: (tableId: string, status: TableStatus) => void
-  getTableById: (tableId: string) => Table | undefined
-}
-
-// src/store/orderStore.ts
-// Active orders (one per table)
-interface OrderStore {
-  orders: Record<string, Order>           // keyed by tableId
-  addItem: (tableId: string, item: MenuItem, modifiers: Modifier[]) => void
-  removeItem: (tableId: string, lineItemId: string) => void
-  updateQuantity: (tableId: string, lineItemId: string, qty: number) => void
-  sendToKitchen: (tableId: string) => void
-  closeOrder: (tableId: string) => void
-  getOrder: (tableId: string) => Order | undefined
-}
-
-// src/store/kdsStore.ts
-// Kitchen ticket state (derived from orders, managed separately for KDS realism)
-interface KDSStore {
-  tickets: Ticket[]
-  updateTicketStatus: (ticketId: string, status: TicketStatus) => void
+// In src/components/ui/button.tsx inside buttonVariants cva():
+variant: {
+  default: "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-[0.98] transition-all",
+  // Existing classes extended — no new file, no wrapper
 }
 ```
 
-### Data Flow Direction
+**Never do:** Create `PrimaryButton.tsx` that wraps `<Button>` with hardcoded className. This splits the variant surface across files and breaks the CVA type system.
 
-```
-Mock fixtures (static)
-       ↓
-  Zustand stores (initialized on app load from fixtures)
-       ↓
-  Page views (read store via hooks)
-       ↓
-  Components (receive props from page views)
-       ↓
-  User actions (call store actions directly via hooks)
-       ↓
-  Store updates → React re-renders
-```
+### Pattern 3: Page-Level Role Guard
 
-**Rule:** Components never mutate store directly — always call named actions. Page views are the only place `useStore` hooks are called; they pass data down as props. This makes components portable and testable.
+**What:** A `useEffect` + early return pattern at the top of a page component that redirects unauthorized roles before rendering any content. Complements the layout-level guard which handles authentication and shift state.
 
-### Role-Based View Gating
+**When to use:** For pages that are accessible to some but not all roles within the `(app)` route group. The layout guard covers "authenticated + shift open" for the whole group; page guards cover "only role X can be here."
 
-Role gating is purely UI-conditional — no auth middleware for wireframe. A `useSession()` hook returns the current role. Views check role to show/hide nav items and action buttons.
+**Trade-offs:** Tiny overhead per render. Necessary because sidebar hiding is UX-only — direct URL navigation bypasses it.
 
+**Example (canonical pattern used in `kds/page.tsx`, extrapolated for `manager/page.tsx`):**
 ```typescript
-// Pattern in Sidebar.tsx
-const { role } = useSession()
-// Manager-only nav items rendered conditionally
-{role === 'manager' && <NavItem href="/shift" label="Shift Management" />}
+const ALLOWED_ROLES: Role[] = ['Manager']
+
+useEffect(() => {
+  if (role === null) router.replace('/login')
+  else if (!ALLOWED_ROLES.includes(role)) router.replace('/table-map')
+}, [role, router])
+
+if (role === null || !ALLOWED_ROLES.includes(role)) return null
 ```
 
 ---
 
-## Patterns to Follow
+## Bug Fix Map
 
-### Pattern 1: Route Group for Shell Isolation
+This is the primary integration reference for downstream roadmap phases. Each bug is mapped to its exact file, the line(s) involved, root cause, and fix approach.
 
-Use Next.js route groups to apply the AppShell layout only to POS pages, keeping `/login` frameless.
+### Bug 1 — AppSidebar `/orders` Dead Link
+
+**File:** `src/components/app-shell/AppSidebar.tsx`
+
+**Location:** Line 29, `NAV_ITEMS` array.
+
+**Root cause:** `href: '/orders'` points to a route that does not exist. There is no `src/app/(app)/orders/` directory. The actual order entry point is `/order/[tableId]`, which requires a table ID. The sidebar cannot link directly to it without a table context.
+
+**Fix:** Create `src/app/(app)/orders/page.tsx` as a client redirect to `/table-map`. The file is three lines — import `useRouter`, call `router.replace('/table-map')` in a `useEffect`. The sidebar href `/orders` now resolves to a real route, and the user lands at the table map to pick a table.
+
+**Files touched:** `src/app/(app)/orders/page.tsx` (new file).
+
+### Bug 2 — KDS Page Guard Blocks Manager
+
+**File:** `src/app/(kds)/kds/page.tsx`
+
+**Location:** Lines 17–24 (`useEffect` guard) and line 48 (early return).
+
+**Root cause:** The guard condition is `role !== 'Kitchen'`. This redirects all non-Kitchen roles, including Manager, to `/table-map`. However `ROLE_NAV_ACCESS` in `role-permissions.ts` (line 8) correctly grants Manager access to `'kds'`. The nav access table is correct; the page guard is over-restrictive.
+
+**Fix:** Change the redirect condition from `role !== 'Kitchen'` to `!['Kitchen', 'Manager'].includes(role)`. Update the early return on line 48 from `if (role === null)` to `if (!role || !['Kitchen', 'Manager'].includes(role))`.
+
+**Files touched:** `src/app/(kds)/kds/page.tsx` only (two line changes).
+
+### Bug 3 — Toaster Not in AppShell
+
+**File:** `src/components/app-shell/AppShell.tsx`
+
+**Location:** No `<Toaster>` present. Currently `<Toaster>` is mounted only inside `src/app/(app)/order/[tableId]/page.tsx` (line 54).
+
+**Root cause:** `<Toaster>` from `sonner` was added only to the order page. Pages like `table-map`, `payment`, and `manager` share `AppShell` but have no Toaster instance. Any `toast()` call on those pages fires into void.
+
+**Fix:** Add `import { Toaster } from 'sonner'` and render `<Toaster position="top-center" />` inside the root div of `AppShell.tsx`. Remove `<Toaster>` and its import from `order/[tableId]/page.tsx`. The `(kds)` route group uses a separate layout with no AppShell — if KDS needs toasts, add `<Toaster>` to `src/app/(kds)/layout.tsx` separately.
+
+**Files touched:** `src/components/app-shell/AppShell.tsx` (add Toaster), `src/app/(app)/order/[tableId]/page.tsx` (remove Toaster + import).
+
+### Bug 4 — Missing `void-post-send` in ACTION_PERMISSIONS
+
+**File:** `src/lib/role-permissions.ts`
+
+**Location:** `ActionKey` type union (lines 20–30) and `ACTION_PERMISSIONS` record (lines 32–43).
+
+**Root cause:** The `ActionKey` union does not include `'void-post-send'`. There are 10 current action keys; `void-post-send` (voiding an already-sent item, which requires manager authorization) is absent. Any component needing to gate the void-post-send button has no typed action key to pass to `canDoAction()`.
+
+**Fix:** Add `'void-post-send'` to the `ActionKey` union and add a corresponding entry to `ACTION_PERMISSIONS`. Appropriate roles: `['Manager']` only — voiding a sent item requires manager override in the A Ramen workflow.
+
+**Files touched:** `src/lib/role-permissions.ts` only (two line additions).
+
+### Bug 5 — Manager Page Has No Role Guard
+
+**File:** `src/app/(app)/manager/page.tsx`
+
+**Location:** Top of `ManagerPage()` function — guard is absent.
+
+**Root cause:** `AppLayout` (`(app)/layout.tsx`) only checks "authenticated + shift open." It does not block non-Manager roles from the `/manager` route. `AppSidebar` hides the Manager nav item for non-Manager roles (line 63), but direct URL navigation bypasses sidebar visibility entirely.
+
+**Fix:** Add the page-level guard pattern at the top of `ManagerPage`. Allowed roles: `['Manager']`. Redirect to `/table-map` for all other roles. Two additions: the `useEffect` guard and the early return.
+
+**Files touched:** `src/app/(app)/manager/page.tsx` only.
+
+---
+
+## Data Flow
+
+### Token to Component Flow
 
 ```
-src/app/
-  (pos)/              ← route group — inherits AppShell layout
-    layout.tsx
-    floor/page.tsx
-    order/[tableId]/page.tsx
-    kds/page.tsx
-    payment/[orderId]/page.tsx
-    shift/page.tsx
-  login/
-    page.tsx          ← no shell, full-screen centered card
-  layout.tsx          ← root layout: providers (ZustandProvider, ThemeProvider)
+globals.css @theme
+    --color-brand-red: oklch(...)
+        |
+        v
+globals.css :root
+    --primary: oklch(...)
+        |
+        v
+globals.css @theme inline
+    --color-primary: var(--primary)
+        |
+        v
+Tailwind CSS 4 generates bg-primary, text-primary, border-primary ...
+        |
+        v
+CVA variant strings in button.tsx, badge.tsx, custom components
+        |
+        v
+className props consumed in JSX
 ```
 
-### Pattern 2: View → Section → Atom Hierarchy
+### Role Permission Flow
 
-Views are page-level orchestrators. Sections are feature regions within a view. Atoms are reusable primitives.
-
-Never put layout logic inside atomic components. Never put data fetching (or mock data access) inside atoms.
-
-### Pattern 3: Mock Data Initialization via Store Hydration
-
-Stores hydrate from mock fixtures on first access — not via useEffect in components. Keep mock data out of component files entirely.
-
-```typescript
-// src/store/tableStore.ts
-import { mockTables } from '@/lib/mock/tables'
-const useTableStore = create<TableStore>((set, get) => ({
-  tables: mockTables,   // ← hydrated at module load time
-  ...
-}))
+```
+session.store  →  role: Role | null
+                      |
+          ┌───────────┼──────────────────────────────────┐
+          v           v                                    v
+  AppLayout       AppSidebar                    Page-level guards
+  (app)/layout    canAccess(role, slug)          KdsPage: ['Kitchen','Manager']
+  auth + shift    shows/hides nav items          ManagerPage: ['Manager']
+  guard for       (UX only — not security)       (enforces route security)
+  whole group
+                      |
+                      v
+              Feature components
+              canDoAction(role, actionKey)
+              enables/disables action buttons
 ```
 
-### Pattern 4: shadcn Sheet for Modifier Flows
+### Toast Coverage (after Bug 3 fix)
 
-The modifier selection flow (broth, spice, add-ons) uses a `Sheet` (side drawer) rather than a modal. This preserves menu context while the user configures an item — matching real POS UX expectations.
+```
+AppShell.tsx
+    <Toaster position="top-center" />
+        |
+        covers all (app) routes:
+        /table-map, /order/[tableId],
+        /payment/[tableId], /manager, /shift-open
 
-### Pattern 5: KDS as Independent Context
-
-KDS is designed to feel like a separate screen. It should:
-- Have no sidebar navigation visible (full-screen mode)
-- Auto-update ticket display (use a mock setInterval to simulate "new order" arriving every N seconds in demo mode)
-- Be the only view that uses a dark or high-contrast color scheme variant — differentiates it visually from front-of-house screens
-
----
-
-## Anti-Patterns to Avoid
-
-### Anti-Pattern 1: Monolithic Page Components
-
-**What:** Putting all order-taking logic (menu, order panel, modifier sheet) inside a single `OrderPage` component.
-**Why bad:** Becomes unmaintainable at ~300 lines. Impossible for engineers to use as a handoff reference for specific components.
-**Instead:** Decompose into View → Section components as specified above. Each section maps to a distinct engineer deliverable.
-
-### Anti-Pattern 2: Mock Data in Components
-
-**What:** Importing fixture arrays directly inside `MenuPanel.tsx` or `TableCard.tsx`.
-**Why bad:** Creates hidden dependencies; fixtures can't be swapped centrally. Breaks the data flow contract.
-**Instead:** All mock data flows through Zustand stores only. Components receive data as props.
-
-### Anti-Pattern 3: Context API for Cross-Route State
-
-**What:** Using React Context for session/role/order state that must persist across navigation.
-**Why bad:** Context does not survive route transitions in App Router without careful provider placement. Role state would reset on navigation — killing demo realism.
-**Instead:** Zustand stores persist across route transitions naturally.
-
-### Anti-Pattern 4: useEffect for Store Initialization
-
-**What:** `useEffect(() => { setTables(mockTables) }, [])` inside a page component.
-**Why bad:** Causes a render cycle; tables are undefined on first render, producing flash.
-**Instead:** Initialize stores with fixture data at module definition time (see Pattern 3).
-
-### Anti-Pattern 5: Tailwind Inline Color Overrides for Semantic States
-
-**What:** `className="bg-green-500"` for "occupied" table status.
-**Why bad:** Status color logic becomes scattered; inconsistent across TableCard, StatusBadge, KDS ticket.
-**Instead:** Define semantic CSS variables in `globals.css` or a `cn()` variant map. StatusBadge is the single source of truth for status color.
+(kds)/layout.tsx (if needed)
+    <Toaster position="top-center" />
+        |
+        covers (kds) routes: /kds
+```
 
 ---
 
-## Build Order (Phase Recommendations)
+## Scaling Considerations
 
-Build in this sequence — each phase produces a fully demonstrable artifact:
+This is a browser wireframe. Scaling here means "stays maintainable as polish scope grows."
 
-| Phase | What to Build | Rationale |
-|-------|---------------|-----------|
-| 1 | Project scaffold + AppShell + `/login` RoleSelectorView | Foundation; establishes shell, routing, store structure, mock data. Everything else hangs on this. |
-| 2 | TableMapView (`/floor`) + TableCard + table status states | Most visually impactful for stakeholders. Tests the store-to-component data flow. |
-| 3 | OrderScreen (`/order/[tableId]`) + MenuPanel + OrderPanel | Longest to build; most complex UX. Core POS interaction. Requires table store to be done. |
-| 4 | ModifierSheet + KDS View (`/kds`) | Modifier sheet completes the order flow. KDS demonstrates the kitchen-facing dimension. |
-| 5 | PaymentScreen (`/payment/[orderId]`) + split bill UI | Natural end-of-flow. Depends on order existing. |
-| 6 | ShiftManagementView (`/shift`) + Manager views | Operational management layer. Depends on session store being solid. |
-| 7 | Polish pass: role gating, branch switching, demo mode, KDS auto-update | Makes it demo-ready. Adds narrative coherence for stakeholder walkthrough. |
+| Scale | Architecture Approach |
+|-------|-----------------------|
+| 5 bug fixes | Direct edits to exact files. Zero abstraction overhead needed. |
+| 10–15 polished components | CVA variant edits in existing `src/components/ui/` files; token edits in `globals.css`. |
+| 30+ component variants | Consider a `src/tokens/` module exporting named OKLCH constants, imported by `globals.css` via `@import` and also available for TypeScript references. |
 
-**Build order rationale:**
-- Shell first — every other phase uses it.
-- Table map second — it is the "home screen" in stakeholder demos; immediate visual payoff.
-- Order flow third — it's the heaviest lift and the core POS proof-of-concept.
-- KDS and payment follow order — they depend on order state existing.
-- Shift management last — least dependent on other flows, can be built in isolation.
+### Scaling Priorities
+
+1. **Token drift:** If the same OKLCH value appears in both `globals.css` and component className strings, they diverge independently. Enforce: all raw OKLCH values live only in `globals.css`; components use only Tailwind utility names.
+2. **Guard duplication:** As more pages add role guards, extract a `useRoleGuard(allowedRoles: Role[], redirectTo: string)` hook to eliminate the repeated `useEffect` + early return pattern. Not needed for v1.1 (only two guard additions), but worth flagging for v1.2+.
 
 ---
 
-## Scalability Considerations (Wireframe to Production Path)
+## Anti-Patterns
 
-| Concern | Wireframe Approach | Production Replacement |
-|---------|--------------------|----------------------|
-| Data layer | Zustand + mock fixtures | Zustand + React Query + REST/WebSocket API |
-| Auth / roles | Session store with manual role selection | NextAuth.js / Clerk with JWT role claims |
-| Real-time KDS | setInterval mock updates | WebSocket (Pusher / Socket.io) |
-| Multi-branch | Branch ID in session store, filtered mock data | API scoping by branch_id, tenant isolation |
-| Payment processing | Mock payment method selection UI | Stripe Terminal / local payment gateway |
-| Menu management | Static fixture file | CMS-driven or Inventory module from FIP |
+### Anti-Pattern 1: Hardcoding OKLCH in Component Classes
 
-This architecture is intentionally forward-compatible: Zustand stores map directly to API resource shapes, component boundaries match API resource boundaries, and route structure mirrors what a production app would use.
+**What people do:** Write `className="bg-[oklch(0.52_0.22_27)]"` in JSX to match a brand color.
+
+**Why it's wrong:** The value is disconnected from the token system. Dark mode breaks, brand updates require grep across all components, CSS variable chain is bypassed.
+
+**Do this instead:** Set the OKLCH value in `globals.css :root`, add it to `@theme inline` as a Tailwind utility, consume as `bg-primary` in className. All components update when the token changes.
+
+### Anti-Pattern 2: New shadcn File per Visual Variant
+
+**What people do:** Create `src/components/ui/button-destructive.tsx` wrapping `<Button>` with hardcoded className.
+
+**Why it's wrong:** Fragments the variant surface. TypeScript VariantProps diverge. The entire shadcn and CVA design is one `cva()` call per primitive — one file, all variants.
+
+**Do this instead:** Add the new variant key inside the existing `buttonVariants` cva call in `button.tsx`.
+
+### Anti-Pattern 3: Relying Only on Sidebar Visibility for Route Security
+
+**What people do:** Hide a nav link in the sidebar for unauthorized roles and assume that is sufficient access control.
+
+**Why it's wrong:** Direct URL navigation, browser history, and back-button presses all bypass sidebar rendering. A Waiter can type `/manager` and reach the page.
+
+**Do this instead:** Sidebar hiding (UX) AND page-level `useEffect` guard (navigation control). Both are needed. This is the root cause of Bug 5.
+
+### Anti-Pattern 4: Mounting Toaster in Individual Pages
+
+**What people do:** Add `<Toaster>` inside each page component that needs toast feedback.
+
+**Why it's wrong:** Multiple Sonner instances produce duplicate toasts when pages re-render. Toast appears on some pages and silently fails on others. The current codebase exhibits this — only order page has a Toaster.
+
+**Do this instead:** One `<Toaster>` at the layout level. One in `AppShell.tsx` for all `(app)` routes. One in `(kds)/layout.tsx` for the KDS route.
+
+### Anti-Pattern 5: Adding Role Arrays Inline in Components
+
+**What people do:** Write `role === 'Manager' || role === 'Kitchen'` directly in JSX.
+
+**Why it's wrong:** Role logic is scattered across components. When roles change (e.g., a "Supervisor" role is added), every component must be found and updated.
+
+**Do this instead:** Add the action to `ACTION_PERMISSIONS` in `role-permissions.ts` with the correct role array, then call `canDoAction(role, 'action-key')` in the component. The permissions table is the single source of truth.
 
 ---
 
-## Component Boundary Summary
+## Integration Points
 
-| Boundary | Rule |
-|----------|------|
-| Shell vs. Views | Shell owns persistent UI (sidebar, topbar). Views own page content. No cross-contamination. |
-| Views vs. Sections | Views read stores and compose sections. Sections receive props only — no store access. |
-| Sections vs. Atoms | Sections own layout and section-level logic. Atoms are pure display. |
-| Mock data vs. Stores | Mock data lives in `src/lib/mock/`. Stores consume it at init. Components never import mock data. |
-| shadcn/ui vs. shared/ | `src/components/ui/` is shadcn territory — untouched. `src/components/shared/` is project-specific wrappers. |
+### Internal Boundaries
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| `globals.css` ↔ components | CSS custom properties → Tailwind utilities → className strings | Token changes propagate automatically; no component edits for color-only brand changes |
+| `role-permissions.ts` ↔ guards and components | Direct TypeScript imports of `canAccess`, `canDoAction`, `ROLE_NAV_ACCESS` | Add ActionKey here first, then consume — never inline role arrays in components |
+| `session.store` ↔ layout and page guards | `useSessionStore()` hook called in layout.tsx and page guards | Handle `role === null` (unauthenticated) separately from wrong-role case |
+| `AppShell` ↔ Toaster | `<Toaster>` mounted once inside AppShell JSX | All `(app)` pages share this single instance via Sonner's global state |
+| `(app)/layout.tsx` ↔ `(kds)/layout.tsx` | No shared layout state; both read `session.store` independently | KDS layout is a server component — role guard lives in `kds/page.tsx` (client component) |
+| `button.tsx` ↔ `@base-ui/react` | `ButtonPrimitive` from `@base-ui/react/button` is the underlying element | Do not import from `@radix-ui` — this project uses Base UI, not Radix |
+
+### Build Order for v1.1 Phases
+
+Bug fixes must precede brand polish because:
+
+1. Toaster fix (Bug 3) ensures toast feedback is visible on all pages during polish testing.
+2. Role guard fixes (Bugs 2, 5) allow managers to navigate to KDS and manager screens when reviewing polished UI.
+3. ACTION_PERMISSIONS fix (Bug 4) is a prerequisite for any component checking `void-post-send`.
+4. All bugs are small, isolated, zero-visual-risk changes — do them in one atomic phase before touching any CSS.
+
+Recommended phase order:
+1. **Bug Phase** — All 5 bugs in one phase. Five files, minimal diffs, zero visual change.
+2. **Token Phase** — Strengthen brand tokens in `globals.css`. Entire UI updates immediately.
+3. **Component Polish Phases** — Buttons, badges, cards, typography. CVA-safe edits to `src/components/ui/` files.
 
 ---
 
 ## Sources
 
-- Next.js App Router documentation (route groups, layouts, dynamic segments): https://nextjs.org/docs/app/building-your-application/routing
-- shadcn/ui component library (Sheet, Dialog, Tabs, Badge): https://ui.shadcn.com/docs
-- Zustand documentation (store patterns, slices): https://zustand.docs.pmnd.rs/
-- Confidence: HIGH — all patterns are from stable, widely-adopted APIs with strong community consensus. No speculative or LOW-confidence claims in this document.
+- `src/app/(kds)/kds/page.tsx` — direct inspection of role guard (Bug 2)
+- `src/components/app-shell/AppSidebar.tsx` — NAV_ITEMS href inspection (Bug 1)
+- `src/components/app-shell/AppShell.tsx` — confirmed Toaster absent (Bug 3)
+- `src/lib/role-permissions.ts` — ACTION_PERMISSIONS key inventory (Bug 4)
+- `src/app/(app)/manager/page.tsx` — confirmed no role guard present (Bug 5)
+- `src/app/(app)/order/[tableId]/page.tsx` — Toaster currently mounted here (Bug 3 context)
+- `src/app/globals.css` — Tailwind CSS 4 @theme / :root / .dark token structure confirmed
+- `src/components/ui/button.tsx` — CVA + @base-ui/react pattern confirmed
+- `src/components/ui/badge.tsx` — CVA + @base-ui/react useRender pattern confirmed
+- `package.json` — Next.js 16.1.6, @base-ui/react 1.2.0, sonner 2.0.7, Tailwind CSS 4, Zustand 5.0.11
+- Confidence: HIGH for all findings — every claim is traceable to a specific file and line number
+
+---
+*Architecture research for: Next.js POS Wireframe v1.1 Bug Fixes + Brand Polish*
+*Researched: 2026-03-11*

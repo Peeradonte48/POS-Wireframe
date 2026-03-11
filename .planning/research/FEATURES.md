@@ -1,174 +1,196 @@
-# Feature Landscape
+# Feature Research — UI Brand Polish (v1.1)
 
-**Domain:** Dine-in Restaurant POS — Table Service (Ramen, Multi-Branch)
-**Researched:** 2026-03-10
-**Confidence Note:** Web search tools unavailable this session. Findings based on training-data knowledge of Toast, Square for Restaurants, Lightspeed Restaurant, and Revel POS (all widely documented through mid-2025). Confidence: MEDIUM-HIGH for industry-standard features; LOW-MEDIUM for cutting-edge differentiators. Validate against current vendor docs before finalizing wireframe scope.
+**Domain:** Bold & Energetic Restaurant POS — Dark-Mode UI Polish for A Ramen
+**Researched:** 2026-03-11
+**Confidence:** MEDIUM-HIGH — primary evidence from codebase audit + UI design research; competitor POS UI patterns from industry knowledge (Toast, Square, Lightspeed); web search verified for dark-mode semantics, OKLCH, badge/button design patterns.
 
 ---
 
-## Table Stakes
+## Research Scope
 
-Features users expect in any dine-in POS. Missing = staff refuses adoption, stakeholders reject the wireframe as unrealistic.
+This file answers the v1.1 milestone question: **what UI component treatments make a restaurant POS feel "bold and energetic" vs. generic?**
+
+The focus is **four component categories**:
+1. Button design (primary CTA, icon buttons, destructive)
+2. Status badges (table state, order stage)
+3. Cards and panels (menu cards, ticket panel, KDS card, info panels)
+4. Typography and hierarchy
+
+All findings are anchored to the existing A Ramen brand tokens:
+- Primary crimson: `oklch(0.52 0.22 27)` (light) / `oklch(0.63 0.22 27)` (dark)
+- Dark mode base: `oklch(0.145 0 0)` background, `oklch(0.205 0 0)` card
+- Radius: `0.625rem` base (`--radius`)
+- Icon set: Solar (flat, linear style)
+- Font: Inter + Noto Sans Thai/JP
+
+---
+
+## Feature Landscape
+
+### Table Stakes (Users Expect These)
+
+Features staff and stakeholders will immediately notice are missing. These are the floor of "competent POS UI" — not having them reads as unfinished or amateurish.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Floor plan / table map | Core mental model for waitstaff; every dine-in POS has it (Toast, Square, Lightspeed, Revel) | Medium | Must show table status at a glance: Open, Occupied, Reserved, Needs Attention |
-| Table status indicators | Waitstaff needs to know occupancy and order stage without asking | Low | Color-coded: green (open), amber (occupied/ordering), red (bill pending), grey (reserved) |
-| Seat / cover count on table | Kitchen and billing need cover count | Low | Set when seating, affects split-bill math |
-| Order-taking screen with menu categories | Core transaction screen; category tabs (e.g. Broth, Toppings, Drinks, Sides) | Medium | Must support rapid tapping for fast service |
-| Item modifier flow | Ramen is inherently modifier-heavy; no modifier support = unusable for this domain | High | Broth type, spice level, noodle doneness, add-ons — structured as required vs optional groups |
-| Add / remove / edit items on open ticket | Waitstaff must correct mistakes before sending | Medium | Edit until "Send to Kitchen" is tapped |
-| Send to Kitchen action | Core event that fires the KDS ticket | Low | Confirmation state to prevent accidental sends |
-| Kitchen Display System (KDS) view | Kitchen cannot operate on paper in a modern ramen shop | Medium | Shows ticket queue, item details with modifiers, elapsed time |
-| Mark items / tickets as ready | Kitchen staff closes the loop to waitstaff | Low | Per-item or whole-ticket "Ready" toggle |
-| Bill / check screen | Every POS has a checkout view with itemized summary | Low | Shows items, modifiers, subtotal, tax, total |
-| Payment method selection | Cash, credit/debit card, QR/PromptPay (Thailand context) | Medium | Must be selectable; amounts clearly shown |
-| Print receipt / bill | Legal requirement in Thailand; operational expectation everywhere | Low | Wireframe: show print action state, not actual printer integration |
-| Void / cancel order or item | Mistakes happen; voiding is a daily operation | Medium | Requires manager confirmation for post-send voids |
-| Staff login / PIN entry | Role-based access is a POS baseline; prevents unauthorized transactions | Low | PIN pad UI; role determines which views are accessible |
-| Cashier view | Dedicated billing-focused view for cashier role | Medium | Bill queue, payment processing, receipt — no table assignment |
-| Waiter view | Table-centric order-taking view | Medium | Floor plan, order entry, modifier flow, send to kitchen |
-| Manager view | Operational oversight and overrides | High | Voids, shift summary, sales snapshot, user management |
-| Shift open / close | Session management is standard in every POS | Medium | Open shift: assign staff, starting float. Close shift: sales summary, cash reconciliation |
-| Menu navigation (categories + items) | Foundational to order entry | Low-Medium | Category tabs, item grid, item detail with modifiers |
-| Item availability toggle | Items sell out; marking 86'd is a real operation | Low | Per-item on/off; reflects immediately on order screen |
-| Order queue / ticket list | View all open tickets across tables | Medium | Useful for both manager and kitchen; shows table, time open, order status |
-| Multi-branch location context | Project explicitly requires it; multi-branch groups need this | Medium | Branch selector at login or in nav; data scoped to selected branch |
+| Primary CTA button uses brand color at full saturation | Every premium POS (Toast, Square, Lightspeed) uses their primary brand color — not muted — for the key action. Missing this = the UI feels like a gray generic SaaS template. | LOW | Current `bg-primary` is correct; the gap is no shadow, no pressed-state depth, no 44px enforcement on CTAs |
+| Status badges use semantic color (not just border-left accent) | Staff need to read table status at a glance under bright restaurant lighting. Semantic color fill (green/amber/red/blue) in the badge chip itself — not just a border stripe — is expected in any POS floor plan. | LOW | Current TableTile uses `border-l-4` colored stripe + muted icon. Badge chip needs colored bg fill |
+| Pressed / active feedback on touch targets | Tablet POS staff tap fast and repeatedly. Active scale (`active:scale-95`, `active:scale-97`) is the tactile signal the tap registered. Missing it = the UI feels unresponsive. | LOW | Already present on MenuPanel cards (`active:scale-[0.98]`). Missing on primary Button, KDS BUMP, ticket qty stepper |
+| 44px minimum touch target on ALL interactive elements | iOS HIG and Material Design both mandate 44–48px for touch targets. POS use case (fast service, gloves possible) makes this even more critical. | LOW | Current Button `h-8` (32px) default is under spec. Send to Kitchen has `h-11` — inconsistent |
+| Consistent border-radius language | Premium POS systems use one clear radius philosophy. Mixing `rounded-lg`, `rounded-xl`, `rounded-4xl` (current badge) without a rule looks accidental. | LOW | Need to define: CTAs = `rounded-lg`, badges = `rounded-full`, cards = `rounded-xl`, modals = `rounded-2xl` |
+| Text hierarchy: 3 clear weight levels | At a glance scannable. Price > item name > modifier detail. Missing clear weight differentiation = staff reads more slowly. | LOW | Current: mix of `font-semibold`, `font-bold`, `font-medium` but not systematized. Prices are inconsistently sized |
+| Muted/disabled states visually distinct | Staff must not accidentally tap disabled actions. Opacity alone is insufficient — color shift needed. | LOW | Current `disabled:opacity-50` is the only cue. No color shift or cursor: not-allowed visibility |
 
----
+### Differentiators (Competitive Advantage)
 
-## Differentiators
-
-Features not universally expected but that add real competitive or operational value. These distinguish a thoughtful wireframe from a generic template.
+Features that elevate A Ramen's POS from "competent" to "brand-distinctive." These are what make stakeholders say "this looks like our restaurant" rather than "this looks like a template."
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Ramen modifier presets / quick combos | A Ramen staff knows regulars order "Tonkotsu, level 2, extra noodles" — preset combos save 5+ taps per order | Medium | Saved modifier combinations per item; shown as quick-select chips |
-| Visual spice level selector | Spice is a key modifier in ramen; a 1–5 flame icon selector is faster and more intuitive than a dropdown | Low | Replace text dropdown with icon-based selector; high UX clarity |
-| Table timer / dwell time | Shows how long a table has been occupied; helps manage table turns in busy service | Low | Elapsed time badge on table map tiles; color shifts at threshold |
-| Order stage tracking per table | "Ordered → Cooking → Ready → Billed" shown on floor plan; reduces waiter-kitchen communication | Medium | Requires KDS state to propagate to floor plan view |
-| Split bill by seat | Common in group dining; reduces end-of-meal friction | High | Assign items to seats at order time OR split evenly at checkout |
-| Course / round management | For multi-round ramen service (e.g., add-on noodles, refills); allows sending items in stages | High | Mark items for Round 1 / Round 2; send sequentially |
-| Manager sales snapshot dashboard | Real-time sales total, covers served, top items — useful for shift reviews | Medium | Simple numbers view, not full analytics |
-| End-of-day summary screen | Shift close report: revenue, payment method breakdown, voids, covers | Medium | Replaces manual reconciliation; high value for manager role |
-| Waiter assignment to table | Track which waiter owns which table; accountability and tip tracking | Low | Assign on seating; visible on floor plan and ticket |
-| Staff performance per shift | Orders per hour, covers served, voids — for manager review | High | Defer to v2 but worth noting as a differentiator |
-| Quick note / special request field | Free text on order item for allergy or preference notes | Low | Single text input field per item; passes to KDS display |
-| Reservation indicator on table | Show reserved status with time and name; reduces seating conflicts | Medium | Static state in wireframe; integration with reservation system is out of scope |
+| Crimson shadow / glow on primary CTA | The single highest-impact brand expression in dark mode. A `box-shadow: 0 0 12px oklch(0.63 0.22 27 / 40%)` under the "Send to Kitchen" button ties the action to the A Ramen brand viscerally. No generic POS does this. | LOW | Pure CSS — one line per button variant. Tailwind: `shadow-[0_0_12px_oklch(0.63_0.22_27/40%)]` in dark mode. Applies to primary variant only |
+| Status badges as filled pills with brand palette | Rather than bare `border-left` stripes, filled color pills (`bg-green-500/20 text-green-400 border border-green-500/30`) for each table status communicate state instantly and look intentional. Industry-standard in premium POS (Square for Restaurants uses colored tiles; Toast uses colored section headers). | LOW | Replace `border-l-4` stripe + text-color pattern in TableTile with a proper badge chip. 5 semantic colors needed: green (Open), crimson (Occupied), blue (Reserved), amber (CheckRequested), gray (Cleaning) |
+| Uppercase tracking on section labels | The `text-[10px] font-bold tracking-widest uppercase` pattern in TicketPanel is a premium typographic micro-treatment. Extending this consistently to ALL section headers (KDS card header, manager tabs, payment sections) creates a cohesive brand voice. | LOW | Currently only in TicketPanel round labels. Should be a named pattern: `label-caps` utility |
+| KDS BUMP button: full-width, high-contrast, brand green | The BUMP button is the kitchen staff's most-tapped element. Currently uses raw `bg-green-600`. Should be styled with consistent `rounded-lg`, `font-bold`, `active:scale-[0.97]`, and on-brand sizing. "Check all items" blocked state needs a visually distinct treatment (not just grayed out). | LOW | Currently a raw `<button>` with no shadcn variant. Migrate to `<Button>` variant or custom CTA pattern |
+| Card elevation tiers: 1-flat / 2-raised / 3-floating | Bold UIs use z-depth to communicate hierarchy. Flat = info display. Raised = interactive element. Floating = active/selected. In dark mode, this is achieved with background lightness steps (`--card` vs `--muted` vs explicit highlight bg), not drop shadows. | MEDIUM | Define 3 tiers: (1) `bg-card` no shadow — base display; (2) `bg-card border-primary/20 shadow-sm` — interactive hover; (3) `bg-primary/10 border-primary/40` — active/selected state |
+| Brand-colored nav active state with indicator line | Current sidebar active state is `bg-primary text-primary-foreground` (solid fill). A more refined treatment: thin left-side `border-l-2 border-primary` + `bg-primary/10 text-primary` — more energetic and modern than the flat pill. | LOW | One class change in AppSidebar. Matches Lightspeed's side-nav pattern |
+| Price as hero text in ticket/bill | The running total in TicketPanel (`text-xl font-bold`) should be `text-2xl font-black` in dark mode with brand crimson color. Price is the most important number a staff member looks at. Making it look like body text undersells the design. | LOW | Only applies to the "Total" readout in TicketPanel footer and payment totals |
+| Spice level selector with colored flame icons | Current implementation exists — this differentiator is about ensuring the flame icons use a gradient from green (1) to crimson (5), making the selector feel branded and intuitive simultaneously. | LOW | The selector exists; add color graduation: L1 `text-green-400` → L3 `text-amber-400` → L5 `text-brand-red` |
 
----
+### Anti-Features (Commonly Requested, Often Problematic)
 
-## Anti-Features
+Patterns that seem like "making it more bold" but create UX problems in a working POS context.
 
-Features to explicitly NOT build in the v1 wireframe. Either out of scope, premature, or harmful to focus.
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Online ordering / delivery screens | Out of scope for this POS phase; completely different flow and UX | Keep a placeholder navigation item labeled "Online Orders" — disabled, greyed out |
-| Inventory management screens | Belongs to FIP Inventory module, not POS core | Reference inventory in PROJECT.md as future FIP integration; no screens in this wireframe |
-| CRM / loyalty program screens | FIP CRM module scope; not a POS core flow | Same: greyed nav item if needed for context |
-| Full accounting / reporting dashboard | Belongs to FIP Accounting module | End-of-day summary (differentiator above) is sufficient for POS scope |
-| Employee scheduling | Out of scope for POS; HR/scheduling module | Not referenced in this wireframe at all |
-| Multi-currency support | Premature complexity; A Ramen operates in THB | Hard-code THB; internationalization is a later concern |
-| Table reservation booking flow | Reservation management is its own system | Show reserved status on table map only; no booking UI |
-| Menu builder / admin editor | Backend CMS for menu is not a POS screen | Assume menu is configured; show a read-only menu settings view at most |
-| Customer-facing display | Second-screen customer confirmation is hardware-dependent | Out of scope for browser wireframe |
-| Tip management | Less common in Thai restaurant context; adds billing complexity | Omit entirely in v1 |
-| Complex discount engine | Promotional rules engine is complex and context-specific | Show a single "Discount %" input field on the bill screen; no rule builder |
-| Real-time multi-device sync indicators | Actual sync is backend; wireframe doesn't simulate live data conflicts | Static state is fine; no sync conflict UI needed |
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| Gradient background on main app shell | "Energetic" brands use gradients. Popular on marketing sites. | Under bright restaurant lighting and on lower-quality tablet screens, gradients on backgrounds make text hard to read and create visual noise during fast-paced service. Dark flat surfaces work better for information density. | Use gradient ONLY on the login/shift-open screen (low-density, one-time view). Keep app shell backgrounds flat `--background`. |
+| Animated shimmer / glow pulse on all CTAs | Draws attention. "Feels premium." | On a working POS, continuous animation on buttons distracts staff mid-service. Animation should only appear as a response to interaction (pressed, loading), not ambient. | Use `active:scale` and `transition-transform` for pressed feedback. Reserve pulsing animation for loading states. |
+| Full crimson fill on ALL interactive surfaces | Brand consistency. | Saturated crimson everywhere destroys hierarchy — if everything is primary color, nothing is primary color. Staff can't locate the key action. | Reserve `bg-primary` fill for ONE CTA per screen (the next logical action). Secondary actions use `variant="outline"` or `variant="ghost"`. |
+| Dense icon decorations on every card | "Character" and brand energy. | Menu cards already have food photos. Adding icon decorations to every card increases visual noise and slows scan speed. | Use icons purposefully: status icons in status rows (already correct), action icons in action buttons, no decorative icons. |
+| Heavy drop shadows everywhere (neumorphism) | Depth and premium feel. | In dark mode, neumorphic shadows require light source simulation that is computationally expensive and rarely renders well on tablet GPU. Also physically inconsistent with flat Solar icon style. | Use background lightness steps for elevation, not shadows. `bg-muted/30` vs `bg-card` vs `bg-background` communicates depth without shadows. Reserve `shadow-sm` for floating panels (modifier sheet, modal). |
+| Multiple font weights (Thin, Regular, Medium, Semibold, Bold, Black) simultaneously | Rich typographic palette. | More than 3 effective weight levels on one screen creates visual noise, not hierarchy. | Limit to: `font-medium` (body/secondary), `font-semibold` (labels/item names), `font-bold` / `font-black` (prices, primary heading). That is the full hierarchy needed. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-PIN Login → Role-determined view (Waiter / Cashier / Manager)
-  |
-  ├── Waiter view
-  │     Floor Plan → Select Table → Set Cover Count → Order Screen
-  │     Order Screen → Browse Menu → Select Item → Modifier Flow → Add to Ticket
-  │     Ticket → Send to Kitchen → KDS ticket created
-  │     KDS → Mark Ready → Waiter notified (state on floor plan changes)
-  │     Table → Request Bill → Bill Screen
-  │
-  ├── Cashier view
-  │     Bill Queue → Select Table/Bill → Payment Screen → Method Selection → Confirm → Receipt
-  │     Void Item → Manager approval required
-  │
-  └── Manager view
-        Shift Open → (all waiter/cashier functions unlocked)
-        Void approval → Required before cashier/waiter can void post-send item
-        Sales Snapshot → Live during shift
-        Shift Close → End-of-day summary → Cash reconciliation input
-
-Item modifier flow (dependency chain):
-  Select Item → Required modifiers must be answered before Add to Ticket
-  (e.g., Broth type required → Spice level required → Add-ons optional)
-
-Send to Kitchen:
-  Requires at least 1 item on ticket
-  Triggers KDS ticket creation
-  Locks sent items from edit (void required to change)
-
-Bill screen:
-  Requires table to have active order
-  Requires all items to be in "sent" or "ready" state
-  Discount applied before tax calculation
-  Split bill (if implemented) must resolve before payment
+Bold & energetic brand expression
+    |
+    ├── Brand tokens (ALREADY EXISTS)
+    │     --primary: oklch(0.63 0.22 27)  [dark mode]
+    │     --card, --muted, --background   [surface hierarchy]
+    │     --radius: 0.625rem              [radius base]
+    │
+    ├── Button system redesign
+    │     └── requires: Token audit (confirm --primary contrast in dark mode)
+    │     └── enables: CTA shadow/glow, pressed feedback, 44px enforcement
+    │     └── downstream: All screens that use Button component
+    │
+    ├── Badge system redesign
+    │     └── requires: Semantic color token decisions (green/amber/red/blue/gray)
+    │     └── enables: TableTile status pills, order stage indicators
+    │     └── note: Do NOT conflict with existing `destructive` semantic in token system
+    │
+    ├── Card/panel elevation tiers
+    │     └── requires: Background token hierarchy exists (bg-card, bg-muted, bg-primary/10)
+    │     └── enables: MenuPanel card hover, KDS card active, selected table highlight
+    │     └── complexity: MEDIUM — must audit all card usages across 6+ screens
+    │
+    ├── Typography system
+    │     └── requires: Nothing — pure CSS weight/size decisions
+    │     └── enables: Section label caps pattern, price hero text, heading scale
+    │     └── risk: Changing font weights may break existing line-clamp layouts
+    │
+    └── Spice selector color graduation
+          └── requires: Spice selector component to exist (ALREADY EXISTS)
+          └── enables: Branded modifier experience
+          └── complexity: LOW — 5 color class assignments
 ```
 
----
+### Dependency Notes
 
-## Screens Inventory
-
-A complete list of distinct screens the wireframe must include. Derived from table stakes + selected differentiators.
-
-| Screen | Role Access | Priority |
-|--------|-------------|----------|
-| PIN Login | All | P0 |
-| Branch Selector | All (manager auto-selects or picks) | P0 |
-| Floor Plan / Table Map | Waiter, Manager | P0 |
-| New Table / Seat Count Modal | Waiter, Manager | P0 |
-| Order Entry (Menu + Ticket) | Waiter | P0 |
-| Item Detail + Modifier Flow | Waiter | P0 |
-| Send to Kitchen Confirmation | Waiter | P0 |
-| KDS / Kitchen Display | Kitchen (view-only role or manager) | P0 |
-| Bill / Check Summary | Cashier, Waiter, Manager | P0 |
-| Payment Screen | Cashier, Manager | P0 |
-| Receipt Confirmation | Cashier | P0 |
-| Void / Cancel Item | Waiter (request), Manager (approve) | P0 |
-| Shift Open Screen | Manager | P0 |
-| Shift Close / EOD Summary | Manager | P0 |
-| Manager Sales Snapshot | Manager | P1 |
-| Order Queue / Ticket List | Manager, (Cashier) | P1 |
-| Item Availability Toggle | Manager | P1 |
-| Staff / User List | Manager | P1 |
+- **Button system requires token audit first:** The dark-mode `--primary` at `oklch(0.63 0.22 27)` is lighter than the light-mode version. Before adding shadow/glow, confirm contrast ratio of `--primary-foreground: oklch(0.10 0 0)` against this value passes WCAG AA. If it does not, adjust lightness before adding visual embellishment.
+- **Badge system must not conflict with destructive token:** `--destructive: oklch(0.704 0.191 22.216)` in dark mode is already a warm red-orange. The "Occupied" table badge (intended as crimson/red) must be distinct from the destructive token visually. Use `text-red-400 bg-red-500/15` rather than `text-destructive` to avoid semantic confusion.
+- **Card elevation tiers enhance all screens:** This is a global pattern change. Apply after button and badge systems are confirmed — so elevation can reference primary-colored borders correctly.
+- **Typography changes are lowest risk, highest perceived-polish impact:** Do typography last — it has no component dependencies and produces visible improvement with minimal code surface.
 
 ---
 
-## MVP Recommendation
+## MVP Definition
 
-For the wireframe to be credible as a dev-handoff spec and stakeholder artifact, prioritize:
+### This milestone's "launch with" (v1.1 brand polish)
 
-1. **Floor plan with table status** — the visual anchor of the entire POS
-2. **Order entry with modifier flow** — the most complex and most ramen-specific screen
-3. **KDS ticket view** — proves the kitchen integration story
-4. **Bill + payment screen** — closes the transaction loop
-5. **PIN login with role routing** — demonstrates role-based access without building auth
-6. **Shift open/close** — operational completeness for manager sign-off
-7. **Manager sales snapshot** — enough for stakeholders to see the oversight layer
+- [ ] Button: primary variant gets `h-11` (44px), crimson glow/shadow in dark mode, `active:scale-[0.97]` pressed feedback
+- [ ] Button: destructive variant gets filled treatment (`bg-destructive text-white`) — current 10% opacity is too subtle for a POS void action
+- [ ] Status badges: TableTile uses filled pill chips with 5 semantic colors, replacing the `border-l-4` stripe approach
+- [ ] KDS BUMP button: migrated to consistent Button component, full-width, 44px, `active:scale` feedback
+- [ ] Cards: MenuPanel cards get consistent hover state (`hover:border-primary/40 hover:shadow-sm`) + `active:scale-[0.97]`
+- [ ] Typography: Section headers get `label-caps` utility (`text-[10px] font-bold tracking-widest uppercase text-muted-foreground`) applied consistently across all screens
+- [ ] Typography: Price readouts (`฿XXXX`) promoted to `text-2xl font-black text-primary` in ticket footer and payment summary
 
-**Defer to v2 wireframe or production design:**
-- Split bill by seat (complex, not blocking validation)
-- Course / round management (A Ramen-specific but adds significant flow complexity)
-- Staff performance per shift (analytics layer; belongs after core is validated)
-- Full reservation integration (separate system)
+### Add after core is stable (v1.1.x)
+
+- [ ] Nav sidebar: active state refined to indicator-line pattern (`border-l-2 border-primary bg-primary/10 text-primary`)
+- [ ] Spice selector: color graduation green → amber → crimson across 5 levels
+- [ ] Card elevation: 3-tier system audited and applied across all info panels
+
+### Future consideration (v2+)
+
+- [ ] Animated entrance states for KDS tickets (slide-in from right on new order)
+- [ ] Login screen gradient background (brand moment at start of shift)
+- [ ] Haptic feedback on bump/send (requires native PWA capabilities)
+
+---
+
+## Feature Prioritization Matrix
+
+| Feature | Staff Value | Implementation Cost | Priority |
+|---------|-------------|---------------------|----------|
+| CTA button 44px + crimson glow | HIGH — core action clarity | LOW — CSS tokens | P1 |
+| Destructive button filled | HIGH — void action legibility | LOW — variant change | P1 |
+| TableTile status badge pills | HIGH — floor plan scan speed | LOW-MEDIUM — TableTile + STATUS_CONFIG refactor | P1 |
+| KDS BUMP consistency | HIGH — kitchen staff ergonomics | LOW — component migration | P1 |
+| Section header caps pattern | MEDIUM — polish, not function | LOW — utility class | P1 |
+| Price hero text promotion | MEDIUM — billing moment clarity | LOW — text class change | P1 |
+| MenuPanel card hover/active | MEDIUM — order entry fluidity | LOW — class additions | P2 |
+| Nav sidebar indicator-line state | LOW-MEDIUM — wayfinding polish | LOW — class change | P2 |
+| Spice selector color graduation | MEDIUM — brand moment | LOW — 5 color classes | P2 |
+| Card elevation tier system | MEDIUM — depth and hierarchy | MEDIUM — audit all screens | P2 |
+
+**Priority key:**
+- P1: Must have for v1.1 — directly addresses the "bold & energetic" milestone goal
+- P2: Should have — elevates from good to great
+- P3: Nice to have — defer to v1.1.x or v2
+
+---
+
+## Competitor Feature Analysis — UI Design Patterns
+
+| UI Pattern | Toast POS | Square for Restaurants | Lightspeed Restaurant | A Ramen v1.0 (current) | A Ramen v1.1 target |
+|------------|-----------|------------------------|----------------------|------------------------|----------------------|
+| Primary CTA size | Large (44-52px), brand-colored, full-width on mobile | Large, brand green, full-width | Brand orange, full-width | `h-8` (32px) default — undersized | `h-11` (44px), brand crimson |
+| Status badge type | Colored icon chips with text label | Full colored tile (green/red/gray) | Colored border + label | Border-left stripe only | Filled pill with semantic color |
+| Dark mode surface depth | 2-3 elevation levels via card bg | Light-dominant, limited dark support | 2-tier (list bg vs card bg) | 2-tier correct, not brand-expressed | 3-tier: flat / raised / floating |
+| Section label style | Uppercase, muted, small tracking | Bold, dark, larger | Tab-style, active underline | `tracking-widest uppercase` in ticket only | Consistent caps utility everywhere |
+| Price display | Large, bold, right-aligned, prominent | Large amount, total highlighted | Clear hierarchy, total prominent | `text-xl font-bold` — undersized | `text-2xl font-black text-primary` |
+| Pressed/active feedback | `active:scale` or background flash | Color darken on press | Subtle background darken | Present on menu cards only | Applied to all interactive elements |
+| Icon button size | 44px minimum | 44px+ | 44px+ | `size-8` (32px) — undersized | `size-11` for primary actions |
 
 ---
 
 ## Sources
 
-- Training data: Toast POS, Square for Restaurants, Lightspeed Restaurant, Revel POS feature documentation (knowledge through mid-2025). Confidence: MEDIUM.
-- Project context: `/Users/peeradonte/Desktop/Tech Basecamp/A RAMEN/POS-wireframe/.planning/PROJECT.md`
-- Recommended validation: https://pos.toasttab.com/restaurant-pos/features, https://squareup.com/us/en/point-of-sale/restaurants, https://www.lightspeedhq.com/pos/restaurant/
-- Thailand-specific payment context (PromptPay QR): industry common knowledge for Thai F&B market. Confidence: MEDIUM.
+- Codebase audit: `/src/components/ui/button.tsx`, `badge.tsx`, `table-map/TableTile.tsx`, `order/TicketPanel.tsx`, `kds/KdsTicketCard.tsx`, `order/MenuPanel.tsx`, `app-shell/AppSidebar.tsx` — HIGH confidence
+- Brand token audit: `/src/app/globals.css` — HIGH confidence
+- OKLCH accessibility: [OKLCH in CSS — Evil Martians](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl), [LogRocket OKLCH guide](https://blog.logrocket.com/oklch-css-consistent-accessible-color-palettes) — MEDIUM confidence
+- Dark mode typography: [Dark Mode UX 2025](https://www.influencers-time.com/dark-mode-ux-in-2025-design-tips-for-comfort-and-control/), [Dark Mode Best Practices 2026](https://www.tech-rz.com/blog/dark-mode-design-best-practices-in-2026/) — MEDIUM confidence
+- Badge design semantics: [Badge UI Design — Cieden](https://cieden.com/book/atoms/badge/badge-ui-design), [Semantic Color System — DEV Community](https://dev.to/ynab/a-semantic-color-system-the-theory-hk7) — MEDIUM confidence
+- Toast POS button color API: [Toast Dev Guide — POS Button Colors](https://doc.toasttab.com/doc/devguide/apiPosButtonColorHexCodesForLightAndDarkMode.html) — MEDIUM confidence (confirms dark mode button theming as a real system concern)
+- CTA design best practices: [LogRocket CTA Button Design](https://blog.logrocket.com/ux-design/cta-button-design-best-practices/) — MEDIUM confidence
+- POS UI design: [BPA POS — User Interface Design of POS](https://www.bpapos.com/blog/post/2024/10/10/User-Interface-Design-of-POS), [Lightspeed design your POS look](https://o-series-support.lightspeedhq.com/hc/en-us/articles/31329442916891-Design-your-POS-look-and-layout) — MEDIUM confidence
+- Training data: Toast, Square for Restaurants, Lightspeed Restaurant UI patterns — MEDIUM confidence (knowledge through mid-2025)
+
+---
+
+*Feature research for: A Ramen POS v1.1 — Bold & Energetic UI Brand Polish*
+*Researched: 2026-03-11*

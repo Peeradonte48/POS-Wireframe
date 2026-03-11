@@ -1,404 +1,277 @@
-# Domain Pitfalls: Restaurant POS Wireframe
+# Pitfalls Research
 
-**Domain:** Restaurant POS — Interactive Wireframe (Dev Handoff + Stakeholder Presentation)
-**Researched:** 2026-03-10
-**Confidence:** HIGH (domain knowledge) — web search unavailable; findings drawn from established POS UX patterns and restaurant operational knowledge
+**Domain:** Brand polish pass on existing Tailwind CSS 4 + shadcn/ui + Base UI app (v1.1 milestone)
+**Researched:** 2026-03-11
+**Confidence:** HIGH (codebase read directly; findings verified against official Tailwind 4 docs, GitHub discussions, and Sonner docs)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause wireframe rejection by stakeholders, rework by engineers, or fundamental misrepresentation of how a restaurant actually operates.
-
----
-
-### Pitfall 1: Treating the Order as a Single Linear Flow
+### Pitfall 1: Mutating `@theme inline` Tokens Breaks the Dark Mode Variable Chain
 
 **What goes wrong:**
-The wireframe shows "seat table → take order → send to kitchen → collect payment" as a clean four-step sequence. Real dine-in service is non-linear. Guests arrive in waves, order in rounds (drinks first, then food, then dessert), add items mid-meal, and sometimes pay before others at the same table finish. A wireframe that only models the happy path fails both audiences: engineers have no spec for re-ordering states, and stakeholders catch the gap immediately because it doesn't match their lived reality.
+`globals.css` uses a two-layer pattern: raw OKLCH values live in `:root` / `.dark` as CSS custom properties (e.g. `--primary: oklch(0.52 0.22 27)`), and `@theme inline` maps them to Tailwind color tokens (`--color-primary: var(--primary)`). If a brand-polish change writes literal OKLCH values directly into `@theme inline` instead of keeping them as `var(--*)` references, the runtime dark-mode override on `.dark` no longer reaches the generated utilities. The crimson updates in light mode; dark mode keeps the old value because the `var()` chain is severed.
 
 **Why it happens:**
-Designers think in task flows. Restaurant operators think in table lifecycles. The two mental models don't naturally overlap unless the designer has observed actual service.
+Developers copy an OKLCH value from a color picker and paste it directly into `@theme inline` for convenience. In Tailwind 4, `@theme inline` generates utilities that resolve at build time — not at CSS variable runtime. The `:root` / `.dark` swap only works when the utility references a CSS custom property via `var()`.
 
-**Consequences:**
-- Engineers build an order object that cannot be appended to after initial submission
-- KDS shows tickets in arrival order regardless of course sequence
-- Stakeholders ask "what happens when table 4 wants another bowl?" and the wireframe has no answer
-- Mid-project redesign of the order data model
+**How to avoid:**
+Never write literal OKLCH values in `@theme inline`. Change brand values only in `:root` and `.dark` blocks. The `@theme inline` section must always say `--color-primary: var(--primary)` — not `--color-primary: oklch(0.52 0.22 27)`. After every token change, toggle dark mode in the browser and confirm the color changes.
 
-**Prevention:**
-Model the table lifecycle, not just the order flow. The correct state machine for a dine-in table is: Empty → Seated → Order Open → Partial Send → Fully Sent → Add-on Round → Check Requested → Paid → Cleaning. Every state transition needs a wireframe screen or at least a documented note. Show "Add Items" as a primary action on an already-active table, not as an edge case buried in a secondary menu.
+**Warning signs:**
+- Primary buttons look correct in light mode but use the wrong shade in dark mode.
+- Toggling the theme switch shows no color change on primary-colored elements.
+- DevTools computed value for `--color-primary` shows a literal OKLCH string rather than a resolved variable reference.
 
-**Detection (warning signs):**
-- Your table map only distinguishes "open" vs "occupied" — no "check requested" or "partial order" states
-- "Add item to existing order" is not a labeled flow in your sitemap
-- KDS ticket screen has no "course 2 arriving" concept
-- Modifier screen has no "void item" action
-
-**Phase to address:** Phase 1 (Table Map + Order Flow foundation) — if the state machine isn't right here, every downstream screen inherits the mistake.
+**Phase to address:** Phase 1 (Token Refresh) — establish the rule before touching any value.
 
 ---
 
-### Pitfall 2: Oversimplifying Role and Permission Boundaries
+### Pitfall 2: OKLCH Chroma Exceeds sRGB Gamut, Causing Silent Browser Clipping
 
 **What goes wrong:**
-The wireframe shows "Manager View," "Waiter View," and "Cashier View" as three completely separate screens. In practice, permissions are action-level, not screen-level. A waiter can see the table map but cannot void items. A cashier can process payment but cannot apply a manager discount without a PIN override. A manager can do everything but still uses the same screens — not a different app. Treating roles as separate apps means the wireframe won't map to any real POS permission system engineers will build, and managers will reject it because it doesn't reflect how they actually grant override access.
+The existing `--primary` is `oklch(0.52 0.22 27)` — chroma 0.22 is near the sRGB gamut boundary for red hues (approximately 0.22–0.23 at L=0.52). Pushing "bolder" by raising chroma to 0.25+ produces an out-of-gamut color on non-P3 displays. Browsers silently clip it to the nearest in-gamut sRGB equivalent, which may differ in hue and saturation from the intended value. The design looks one way in a P3-capable browser (Safari on M-series Mac) and differently on the stakeholder's Windows machine — the exact device used for final sign-off.
 
 **Why it happens:**
-It's easier to design three distinct interfaces than one interface with dynamic permission states. Designers take the path of least visual complexity.
+OKLCH's gamut is not a uniform shape. The chroma ceiling for red (hue ~27) at L=0.52 is ~0.23 in sRGB. Design tools that display OKLCH values may not warn about gamut exceedance. Designers push chroma for vibrancy without a gamut check.
 
-**Consequences:**
-- Engineers must retrofit a permission layer onto screens designed without it
-- Manager override / PIN prompt flow is absent — a critical operational workflow
-- Void, discount, and refund actions have no escalation path in the wireframe
-- Stakeholders who understand real operations will flag this immediately
+**How to avoid:**
+Use the OKLCH gamut-check tool at oklch.com to plot all new token values before committing. The point must fall inside the sRGB gamut triangle. For dark-mode primary `oklch(0.63 0.22 27)`, verify the higher L value does not push chroma past the sRGB ceiling at that lightness. Safe rule: if changing chroma, verify on oklch.com; do not rely on a wide-gamut monitor to catch this.
 
-**Prevention:**
-Design one interface with permission-aware action states. Show the same order screen across roles, but annotate: "Void button — waiter sees disabled state, cashier sees active, manager sees active + can authorize waiter override." Include a PIN/manager-override modal as an explicit wireframe screen. Document at least three permission levels per critical action (view, act, authorize).
+**Warning signs:**
+- A color looks vivid in Chrome/Safari on Mac but washed-out or hue-shifted on Windows Chrome.
+- DevTools shows the browser's computed `color` value differs from the declared OKLCH literal.
+- The plotted point on oklch.com's sRGB triangle sits outside or on the boundary.
 
-**Detection (warning signs):**
-- Role switching is represented as a login screen with no shared screens
-- "Void item" button exists but has no disabled state shown
-- No manager override / PIN prompt wireframe screen exists
-- Discount and refund flows only appear in the manager view, not as escalation flows from waiter/cashier views
-
-**Phase to address:** Phase 1 (Role + Permission Layer) — decisions made here affect every subsequent screen.
+**Phase to address:** Phase 1 (Token Refresh) — verify every new token against sRGB gamut before applying.
 
 ---
 
-### Pitfall 3: Mock Data That Doesn't Reflect A Ramen's Actual Menu Structure
+### Pitfall 3: Hardcoded Tailwind Palette Classes Bypass the Token System and Are Dark-Mode Blind
 
 **What goes wrong:**
-The wireframe uses placeholder data like "Item 1 / $10.00" or generic "Burger / Pizza / Pasta" categories. For a ramen restaurant with a structured modifier system (broth type, spice level, protein, toppings, extras), the mock menu must reflect that structure. Stakeholders from A Ramen will immediately disengage if the menu screen doesn't look like their menu. Engineers will underspec the modifier system if they're designing against flat items with no nested options.
+Status color logic in `TableTile.tsx`, timer urgency logic in `KdsTicketCard.tsx`, and the shift-open lock banner in `AppSidebar.tsx` all use hardcoded Tailwind palette classes: `border-l-green-500`, `text-red-600`, `bg-amber-50`, `bg-green-600`, `text-amber-700`. These classes are not connected to any CSS custom property. When the brand token values change, or when dark mode is active, these palette classes do not adapt. The KDS BUMP button (`bg-green-600 ring-2 ring-green-400`) becomes visually jarring against a refined dark card surface. The sidebar lock banner (`bg-amber-50 border-amber-200`) becomes nearly invisible in dark mode because `amber-50` is almost white.
 
 **Why it happens:**
-Using real menu data feels like "extra work" for a wireframe. Designers defer it, thinking it can be filled in later. It cannot — the modifier architecture is baked into the order screen layout.
+Status indicators are added with semantic intent ("green = available") using raw palette because there is no `--color-status-open` token. This is fast and works well in light-mode-only development. The problem only surfaces when dark mode is tested or when a brand pass introduces new surface colors that create contrast clashes.
 
-**Consequences:**
-- Modifier UI is designed for one layer (e.g., "choose size") when A Ramen needs three to four layers (broth, spice, protein, toppings, add-ons)
-- Item count per category is underestimated — menu categories with 15+ items need scroll/pagination, not just a 6-item grid
-- Stakeholders cannot evaluate whether the UI handles their actual product
-- Engineers build a modifier system that handles checkboxes but not required-single-select (broth type) + optional-multi-select (toppings) simultaneously
+**How to avoid:**
+Before the brand polish pass, grep `src/` for raw Tailwind palette classes that carry semantic meaning. Decide on one of two approaches: (a) introduce `--color-status-*` semantic tokens in `:root` / `.dark` and map through `@theme inline` — more scalable but requires touching `globals.css`; or (b) add `dark:` variants explicitly to each hardcoded class — faster for a wireframe. Either approach must be applied consistently across all instances of each semantic color. Do not mix (a) and (b) for the same semantic concept.
 
-**Prevention:**
-Use actual A Ramen menu data from day one. If the full menu isn't available, construct representative mock data: 3-4 categories, 8-12 items per category, at least one item with a full modifier tree (required single-select + required single-select + optional multi-select + optional free-text for special requests). Show both a simple item and a fully-modified item in the order screen to demonstrate the complexity range.
+**Warning signs:**
+- Status badges and BUMP button look dramatically different brightness between light and dark mode.
+- Brand audit in dark mode reveals green/amber elements that appear neon or nearly invisible against the refined palette.
+- `grep -r "text-green-\|bg-amber-\|border-l-red-\|bg-green-" src/` returns more than 5 files.
 
-**Detection (warning signs):**
-- Menu items have a single price field and no modifier tree
-- Your modifier UI only shows one modifier group at a time
-- No "special request / free text" field exists on the order item
-- Category grid shows 4-6 items maximum with no scroll behavior indicated
-
-**Phase to address:** Phase 2 (Order-Taking Screen) — but mock data structure must be decided in Phase 1 so it's consistent across all screens.
+**Phase to address:** Phase 1 (Token Refresh) — audit and catalogue all hardcoded palette usage. Phase 2 (Component Polish) — fix during component redesign.
 
 ---
 
-### Pitfall 4: Table Map That Only Shows Status, Not Operability
+### Pitfall 4: CVA Base Class Additions During Polish Silently Override Call-Site `className` Props
 
 **What goes wrong:**
-The table map is designed as a visual display — a bird's-eye floor plan with color-coded statuses. It looks good in a stakeholder presentation but fails as an operational tool. Staff need to do things from the table map: seat guests, transfer a table, merge tables, see how long a table has been occupied, and navigate directly to that table's active order. A read-only status map is a dashboard, not a POS screen.
+Button and Badge are CVA-based components using `cn(buttonVariants({ variant, size, className }))`. `tailwind-merge` resolves conflicts by keeping the last class controlling each CSS property. When `TicketPanel.tsx` passes `className="h-11 px-5"` on `<Button>`, this correctly overrides the variant's `h-8`. However, if the brand polish pass adds `font-bold` to the CVA base string while the call site passes `font-semibold`, `tailwind-merge` picks `font-bold` (last wins by property group) and silently drops the caller's intent. This is invisible at the TypeScript level and only manifests as a visual regression that is easy to miss in review.
 
 **Why it happens:**
-Table maps are visually satisfying to design. The layout exercise dominates and the interaction design gets deprioritized.
+Adding a new utility class to a shared CVA base feels like a safe system-wide change. Developers do not think to check all call sites for conflicting props on the same CSS property because the component still compiles and renders.
 
-**Consequences:**
-- No "tap table to open order" interaction shown — engineers don't know what the tap target does
-- Table transfer and table merge flows are absent — a daily operational necessity
-- Time-on-table is not surfaced — waitstaff cannot identify tables approaching turn time
-- The floor plan uses a grid layout that doesn't reflect actual restaurant floor geometry (booths, bar, outdoor)
+**How to avoid:**
+When adding any class to a CVA base string during polish, grep all call sites of that component for `className` props containing utilities in the same CSS property group (font weight, height, padding, color, border). If a conflict exists, use a CVA variant instead of a base class modification. Example: add a `weight` variant (`bold: "font-bold"`) rather than hardcoding `font-bold` in the base.
 
-**Prevention:**
-Design the table map as a primary action surface, not a display. Every table cell must have a defined tap behavior for each status. Document: Empty → tap opens "Seat Table" modal; Occupied → tap opens active order; Check Requested → tap opens payment screen. Include secondary actions (long press or right-click equivalent) for: transfer table, merge tables, mark as reserved. Show time-on-table as a data point. Reserve one area of the map for "sections" if A Ramen uses section-based service.
+**Warning signs:**
+- Removing a `className` prop from a call site makes no visual difference — the prop was silently overridden.
+- A new CVA base class looks correct in isolation but overrides existing call-site intent on specific screens.
+- Grepping call sites after a CVA base change reveals the same CSS property appearing in both the base and a `className` prop.
 
-**Detection (warning signs):**
-- Table cells are visual elements with no interaction annotation
-- No "seat guests" modal wireframe exists
-- Table merge / table transfer are not in the sitemap
-- The floor plan is a perfect grid (never matches reality)
-- No time indicator on occupied tables
-
-**Phase to address:** Phase 2 (Table Map screen) — foundational to the entire dine-in flow.
+**Phase to address:** Phase 2 (Component Polish) — every CVA base change must be accompanied by a grep of all call sites.
 
 ---
 
-### Pitfall 5: KDS Designed Without Understanding Kitchen Workflow Realities
+### Pitfall 5: Sonner `<Toaster>` Does Not Inherit Dark Mode from the `html.dark` Class Without Explicit Configuration
 
 **What goes wrong:**
-The Kitchen Display System (KDS) wireframe shows a list of tickets sorted by time. Real kitchen workflows are organized by station (cold station, hot station, noodle station), by course (fire appetizers now, hold mains), and by urgency signals (rush ticket, allergy flag). A flat ticket list doesn't communicate any of this. The KDS wireframe also frequently omits the "bump" action (mark item/ticket complete and remove from screen) and the recall function (retrieve a bumped ticket if needed).
+The v1.1 goal is to mount `<Toaster>` in `AppShell`. Sonner's `<Toaster>` has its own `theme` prop (`"light" | "dark" | "system"`). Without this prop it defaults to `"light"`, rendering toasts with a white background even when the rest of the app is in dark mode. Sonner's toast portal is injected at the document body level and may appear outside the `.dark` ancestor scope that `@custom-variant dark (&:where(.dark, .dark *))` relies on — making the `dark:` utilities in Sonner's built-in styles inactive.
 
 **Why it happens:**
-Designers focus on what information to show, not on what actions kitchen staff need to perform and in what sequence.
+Developers mount `<Toaster />` without reading the next-themes `resolvedTheme` value because the component looks correct during light-mode development. Dark mode is only tested afterward, sometimes never during a wireframe project.
 
-**Consequences:**
-- Kitchen staff cannot use the wireframe to validate whether it reflects their actual workflow
-- No course-fire concept means mains print immediately with appetizers — a real operational problem
-- Missing bump action means engineers don't spec the ticket state machine correctly
-- Allergy and special request flags have no visual treatment — a food safety risk in the real system
+**How to avoid:**
+Pass the resolved theme explicitly: `<Toaster theme={resolvedTheme as "light" | "dark" | "system"} />`. Use `useTheme()` from `next-themes` to read `resolvedTheme` in the component that mounts `<Toaster>`. Do not use `theme="system"` — this reads `prefers-color-scheme` from the OS and can desynchronize from the manual toggle in `ThemeToggle`. The explicit `resolvedTheme` pass is the correct approach for a next-themes-controlled dark mode.
 
-**Prevention:**
-Show at least two KDS states: active ticket list and a single ticket detail. Annotate every action: "Bump item" (marks one item done), "Bump ticket" (marks whole table done), "Recall" (retrieves last bumped). Include visual differentiation for: rush tickets, allergen flags, special requests. If A Ramen uses course-based ordering (drinks → ramen → dessert), show how courses appear as separate groupings on a ticket, not merged.
+**Warning signs:**
+- Toasts appear with a white background in dark mode.
+- Toggling the theme switch does not change toast appearance without a page reload.
+- Sonner's built-in `dark:` classes are present in the rendered DOM but have no effect.
 
-**Detection (warning signs):**
-- KDS shows information only, no action buttons annotated
-- All items on a ticket look identical regardless of urgency or allergy flags
-- "Bump" is not a labeled interaction
-- No "recall" or "undo bump" state exists
-- All tickets are sorted only by time, no grouping by station or course
-
-**Phase to address:** Phase 3 (KDS screen) — can be designed in isolation but must reference order send logic from Phase 2.
+**Phase to address:** Phase 1 (Bug Fixes) — mount `<Toaster>` with the correct `theme` prop from the start. Do not add it as a follow-up.
 
 ---
 
-### Pitfall 6: Payment Screen Underspecifies Split Bill Logic
+### Pitfall 6: Changing `--radius` or `--font-sans` Globally Changes Every Component Simultaneously
 
 **What goes wrong:**
-The wireframe shows a "Split Bill" button that leads to a screen with no specified behavior. Real split scenarios are: split evenly by number of guests, split by item (each person pays for what they ordered), split into unequal custom amounts, and partial payment (one person pays their portion now, others pay later). Each scenario requires different UI affordances. "Split bill" as a single button with no flow detail is a dev-handoff failure — engineers will guess, and they'll guess the simplest case.
+`@theme inline` maps `--radius-sm` through `--radius-4xl` from the single `--radius: 0.625rem` base using `calc()`. Button sm/xs sizes use `rounded-[min(var(--radius-md),12px)]`. Badge uses `rounded-4xl`. KDS cards use `rounded-lg`. Dialog and Select use derived radius tokens in their shadcn/ui internals. Changing `--radius` from `0.625rem` to `0.75rem` for "punchier" brand expression simultaneously changes the shape of 30+ components across 8 route paths. Similarly, prepending a display typeface to `--font-sans` changes every body text element globally — including the PIN numpad, manager tab labels, and payment receipt text.
 
 **Why it happens:**
-Split bill is the hardest payment flow to design because it has the most combinatorial states. Designers document the easy case and defer the rest.
+Global tokens are powerful precisely because they cascade everywhere. During a brand polish pass, the temptation is to make one global change and see the entire UI update. The problem is "the entire UI" is larger than expected after 5,583 LOC.
 
-**Consequences:**
-- Engineers implement only even-split, which fails immediately in real service
-- Item-based splitting requires knowing which guest ordered what — a data model decision that should be made in the order-taking phase, not the payment phase
-- Partial payment state is not handled — the table stays "occupied" even after partial payment
-- Discount + split interactions are never modeled (what happens when a 10% discount is applied, then the bill is split?)
+**How to avoid:**
+For radius changes: Rather than changing `--radius`, add targeted `rounded-*` overrides directly to the specific component's CVA base or via a scoped CSS rule. Only change `--radius` if the intent is a true global radius shift, and budget time to review all 8 route paths. For typography: Introduce a `--font-display` token and apply it only to heading elements that need it. Never replace `--font-sans` with a display typeface — it will break Thai/Japanese script rendering which requires `Noto Sans Thai` / `Noto Sans JP` as font-stack fallbacks.
 
-**Prevention:**
-Design at minimum two split scenarios in full: even split and item-based split. For even split: show the "how many ways?" input, per-person amount, and payment method per person. For item-based split: show the assignment UI (drag item to "Guest 1 / Guest 2" columns or checkbox per guest). Show the combined payment screen state when one person has paid and one hasn't. Annotate discount behavior on split bills explicitly.
+**Warning signs:**
+- After changing `--radius`, Dialogs, Selects, Badges, and KDS cards all change shape together.
+- After changing `--font-sans`, all body labels shift appearance including the KDS timer and PIN numpad.
+- Thai and Japanese characters (menu item names, table labels) render with incorrect font-stack after a `--font-sans` change.
 
-**Detection (warning signs):**
-- "Split Bill" is a single button with no further flow designed
-- No "assign items to guests" UI exists in the order-taking screen
-- Payment screen shows only one total, no partial-payment state
-- Discount + split interaction is not documented
-
-**Phase to address:** Phase 4 (Payment screen) — but the guest-item assignment data must be accounted for as early as Phase 2.
+**Phase to address:** Phase 1 (Token Refresh) — document which tokens are safe for global change vs. which require scoped application before any edits are made.
 
 ---
 
-### Pitfall 7: Shift Management Treated as an Admin Afterthought
+### Pitfall 7: Line-Height Changes Break Thai and Japanese Script Rendering
 
 **What goes wrong:**
-Open shift and close shift are placed in a settings menu or an admin panel as secondary flows. In a real restaurant POS, shift management is the first thing a staff member does every morning and the last thing every night. It gates everything else — you cannot take orders without an open shift. Closing a shift triggers an end-of-day summary with cash count, tip reconciliation, and transaction totals. Treating it as an admin flow means it's underspecified and disconnected from the daily operational reality the wireframe is supposed to represent.
+The project loads three Google Fonts: Inter, Noto Sans JP, and Noto Sans Thai. Adding `leading-tight` globally to improve visual density — a common brand-polish move — clips Thai descenders and stacks Japanese characters awkwardly. Thai script has tonal marks and vowel symbols that extend significantly above and below the baseline. A `line-height` below 1.5 for Thai text causes visual overlap between lines.
 
 **Why it happens:**
-Shift management isn't visually interesting. It's backstage infrastructure compared to the table map or order screen. It gets deprioritized in wireframes focused on the "exciting" screens.
+Designers set line-height for Latin text readability, then apply it globally without testing multilingual content. The POS has Thai content throughout (menu item names, table labels, manager notes) that is easy to miss when developing in English.
 
-**Consequences:**
-- No "shift not open" state is shown — engineers don't know what to render when no shift is active
-- End-of-day summary screen is absent — a critical screen for managers and accountants
-- Cash drawer reconciliation flow (expected vs. actual cash) is never designed
-- Multi-branch context means a staff member might work at Branch A but accidentally log into Branch B — no branch-selection-at-shift-open flow
+**How to avoid:**
+Never set `leading-tight` or any `line-height < 1.5` globally via `@layer base` or a body rule. Apply tighter leading only to specific elements that are guaranteed to render Latin text only: currency amounts (`text-xl font-bold` price fields), section headers like "New Items" / "Round 1". Test any leading change by rendering an actual Thai-language menu item name and checking for clipping.
 
-**Prevention:**
-Include shift open as the first flow after login: select branch → select role → open shift → confirm opening cash. End-of-day should show: transaction count, payment method breakdown (cash / card / QR), tips collected, voids and discounts applied, net sales. Show the "shift already open" state (someone forgot to close yesterday's shift). For multi-branch context, make branch selection explicit at shift open, not buried in settings.
+**Warning signs:**
+- Thai vowel marks (sara, mai, wunagu) visually overlap with the line above after a line-height change.
+- Japanese characters appear cramped or overlapping in multi-line contexts.
+- The effect is invisible during English-only development and only appears with real menu data.
 
-**Detection (warning signs):**
-- Shift open/close is in a settings or admin submenu, not a primary flow
-- No "opening cash" input screen exists
-- End-of-day summary is absent from the sitemap
-- Branch selection has no relationship to shift open
-- No "shift not open" zero state for the table map
-
-**Phase to address:** Phase 1 (Authentication + Shift Open) — this is a foundational gate flow, not a supplementary one.
+**Phase to address:** Phase 2 (Typography Hierarchy) — apply leading only to scoped Latin-only elements.
 
 ---
 
-### Pitfall 8: Multi-Branch Context Not Surfaced in Navigation
+## Technical Debt Patterns
 
-**What goes wrong:**
-The wireframe shows the POS interface without any visible indication of which branch the user is operating. With A Ramen scaling to multiple locations, staff members and managers need to see "Branch: Silom" or "Branch: Thonglor" clearly at all times. Managers reviewing cross-branch sales need a branch-switching mechanism. Without this, the wireframe implies a single-location system, and engineers will not architect for multi-tenancy from the start.
+Shortcuts that seem reasonable but create long-term problems.
 
-**Why it happens:**
-Designing for one location is simpler. Multi-branch context feels like a backend concern, not a UX concern. Designers defer it.
-
-**Consequences:**
-- No branch selector exists — engineers treat branch as a backend config, not a UI concern
-- Manager dashboard shows no branch filter — aggregated data only
-- Staff can't tell which branch's menu they're building an order against
-- Real-world scenario: manager at HQ wants to see Branch A's current floor plan — no mechanism exists in the wireframe
-
-**Prevention:**
-Place branch context in the persistent navigation header — visible on every screen. For staff: read-only (they're assigned to a branch at shift open). For managers: a branch switcher dropdown with "All Branches" aggregate view option. Show branch name in the shift open flow, the table map header, and the end-of-day summary. Make the manager dashboard branch-filterable.
-
-**Detection (warning signs):**
-- No branch indicator in the nav header
-- Manager dashboard shows one total, no branch breakdown
-- Table map has no branch label
-- Staff login flow has no branch-selection step
-
-**Phase to address:** Phase 1 (Navigation Shell + Shift Open) — must be in the persistent layout from the start.
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Hardcoded palette classes for status colors (`text-green-600`, `border-l-red-500`) | Fast semantic clarity | Does not adapt to dark mode; breaks if brand palette shifts; bypasses token system | v1.0 wireframe only; must be resolved before stakeholder dark-mode demo |
+| Inline `className` overrides on Button instances (`h-11 px-5`) instead of CVA variants | One-off sizing without touching shared code | Silent merge conflicts when CVA base is later modified | One-off instances; never for patterns repeated 3+ times across the codebase |
+| `font-bold` vs `font-semibold` scattered inconsistently across same text roles | Quick visual hierarchy decisions | Typography hierarchy breaks under a global font weight audit; hard to normalize | Never — lock a role-to-weight map during the polish phase |
+| `opacity-30` / `opacity-40` for disabled/empty states with no shared token | Rapid implementation | Muted states look different brightness in dark mode depending on the background surface | v1.0 wireframe only; define a shared muted-state pattern during polish |
+| `bg-muted/30` on KDS card header as a surface treatment | Avoids over-engineering | Opacity over dark backgrounds produces different effective colors than intended; check contrast | Acceptable for v1.0; verify contrast ratio during dark-mode polish pass |
 
 ---
 
-### Pitfall 9: Void and Error Correction Flows Completely Absent
+## Integration Gotchas
 
-**What goes wrong:**
-The wireframe covers the happy path exclusively. Voids (removing an item before the kitchen sees it), order corrections (removing an item after it's been sent to the kitchen), wrong table corrections, and reprint receipt are not designed. These are not edge cases — they happen every service. A wireframe without these flows fails the dev-handoff purpose because engineers have no spec for error recovery, which is often where the hardest state machine logic lives.
+Common mistakes when connecting the styling system to external components.
 
-**Why it happens:**
-Voids and corrections feel like exceptions. Designers focus on primary flows and leave error states as "to be determined."
-
-**Consequences:**
-- Engineers implement the happy path and stub error recovery for "later" — later never comes before launch
-- No permission model for voids (anyone can void? manager PIN required?) because the flow isn't designed
-- No difference designed between "void before send" (simple) and "void after send" (requires kitchen communication)
-- Reprinting a receipt / re-sending a bill has no screen
-
-**Prevention:**
-Include void flow as an explicit wireframe: item long-press → void options → reason selection → confirmation → manager PIN (if required). Design two void states: pre-send (item simply removed) and post-send (item voided, kitchen notified, appears as struck-through on KDS). Include "wrong table" correction: transfer active order from Table 4 to Table 7 with confirmation. Show receipt reprint as an accessible action on a closed order.
-
-**Detection (warning signs):**
-- No void or correction screen in the sitemap
-- Long-press or secondary action on order items is not annotated
-- KDS has no visual treatment for voided items
-- Closed order history has no "reprint" action
-
-**Phase to address:** Phase 2 (Order-Taking Screen) for pre-send voids; Phase 3 (KDS) for post-send voids; Phase 4 (Payment) for receipt management.
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| Sonner `<Toaster>` | Mount without `theme` prop; toasts default to light regardless of app theme | Pass `theme={resolvedTheme}` from `useTheme()` from next-themes; verify by toggling dark mode and firing a toast |
+| next-themes `ThemeProvider` | Removing `suppressHydrationWarning` from `<html>` during a layout refactor | `suppressHydrationWarning` is already present in `layout.tsx` and must be retained — next-themes modifies the html element's `class` attribute server-to-client |
+| Base UI dialog portals | Assuming portal inherits `.dark` class from ancestor tree automatically | Base UI and Sonner portals mount at the document body level; they inherit `.dark` only if the `<html>` element carries the class, which next-themes (attribute="class") correctly provides — do not move the `ThemeProvider` below the body level |
+| Tailwind 4 `@theme inline` | Writing literal OKLCH values instead of `var()` references | Always `var(--token-name)` in `@theme inline`; write actual OKLCH values only in `:root` and `.dark` |
+| Solar icons in STATUS_CONFIG | Hardcoding icon `size` as a pixel integer in the config object | Already using `size={12}` / `size={18}` consistently — do not change to dynamic sizing without updating all call sites |
 
 ---
 
-### Pitfall 10: Wireframe Designed for Desktop, Ignoring POS Hardware Reality
+## Performance Traps
 
-**What goes wrong:**
-The wireframe is designed for a standard laptop viewport (1280x800 or larger). Real POS terminals are often 10-15 inch touchscreens in portrait or landscape orientation, operated with a single finger by staff who are standing, wearing gloves, or moving fast. Touch targets, font sizes, and information density appropriate for a trackpad click are completely wrong for a touchscreen terminal. Even though the brief specifies "browser-based," the usage context is still a restaurant environment, not a desk.
+In a browser wireframe, "performance" during a polish pass means development velocity and review accuracy, not runtime performance.
 
-**Why it happens:**
-Designers work on their own machines. They design for the viewport they're looking at.
-
-**Consequences:**
-- Touch targets are 24px or smaller — untappable without a stylus
-- Primary actions (send to kitchen, confirm payment) are in the top right corner — physically awkward on a counter-mounted terminal
-- Text is 12-14px — unreadable at arm's length in a bright restaurant
-- Stakeholders test on a tablet and find the interface unusable
-
-**Prevention:**
-Design with a 15-inch touchscreen context in mind: minimum 44x44px touch targets (prefer 48px), primary actions at bottom or center of screen (thumb zone for standing users), font sizes minimum 16px for body, 20px+ for key figures (table number, price totals). Use shadcn/ui component sizes at "lg" or above for interactive elements. Test the wireframe on an iPad or tablet before any stakeholder presentation.
-
-**Detection (warning signs):**
-- Wireframe is only viewable at 1280px+ width
-- Button components use default (not large) shadcn/ui size
-- Primary "Send to Kitchen" and "Charge" actions are in the top navigation
-- No mobile/tablet breakpoint considered
-
-**Phase to address:** Phase 2 (Order-Taking Screen) first — this is where touch interaction is most critical. But the layout system must account for it from Phase 1.
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| Changing a global CSS variable and checking all screens by eye only | Missing one screen; stakeholder finds the regression | Enumerate all 8 route paths as a checklist; check each one after every global token change | Every global token change |
+| Template literal class construction for conditional styles | Tailwind JIT fails to detect dynamically constructed class names; classes disappear from compiled CSS | `STATUS_CONFIG` in `TableTile.tsx` already uses the correct full-class-name constant map pattern — do not change to template literals during polish | Any time dynamic class string construction is introduced |
+| Adding `transition-all` to elements with OKLCH color changes | Janky animation on tablet; transitions trigger on layout properties | Use `transition-colors` for color-only; `transition-transform` for scale; never `transition-all` on interactive POS elements | During fast, repeated tablet interactions |
+| Adding `font-bold` or heavier font weights to Google Font declarations without updating the `weight` array in `layout.tsx` | The bold weight silently falls back to the next available weight; the intended visual impact does not appear | When adding a new font weight to a component, verify the weight is declared in the `Noto_Sans_Thai`, `Noto_Sans_JP`, or `Inter` config in `layout.tsx` | Any new font weight reference in the codebase |
 
 ---
 
-## Moderate Pitfalls
+## UX Pitfalls
+
+Common user experience mistakes during a brand polish pass on a POS interface.
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| Increasing primary button font size for visual boldness | May break the 44px touch target if height is not also adjusted; text can overflow on short button labels | Increase weight (`font-extrabold`) and letter-spacing (`tracking-wide`) instead of font-size to add character without changing layout |
+| Using crimson fill at L < 0.45 for primary button background | White foreground text contrast drops below 4.5:1 — WCAG AA failure on a POS device that must be readable at arm's length under restaurant lighting | Stay at L ≥ 0.48 for primary fill backgrounds; current `oklch(0.52 0.22 27)` is safe; verify any change with a contrast checker |
+| Animating status badge transitions between table states | Distracts staff reading the floor map during active service; animated changes create motion noise | Keep status badge updates instant; reserve CSS transitions for user-initiated interactions like button press or sheet open |
+| Making destructive (void) buttons more visually prominent during polish | Increases risk of accidental void taps on a touchscreen POS | Destructive actions must be visually distinct but not dominant; use outline/ghost style with destructive color, not filled primary-weight style |
+| Applying `leading-tight` globally to improve typographic density | Thai tonal marks and Japanese characters clip or overlap with adjacent lines | Apply tight leading only to confirmed Latin-only contexts: price fields, section counters, Latin-only labels |
 
 ---
 
-### Pitfall 11: Menu Category Navigation Not Designed for Speed
+## "Looks Done But Isn't" Checklist
 
-**What goes wrong:**
-Menu categories are shown as a dropdown or tabbed interface requiring two taps to reach an item. Experienced waitstaff navigate menus from memory at speed — the interface needs to support this. Common pattern: persistent category sidebar (visible at all times) + item grid that updates instantly on category tap, no page transition. If category navigation requires a dropdown interaction, the order screen feels slow even in a wireframe demo.
+Things that appear complete in light mode or in isolation but have hidden failures.
 
-**Prevention:**
-Use a persistent left-column category list (not a dropdown, not a tab bar that scrolls off screen). Items appear in a right-panel grid that updates without page navigation. Highlight the active category. Allow direct item tap to add — no "add to order" confirmation dialog for standard items (confirmation only for items with required modifiers).
-
-**Phase to address:** Phase 2 (Order-Taking Screen).
-
----
-
-### Pitfall 12: No "Table Notes" or "Reservation Note" Concept
-
-**What goes wrong:**
-Real restaurant service involves notes at the table level: "birthday celebration," "allergic to shellfish," "VIP guest," "high chair needed." These notes affect service for the entire table, not a single order item. A wireframe with no table-level note field forces all allergy and preference information into item-level special requests, which gets lost when a new order round is started.
-
-**Prevention:**
-Add a table note field accessible from the table detail view (visible when a table is selected on the floor map). Show it prominently in the KDS ticket header. Distinguish table notes (persist for the entire visit) from item notes (apply to one dish).
-
-**Phase to address:** Phase 2 (Table Map + Order-Taking).
+- [ ] **Token dark mode pair:** Every new OKLCH token in `:root` must have a corresponding value in `.dark` — the dark-mode value is the one most often forgotten.
+- [ ] **Toaster dark mode:** After mounting `<Toaster>`, fire a `toast()` call in dark mode — background must be dark, not white.
+- [ ] **Sidebar lock banner:** The shift-not-open banner uses `bg-amber-50 border-amber-200 text-amber-700` with no `dark:` variant — must be checked in dark mode; currently near-invisible against a dark background.
+- [ ] **Table status colors in dark mode:** `text-green-600`, `text-red-600`, `text-blue-600`, `text-amber-600` in `TableTile.tsx` — check contrast against the dark card background for each status.
+- [ ] **KDS BUMP button in dark mode:** `bg-green-600 ring-2 ring-green-400` in `KdsTicketCard.tsx` — check whether the green ring appears garish against a refined dark card in the new brand.
+- [ ] **Touch targets:** After any button height change, measure rendered height in DevTools — all primary CTAs (Send to Kitchen, BUMP, payment confirm) must remain ≥ 44px.
+- [ ] **Font weight loading:** After referencing a new font weight, verify it is listed in the `weight` array of the appropriate `next/font/google` config in `layout.tsx`.
+- [ ] **Dialog and Select radius:** After any `--radius` token change, open the Manager PIN modal (Dialog) and the Branch selector (Select in ShiftOpen) to confirm shape changes are acceptable.
+- [ ] **`@theme inline` chain integrity:** After any token change, open DevTools and inspect the computed `--color-primary` value — it should resolve to an OKLCH color, not show `var(--primary)` as an unresolved string.
+- [ ] **Thai/Japanese text rendering:** After any `leading-*` change, render a Thai-language menu item name and confirm no character clipping.
 
 ---
 
-### Pitfall 13: End State of "Paid" Table Not Designed
+## Recovery Strategies
 
-**What goes wrong:**
-The wireframe shows payment completion but not what happens next: the table should return to "empty" status, appear as "cleaning" briefly, then be available again. If the table goes directly from "paid" to "empty," the floor plan shows incorrect status to staff. The cleaning state also gates: a waiter cannot seat a new party at a table still being cleaned.
+When pitfalls occur despite prevention, how to recover.
 
-**Prevention:**
-Design the post-payment table lifecycle: Paid → Cleaning (staff clears table) → Ready (manager/host marks ready) → Empty (available to seat). Even if this is a simple status toggle, it must appear as a wireframe state.
-
-**Phase to address:** Phase 2 (Table Map), cross-referenced with Phase 4 (Payment).
-
----
-
-### Pitfall 14: Printer and Receipt Interactions Assumed, Not Specified
-
-**What goes wrong:**
-"Print receipt" and "print kitchen ticket" are shown as buttons with no specification of what triggers them, when they trigger automatically, and what happens if a printer is offline. In the wireframe context (no real hardware), this is a documentation problem: engineers need to know the intended behavior even though the wireframe can't simulate the printer.
-
-**Prevention:**
-Annotate print actions with intended behavior: "On 'Send to Kitchen' confirmation, kitchen ticket prints automatically. If printer offline, show error toast with retry option. Receipt prints on payment confirmation; staff can reprint from order history." This annotation lives in the wireframe as a design note, not a screen.
-
-**Phase to address:** Phase 3 (KDS) and Phase 4 (Payment) — annotation only, no screen required.
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| OKLCH chroma exceeds sRGB gamut | LOW | Open oklch.com, reduce chroma until point is inside the sRGB triangle, update `:root` and `.dark`, re-verify across displays |
+| `@theme inline` literal value severs dark mode chain | LOW | Replace literal with `var(--token-name)` in `@theme inline`; confirm corresponding property exists in `.dark`; hard-refresh browser to clear Tailwind dev cache |
+| Global `--radius` change reshaped all components unexpectedly | MEDIUM | Revert `--radius` in `globals.css`; apply the targeted radius change directly to the specific component's CVA base string instead |
+| Sonner `<Toaster>` renders wrong theme | LOW | Add `theme={resolvedTheme}` prop; use `useTheme()` from next-themes to read `resolvedTheme`; verify by toggling dark mode and firing a toast |
+| Hardcoded palette classes fail contrast in dark mode | MEDIUM | Grep all instances; apply `dark:` variants consistently across all matching components; or introduce semantic tokens in `:root` / `.dark` if the same semantic color appears in 5+ places |
+| `leading-tight` applied globally clips Thai text | LOW | Remove the global leading rule from `@layer base`; re-apply `leading-tight` only to scoped Latin-only selectors |
+| New font weight referenced in a component but missing from `layout.tsx` weight array | LOW | Add the weight string to the corresponding font config object in `layout.tsx`; Next.js will reload with the correct weight |
 
 ---
 
-## Minor Pitfalls
+## Pitfall-to-Phase Mapping
 
----
-
-### Pitfall 15: Inconsistent Terminology Across Screens
-
-**What goes wrong:**
-The wireframe uses "order," "ticket," "bill," and "check" interchangeably. Engineers implement separate concepts. Stakeholders get confused. Restaurant staff use specific terms that differ by region and establishment type.
-
-**Prevention:**
-Establish a terminology glossary in Phase 1: "Order" = what the guest requests; "Ticket" = what goes to the kitchen; "Bill/Check" = the payment document presented to the guest. Use these terms consistently across every screen label, button, and annotation.
-
-**Phase to address:** Phase 1 (any phase).
-
----
-
-### Pitfall 16: Loading and Empty States Absent
-
-**What goes wrong:**
-Every screen shows data. No screen shows what happens when there are no open tables, no active orders, or data is loading. Engineers must invent these states, and they usually ship them as invisible or broken.
-
-**Prevention:**
-Design one empty state per major screen: Table map with no occupied tables (new day, opening shift), KDS with no active tickets, order history with no past orders. These can be simple — a centered illustration or message — but they must exist.
-
-**Phase to address:** Phase 2-4, one per screen.
-
----
-
-### Pitfall 17: Color Used as the Only Status Differentiator on the Table Map
-
-**What goes wrong:**
-Table statuses are communicated only via color (green = open, red = occupied, yellow = check requested). Color-blind staff members cannot distinguish them. More practically, on a bright restaurant screen in daylight, subtle color differences wash out.
-
-**Prevention:**
-Pair every color-based status with a secondary indicator: icon, label, or pattern. "Occupied" tables show a chair count or time-elapsed badge in addition to red fill. "Check requested" tables show a bill icon. Do not rely on color alone.
-
-**Phase to address:** Phase 2 (Table Map).
-
----
-
-## Phase-Specific Warnings
-
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Phase 1: Auth + Shift Open | Shift open is deprioritized as secondary flow | Design shift open as the entry gate — it must be the first post-login screen |
-| Phase 1: Navigation Shell | Branch context absent from persistent nav | Add branch label to header in the layout template before any screen is designed |
-| Phase 1: Role/Permission Architecture | Three separate apps instead of one with permission states | Define permission matrix first; design one interface with annotated disabled states |
-| Phase 2: Table Map | Read-only status display with no interaction spec | Define tap behavior for every table status before starting visual design |
-| Phase 2: Order-Taking | Generic menu data, flat modifier structure | Source A Ramen menu data; design modifier tree for at least one complex item |
-| Phase 2: Order Flow | Linear happy path only | Map the full table lifecycle state machine before designing individual screens |
-| Phase 2: Void Flow | Void completely absent | Include void pre-send and post-send as explicit flows, with permission annotations |
-| Phase 3: KDS | Information display only, no kitchen actions | Annotate every action: bump item, bump ticket, recall, rush flag |
-| Phase 4: Payment / Split Bill | Split bill is a single button with no specified behavior | Design at least two split scenarios in full (even split + item split) |
-| Phase 4: Post-Payment Table State | Table goes directly from paid to open | Design Paid → Cleaning → Ready → Empty lifecycle |
-| All Phases | Desktop-only viewport assumptions | Test every major screen at 1024x768 (tablet landscape) as minimum viable viewport |
-| All Phases | Inconsistent terminology | Lock terminology glossary in Phase 1 documentation |
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| `@theme inline` literal vs `var()` chain | Phase 1: Token Refresh | DevTools computed value shows resolved color, not an unresolved `var()` string |
+| OKLCH gamut exceedance | Phase 1: Token Refresh | All new tokens plotted on oklch.com and confirmed inside sRGB triangle |
+| Hardcoded palette classes — audit | Phase 1: Token Refresh | `grep -r "text-green-\|bg-amber-\|border-l-" src/` catalogued and plan decided |
+| Hardcoded palette classes — fix | Phase 2: Component Polish | Each hardcoded semantic color has either a `dark:` variant or a semantic token; visual check in dark mode per component |
+| CVA base class conflict with call-site props | Phase 2: Component Polish | After each CVA base change, grep call sites; no silent property conflicts |
+| Sonner `theme` prop missing | Phase 1: Bug Fixes | Mount Toaster, toggle dark mode, fire toast, verify background color matches theme |
+| Global radius blast radius | Phase 1: Token Refresh | After any `--radius` change, open all 8 route paths; screenshot before/after |
+| Touch target regression | Phase 2: Component Polish | DevTools measured height ≥ 44px on all primary CTAs after any padding/size change |
+| Thai/JP line-height clipping | Phase 2: Typography Hierarchy | Render Thai menu item name after any `leading-` change; confirm no descender clipping |
+| Sidebar lock banner dark mode | Phase 2: Component Polish | Open with shift closed, toggle dark mode, verify banner is readable |
+| Font weight not loaded | Phase 2: Typography Hierarchy | Check `layout.tsx` `weight` array includes any new weight after referencing it in a component |
 
 ---
 
 ## Sources
 
-- Project context: `/Users/peeradonte/Desktop/Tech Basecamp/A RAMEN/POS-wireframe/.planning/PROJECT.md`
-- Domain knowledge: Restaurant POS operational patterns (dine-in table service, kitchen workflow, payment reconciliation) — HIGH confidence based on established industry patterns
-- UX principles: Touch target sizing (44px minimum) — WCAG 2.5.5 / Apple HIG standard — HIGH confidence
-- Note: Web search and WebFetch tools were unavailable during research. All findings are based on established domain knowledge. Recommend validating KDS and shift management specifics against A Ramen's actual operational staff before finalizing Phase 3-4 wireframes.
+- Tailwind CSS v4 official docs, Theme variables: https://tailwindcss.com/docs/theme
+- Tailwind CSS v4 official docs, Dark mode: https://tailwindcss.com/docs/dark-mode
+- GitHub Discussion: `@theme` vs `@theme inline` semantics (v4): https://github.com/tailwindlabs/tailwindcss/discussions/18560
+- GitHub Discussion: CSS variables for dark/light mode in v4: https://github.com/tailwindlabs/tailwindcss/discussions/15083
+- GitHub Issue: Dark mode browser preference override in Tailwind v4: https://github.com/tailwindlabs/tailwindcss/discussions/17810
+- Evil Martians: OKLCH in CSS — gamut mapping, sRGB ceiling explanation: https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl
+- LogRocket: OKLCH accessibility, consistent palettes, contrast: https://blog.logrocket.com/oklch-css-consistent-accessible-color-palettes
+- Sonner styling and theming docs: https://sonner.emilkowal.ski/styling
+- Sonner Toaster component docs: https://sonner.emilkowal.ski/toaster
+- shadcn/ui Tailwind v4 integration: https://ui.shadcn.com/docs/tailwind-v4
+- Vercel Academy — Overriding Tailwind styles in shadcn components: https://vercel.com/academy/shadcn-ui/overriding-styles-with-tailwind
+- next-themes repository — suppressHydrationWarning, theme prop behavior: https://github.com/pacocoursey/next-themes
+- Paul Serban — 5 Critical shadcn/ui Pitfalls: https://www.paulserban.eu/blog/post/5-critical-shadcnui-pitfalls-that-break-production-apps-and-how-to-avoid-them/
+- Codebase direct read: `globals.css`, `button.tsx`, `badge.tsx`, `TableTile.tsx`, `KdsTicketCard.tsx`, `AppSidebar.tsx`, `TicketPanel.tsx`, `AppShell.tsx`, `layout.tsx`, `ThemeProvider.tsx`
+
+---
+
+*Pitfalls research for: brand polish pass on Tailwind CSS 4 + shadcn/ui + Base UI + OKLCH token system*
+*Researched: 2026-03-11*
