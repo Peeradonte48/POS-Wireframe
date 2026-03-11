@@ -4,11 +4,13 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSessionStore } from '@/stores/session.store'
 import { useKdsStore } from '@/stores/kds.store'
+import { KdsBoard } from '@/components/kds/KdsBoard'
+import { KdsRecallTray } from '@/components/kds/KdsRecallTray'
 
 export default function KdsPage() {
   const router = useRouter()
   const { role } = useSessionStore()
-  const { demoActive, toggleDemoActive, tickets } = useKdsStore()
+  const { demoActive, toggleDemoActive } = useKdsStore()
 
   // Auth guard: Kitchen staff only
   useEffect(() => {
@@ -23,78 +25,33 @@ export default function KdsPage() {
   // Don't render until auth state is known
   if (role === null) return null
 
-  const ticketCount = Object.keys(tickets).length
-
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
-
-      {/* ── Header bar ── */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b px-4">
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      {/* KDS Header */}
+      <header className="h-14 shrink-0 border-b border-border flex items-center justify-between px-4">
         <span className="font-semibold text-base">Kitchen Display</span>
-
         <div className="flex items-center gap-3">
-          {/* DEMO badge — visible only when demoActive */}
           {demoActive && (
-            <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+            <span className="text-[11px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 px-2 py-0.5 rounded-full uppercase tracking-wide">
               DEMO
             </span>
           )}
-
-          {/* Demo Mode toggle button */}
           <button
             onClick={toggleDemoActive}
-            className="rounded border px-2.5 py-1 text-xs text-muted-foreground hover:bg-muted"
+            className="text-xs border border-border rounded px-3 py-1.5 hover:bg-accent transition-colors"
           >
-            {demoActive ? 'Exit Demo' : 'Demo Mode'}
+            Demo Mode
           </button>
         </div>
       </header>
 
-      {/* ── Board area (three-column scaffold) ── */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* NEW column */}
-        <section className="flex flex-1 flex-col border-r">
-          <div className="border-b px-4 py-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              New
-            </span>
-          </div>
-          <div className="flex-1 p-4 text-sm text-muted-foreground">
-            {ticketCount === 0
-              ? 'No tickets — board components wired in Plan 02'
-              : `${ticketCount} ticket(s) — board components wired in Plan 02`}
-          </div>
-        </section>
+      {/* Board */}
+      <div className="flex flex-1 overflow-hidden">
+        <KdsBoard />
+      </div>
 
-        {/* IN PROGRESS column */}
-        <section className="flex flex-1 flex-col border-r">
-          <div className="border-b px-4 py-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              In Progress
-            </span>
-          </div>
-          <div className="flex-1 p-4 text-sm text-muted-foreground">
-            Board components wired in Plan 02
-          </div>
-        </section>
-
-        {/* READY column */}
-        <section className="flex flex-1 flex-col">
-          <div className="border-b px-4 py-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Ready
-            </span>
-          </div>
-          <div className="flex-1 p-4 text-sm text-muted-foreground">
-            Board components wired in Plan 02
-          </div>
-        </section>
-      </main>
-
-      {/* ── Recall tray (placeholder) ── */}
-      <footer className="shrink-0 border-t px-4 py-2 text-xs text-muted-foreground">
-        Recall tray — wired in Plan 02
-      </footer>
+      {/* Recall Tray */}
+      <KdsRecallTray />
     </div>
   )
 }
