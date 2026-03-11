@@ -151,6 +151,13 @@ export function TableBottomSheet({
                   </div>
                 )}
 
+                {/* Served-at timestamp — visible only after Served is tapped */}
+                {table.servedAt !== null && (
+                  <p className="text-sm text-muted-foreground">
+                    Served at {new Date(table.servedAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                )}
+
                 {/* Action buttons */}
                 <div className="flex gap-2">
                   <Button
