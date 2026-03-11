@@ -1,4 +1,8 @@
 'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSessionStore } from '@/stores/session.store'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { EodSummaryTab } from '@/components/manager/EodSummaryTab'
 import { SalesSnapshotTab } from '@/components/manager/SalesSnapshotTab'
@@ -6,6 +10,20 @@ import { EightySixTab } from '@/components/manager/EightySixTab'
 import { OpenTicketsTab } from '@/components/manager/OpenTicketsTab'
 
 export default function ManagerPage() {
+  const router = useRouter()
+  const { role } = useSessionStore()
+
+  // Role guard: Manager only. Null check prevents redirect before Zustand hydration.
+  useEffect(() => {
+    if (role !== null && role !== 'Manager') {
+      router.replace('/table-map')
+    }
+  }, [role, router])
+
+  // Early return prevents content flash before redirect fires.
+  // Also covers null (unauthenticated) — layout handles the /login redirect.
+  if (role !== 'Manager') return null
+
   return (
     <div className="flex flex-col h-full">
       <header className="h-14 border-b flex items-center px-4 shrink-0">
