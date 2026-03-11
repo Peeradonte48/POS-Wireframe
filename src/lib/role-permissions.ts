@@ -23,6 +23,7 @@ export type ActionKey =
   | 'request-check'
   | 'send-to-kitchen'
   | 'void-pre-send'
+  | 'void-post-send'   // void after order sent to kitchen
   | 'confirm-payment'
   | 'eighty-six-toggle'
   | 'close-shift'
@@ -35,6 +36,7 @@ export const ACTION_PERMISSIONS: Record<ActionKey, Role[]> = {
   'request-check':     ['Waiter', 'Cashier', 'Manager'],
   'send-to-kitchen':   ['Waiter', 'Manager'],
   'void-pre-send':     ['Waiter', 'Cashier', 'Manager'],
+  'void-post-send':    ['Manager'],
   'confirm-payment':   ['Cashier', 'Manager'],
   'eighty-six-toggle': ['Manager'],
   'close-shift':       ['Manager'],
