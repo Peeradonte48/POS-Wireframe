@@ -15,7 +15,7 @@
 - [x] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode (completed 2026-03-11)
 - [x] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle (completed 2026-03-11)
 - [x] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools (completed 2026-03-11)
-- [ ] **Phase 7: Polish** — Hi-Fi & Brand: brand tokens, Solar icons, dark mode, role gating, toasts, touch targets, empty/loading states
+- [x] **Phase 7: Polish** — Hi-Fi & Brand: brand tokens, Solar icons, dark mode, role gating, toasts, touch targets, empty/loading states (completed 2026-03-11)
 
 ---
 
@@ -29,7 +29,7 @@
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
 | 6. Manager Layer | 4/4 | Complete   | 2026-03-11 |
-| 7. Polish | 4/5 | In Progress|  |
+| 7. Polish | 5/5 | Complete   | 2026-03-11 |
 
 ---
 
@@ -174,7 +174,7 @@ Plans:
 3. Sonner toast notifications appear for key actions ("Order sent to kitchen", "Payment received") on every applicable screen
 4. Every major screen has a defined loading state and empty state — no screen ever shows a blank or broken layout when data is absent
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 07-01-PLAN.md — Brand tokens (OKLCH crimson), font swap (Inter + Noto JP), dark mode infra (next-themes + ThemeProvider), Unsplash remotePatterns (POLISH-01–04 foundation)
