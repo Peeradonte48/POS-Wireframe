@@ -63,7 +63,7 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={guestCount === '' || (typeof guestCount === 'number' && guestCount < 1)}>
+          <Button size="cta" onClick={handleConfirm} disabled={guestCount === '' || (typeof guestCount === 'number' && guestCount < 1)}>
             Open Table
           </Button>
         </DialogFooter>

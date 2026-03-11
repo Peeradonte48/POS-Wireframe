@@ -116,7 +116,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
               <div key={round.roundId}>
                 {/* Section label */}
                 <div className="px-4 pt-3 pb-1">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                  <p className="caps">
                     {isSent ? `Round ${i + 1}` : 'New Items'}
                   </p>
                 </div>
@@ -141,13 +141,13 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
       {/* Footer */}
       <div className="border-t px-4 py-3 flex items-center justify-between gap-3 shrink-0">
         <div>
-          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Total</p>
-          <p className="text-xl font-bold leading-tight">฿{runningTotal.toFixed(0)}</p>
+          <p className="caps">Total</p>
+          <p className="text-2xl font-black text-primary leading-tight">฿{runningTotal.toFixed(0)}</p>
         </div>
         <Button
+          size="cta"
           onClick={handleSend}
           disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
-          className="h-11 px-5 font-semibold"
         >
           Send to Kitchen
         </Button>

@@ -210,7 +210,8 @@ export default function PaymentPage() {
         <div className="sticky bottom-0 bg-background border-t p-4">
           <div className="max-w-2xl mx-auto space-y-2">
             <Button
-              className="w-full h-12 text-base"
+              size="cta"
+              className="w-full text-base"
               disabled={confirmDisabled}
               onClick={handleConfirmPayment}
             >
