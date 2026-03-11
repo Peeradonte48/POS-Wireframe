@@ -172,9 +172,8 @@ export function TableBottomSheet({
 
             {table.status === 'CheckRequested' && (
               <div className="px-4 pb-6 flex flex-col gap-3">
-                <Button className="w-full" disabled>
-                  Go to Payment{' '}
-                  <span className="text-[10px] ml-1">(Phase 5)</span>
+                <Button className="w-full" onClick={() => router.push(`/payment/${table.id}`)}>
+                  Go to Payment
                 </Button>
               </div>
             )}
