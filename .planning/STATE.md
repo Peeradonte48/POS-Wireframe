@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-11T07:17:58.122Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-03-11T07:21:45.956Z"
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 23
-  completed_plans: 19
+  completed_plans: 20
   percent: 95
 ---
 
@@ -109,6 +109,8 @@ Progress: [█████████░] 95% (18 of 19 plans)
 - [Phase 06-manager-layer]: AppSidebar hides manager item with early null return (not greyed-out div) for non-Manager roles
 - [Phase 06-manager-layer]: Cross-store reset on logout: session.store imports manager.store and calls getState().resetShift() — no 'use client' needed on session.store since call is runtime-only
 - [Phase 06-manager-layer]: Payment capture fields (paidAmount, paymentMethod, discountApplied) initialized as null in openTable and markClean to prevent stale data on re-seat
+- [Phase 06-manager-layer]: Estimated total computed inline in OpenTicketsTab rather than helper function to avoid complex ReturnType annotation
+- [Phase 06-manager-layer]: EightySixTab and OpenTicketsTab stubs from Plan 02 replaced with full implementations
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -164,11 +166,12 @@ None.
 | Phase 05-payment P02 | 2min | 2 tasks | 3 files |
 | Phase 05-payment P03 | 10min | 2 tasks | 2 files |
 | Phase 06-manager-layer P01 | 2min | 2 tasks | 6 files |
+| Phase 06-manager-layer P03 | 2min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T07:17:58.120Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-11T07:21:45.954Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
 
 To resume after any context loss:
