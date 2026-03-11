@@ -28,7 +28,7 @@
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
-| 6. Manager Layer | 0/4 | Not started | - |
+| 6. Manager Layer | 1/4 | In Progress|  |
 | 7. Polish | 0/? | Not started | - |
 
 ---
@@ -153,7 +153,7 @@ Plans:
 3. Manager can toggle item availability (mark as 86'd) from within the Staff POS app — change is immediately reflected in the order-taking menu
 4. Manager can view all open tickets across all tables and a staff/user list for the current shift
 
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 06-01-PLAN.md — manager.store.ts (86'd + shiftClosed) + extend TableRecord with payment fields + PaymentPage wire + AppSidebar hide (SHIFT-01 data, SHIFT-03)
