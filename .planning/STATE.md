@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: completed
-last_updated: "2026-03-11T19:24:39.790Z"
-last_activity: 2026-03-12 — 10-02 TOKEN-04 (component palette class migration — TableTile, KdsTicketCard, AppSidebar)
+last_updated: "2026-03-11T20:07:17Z"
+last_activity: 2026-03-12 — 11-01 COMP-01/COMP-02 (button cta size + press scale + hover glow; filled status pill badges — TableTile, KdsTicketCard)
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 97
+  total_plans: 13
+  completed_plans: 13
+  percent: 95
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** Completed 10-02 (TOKEN-04) — Phase 10 Plan 02 executed; all four TOKEN requirements satisfied
+**Session:** Completed 11-01 (COMP-01/COMP-02) — Button cta size, press scale, hover glow; filled status pills on TableTile and KDS
 
 ---
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 ## Current Position
 
-Phase: 10 of 11 (Brand Token Refresh) — v1.1 Phase 3 — Plan 02 COMPLETE (Phase 10 COMPLETE)
-Plan: 10-02 done (TOKEN-04) — all component files migrated to semantic token classes
-Status: Phase 10 complete — all four TOKEN requirements satisfied, Phase 11 unblocked
-Last activity: 2026-03-12 — 10-02 TOKEN-04 (component palette class migration — TableTile, KdsTicketCard, AppSidebar)
+Phase: 11 of 11 (Component Polish) — v1.1 Phase 4 — Plan 01 COMPLETE
+Plan: 11-01 done (COMP-01/COMP-02) — button cta size, press scale, hover glow; filled status pill badges
+Status: Phase 11 Plan 01 complete — COMP-01 and COMP-02 requirements satisfied
+Last activity: 2026-03-12 — 11-01 COMP-01/COMP-02 (button cta size + press scale + hover glow; filled status pill badges — TableTile, KdsTicketCard)
 
 ```
-Progress: [██████████] 97% (11/11 plans complete in active phases)
+Progress: [██████████] 95% (13/13 plans complete in active phases)
 ```
 
 ---
@@ -97,6 +97,13 @@ See `.planning/PROJECT.md` for full key decisions log.
 
 - border-l-status-* works natively in Tailwind v4 without arbitrary value fallback — directional border colors auto-generated from @theme inline --color-status-* aliases
 - BUMP button uses opacity modifier syntax (bg-status-open/80, ring-status-open/60) — avoids adding dedicated hover-state tokens; TOKEN-04 complete
+
+### Key Decisions (11-01)
+
+- active:scale-[0.97] transition-transform added to base CVA string — applies press feedback universally to all buttons (matches TableTile tile pattern already in production)
+- Hover glow uses color-mix(in oklch, var(--color-primary) 25%, transparent) — 25% opacity gives visible ring without being aggressive; oklch interpolation preserves color accuracy across light/dark
+- KDS_STAGE_CONFIG maps New/InProgress/Ready to existing status-bg tokens — New=open-bg (green=waiting), InProgress=check-requested-bg (amber=active), Ready=reserved-bg (blue=awaiting collection)
+- Badge border-0 required on filled pills to suppress default outline border bleeding through colored backgrounds
 
 ### Key Patterns from v1.0
 
