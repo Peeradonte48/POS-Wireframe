@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: completed
-last_updated: "2026-03-12T19:17:45Z"
+last_updated: "2026-03-11T19:24:39.790Z"
 last_activity: 2026-03-12 — 10-02 TOKEN-04 (component palette class migration — TableTile, KdsTicketCard, AppSidebar)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 10
-  completed_plans: 11
+  completed_plans: 10
   percent: 97
 ---
 
