@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { toast } from 'sonner'
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
 import { useManagerStore } from '@/stores/manager.store'
 import { useSessionStore } from '@/stores/session.store'
@@ -40,7 +41,16 @@ export function EightySixTab() {
                   type="checkbox"
                   id={`86d-${item.id}`}
                   checked={is86d}
-                  onChange={() => canDoAction(role, 'eighty-six-toggle') && toggleEightySix(item.id)}
+                  onChange={() => {
+                    if (!canDoAction(role, 'eighty-six-toggle')) return
+                    const willBe86d = !is86d
+                    toggleEightySix(item.id)
+                    if (willBe86d) {
+                      toast.success(`${item.name} 86'd`)
+                    } else {
+                      toast(`${item.name} available`)
+                    }
+                  }}
                   disabled={!canDoAction(role, 'eighty-six-toggle')}
                   className="accent-primary h-4 w-4 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 />

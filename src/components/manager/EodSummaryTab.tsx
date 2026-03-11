@@ -1,5 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
@@ -92,7 +93,7 @@ export function EodSummaryTab() {
           <p className="text-sm text-muted-foreground">This will lock the EOD summary. You can review before logging out.</p>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" className="flex-1" onClick={() => setConfirmOpen(false)}>Cancel</Button>
-            <Button className="flex-1" onClick={() => { closeShift(); setConfirmOpen(false) }}>Close Shift</Button>
+            <Button className="flex-1" onClick={() => { closeShift(); toast.success('Shift closed'); setConfirmOpen(false) }}>Close Shift</Button>
           </div>
         </DialogContent>
       </Dialog>

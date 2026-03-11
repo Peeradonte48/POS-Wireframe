@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { ClockCircleLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -94,6 +95,7 @@ export function TableBottomSheet({
                   className="w-full"
                   onClick={() => {
                     markReserved(table.id)
+                    toast('Table reserved')
                     onClose()
                   }}
                   disabled={!canDoAction(role, 'mark-reserved')}
@@ -161,7 +163,7 @@ export function TableBottomSheet({
                   <Button
                     variant="outline"
                     className="flex-1"
-                    onClick={() => markServed(table.id)}
+                    onClick={() => { markServed(table.id); toast('Table served') }}
                     disabled={!canDoAction(role, 'mark-served')}
                   >
                     Served

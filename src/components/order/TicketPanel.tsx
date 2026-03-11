@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useOrderStore } from '@/stores/order.store'
@@ -51,6 +51,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   const role = useSessionStore((s) => s.role)!
 
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
+  const voidAuthorizedRef = useRef(false)
 
   // Flatten all rounds for display purposes
   const allItems: OrderLineItem[] = order
@@ -146,11 +147,23 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
       <ManagerPinModal
         open={voidingLineId !== null}
         onOpenChange={(open) => {
-          if (!open) setVoidingLineId(null)
+          if (!open) {
+            // Use microtask so onAuthorize (which fires after onOpenChange) can set the flag first
+            const lineIdAtClose = voidingLineId
+            setTimeout(() => {
+              if (!voidAuthorizedRef.current && lineIdAtClose !== null) {
+                toast.error('Void cancelled')
+              }
+              voidAuthorizedRef.current = false
+            }, 0)
+            setVoidingLineId(null)
+          }
         }}
         actionLabel="Authorize: Void Item"
         onAuthorize={() => {
+          voidAuthorizedRef.current = true
           if (voidingLineId) useOrderStore.getState().voidItem(tableId, voidingLineId)
+          toast('Item voided — manager approved')
           setVoidingLineId(null)
         }}
       />

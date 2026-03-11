@@ -87,6 +87,7 @@ export default function PaymentPage() {
       paymentMethod: paymentMethod,
       discountApplied: discountAmount,
     })
+    toast.success('Payment confirmed')
     setReceiptData({ grandTotal, paymentMethod, paidAt: new Date() })
     setViewState('receipt')
   }

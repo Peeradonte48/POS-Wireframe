@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useManagerStore } from '@/stores/manager.store'
@@ -49,10 +50,20 @@ export function MenuPanel({ onItemTap }: MenuPanelProps) {
                   is86d ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent',
                 )}
               >
-                {/* Thumbnail placeholder */}
-                <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-xl shrink-0">
-                  {item.thumbnailPlaceholder}
-                </div>
+                {/* Thumbnail */}
+                {item.unsplashId ? (
+                  <Image
+                    src={`https://images.unsplash.com/photo-${item.unsplashId}?auto=format&fit=crop&w=80&q=80`}
+                    alt={item.name}
+                    width={40}
+                    height={40}
+                    className="rounded-md object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-xl shrink-0">
+                    {item.thumbnailPlaceholder}
+                  </div>
+                )}
                 {/* Name + Thai name */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{item.name}</p>

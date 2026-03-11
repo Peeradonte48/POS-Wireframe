@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,7 @@ interface OpenTableModalProps {
 }
 
 export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
-  const { openTable } = useTableStore()
+  const { openTable, tables } = useTableStore()
   const [guestCount, setGuestCount] = useState(1)
 
   // Reset guest count when tableId changes (different table opened)
@@ -29,6 +30,8 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
   const handleConfirm = () => {
     if (guestCount >= 1 && tableId) {
       openTable(tableId, guestCount)
+      const tableLabel = tables[tableId]?.label ?? tableId
+      toast(`${tableLabel} opened — ${guestCount} guests`)
       onClose()
     }
   }

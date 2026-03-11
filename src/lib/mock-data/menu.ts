@@ -19,6 +19,7 @@ export interface MenuItem {
   nameTh: string
   basePrice: number
   thumbnailPlaceholder: string
+  unsplashId?: string
   modifierGroups: MenuModifierGroup[]
 }
 
@@ -102,6 +103,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'โทนโกตสึราเมน',
     basePrice: 290,
     thumbnailPlaceholder: '🍜',
+    unsplashId: '1569718044309-309dc2748ad7',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   {
@@ -111,6 +113,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'มิโซราเมน',
     basePrice: 280,
     thumbnailPlaceholder: '🍜',
+    unsplashId: '1617093727343-374698b1b08d',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   {
@@ -120,6 +123,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ราเมนมิโซเผ็ด',
     basePrice: 300,
     thumbnailPlaceholder: '🌶️',
+    unsplashId: '1547592166-23ac45744acd',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   {
@@ -129,6 +133,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'โชยุราเมน',
     basePrice: 270,
     thumbnailPlaceholder: '🍜',
+    unsplashId: '1569050467447-ce54b3bbc37d',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   // Rice Bowls
@@ -139,6 +144,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ข้าวหมูชาชู',
     basePrice: 180,
     thumbnailPlaceholder: '🍚',
+    unsplashId: '1611143669185-af224c5e3252',
     modifierGroups: [],
   },
   {
@@ -158,6 +164,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'เกี๊ยวซ่า',
     basePrice: 120,
     thumbnailPlaceholder: '🥟',
+    unsplashId: '1496116218422-9ce2cb082c08',
     modifierGroups: [],
   },
   // Drinks
@@ -168,6 +175,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ชาเขียว',
     basePrice: 60,
     thumbnailPlaceholder: '🍵',
+    unsplashId: '1556679343-c7306c1976bc',
     modifierGroups: [],
   },
 ]
