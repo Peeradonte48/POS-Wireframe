@@ -31,6 +31,9 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
     nonVoidedItems.length > 0 &&
     nonVoidedItems.every((item) => ticket.checkedItems.has(item.lineId))
 
+  // BUMP is blocked while InProgress until all non-voided items are checked
+  const bumpBlocked = ticket.stage === 'InProgress' && !allNonVoidedChecked
+
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
       {/* Header */}
@@ -59,12 +62,15 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       {/* Footer — BUMP button */}
       <div className="px-3 py-2 border-t border-border/40">
         <button
-          onClick={() => bumpTicket(ticket.ticketId)}
-          className={`w-full font-bold text-sm py-2 rounded bg-green-600 hover:bg-green-500 text-white active:scale-95 transition-transform ${
-            allNonVoidedChecked ? 'ring-2 ring-green-400' : ''
+          onClick={() => !bumpBlocked && bumpTicket(ticket.ticketId)}
+          disabled={bumpBlocked}
+          className={`w-full font-bold text-sm py-2 rounded text-white transition-all ${
+            bumpBlocked
+              ? 'bg-muted-foreground/30 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-500 active:scale-95 ring-2 ring-green-400'
           }`}
         >
-          BUMP
+          {bumpBlocked ? `Check all items (${ticket.checkedItems.size}/${nonVoidedItems.length})` : 'BUMP'}
         </button>
       </div>
     </div>
