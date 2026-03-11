@@ -36,8 +36,8 @@ Requirements for v1.1 release. Each maps to roadmap phases.
 - [x] **COMP-01**: All primary action buttons are 44px with crimson glow and active press scale
 - [x] **COMP-02**: Table status indicators display as filled colored pill chips
 - [ ] **COMP-03**: Menu cards, ticket panel, and info panels use the elevation token system
-- [ ] **COMP-04**: Price totals (฿XXXX) render as hero text — `text-2xl font-black text-primary`
-- [ ] **COMP-05**: Section labels use caps utility for visual hierarchy throughout
+- [x] **COMP-04**: Price totals (฿XXXX) render as hero text — `text-2xl font-black text-primary`
+- [x] **COMP-05**: Section labels use caps utility for visual hierarchy throughout
 
 ## v2 Requirements
 
@@ -87,8 +87,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-01 | Phase 11 | Complete |
 | COMP-02 | Phase 11 | Complete |
 | COMP-03 | Phase 11 | Pending |
-| COMP-04 | Phase 11 | Pending |
-| COMP-05 | Phase 11 | Pending |
+| COMP-04 | Phase 11 | Complete |
+| COMP-05 | Phase 11 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 19 total

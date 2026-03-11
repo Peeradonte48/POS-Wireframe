@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Bug Fixes + Brand Polish
 status: completed
-last_updated: "2026-03-11T20:07:17Z"
-last_activity: 2026-03-12 — 11-01 COMP-01/COMP-02 (button cta size + press scale + hover glow; filled status pill badges — TableTile, KdsTicketCard)
+last_updated: "2026-03-12T04:46:37Z"
+last_activity: 2026-03-12 — 11-02 COMP-04+COMP-05 (@utility caps + hero price readouts across 9 files)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 13
+  completed_plans: 14
   percent: 95
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** Completed 11-01 (COMP-01/COMP-02) — Button cta size, press scale, hover glow; filled status pills on TableTile and KDS
+**Session:** Completed 11-02 (COMP-04/COMP-05) — @utility caps defined in globals.css; hero price readouts on TicketPanel and TotalsSection; 13 inline caps patterns replaced
 
 ---
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-11 — Milestone v1.1 started)
 
 ## Current Position
 
-Phase: 11 of 11 (Component Polish) — v1.1 Phase 4 — Plan 01 COMPLETE
-Plan: 11-01 done (COMP-01/COMP-02) — button cta size, press scale, hover glow; filled status pill badges
-Status: Phase 11 Plan 01 complete — COMP-01 and COMP-02 requirements satisfied
-Last activity: 2026-03-12 — 11-01 COMP-01/COMP-02 (button cta size + press scale + hover glow; filled status pill badges — TableTile, KdsTicketCard)
+Phase: 11 of 11 (Component Polish) — v1.1 Phase 4 — Plan 02 COMPLETE
+Plan: 11-02 done (COMP-04/COMP-05) — @utility caps + hero price readouts; all 13 inline caps replaced
+Status: Phase 11 Plan 02 complete — COMP-04 and COMP-05 requirements satisfied
+Last activity: 2026-03-12 — 11-02 COMP-04+COMP-05 (@utility caps + hero price readouts across 9 files)
 
 ```
-Progress: [██████████] 95% (13/13 plans complete in active phases)
+Progress: [██████████] 95% (14/14 plans complete in active phases)
 ```
 
 ---
@@ -104,6 +104,11 @@ See `.planning/PROJECT.md` for full key decisions log.
 - Hover glow uses color-mix(in oklch, var(--color-primary) 25%, transparent) — 25% opacity gives visible ring without being aggressive; oklch interpolation preserves color accuracy across light/dark
 - KDS_STAGE_CONFIG maps New/InProgress/Ready to existing status-bg tokens — New=open-bg (green=waiting), InProgress=check-requested-bg (amber=active), Ready=reserved-bg (blue=awaiting collection)
 - Badge border-0 required on filled pills to suppress default outline border bleeding through colored backgrounds
+
+### Key Decisions (11-02)
+
+- @utility caps uses @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground — theme() function not resolvable in this project's Tailwind v4/PostCSS pipeline; @apply produces identical compiled output
+- Hero price readout: text-2xl font-black text-primary on TicketPanel running total and TotalsSection grand total — brand crimson as focal payment amount on order and payment screens
 
 ### Key Patterns from v1.0
 
