@@ -119,7 +119,7 @@ export function TicketLineItem({
         <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
           <button
             onClick={() => onQtyChange(item.lineId, -1)}
-            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
+            className="w-9 h-11 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
             aria-label="Decrease quantity"
           >
             −
@@ -127,7 +127,7 @@ export function TicketLineItem({
           <span className="w-7 text-center text-sm font-bold tabular-nums">{item.quantity}</span>
           <button
             onClick={() => onQtyChange(item.lineId, 1)}
-            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
+            className="w-9 h-11 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
             aria-label="Increase quantity"
           >
             +
