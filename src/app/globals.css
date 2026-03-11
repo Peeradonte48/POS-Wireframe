@@ -121,6 +121,11 @@
   --color-status-check-requested-bg: oklch(0.97 0.05 75);
   --color-status-cleaning:           oklch(0.55 0.06 50);
   --color-status-cleaning-bg:        oklch(0.95 0.03 50);
+
+  /* Elevation shadows — 3 tiers: flat, raised, floating */
+  --shadow-card:     0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.06);
+  --shadow-panel:    0 4px 6px -1px oklch(0 0 0 / 0.08), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+  --shadow-floating: 0 10px 15px -3px oklch(0 0 0 / 0.10), 0 4px 6px -4px oklch(0 0 0 / 0.07);
 }
 
 .dark {
@@ -167,6 +172,11 @@
   --color-status-check-requested-bg: oklch(0.28 0.07 75);
   --color-status-cleaning:           oklch(0.70 0.05 50);
   --color-status-cleaning-bg:        oklch(0.25 0.03 50);
+
+  /* Elevation shadows — dark mode uses glow/border instead of drop shadows */
+  --shadow-card:     0 0 0 1px oklch(1 0 0 / 0.06);
+  --shadow-panel:    0 0 0 1px oklch(1 0 0 / 0.08), 0 4px 12px oklch(0 0 0 / 0.40);
+  --shadow-floating: 0 0 0 1px oklch(1 0 0 / 0.10), 0 8px 24px oklch(0 0 0 / 0.50);
 }
 
 @layer base {
