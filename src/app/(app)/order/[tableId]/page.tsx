@@ -73,7 +73,7 @@ export default function OrderPage() {
         <div className="flex flex-row flex-1 overflow-hidden">
 
           {/* Column 1: Category sidebar */}
-          <aside className="w-44 border-r border-border bg-card flex flex-col shrink-0 overflow-y-auto py-2">
+          <aside className="w-32 md:w-36 lg:w-44 border-r border-border bg-card flex flex-col shrink-0 overflow-y-auto py-2">
             {CATEGORY_NAV.map((cat) => {
               const isActive = activeCategory === cat.id
               return (
@@ -81,7 +81,7 @@ export default function OrderPage() {
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   className={cn(
-                    'w-full text-left px-4 py-3 text-sm font-medium transition-colors duration-150',
+                    'w-full text-left px-3 lg:px-4 py-3 text-xs md:text-sm font-medium transition-colors duration-150',
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-foreground hover:bg-muted'
@@ -102,7 +102,7 @@ export default function OrderPage() {
           </div>
 
           {/* Column 3: Ticket */}
-          <div className="w-80 border-l border-border flex flex-col bg-card shrink-0">
+          <div className="w-56 md:w-64 lg:w-72 xl:w-80 border-l border-border flex flex-col bg-card shrink-0">
             <TicketPanel
               tableId={tableId}
               onEditLineItem={(lineId) => {

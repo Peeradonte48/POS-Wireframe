@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Noto_Sans_JP, Noto_Sans_Thai } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/providers/ThemeProvider'
@@ -26,6 +26,14 @@ const notoSansThai = Noto_Sans_Thai({
 export const metadata: Metadata = {
   title: 'A Ramen POS',
   description: 'FIP Point of Sale — Staff App',
+}
+
+// POS tablet: lock viewport — no accidental pinch-zoom for staff
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

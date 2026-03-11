@@ -41,7 +41,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
 
   if (isLoading) {
     return (
-      <div className="p-4 grid grid-cols-4 gap-3">
+      <div className="p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <MenuCardSkeleton key={i} />
         ))}
@@ -58,7 +58,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
   }
 
   return (
-    <div className="p-4 grid grid-cols-4 gap-3">
+    <div className="p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
       {filteredItems.map((item) => {
         const is86d = eightySixedIds.includes(item.id)
         return (

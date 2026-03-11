@@ -7,7 +7,8 @@ import { SidebarMinimalisticLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  // Start collapsed — maximises content area on tablet screens
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">

@@ -139,8 +139,20 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent callout on long-press and highlight on tap (tablet POS) */
+    -webkit-tap-highlight-color: transparent;
   }
   html {
     @apply font-sans;
+  }
+
+  /* Fast tap — remove 300ms delay on all interactive elements */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent iOS auto-zoom on form inputs (font must be ≥ 16px) */
+  input, select, textarea {
+    font-size: max(16px, 1em);
   }
 }

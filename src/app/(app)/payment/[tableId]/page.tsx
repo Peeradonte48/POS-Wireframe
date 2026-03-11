@@ -152,8 +152,9 @@ export default function PaymentPage() {
           <div className="w-8" />
         </header>
 
-        {/* Scrollable main content */}
-        <main className="overflow-y-auto flex-1 px-4 py-4 space-y-6 pb-24">
+        {/* Scrollable main content — centered on wide tablets */}
+        <main className="overflow-y-auto flex-1 pb-24">
+          <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
           {/* Items section */}
           <section>
             <p className="text-sm font-medium text-muted-foreground uppercase mb-2 tracking-wide">
@@ -193,17 +194,20 @@ export default function PaymentPage() {
           )}
           {paymentMethod === 'QR PromptPay' && <QrPanel grandTotal={grandTotal} />}
           {paymentMethod === 'Card' && <CardPanel grandTotal={grandTotal} />}
+          </div>
         </main>
 
         {/* Sticky bottom bar */}
         <div className="sticky bottom-0 bg-background border-t p-4">
-          <Button
-            className="w-full"
-            disabled={confirmDisabled}
-            onClick={handleConfirmPayment}
-          >
-            Confirm Payment — ฿{grandTotal.toLocaleString()}
-          </Button>
+          <div className="max-w-2xl mx-auto">
+            <Button
+              className="w-full h-12 text-base"
+              disabled={confirmDisabled}
+              onClick={handleConfirmPayment}
+            >
+              Confirm Payment — ฿{grandTotal.toLocaleString()}
+            </Button>
+          </div>
         </div>
       </div>
     </>
