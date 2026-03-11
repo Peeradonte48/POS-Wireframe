@@ -27,7 +27,7 @@
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
-| 5. Payment | 0/3 | Not started | - |
+| 5. Payment | 1/3 | In Progress|  |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
 
@@ -133,7 +133,7 @@ Plans:
 3. After payment, staff can access a receipt action state (print annotation visible; no real printer required) and reprint from a closed order
 4. The payment screen contains a clearly annotated placeholder indicating where split bill functionality will attach in v2
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 05-01-PLAN.md — Payment sub-components (BillLineItem, TotalsSection, PaymentMethodSelector, CashPanel, QrPanel, CardPanel) + PaymentPage payment view (PAY-01, PAY-02, PAY-05)

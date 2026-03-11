@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-11T05:41:27.318Z"
+stopped_at: Completed 05-payment-01-PLAN.md
+last_updated: "2026-03-11T06:04:11.415Z"
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 16
-  completed_plans: 15
+  total_plans: 19
+  completed_plans: 16
   percent: 92
 ---
 
@@ -100,6 +100,9 @@ Progress: [█████████░] 92% (13 of 13 plans)
 - [Phase 04-kds]: Demo tickets injected into kds.store only (not order.store) — avoids polluting floor map during stakeholder demos
 - [Phase 04-kds]: BUMP blocked from InProgress until all items checked — enforces cook confirmation workflow before marking Ready
 - [Phase 04-kds]: Item checkboxes active only when ticket.stage === InProgress — prevents accidental pre-checks in New stage
+- [Phase 05-payment]: VAT applied to post-discount subtotal: Math.round((subtotal - discountAmount) * 0.07) — coupon reduces tax base before VAT calculation
+- [Phase 05-payment]: Confirm button disabled: null payment method OR Cash entered but insufficient; cashReceived===0 (untouched) does not block
+- [Phase 05-payment]: PaymentPage receipt view is a stub in Plan 01 — Plan 02 builds the full receipt screen
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -151,12 +154,13 @@ None.
 | Phase 04-kds P01 | 10min | 2 tasks | 5 files |
 | Phase 04-kds P02 | 8min | 2 tasks | 5 files |
 | Phase 04-kds P03 | 20min | 2 tasks | 4 files |
+| Phase 05-payment P01 | 2min | 2 tasks | 7 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T05:41:27.309Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-payment/05-CONTEXT.md
+Last session: 2026-03-11T06:04:11.413Z
+Stopped at: Completed 05-payment-01-PLAN.md
+Resume file: None
 
 To resume after any context loss:
 

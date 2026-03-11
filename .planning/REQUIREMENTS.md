@@ -42,11 +42,11 @@ Requirements for the FIP POS Staff App interactive wireframe (mobile PWA). Each 
 
 ### Payment & Checkout
 
-- [ ] **PAY-01**: Staff can view an itemized bill with line items, modifier details, discount input field, tax, and total
-- [ ] **PAY-02**: Staff can select payment method (Cash / QR PromptPay / Card) and confirm payment
+- [x] **PAY-01**: Staff can view an itemized bill with line items, modifier details, discount input field, tax, and total
+- [x] **PAY-02**: Staff can select payment method (Cash / QR PromptPay / Card) and confirm payment
 - [ ] **PAY-03**: Payment confirmation triggers table status → Cleaning and shows a receipt action state (annotated — no real printer)
 - [ ] **PAY-04**: Staff can reprint a receipt from a closed/paid order
-- [ ] **PAY-05**: Split bill v2 placeholder is annotated on the payment screen with a design note
+- [x] **PAY-05**: Split bill v2 placeholder is annotated on the payment screen with a design note
 
 ### Shift & Manager (Staff POS Layer)
 
@@ -123,11 +123,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | KDS-02 | Phase 4 | Complete |
 | KDS-03 | Phase 4 | Complete |
 | KDS-04 | Phase 4 | Complete |
-| PAY-01 | Phase 5 | Pending |
-| PAY-02 | Phase 5 | Pending |
+| PAY-01 | Phase 5 | Complete |
+| PAY-02 | Phase 5 | Complete |
 | PAY-03 | Phase 5 | Pending |
 | PAY-04 | Phase 5 | Pending |
-| PAY-05 | Phase 5 | Pending |
+| PAY-05 | Phase 5 | Complete |
 | SHIFT-01 | Phase 6 | Pending |
 | SHIFT-02 | Phase 6 | Pending |
 | SHIFT-03 | Phase 6 | Pending |
