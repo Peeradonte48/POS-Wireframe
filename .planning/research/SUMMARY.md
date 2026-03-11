@@ -1,19 +1,19 @@
 # Project Research Summary
 
-**Project:** A Ramen POS Wireframe — v1.1 Brand Polish + Bug Fixes
-**Domain:** Restaurant POS UI — dark-mode brand refresh on existing Next.js 16 + Tailwind CSS 4 + shadcn/ui stack
-**Researched:** 2026-03-11
+**Project:** A Ramen POS Wireframe -- v1.2 Bill Management + Order Tracking
+**Domain:** Restaurant POS -- split bill, merge bill, digital order tracking
+**Researched:** 2026-03-12
 **Confidence:** HIGH
 
 ---
 
 ## Executive Summary
 
-This is a focused polish milestone on a feature-complete wireframe — not a greenfield build. The v1.0 stack (Next.js 16, Tailwind CSS 4, shadcn/ui, @base-ui/react, Zustand 5, OKLCH tokens, Sonner) is locked and working. v1.1 has two parallel goals: fix five known bugs that limit functionality correctness, then apply a "bold and energetic" brand polish across four component categories (buttons, status badges, cards/panels, typography). No new dependencies are required for either goal — all capability exists in the installed stack.
+This milestone adds three feature groups to an existing, stable POS wireframe: split bill (equal and per-seat), merge bill (combine tables into one check), and digital order tracking (live stage badges and per-item timelines on the floor plan). The existing codebase already has the complete tech stack, five Zustand stores, a working payment page, KDS, and table map. The research conclusion is unanimous: **zero new npm packages are needed.** All three features are pure state modeling and UI composition on top of existing primitives (Zustand 5, shadcn/ui, Tailwind CSS 4, CVA).
 
-The recommended approach is strictly sequential: bugs first, tokens second, component polish third. Architecture research confirms that three of the five bugs have downstream effects on polish validation — the Toaster must be in AppShell before any toast feedback can be tested during polish; the role guards must be corrected before managers can navigate to the screens under review. Bug fixes are isolated one-to-two-file changes with zero visual side effects, making them safe to land atomically before touching any CSS. The brand polish then operates through two controlled surfaces: `globals.css` (token layer) and the CVA variant maps in `src/components/ui/` (component layer). Changes in those surfaces cascade predictably across all routes.
+The recommended approach is to introduce a single new `bill.store.ts` for split/merge concerns (keeping it separate from the order lifecycle), enhance the KDS ticket interface with item references for tracking, and derive order stages through pure functions rather than duplicating state across stores. The architecture and pitfalls research converge on the core design principle: **extend, do not rewrite.** Order data stays in `order.store`, table data stays in `table.store`, and payment-phase concerns (splits, merges, seat assignments) live in a new dedicated store. The existing five stores remain structurally unchanged except for one additive modification to `kds.store` (item refs on tickets).
 
-The key risk is the Tailwind CSS 4 `@theme inline` trap: if any token edit writes literal OKLCH values into `@theme inline` instead of `var()` references, the dark mode variable chain silently breaks and only the light-mode state updates. A second systemic risk is hardcoded Tailwind palette classes scattered across `TableTile.tsx`, `KdsTicketCard.tsx`, and `AppSidebar.tsx` — these bypass the token system entirely and will look wrong in dark mode after the brand refresh. Both risks must be addressed in Phase 2 (Token Refresh) before component-level polish begins.
+The dominant risk is the payment page, which is currently hardcoded for single-table, single-payer flow. Split bill alone requires multi-total display, per-portion payment method selection, partial payment tracking, and rounding logic -- roughly 60% of the milestone effort. The mitigation is to build the data model (bill store) first, validate it against edge cases (rounding, partial payment persistence, unsplit-after-payment guards), and only then build UI on top of a solid foundation. A secondary risk is KDS-to-table stage desync: the two stores have no event bridge, so the tracking badge feature requires an explicit cross-store sync call when KDS bumps tickets.
 
 ---
 
@@ -21,141 +21,123 @@ The key risk is the Tailwind CSS 4 `@theme inline` trap: if any token edit write
 
 ### Recommended Stack
 
-The v1.1 stack requires zero new packages. All capability exists in the installed dependency tree. The work is technique-based, not dependency-based.
+No new dependencies. The existing stack (Next.js 16, React 19, Zustand 5, Tailwind CSS 4, shadcn/ui, CVA, tw-animate-css, Solar icons, sonner) covers every v1.2 requirement. Split bill is floor division + Zustand state. Order tracking is a pure derivation function. Timeline animations use `tw-animate-css`. No need for dinero.js, dnd-kit, framer-motion, date-fns, or immer.
 
-**Core technologies:**
-- **Tailwind CSS 4 `@theme` block**: register new brand color tokens and custom `@keyframes` — the only mechanism that auto-generates `animate-*` and `bg-*` utilities from inline definitions
-- **Tailwind CSS 4 `@theme inline` block**: maps CSS custom properties to Tailwind utility space — must always reference `var(--token)`, never literal OKLCH values; this is the single most dangerous edit surface for v1.1
-- **CSS Relative Color Syntax `oklch(from var(--x) l c h)`**: derive hover/active/muted states from a single base token; zero bundle cost, 92%+ browser support; eliminates manual hover token proliferation
-- **CVA `cva()` variant extension**: add new button and badge variants by editing the `cva()` call directly in the component file; never create wrapper components
-- **`cn()` with `tailwind-merge`**: class conflict resolution at call sites; critical when passing `className` overrides to CVA components — last class wins per CSS property group
-- **`tw-animate-css` `animate-in` / `animate-out`**: already installed; compose with `fade-in zoom-in-95 duration-150` for snappy POS micro-interactions; do not use for button press feedback
-- **`active:scale-[0.97]` Tailwind utility**: preferred over keyframe animations for button press feedback; must resolve under 80ms to feel tactile on a tablet POS
-
-**Critical constraint:** Do not create `tailwind.config.js` — this project is Tailwind 4 CSS-first; all config lives in `globals.css`.
+**Core technique:**
+- **New `bill.store.ts`**: Split configuration, merge groups, seat payment tracking (persisted via Zustand persist middleware with separate `bill-store` localStorage key)
+- **Extended `kds.store.ts`**: Add `items: KdsLineRef[]` to `KdsTicket` for item-level tracking linkage
+- **New `order-tracking.ts` utility**: Pure derivation function -- computes per-item stages from KDS + order data without duplicating state
+- **Existing shadcn components**: `Dialog`, `Tabs`, `Badge`, `Button`, `Select` cover all new UI patterns -- no new shadcn components needed
 
 ### Expected Features
 
-**Must have — table stakes (v1.1 launch):**
-- Primary CTA button: `h-11` (44px minimum), crimson glow/shadow in dark mode, `active:scale-[0.97]` pressed feedback — currently `h-8` (32px) which fails touch target spec
-- Destructive (void) button: filled treatment (`bg-destructive text-white`); current 10% opacity fill is unreadable as a void action
-- TableTile status badges: filled pill chips with five semantic colors (green/crimson/blue/amber/gray) replacing the `border-l-4` stripe approach — essential for floor-plan scan speed under restaurant lighting
-- KDS BUMP button: migrated to consistent Button component, full-width, 44px, `active:scale` feedback
-- Section header caps pattern: `text-[10px] font-bold tracking-widest uppercase text-muted-foreground` applied consistently across all screens (currently only in TicketPanel)
-- Price readouts (`฿XXXX`): promoted to `text-2xl font-black text-primary` in ticket footer and payment summary
+**Must have (table stakes):**
+- Equal split (divide by N) -- most common request, pre-fill from guestCount
+- Per-seat item assignment -- tap-to-assign UI, each item gets a guest number
+- Independent payment per split -- each sub-bill accepts its own payment method
+- VAT proportional to split with correct rounding (floor + remainder-on-last)
+- Merge two tables into one bill -- aggregate at read time, not by moving data
+- Unsplit (recombine) -- only allowed when no splits are paid yet
+- KDS-to-table stage auto-sync -- explicit cross-store call on bump
+- Color-coded order stage badge on table tiles (upgrade existing outline to filled semantic)
 
-**Should have — competitive differentiators (v1.1 or v1.1.x):**
-- Nav sidebar: active state refined to indicator-line pattern (`border-l-2 border-primary bg-primary/10 text-primary`)
-- Spice selector: color graduation green (L1) → amber (L3) → crimson (L5) across five levels
-- Card elevation: 3-tier system (flat / raised / floating via background lightness steps, not drop shadows) audited and applied across all info panels
-- MenuPanel cards: consistent hover state (`hover:border-primary/40 hover:shadow-sm`) and `active:scale-[0.97]`
+**Should have (differentiators):**
+- Per-item timeline detail view -- strongest stakeholder demo feature
+- Split progress indicator ("2 of 3 paid") -- minimal effort, high cashier clarity
+- Elapsed time color escalation on stage badges (green to amber to red based on time-in-stage)
 
-**Defer to v2+:**
-- Animated entrance states for KDS tickets (slide-in from right on new order)
-- Login screen gradient background (brand moment, low-density view)
-- Haptic feedback on bump/send (requires native PWA capabilities)
-
-**Anti-features to avoid explicitly:** gradient on main app shell, continuous glow pulse on CTAs (ambient animation distracts staff mid-service), full crimson fill on all surfaces (destroys hierarchy), heavy drop shadows/neumorphism (inconsistent with flat Solar icon style), more than 3 font weight levels simultaneously on one screen.
+**Defer (polish pass / v2+):**
+- Customer-facing order tracker (separate deliverable per PROJECT.md)
+- Percentage-based split, custom arbitrary amounts, fractional shared items
+- Merge confirmation preview, visual color-coded split assignment
+- Real-time push (WebSocket/SSE) -- unnecessary for wireframe with Zustand
+- Automatic seat detection during order entry
+- Transfer individual items between tables without full merge
+- Split bill after partial payment
 
 ### Architecture Approach
 
-The project uses a clean five-layer architecture: route groups for layout isolation (`(auth)` / `(app)` / `(kds)`), a single AppShell for all staff-facing routes, a Zustand store layer for in-memory POS state, a single permissions source (`role-permissions.ts` with typed `ActionKey` union), and `globals.css` as the sole design token source. Brand polish flows through one control surface (`globals.css`) and one component override surface (`src/components/ui/`). This architecture is correct and should not be restructured — the five bugs are local defects, not structural problems.
+The architecture follows three core patterns: (1) separate store for separate lifecycle -- bill splits are payment-phase data, not ordering data; (2) derived selectors over duplicated state -- order tracking stages are computed from KDS + order stores via a pure function, never stored redundantly; (3) reference by ID, never copy data -- bill store points to line items by `lineId`, merge groups reference tables by `tableId`, and merged orders are aggregated at read time only.
 
 **Major components:**
-1. `globals.css` — single token source; `@theme` for brand values, `@theme inline` for Tailwind utility mapping, `:root`/`.dark` for light/dark semantic values
-2. `src/components/ui/button.tsx` and `badge.tsx` — CVA variant maps over `@base-ui/react` primitives; all visual variants live in the `cva()` calls in these files
-3. `role-permissions.ts` — single permissions source; `ActionKey` union + `ACTION_PERMISSIONS` record; `canAccess()` and `canDoAction()` are the only permission call points throughout the codebase
-4. `AppShell.tsx` — the correct home for `<Toaster>` once Bug 3 is fixed; all `(app)` routes share this single instance
-5. Page-level `useEffect` guards — enforce route security beyond what the sidebar (UX-only visibility) provides
+1. **`bill.store.ts`** (NEW) -- Split mode config (`full`/`equal`/`per-seat`), seat assignments as `lineId` mappings, merge groups with primary/secondary table tracking, paid-seat tracking per split
+2. **`order-tracking.ts`** (NEW) -- Pure derivation function that maps KDS ticket stages to per-item tracking stages (`Queued`/`Cooking`/`Ready`/`Served`), with aggregate table-level stage for badge display
+3. **`SplitBillSheet` + `SeatNavigator` + `SeatAssignmentView`** (NEW) -- Split bill UI layered onto payment page
+4. **`MergeTablePicker`** (NEW) -- Table selection modal triggered from `TableBottomSheet` Occupied state
+5. **`OrderTimeline`** (NEW) -- Per-item stage timeline in table bottom sheet with elapsed time display
+6. **`payment/[tableId]/page.tsx`** (MODIFIED) -- Reads `bill.store` for split/merge mode, renders per-portion payment flow
 
-**Five confirmed bugs requiring fixes before polish:**
-1. AppSidebar `/orders` dead link — route does not exist; fix: create a 3-line redirect page at `src/app/(app)/orders/page.tsx`
-2. KDS page guard blocks Manager — `role !== 'Kitchen'` is too restrictive; fix: extend to `!['Kitchen', 'Manager'].includes(role)`
-3. Toaster not in AppShell — only mounted in the order page; fix: move to `AppShell.tsx`, add `theme={resolvedTheme}` prop from `useTheme()`
-4. Missing `void-post-send` ActionKey — add to `ActionKey` union and `ACTION_PERMISSIONS` with `['Manager']` roles
-5. Manager page has no role guard — add `useEffect` guard + early return redirecting non-Manager roles to `/table-map`
+**Key architectural decisions:**
+- `order.store` is NOT modified -- seat assignments live in `bill.store` as a mapping layer
+- `table.store` is NOT modified -- merge indicators are derived from `bill.store.tableMergeMap`
+- `kds.store` gets ONE additive change -- `items: KdsLineRef[]` on `KdsTicket` interface
 
 ### Critical Pitfalls
 
-1. **`@theme inline` literal OKLCH severs dark mode chain** — always use `var(--token)` in `@theme inline`; write actual OKLCH values only in `:root` and `.dark`. Verify by inspecting computed `--color-primary` in DevTools after every token change — it must resolve to a color, not show as an unresolved `var()` string.
+1. **Payment page hardcoded for single-table flow** -- Current page has one total, one payment method, one confirmation. Split/merge require multi-total, multi-payment, partial-payment states. Prevention: extract bill calculation into shared utility, build split as a separate mode within payment, keep full-bill path unchanged as default.
 
-2. **OKLCH chroma exceeds sRGB gamut silently** — the current `--primary` at chroma 0.22 is near the sRGB ceiling for hue 27 at L=0.52. Pushing to 0.25+ clips on non-P3 displays. Stakeholder review machines are Windows/sRGB. Verify every new token at oklch.com before committing.
+2. **KDS-table stage desync** -- Two independent stores with no event bridge. Kitchen bumps do not update table badges. Prevention: explicit cross-store call in `bumpTicket` handler. Use "furthest behind item stage" as table-level badge for multi-round orders.
 
-3. **Hardcoded Tailwind palette classes are dark-mode blind** — `text-green-600`, `bg-amber-50`, `border-l-green-500`, `bg-green-600` are scattered across `TableTile.tsx`, `KdsTicketCard.tsx`, and `AppSidebar.tsx`. These do not adapt to dark mode. Audit and catalogue before polish begins; decide on either `dark:` variants or semantic tokens per semantic color concept.
+3. **Split without persistent sub-bill entity** -- If split state lives in React `useState`, partial payments are lost on navigation. Rounding errors accumulate. Prevention: persist `BillSplit` in `bill.store` with floor-division + remainder-on-last pattern (last guest absorbs 0 to N-1 satang difference).
 
-4. **CVA base class additions silently override call-site `className` props** — `tailwind-merge` picks last-wins per CSS property group. Adding `font-bold` to a CVA base silently overrides a call site that passes `font-semibold`. After every CVA base change, grep all call sites for conflicting utilities on the same CSS property.
+4. **Merge without provenance tracking** -- Once items from table B are merged into table A, unmerge is impossible without knowing which items came from where. Prevention: keep orders in their original tables and aggregate at read time only. If data must be moved, tag rounds with `originTableId`.
 
-5. **Sonner `<Toaster>` defaults to light regardless of app theme** — pass `theme={resolvedTheme}` from `useTheme()` (next-themes). Verify immediately after mounting by toggling dark mode and firing a toast. `theme="system"` is wrong here — it reads OS preference, not the app toggle state.
-
-6. **Global `--radius` or `--font-sans` changes blast all 30+ components simultaneously** — never change `--radius` globally for a targeted radius change; edit the specific component's CVA base string instead. Never replace `--font-sans` with a display font — it breaks Thai/Japanese script fallback (Noto Sans Thai/JP).
-
-7. **`leading-tight` globally clips Thai tonal marks and Japanese characters** — apply tight leading only to confirmed Latin-only elements (price fields, section counters). Test any leading change by rendering an actual Thai menu item name before committing.
+5. **Stale badges on merged secondary tables** -- Table B still shows its old `orderStage` after merging into A. Prevention: clear secondary table's `orderStage` on merge, show "Merged into T[X]" indicator derived from `bill.store`.
 
 ---
 
 ## Implications for Roadmap
 
-Based on combined research, three phases are strongly indicated with a strict sequential dependency enforced by the architecture findings.
+Based on combined research, four phases are recommended with strict ordering based on dependency analysis.
 
-### Phase 1: Bug Fixes
+### Phase 1: Digital Order Tracking
 
-**Rationale:** Architecture research establishes a clear build-order constraint: Toaster must be in AppShell before polish feedback is testable on all pages; role guards must be correct before managers can review polished screens; `void-post-send` ActionKey must exist before any component can call `canDoAction()` against it. All five bugs are isolated, zero-visual-impact changes — landing them atomically before any CSS changes eliminates the risk of conflating visual regressions with bug fixes.
+**Rationale:** No dependency on the new bill store. Purely additive -- reads from existing stores, derives stage data via pure functions. Validates the cross-store derivation pattern before split/merge builds on similar principles. High visibility on the floor plan for early demo impact.
+**Delivers:** Live color-coded stage badges on table tiles, per-item stage timeline in bottom sheet, KDS-to-table sync bridge, elapsed time escalation.
+**Addresses:** KDS auto-sync (table stakes), order stage badge (table stakes), per-item timeline (differentiator), elapsed time escalation (differentiator).
+**Avoids:** Pitfall 3 (KDS-table desync) by establishing the sync mechanism upfront.
+**Key files:** New `src/lib/order-tracking.ts`, new `src/components/table-map/OrderTimeline.tsx`, modified `kds.store.ts` (add items to ticket), modified `TableTile.tsx` (derived badge), modified `TableBottomSheet.tsx` (timeline section).
 
-**Delivers:** A functionally correct navigation and permissions baseline. Dead links resolved, all roles able to reach their authorized screens, toast feedback active on all routes, Sonner correctly themed for dark mode from the first moment.
+### Phase 2: Bill Store + Equal Split
 
-**Addresses:** AppSidebar `/orders` dead link (Bug 1), KDS guard over-restriction (Bug 2), Toaster placement and dark-mode theming (Bug 3), `void-post-send` ActionKey gap (Bug 4), Manager page missing guard (Bug 5).
+**Rationale:** Creates the foundational `bill.store.ts` that both split modes and merge depend on. Equal split is the simplest mode -- validates the store design, rounding logic, and multi-payment flow before tackling per-seat assignment. Replaces the existing "Split Bill -> v2" placeholder button in TotalsSection.
+**Delivers:** `bill.store.ts` with split actions, equal split UI on payment page, per-share payment with independent method selection, split progress indicator ("2 of 3 paid").
+**Addresses:** Equal split (table stakes), independent payment per split (table stakes), VAT rounding (table stakes), split progress (differentiator).
+**Avoids:** Pitfall 2 (split without persistent entity) by building the store first. Pitfall 5 (payment page complexity) by starting with the simpler equal mode.
+**Key files:** New `src/stores/bill.store.ts`, new `SplitBillSheet.tsx`, new `SeatNavigator.tsx`, modified `TotalsSection.tsx`, modified `payment/[tableId]/page.tsx`.
 
-**Avoids:** Sonner light-mode-only pitfall (Pitfall 5), Toaster-per-page anti-pattern (ARCHITECTURE Anti-Pattern 4), sidebar-only security anti-pattern (ARCHITECTURE Anti-Pattern 3).
+### Phase 3: Per-Seat Split
 
-**Files touched:** 6 files maximum, all small diffs, zero CSS changes.
+**Rationale:** Builds on the bill store and payment flow from Phase 2. Adds seat assignment UI and per-seat item filtering. More complex than equal split because it requires item-to-seat mapping, shared-item handling, and per-seat VAT calculation.
+**Delivers:** `SeatAssignmentView` (tap-to-assign), per-seat subtotal/VAT calculation, unsplit action with paid-seat guard, coupon-before-split behavior.
+**Addresses:** Per-seat item assignment (table stakes), unsplit (table stakes), coupon-before-split (table stakes).
+**Avoids:** Pitfall 6 (no seat identity) by using `bill.store` seat assignments rather than modifying `OrderLineItem`. Pitfall 11 (unsplit after partial payment) by disabling unsplit once any portion is paid.
+**Key files:** New `SeatAssignmentView.tsx`, modified `bill.store.ts` (seat assignment actions), modified `payment/[tableId]/page.tsx` (per-seat item filtering), modified `role-permissions.ts` (add `split-bill` ActionKey).
 
----
+### Phase 4: Merge Bill
 
-### Phase 2: Token Refresh
-
-**Rationale:** Token changes in `globals.css` cascade to the entire UI simultaneously — this is the highest-leverage phase of the polish. Strengthening `--primary` chroma and verifying the `@theme inline` chain before touching any component file means all downstream component work in Phase 3 happens against the correct brand surface. The hardcoded palette class audit must also happen here so Phase 3 component work can introduce proper semantic badge colors without collision with raw palette values already in the files.
-
-**Delivers:** A stronger brand-red primary throughout all routes (chroma tuned and verified against sRGB gamut), verified dark-mode variable chain integrity, `@theme inline` confirmed to use only `var()` references, hardcoded palette usage catalogued across `TableTile.tsx`, `KdsTicketCard.tsx`, `AppSidebar.tsx` with a fix plan ready for Phase 3.
-
-**Addresses:** OKLCH chroma tuning (`0.22` toward `0.26` — gamut-checked), `@theme inline` audit, hardcoded palette audit, dark-mode token pair completeness check (every `:root` token must have a `.dark` counterpart).
-
-**Avoids:** `@theme inline` dark mode break (Pitfall 1), sRGB gamut exceedance (Pitfall 2), hardcoded palette dark-mode failures discovered mid-Phase 3 (Pitfall 3), global radius blast (Pitfall 6).
-
-**Files touched:** `globals.css` primarily; audit output generates a fix checklist consumed by Phase 3.
-
----
-
-### Phase 3: Component Polish
-
-**Rationale:** With bugs fixed and tokens verified, component-level CVA edits are safe and predictable. This phase applies the six P1 feature changes first (button sizing/glow/press, badge pills, BUMP button, caps labels, price hero, destructive fill), verifies them across all 8 route paths, then applies P2 enhancements (sidebar indicator line, spice selector graduation, card elevation tiers). Typography work comes last — zero component dependencies, lowest risk, high perceived polish impact.
-
-**Delivers:** The "bold and energetic" brand expression across all POS screens. Staff-facing interaction quality improvements: 44px touch targets on all primary actions, tactile `active:scale` press feedback on all interactive elements, readable semantic status colors in dark mode, consistent typographic hierarchy with the caps utility pattern.
-
-**Implements (P1 — must have):** CVA variant additions to `button.tsx` (44px primary sizing, crimson glow in dark mode, `active:scale-[0.97]`), filled `destructive` variant, `badge.tsx` status variants (occupied/reserved/check-requested/cleaning/open), TableTile refactor from `border-l-4` to badge pill chips, KDS BUMP button migration to Button component, `label-caps` utility in `@layer base`, price readout class promotions.
-
-**Implements (P2 — should have):** Sidebar active indicator-line pattern, spice selector color graduation, card elevation 3-tier system audit and application, MenuPanel card hover/active states.
-
-**Avoids:** CVA base class call-site conflicts (Pitfall 4 — grep all call sites after every base change), touch target regression after height changes, Thai/JP line-height clipping (Pitfall 7), template literal class construction for dynamic status colors (fails Tailwind JIT), multiple Toaster instances, inline role arrays in components.
-
-**Files touched:** `src/components/ui/button.tsx`, `src/components/ui/badge.tsx`, `src/components/table-map/TableTile.tsx`, `src/components/kds/KdsTicketCard.tsx`, `src/app/globals.css` (@layer base additions), individual screen components for price and label class updates.
-
----
+**Rationale:** Extends `bill.store` with merge groups. Least frequent operation in a ramen restaurant, simplest state changes, but requires careful secondary-table cleanup and KDS label handling. Depends on the stable bill store from Phases 2-3.
+**Delivers:** `MergeTablePicker` modal, merged bill aggregation on payment page, unmerge support via merge group dissolution, secondary table status cleanup, KDS label updates for merged tickets.
+**Addresses:** Merge two tables (table stakes), merge badge on table tile.
+**Avoids:** Pitfall 4 (merge without provenance) by keeping orders in original tables and aggregating at read time. Pitfall 8 (stale badges on secondary tables) by clearing `orderStage` and deriving merge indicator from `bill.store`. Pitfall 9 (misleading KDS labels) by updating ticket labels on merge.
+**Key files:** New `MergeTablePicker.tsx`, modified `bill.store.ts` (merge actions), modified `TableBottomSheet.tsx` ("Merge Tables" button), modified `payment/[tableId]/page.tsx` (multi-table item aggregation), modified `role-permissions.ts` (add `merge-tables` ActionKey).
 
 ### Phase Ordering Rationale
 
-- Bugs before tokens: Toaster dark-mode verification (required during token phase to confirm Sonner respects the dark class) depends on Bug 3 being resolved and the `theme={resolvedTheme}` prop being in place first.
-- Tokens before components: Strengthening `--primary` chroma changes button and badge appearance. If component polish is applied first against the weaker token, the visual baseline shifts under completed work and requires re-review.
-- P1 component changes before P2: The card elevation tier audit references `border-primary/40` — which depends on the correct primary token being confirmed in Phase 2 and the button primary variant being finalized in P1 of Phase 3.
-- Typography last within Phase 3: Zero component dependencies, no risk of breaking other Phase 3 work, produces visible improvement with minimal code surface.
+- **Tracking first** because it has zero dependency on split/merge, validates cross-store derivation patterns, and produces immediate visual results on the floor plan. No new store creation required.
+- **Equal split before per-seat** because equal split is simpler (no item assignment), validates the bill store design and multi-payment flow, and exercises the `SeatNavigator` pattern that per-seat also needs.
+- **Per-seat after equal** because it adds complexity incrementally -- the store, payment flow, and navigator patterns from equal split are reused directly.
+- **Merge last** because it is the least common operation in a ramen restaurant, has the most edge cases (provenance, KDS labels, secondary table cleanup), and depends on the bill store being stable. It also benefits from the unsplit action implemented in Phase 3.
 
 ### Research Flags
 
-Phases with well-documented patterns — skip research-phase:
-- **Phase 1 (Bug Fixes):** All five bugs are fully documented with exact file paths, line numbers, and fix approaches in ARCHITECTURE.md. Standard patterns (redirect page, role array extension, Toaster mount). No additional research needed.
-- **Phase 2 (Token Refresh):** OKLCH token technique and `@theme inline` mechanics are fully covered in STACK.md with official Tailwind 4 source backing. Use oklch.com for gamut verification.
+Phases likely needing deeper research during planning:
+- **Phase 2 (Equal Split):** Rounding edge cases with THB satang. The floor + remainder pattern is standard, but VAT-on-split vs split-of-VAT calculation order needs a business rule decision before implementation.
+- **Phase 3 (Per-Seat Split):** Shared/unassigned item handling. The "seat 0 = shared, split equally" concept is defined but the UX for displaying and paying for shared items alongside assigned items needs design validation.
+- **Phase 4 (Merge Bill):** Merge + split interaction. A merged bill that is then split creates a combined state. The architecture supports it (merged items expand the lineId pool), but this combination needs explicit testing matrix definition.
 
-Phases that benefit from a pre-phase file read (not full research-phase):
-- **Phase 3 (Component Polish):** The `STATUS_CONFIG` structure in `TableTile.tsx` drives badge rendering via full class-name constants. Before designing the badge pill chip refactor, read `TableTile.tsx` to confirm the existing config map shape so new badge variant names can be slotted in without breaking the full-class-name constant rule (template literal construction fails Tailwind JIT). A 5-minute read replaces a full research phase.
+Phases with standard patterns (skip research-phase):
+- **Phase 1 (Order Tracking):** Well-documented pattern. Pure derivation from existing stores. KDS-to-order item mapping is straightforward. No new store needed.
 
 ---
 
@@ -163,52 +145,42 @@ Phases that benefit from a pre-phase file read (not full research-phase):
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Zero new packages; all techniques verified against installed source files and official Tailwind 4 docs |
-| Features | HIGH | Grounded in direct codebase audit + competitor POS UI pattern analysis; feature gaps are visible in the source and measurable against design benchmarks |
-| Architecture | HIGH | All five bugs verified by direct file inspection with exact line numbers; no architectural assumptions made — all claims traceable to a specific file |
-| Pitfalls | HIGH | Most pitfalls derived from direct source code read + official docs and GitHub discussions; not speculative or based on single sources |
+| Stack | HIGH | Zero new packages. Every capability verified against existing `package.json` and live source code. |
+| Features | HIGH | Sourced from 16+ POS vendor docs (Lightspeed, Square, Toast, MobiPOS, Clover, Odoo). Clear consensus on table stakes vs differentiators. |
+| Architecture | HIGH | All findings derived from direct line-by-line codebase analysis of all 5 stores, payment page, and table components with exact line numbers. |
+| Pitfalls | HIGH | Every pitfall traced to specific file and line number. Prevention strategies validated against industry POS patterns. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **`STATUS_CONFIG` shape in `TableTile.tsx`:** ARCHITECTURE.md references this file but does not document the exact data structure of the config object. Before writing the badge pill refactor implementation plan, read the file to confirm existing key names and how they map to badge variant strings. 5-minute read, not a research gap.
-- **WCAG contrast for boosted `--primary` chroma:** Research recommends increasing chroma from 0.22 toward 0.26 but notes L ≥ 0.48 is required for WCAG AA with white foreground. The exact safe chroma ceiling depends on the chosen lightness value. Verify the final chosen value with a contrast checker (oklch.com or Chrome DevTools accessibility panel) before locking the token in Phase 2.
-- **KDS `(kds)/layout.tsx` Toaster need:** Architecture research flags that KDS may need its own `<Toaster>` in `(kds)/layout.tsx` if kitchen staff need toast feedback. This is not confirmed as a v1.1 requirement — flag for product decision during Phase 1 planning before the AppShell Toaster fix is finalized.
+- **Rounding business rule:** Floor + remainder-on-last is the technical recommendation, but the product owner should confirm whether the rounding difference (0 to N-1 satang) lands on the last guest or is absorbed by the restaurant. Policy decision, not technical.
+- **Order cleanup policy:** Orders are never cleared from `order.store` after payment. Adding `stageHistory` and `BillSplit` data increases localStorage payload over a service day. A cleanup-on-payment-confirm policy should be defined in Phase 2.
+- **KDS ticket-to-item linkage:** Current `addTicket` takes no item data. The Phase 1 modification (adding `items: KdsLineRef[]`) is additive, but the call site where `sendRound` triggers `addTicket` needs verification to confirm items are available and correctly shaped.
+- **Merge + split composition:** The architecture supports it (merged items expand the lineId pool for per-seat assignment), but no research source explicitly validated this combination. Needs a testing matrix during Phase 4 planning.
+- **Architecture disagreement on seat assignment storage:** STACK.md suggests adding `seatNumber` to `OrderLineItem`; ARCHITECTURE.md recommends keeping seat assignments only in `bill.store` as a mapping layer. The ARCHITECTURE.md approach is stronger -- seat assignment is a payment-phase concern and should not pollute the order data model. **Recommendation: follow ARCHITECTURE.md.**
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- `src/app/globals.css` — Tailwind CSS 4 token structure, existing OKLCH values, `@theme` / `@theme inline` / `:root` / `.dark` pattern confirmed by direct read
-- `src/components/ui/button.tsx`, `badge.tsx` — CVA + @base-ui/react pattern confirmed
-- `src/components/app-shell/AppShell.tsx`, `AppSidebar.tsx` — Bug 1 and Bug 3 confirmed
-- `src/app/(kds)/kds/page.tsx` — Bug 2 exact lines confirmed
-- `src/lib/role-permissions.ts` — Bug 4 missing ActionKey confirmed
-- `src/app/(app)/manager/page.tsx` — Bug 5 missing guard confirmed
-- `package.json` — full dependency inventory (Next.js 16.1.6, @base-ui/react 1.2.0, sonner 2.0.7, Tailwind CSS 4, Zustand 5.0.11)
-- [Tailwind CSS v4 Theme docs](https://tailwindcss.com/docs/theme) — `@theme`, `@theme inline` behavior confirmed
-- [Tailwind CSS v4 release blog](https://tailwindcss.com/blog/tailwindcss-v4) — CSS-first architecture
-- [Tailwind CSS Dark Mode docs](https://tailwindcss.com/docs/dark-mode) — `@custom-variant dark` behavior
-- [Sonner Toaster docs](https://sonner.emilkowal.ski/toaster) — `theme` prop requirement confirmed
-- [MDN oklch()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/oklch) — Baseline 2023, 92%+ browser support
-- GitHub discussions: Tailwind CSS v4 `@theme inline` vs `@theme` semantics (#18560, #15083, #17810)
+- Direct codebase analysis of all stores (`order.store.ts`, `table.store.ts`, `kds.store.ts`, `session.store.ts`, `manager.store.ts`), payment page, TotalsSection, TableTile, TableBottomSheet, role-permissions -- every claim traceable to specific file and line number
+- `.planning/PROJECT.md` -- v1.2 feature requirements and constraints
 
-### Secondary (MEDIUM confidence)
-- [Evil Martians: OKLCH in CSS](https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl) — chroma ceiling for red hues (~0.23 at L=0.52 for sRGB), perceptual uniformity rationale
-- [Chrome for Developers: CSS relative color syntax](https://developer.chrome.com/blog/css-relative-color-syntax) — `oklch(from var(--x) l c h)` pattern and browser support
-- [Vercel Academy: Extending shadcn/ui](https://vercel.com/academy/shadcn-ui/extending-shadcn-ui-with-custom-components) — CVA extension patterns
-- Toast POS, Square for Restaurants, Lightspeed Restaurant UI patterns — competitor button sizing (44-52px), badge design (colored tiles/chips), dark mode surface depth (2-3 levels); industry knowledge through mid-2025
-- [LogRocket: CTA Button Design](https://blog.logrocket.com/ux-design/cta-button-design-best-practices/) — 44px touch target mandate corroboration
-- [Sonner styling docs](https://sonner.emilkowal.ski/styling) — portal mounting behavior
-- [next-themes repository](https://github.com/pacocoursey/next-themes) — `suppressHydrationWarning` requirement, `resolvedTheme` vs `theme` behavior
-- [shadcn/ui Tailwind v4 integration](https://ui.shadcn.com/docs/tailwind-v4) — component token structure
-
-### Tertiary (LOW confidence — directional guidance only)
-- Dark Mode UX 2025/2026 articles — general dark mode best practices for surface depth and contrast; validated against actual codebase token structure before inclusion in findings
+### Secondary (HIGH confidence)
+- [Lightspeed L-Series / K-Series](https://resto-support.lightspeedhq.com/) -- split modes, seat assignment, check merging, max 99 splits
+- [Square for Restaurants](https://squareup.com/help/) -- per-seat and per-item split patterns
+- [MobiPOS](https://www.mobi-pos.com/) -- split/merge/unsplit workflows
+- [ConnectPOS](https://www.connectpos.com/) -- merge check use cases and cross-area limitations
+- [Bright Inventions](https://brightinventions.pl/blog/decimals-pos-bill-splitting-restaurants/) -- rounding strategies for bill splitting
+- [Menumium](https://menumium.com/blog/) -- order stage lifecycle and tracking patterns
+- [WaiterOne](https://www.waiterone.net/blog/) -- order status board display patterns
+- [Quantic POS](https://getquantic.com/restaurant-pos-system-features/) -- 2026 restaurant POS feature expectations
+- [Odoo POS Split/Merge module](https://apps.odoo.com/apps/modules/17.0/pos_split_merge) -- combined split/merge functionality
+- Zustand 5 persist middleware -- existing pattern validated across 4 stores in this project
 
 ---
 
-*Research completed: 2026-03-11*
+*Research completed: 2026-03-12*
 *Ready for roadmap: yes*
