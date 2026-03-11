@@ -99,7 +99,7 @@ export default function OrderPage() {
           </div>
 
           {/* Column 3: Ticket */}
-          <div className="w-56 md:w-64 lg:w-72 xl:w-80 border-l border-border flex flex-col bg-card shrink-0" style={{ boxShadow: 'var(--shadow-panel)' }}>
+          <div className="w-56 md:w-64 lg:w-72 xl:w-80 border-l border-border flex flex-col bg-card shrink-0 overflow-hidden" style={{ boxShadow: 'var(--shadow-panel)' }}>
             <TicketPanel
               tableId={tableId}
               onEditLineItem={(lineId) => {

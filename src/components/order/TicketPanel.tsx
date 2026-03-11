@@ -142,7 +142,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
       <div className="border-t px-4 py-3 flex items-center justify-between gap-3 shrink-0">
         <div>
           <p className="caps">Total</p>
-          <p className="text-2xl font-black text-primary leading-tight">฿{runningTotal.toFixed(0)}</p>
+          <p className="text-xl font-black text-primary leading-tight">฿{runningTotal.toFixed(0)}</p>
         </div>
         <Button
           size="cta"
