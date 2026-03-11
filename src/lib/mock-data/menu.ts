@@ -103,7 +103,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'โทนโกตสึราเมน',
     basePrice: 290,
     thumbnailPlaceholder: '🍜',
-    unsplashId: '1569718044309-309dc2748ad7',
+    unsplashId: '1476224203421-9ac39bcb3327',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   {
@@ -164,7 +164,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'เกี๊ยวซ่า',
     basePrice: 120,
     thumbnailPlaceholder: '🥟',
-    unsplashId: '1496116218422-9ce2cb082c08',
+    unsplashId: '1432139555190-58524dae6a55',
     modifierGroups: [],
   },
   // Veggie Ramen
@@ -175,7 +175,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ราเมนผัก',
     basePrice: 250,
     thumbnailPlaceholder: '🥦',
-    unsplashId: '1580822184872-0f30f1ec5a73',
+    unsplashId: '1606755962773-d324e0a13086',
     modifierGroups: RAMEN_MODIFIER_GROUPS,
   },
   // Karaage Chicken
@@ -186,7 +186,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ไก่คาราเกะ',
     basePrice: 139,
     thumbnailPlaceholder: '🍗',
-    unsplashId: '1562802378-173b9d7e9c9b',
+    unsplashId: '1504674900247-0877df9cc836',
     modifierGroups: [],
   },
   // Edamame
@@ -208,7 +208,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'คัตสึดง',
     basePrice: 220,
     thumbnailPlaceholder: '🍱',
-    unsplashId: '1611143669185-af224c5e3252',
+    unsplashId: '1534482421-64566f976cfa',
     modifierGroups: [],
   },
   // Drinks
@@ -229,7 +229,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'กาแฟเย็น',
     basePrice: 75,
     thumbnailPlaceholder: '☕',
-    unsplashId: '1461023058943-362cf31f8a9a',
+    unsplashId: '1602253057119-44d745d9b860',
     modifierGroups: [],
   },
 ]
