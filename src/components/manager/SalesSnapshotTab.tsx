@@ -30,8 +30,16 @@ export function SalesSnapshotTab() {
     return { grossRevenue, vatAmount, netSales, coverCount, topItems }
   }, [orders, tables])
 
+  const hasNoSales = grossRevenue === 0
+
   return (
     <div className="p-4 space-y-4">
+      {hasNoSales && (
+        <div className="flex items-center justify-center h-32 text-muted-foreground">
+          No sales data for this shift
+        </div>
+      )}
+
       {/* Key Numbers */}
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Net Sales" value={`฿${netSales.toLocaleString()}`} />

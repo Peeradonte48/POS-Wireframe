@@ -1,20 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useManagerStore } from '@/stores/manager.store'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 interface MenuPanelProps {
   onItemTap: (itemId: string) => void
 }
 
+function MenuItemSkeleton() {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 border-b">
+      <Skeleton className="w-10 h-10 rounded-md shrink-0" />
+      <div className="flex-1 space-y-1.5">
+        <Skeleton className="h-4 w-[140px]" />
+        <Skeleton className="h-3 w-[100px]" />
+      </div>
+      <Skeleton className="h-4 w-[40px]" />
+    </div>
+  )
+}
+
 export function MenuPanel({ onItemTap }: MenuPanelProps) {
   const [activeCategory, setActiveCategory] = useState<string>(MENU_CATEGORIES[0].id)
   const eightySixedIds = useManagerStore((s) => s.eightySixedIds)
+
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 300)
+    return () => clearTimeout(t)
+  }, [])
 
   const filteredItems = MENU_ITEMS.filter((item) => item.categoryId === activeCategory)
 
@@ -33,7 +53,9 @@ export function MenuPanel({ onItemTap }: MenuPanelProps) {
 
       {/* Item list */}
       <div className="flex-1 overflow-y-auto">
-        {filteredItems.length === 0 ? (
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, i) => <MenuItemSkeleton key={i} />)
+        ) : filteredItems.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
             No items in this category
           </p>

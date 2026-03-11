@@ -46,7 +46,9 @@ export function OpenTicketsTab() {
         </div>
 
         {occupiedTables.length === 0 ? (
-          <p className="px-4 py-6 text-sm text-muted-foreground text-center">No open tables</p>
+          <div className="flex items-center justify-center h-32 text-muted-foreground">
+            No open tickets
+          </div>
         ) : (
           occupiedTables.map((table) => {
             // Compute estimated total inline to avoid complex helper type annotation

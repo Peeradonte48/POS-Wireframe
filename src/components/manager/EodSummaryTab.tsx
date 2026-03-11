@@ -98,6 +98,13 @@ export function EodSummaryTab() {
         </DialogContent>
       </Dialog>
 
+      {/* Empty state — no orders this shift */}
+      {grossRevenue === 0 && (
+        <div className="flex items-center justify-center h-32 text-muted-foreground">
+          No orders this shift
+        </div>
+      )}
+
       {/* Sales Summary */}
       <div className="rounded-lg border bg-card p-4 space-y-2">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Sales Summary</p>
