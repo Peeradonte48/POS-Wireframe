@@ -13,7 +13,7 @@
 - [x] **Phase 2: Table Map** — Floor plan with full table lifecycle state machine
 - [x] **Phase 3: Order Flow** — Order entry, ramen modifier sheet, void flows (completed 2026-03-10)
 - [x] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode (completed 2026-03-11)
-- [ ] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle
+- [x] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle (completed 2026-03-11)
 - [ ] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools
 - [ ] **Phase 7: Polish** — Role gating audit, touch targets, toasts, empty/loading states
 
@@ -27,7 +27,7 @@
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
-| 5. Payment | 2/3 | In Progress|  |
+| 5. Payment | 3/3 | Complete | 2026-03-11 |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
 
@@ -133,12 +133,12 @@ Plans:
 3. After payment, staff can access a receipt action state (print annotation visible; no real printer required) and reprint from a closed order
 4. The payment screen contains a clearly annotated placeholder indicating where split bill functionality will attach in v2
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
-- [ ] 05-01-PLAN.md — Payment sub-components (BillLineItem, TotalsSection, PaymentMethodSelector, CashPanel, QrPanel, CardPanel) + PaymentPage payment view (PAY-01, PAY-02, PAY-05)
-- [ ] 05-02-PLAN.md — ReceiptScreen + PaymentPage receipt view-state + markCleaning wiring + TableBottomSheet Go to Payment activation (PAY-03, PAY-04)
-- [ ] 05-03-PLAN.md — Build verify + browser checkpoint: all 5 PAY criteria (PAY-01–05)
+- [x] 05-01-PLAN.md — Payment sub-components (BillLineItem, TotalsSection, PaymentMethodSelector, CashPanel, QrPanel, CardPanel) + PaymentPage payment view (PAY-01, PAY-02, PAY-05)
+- [x] 05-02-PLAN.md — ReceiptScreen + PaymentPage receipt view-state + markCleaning wiring + TableBottomSheet Go to Payment activation (PAY-03, PAY-04)
+- [x] 05-03-PLAN.md — Build verify + browser checkpoint: all 5 PAY criteria (PAY-01–05)
 
 ---
 
@@ -237,3 +237,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Updated: 2026-03-10 — Phase 3 plans created (4 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 4 plans created (3 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 5 plans created (3 plans, 3 waves)*
+*Updated: 2026-03-11 — Phase 5 complete — all 5 PAY criteria browser-verified*

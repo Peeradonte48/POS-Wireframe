@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-payment-02-PLAN.md
-last_updated: "2026-03-11T06:07:48.303Z"
+stopped_at: Completed 05-payment-03-PLAN.md — Phase 5 complete
+last_updated: "2026-03-11T07:00:00.000Z"
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 5
   total_plans: 19
-  completed_plans: 17
-  percent: 92
+  completed_plans: 18
+  percent: 95
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-11
-**Session:** Phase 3 complete — all 7 ORDER requirements browser-verified
+**Session:** Phase 5 complete — all 5 PAY requirements browser-verified
 
 ---
 
@@ -34,12 +34,12 @@ progress:
 
 ## Current Position
 
-**Phase:** Phase 3 — Order Flow (complete)
-**Plan:** 03-04 complete — full order flow wired and browser-verified
-**Status:** Ready to plan
+**Phase:** Phase 5 — Payment (complete)
+**Plan:** 05-03 complete — full payment flow browser-verified (all 5 PAY criteria)
+**Status:** Ready to plan Phase 6
 
 ```
-Progress: [█████████░] 92% (13 of 13 plans)
+Progress: [█████████░] 95% (18 of 19 plans)
 ```
 
 ---
@@ -51,8 +51,8 @@ Progress: [█████████░] 92% (13 of 13 plans)
 | 1 | Foundation | AUTH-01–05 | Complete ✓ (2026-03-10) |
 | 2 | Table Map | FLOOR-01–05 | Complete ✓ (2026-03-10) |
 | 3 | Order Flow | ORDER-01–07 | Complete ✓ (2026-03-11) |
-| 4 | KDS | KDS-01–04 | Not started |
-| 5 | Payment | PAY-01–05 | Not started |
+| 4 | KDS | KDS-01–04 | Complete ✓ (2026-03-11) |
+| 5 | Payment | PAY-01–05 | Complete ✓ (2026-03-11) |
 | 6 | Manager Layer | SHIFT-01–04 | Not started |
 | 7 | Polish | POLISH-01–04 | Not started |
 
@@ -69,7 +69,7 @@ Progress: [█████████░] 92% (13 of 13 plans)
 | Static floor plan (no dnd-kit) assumed for Phase 2 | Manager-driven table repositioning is not an explicit v1 requirement; add dnd-kit only if required | Roadmap |
 | A Ramen actual menu data required before Phase 3 | Mock menu must reflect real categories/items/modifier trees or modifier UI will be underspecced | Roadmap |
 | Tailwind v3 vs v4 compatibility must be verified at init | Tailwind v4 introduced breaking changes to config format | Roadmap |
-| No Zustand persist middleware | Each page load starts fresh at login — intentional for wireframe simplicity | Phase 1 Plan 01 |
+| Zustand persist middleware added (reversed Phase 1 decision) | (app)/(kds) route group navigation destroys React tree, resetting in-memory stores; localStorage persist is minimal fix; wireframe intent preserved since logout clears state | Phase 5 Plan 03 |
 | globals.css preserves shadcn CSS variable tokens + brand @theme block | Both coexist under Tailwind v4 CSS-first config | Phase 1 Plan 01 |
 - [Phase 01-foundation]: PinNumpad auto-clear timeout set to 600ms to match shake animation duration before resetting digits
 - [Phase 01-foundation]: PinNumpad reusable: no confirm button, 4th digit auto-submits via useEffect (not inline handler)
@@ -105,6 +105,7 @@ Progress: [█████████░] 92% (13 of 13 plans)
 - [Phase 05-payment]: PaymentPage receipt view is a stub in Plan 01 — Plan 02 builds the full receipt screen
 - [Phase 05-payment]: toast import kept in PaymentPage (not ReceiptScreen) — keeps ReceiptScreen a pure display component with callbacks only
 - [Phase 05-payment]: useRouter already imported in TableBottomSheet from Phase 2 — no duplicate import needed for Go to Payment activation
+- [Phase 05-payment]: Zustand persist middleware adopted (reversed Phase 1 decision) — required for state to survive (app)/(kds) route group navigation on role switch; localStorage storage with named keys per store
 
 ### Research Flags (validate before the flagged phase begins)
 
@@ -158,11 +159,12 @@ None.
 | Phase 04-kds P03 | 20min | 2 tasks | 4 files |
 | Phase 05-payment P01 | 2min | 2 tasks | 7 files |
 | Phase 05-payment P02 | 2min | 2 tasks | 3 files |
+| Phase 05-payment P03 | 10min | 2 tasks | 2 files |
 
 ## Session Continuity
 
-Last session: 2026-03-11T06:07:48.300Z
-Stopped at: Completed 05-payment-02-PLAN.md
+Last session: 2026-03-11T07:00:00.000Z
+Stopped at: Completed 05-payment-03-PLAN.md — Phase 5 complete, ready for Phase 6
 Resume file: None
 
 To resume after any context loss:
