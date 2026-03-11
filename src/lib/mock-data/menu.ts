@@ -167,6 +167,50 @@ export const MENU_ITEMS: MenuItem[] = [
     unsplashId: '1496116218422-9ce2cb082c08',
     modifierGroups: [],
   },
+  // Veggie Ramen
+  {
+    id: 'veggie-ramen',
+    categoryId: 'ramen',
+    name: 'Veggie Ramen',
+    nameTh: 'ราเมนผัก',
+    basePrice: 250,
+    thumbnailPlaceholder: '🥦',
+    unsplashId: '1580822184872-0f30f1ec5a73',
+    modifierGroups: RAMEN_MODIFIER_GROUPS,
+  },
+  // Karaage Chicken
+  {
+    id: 'karaage',
+    categoryId: 'sides',
+    name: 'Karaage Chicken',
+    nameTh: 'ไก่คาราเกะ',
+    basePrice: 139,
+    thumbnailPlaceholder: '🍗',
+    unsplashId: '1562802378-173b9d7e9c9b',
+    modifierGroups: [],
+  },
+  // Edamame
+  {
+    id: 'edamame',
+    categoryId: 'sides',
+    name: 'Edamame',
+    nameTh: 'ถั่วแระญี่ปุ่น',
+    basePrice: 79,
+    thumbnailPlaceholder: '🫘',
+    unsplashId: '1482049016688-2d3e1b311543',
+    modifierGroups: [],
+  },
+  // Katsu Don
+  {
+    id: 'katsu-don',
+    categoryId: 'rice',
+    name: 'Katsu Don',
+    nameTh: 'คัตสึดง',
+    basePrice: 220,
+    thumbnailPlaceholder: '🍱',
+    unsplashId: '1611143669185-af224c5e3252',
+    modifierGroups: [],
+  },
   // Drinks
   {
     id: 'green-tea',
@@ -176,6 +220,16 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 60,
     thumbnailPlaceholder: '🍵',
     unsplashId: '1556679343-c7306c1976bc',
+    modifierGroups: [],
+  },
+  {
+    id: 'iced-coffee',
+    categoryId: 'drinks',
+    name: 'Iced Coffee',
+    nameTh: 'กาแฟเย็น',
+    basePrice: 75,
+    thumbnailPlaceholder: '☕',
+    unsplashId: '1461023058943-362cf31f8a9a',
     modifierGroups: [],
   },
 ]

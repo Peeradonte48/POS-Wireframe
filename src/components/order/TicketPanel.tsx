@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
+import { NotesLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -21,22 +22,13 @@ interface TicketPanelProps {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: compute running total across all rounds for non-voided items
+// Helper: running total (non-voided items)
 // ---------------------------------------------------------------------------
 
 function computeTotal(allItems: OrderLineItem[]): number {
   return allItems.reduce((sum, item) => {
     if (item.status === 'voided') return sum
-    const toppingAdj = item.modifiers
-      .filter((m) => m.groupId === 'toppings')
-      .reduce((adj, _m) => {
-        // priceAdj is on the menu option, but we stored optionLabel not priceAdj.
-        // The store doesn't hold priceAdj; the base price already accounts for the bowl.
-        // Toppings with priceAdj are a nice-to-have — for this wireframe we sum
-        // basePrice × qty only, as the topping priceAdj isn't stored in ModifierSelection.
-        return adj
-      }, 0)
-    return sum + item.basePrice * item.quantity + toppingAdj
+    return sum + item.basePrice * item.quantity
   }, 0)
 }
 
@@ -46,6 +38,7 @@ function computeTotal(allItems: OrderLineItem[]): number {
 
 export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   const order = useOrderStore((s) => s.orders[tableId])
+  const table = useTableStore((s) => s.tables[tableId])
   const { removeItem } = useOrderStore()
   const { updateTable } = useTableStore()
   const role = useSessionStore((s) => s.role)!
@@ -53,18 +46,16 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
   const voidAuthorizedRef = useRef(false)
 
-  // Flatten all rounds for display purposes
   const allItems: OrderLineItem[] = order
     ? order.rounds.flatMap((r) => r.items)
     : []
 
   const hasUnsentItems = allItems.some((i) => i.status === 'unsent')
-  const hasSentItems = allItems.some((i) => i.status === 'sent' || i.status === 'voided')
+  const unsentCount = allItems.filter((i) => i.status === 'unsent').length
+  const sentCount = allItems.filter((i) => i.status === 'sent').length
   const runningTotal = computeTotal(allItems)
 
-  const multipleRounds = order ? order.rounds.length > 1 : false
-
-  // ---- Qty change: read order live from store state ----
+  // ---- Qty change ----
   function handleQtyChange(lineId: string, delta: number) {
     const currentOrder = useOrderStore.getState().orders[tableId]
     if (!currentOrder) return
@@ -85,59 +76,77 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
     toast('Order sent to kitchen')
   }
 
+  // ---- Subtitle text ----
+  function subtitleText() {
+    const parts: string[] = []
+    if (unsentCount > 0) parts.push(`${unsentCount} unsent`)
+    if (sentCount > 0) parts.push(`${sentCount} sent`)
+    return parts.length > 0 ? parts.join(' · ') : 'Empty'
+  }
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header area */}
-      <div className="px-4 py-3 border-b">
-        {allItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No items yet</p>
-        ) : hasSentItems && !hasUnsentItems ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => {
-              // No explicit action needed — when the next item is added via ModifierSheet
-              // the order store automatically creates a new unsent round.
-            }}
-          >
-            Add Items
-          </Button>
-        ) : null}
+
+      {/* Ticket header */}
+      <div className="px-4 py-3.5 border-b">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <NotesLinear size={18} className="text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm leading-tight truncate">
+              {table?.label ?? tableId}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{subtitleText()}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Body — scrollable list of all rounds */}
+      {/* Scrollable body — round sections */}
       <div className="flex-1 overflow-y-auto">
-        {order &&
-          order.rounds.map((round, i) => (
-            <div key={round.roundId}>
-              {multipleRounds && (
-                <div className="text-xs text-muted-foreground px-4 py-1 bg-muted/50">
-                  Round {i + 1} {round.sentAt ? '· Sent' : '· Pending'}
+        {!order || allItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
+            <NotesLinear size={28} className="opacity-30" />
+            <p className="text-sm">No items yet</p>
+          </div>
+        ) : (
+          order.rounds.map((round, i) => {
+            const isSent = !!round.sentAt
+            return (
+              <div key={round.roundId}>
+                {/* Section label */}
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                    {isSent ? `Round ${i + 1}` : 'New Items'}
+                  </p>
                 </div>
-              )}
-              {round.items.map((item) => (
-                <TicketLineItem
-                  key={item.lineId}
-                  item={item}
-                  onRemove={(lineId) => removeItem(tableId, lineId)}
-                  onQtyChange={handleQtyChange}
-                  onEditTap={onEditLineItem}
-                  onVoidTap={(lineId) => setVoidingLineId(lineId)}
-                  canRemove={canDoAction(role, 'void-pre-send')}
-                />
-              ))}
-            </div>
-          ))}
+                {round.items.map((item) => (
+                  <TicketLineItem
+                    key={item.lineId}
+                    item={item}
+                    onRemove={(lineId) => removeItem(tableId, lineId)}
+                    onQtyChange={handleQtyChange}
+                    onEditTap={onEditLineItem}
+                    onVoidTap={(lineId) => setVoidingLineId(lineId)}
+                    canRemove={canDoAction(role, 'void-pre-send')}
+                  />
+                ))}
+              </div>
+            )
+          })
+        )}
       </div>
 
       {/* Footer */}
-      <div className="h-16 border-t flex items-center justify-between px-4 gap-2 shrink-0">
-        <span className="text-sm font-semibold">฿{runningTotal.toFixed(0)}</span>
+      <div className="border-t px-4 py-3 flex items-center justify-between gap-3 shrink-0">
+        <div>
+          <p className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">Total</p>
+          <p className="text-xl font-bold leading-tight">฿{runningTotal.toFixed(0)}</p>
+        </div>
         <Button
           onClick={handleSend}
           disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
-          className="h-10 px-4"
+          className="h-11 px-5 font-semibold"
         >
           Send to Kitchen
         </Button>
@@ -148,7 +157,6 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
         open={voidingLineId !== null}
         onOpenChange={(open) => {
           if (!open) {
-            // Use microtask so onAuthorize (which fires after onOpenChange) can set the flag first
             const lineIdAtClose = voidingLineId
             setTimeout(() => {
               if (!voidAuthorizedRef.current && lineIdAtClose !== null) {

@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import { useManagerStore } from '@/stores/manager.store'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -11,23 +10,22 @@ import { cn } from '@/lib/utils'
 
 interface MenuPanelProps {
   onItemTap: (itemId: string) => void
+  activeCategory: string
 }
 
-function MenuItemSkeleton() {
+function MenuCardSkeleton() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b">
-      <Skeleton className="w-10 h-10 rounded-md shrink-0" />
-      <div className="flex-1 space-y-1.5">
-        <Skeleton className="h-4 w-[140px]" />
-        <Skeleton className="h-3 w-[100px]" />
+    <div className="bg-card rounded-xl overflow-hidden border border-border">
+      <Skeleton className="aspect-[4/3] w-full rounded-none" />
+      <div className="p-3 space-y-1.5">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-1/3" />
       </div>
-      <Skeleton className="h-4 w-[40px]" />
     </div>
   )
 }
 
-export function MenuPanel({ onItemTap }: MenuPanelProps) {
-  const [activeCategory, setActiveCategory] = useState<string>(MENU_CATEGORIES[0].id)
+export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
   const eightySixedIds = useManagerStore((s) => s.eightySixedIds)
 
   const [isLoading, setIsLoading] = useState(true)
@@ -36,71 +34,77 @@ export function MenuPanel({ onItemTap }: MenuPanelProps) {
     return () => clearTimeout(t)
   }, [])
 
-  const filteredItems = MENU_ITEMS.filter((item) => item.categoryId === activeCategory)
+  const filteredItems =
+    activeCategory === 'all'
+      ? MENU_ITEMS
+      : MENU_ITEMS.filter((item) => item.categoryId === activeCategory)
+
+  if (isLoading) {
+    return (
+      <div className="p-4 grid grid-cols-4 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <MenuCardSkeleton key={i} />
+        ))}
+      </div>
+    )
+  }
+
+  if (filteredItems.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <p className="text-sm text-muted-foreground">No items in this category</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Category tabs */}
-      <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="w-full justify-start overflow-x-auto rounded-none border-b h-10 px-2">
-          {MENU_CATEGORIES.map((cat) => (
-            <TabsTrigger key={cat.id} value={cat.id} className="text-xs shrink-0">
-              {cat.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      {/* Item list */}
-      <div className="flex-1 overflow-y-auto">
-        {isLoading ? (
-          Array.from({ length: 5 }).map((_, i) => <MenuItemSkeleton key={i} />)
-        ) : filteredItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            No items in this category
-          </p>
-        ) : (
-          filteredItems.map((item) => {
-            const is86d = eightySixedIds.includes(item.id)
-            return (
-              <button
-                key={item.id}
-                disabled={is86d}
-                onClick={is86d ? undefined : () => onItemTap(item.id)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-4 py-3 border-b transition-colors text-left',
-                  is86d ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent',
-                )}
-              >
-                {/* Thumbnail */}
-                {item.unsplashId ? (
-                  <Image
-                    src={`https://images.unsplash.com/photo-${item.unsplashId}?auto=format&fit=crop&w=80&q=80`}
-                    alt={item.name}
-                    width={40}
-                    height={40}
-                    className="rounded-md object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-xl shrink-0">
-                    {item.thumbnailPlaceholder}
-                  </div>
-                )}
-                {/* Name + Thai name */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{item.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{item.nameTh}</p>
+    <div className="p-4 grid grid-cols-4 gap-3">
+      {filteredItems.map((item) => {
+        const is86d = eightySixedIds.includes(item.id)
+        return (
+          <button
+            key={item.id}
+            disabled={is86d}
+            onClick={is86d ? undefined : () => onItemTap(item.id)}
+            className={cn(
+              'group bg-card rounded-xl overflow-hidden border text-left transition-all duration-200',
+              is86d
+                ? 'opacity-50 cursor-not-allowed border-border'
+                : 'border-border hover:border-primary/50 hover:shadow-lg cursor-pointer active:scale-[0.98]'
+            )}
+          >
+            {/* Photo */}
+            <div className="aspect-[4/3] relative bg-muted overflow-hidden">
+              {item.unsplashId ? (
+                <Image
+                  src={`https://images.unsplash.com/photo-${item.unsplashId}?auto=format&fit=crop&w=400&q=80`}
+                  alt={item.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 1280px) 25vw, 200px"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-4xl bg-muted">
+                  {item.thumbnailPlaceholder}
                 </div>
-                {/* Price */}
-                <span className="text-sm font-medium shrink-0">฿{item.basePrice}</span>
-                {is86d && (
-                  <Badge variant="outline" className="text-xs shrink-0">86&apos;d</Badge>
-                )}
-              </button>
-            )
-          })
-        )}
-      </div>
+              )}
+              {is86d && (
+                <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
+                  <Badge variant="outline" className="bg-background text-xs font-semibold">
+                    86&apos;d
+                  </Badge>
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="p-3">
+              <p className="text-sm font-semibold leading-snug line-clamp-1">{item.name}</p>
+              <p className="text-sm font-bold text-primary mt-1">฿{item.basePrice}</p>
+            </div>
+          </button>
+        )
+      })}
     </div>
   )
 }
