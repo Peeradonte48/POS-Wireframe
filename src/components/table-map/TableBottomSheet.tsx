@@ -66,8 +66,9 @@ export function TableBottomSheet({
 
       {/* Panel */}
       <div
+        style={{ boxShadow: 'var(--shadow-floating)' }}
         className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-background
-          shadow-lg transition-transform duration-300 ease-out max-h-[80vh] overflow-y-auto
+          transition-transform duration-300 ease-out max-h-[80vh] overflow-y-auto
           ${open ? 'translate-y-0' : 'translate-y-full'}`}
       >
         {/* Drag handle */}

@@ -37,7 +37,7 @@ export function ReceiptScreen({
       </div>
 
       {/* Details card */}
-      <div className="rounded-xl border bg-card p-6 w-full max-w-sm space-y-3">
+      <div className="rounded-xl border bg-card p-6 w-full max-w-sm space-y-3" style={{ boxShadow: 'var(--shadow-panel)' }}>
         {/* Table row */}
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Table</span>
@@ -72,7 +72,7 @@ export function ReceiptScreen({
       </div>
 
       {/* Loyalty Section — CRM Type 2 (Smart Loyalty) */}
-      <div className="rounded-xl border bg-card p-4 w-full max-w-sm space-y-3">
+      <div className="rounded-xl border bg-card p-4 w-full max-w-sm space-y-3" style={{ boxShadow: 'var(--shadow-panel)' }}>
         {/* Member tier and point balance */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-amber-500">Gold Member</span>

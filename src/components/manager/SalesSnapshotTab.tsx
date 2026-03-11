@@ -49,7 +49,7 @@ export function SalesSnapshotTab() {
       </div>
 
       {/* Top Items */}
-      <div className="rounded-lg border bg-card p-4 space-y-2">
+      <div className="rounded-lg border bg-card p-4 space-y-2" style={{ boxShadow: 'var(--shadow-card)' }}>
         <p className="caps">
           Top Items
         </p>
@@ -73,7 +73,7 @@ export function SalesSnapshotTab() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border bg-card p-3 space-y-0.5">
+    <div className="rounded-lg border bg-card p-3 space-y-0.5" style={{ boxShadow: 'var(--shadow-card)' }}>
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="text-lg font-semibold tabular-nums">{value}</p>
     </div>

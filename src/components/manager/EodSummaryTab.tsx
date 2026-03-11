@@ -106,7 +106,7 @@ export function EodSummaryTab() {
       )}
 
       {/* Sales Summary */}
-      <div className="rounded-lg border bg-card p-4 space-y-2">
+      <div className="rounded-lg border bg-card p-4 space-y-2" style={{ boxShadow: 'var(--shadow-card)' }}>
         <p className="caps">Sales Summary</p>
         <div className="space-y-1.5">
           <Row label="Gross Revenue" value={`฿${grossRevenue.toLocaleString()}`} />
@@ -117,7 +117,7 @@ export function EodSummaryTab() {
       </div>
 
       {/* Payment Method Breakdown */}
-      <div className="rounded-lg border bg-card p-4 space-y-2">
+      <div className="rounded-lg border bg-card p-4 space-y-2" style={{ boxShadow: 'var(--shadow-card)' }}>
         <p className="caps">Payment Breakdown</p>
         <div className="space-y-1.5">
           <Row label="Cash" value={`฿${cashTotal.toLocaleString()}`} />
@@ -127,7 +127,7 @@ export function EodSummaryTab() {
       </div>
 
       {/* Adjustments */}
-      <div className="rounded-lg border bg-card p-4 space-y-2">
+      <div className="rounded-lg border bg-card p-4 space-y-2" style={{ boxShadow: 'var(--shadow-card)' }}>
         <p className="caps">Adjustments</p>
         <div className="space-y-1.5">
           <Row label="Void Count" value={`${voidCount} items`} />
@@ -136,7 +136,7 @@ export function EodSummaryTab() {
       </div>
 
       {/* Cash Reconciliation */}
-      <div className="rounded-lg border bg-card p-4 space-y-3">
+      <div className="rounded-lg border bg-card p-4 space-y-3" style={{ boxShadow: 'var(--shadow-card)' }}>
         <p className="caps">Cash Reconciliation</p>
         <div className="space-y-1">
           <label className="text-xs text-muted-foreground">Closing Cash (฿)</label>
