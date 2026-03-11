@@ -43,6 +43,7 @@ interface TicketLineItemProps {
   onEditTap: (lineId: string) => void
   onVoidTap: (lineId: string) => void
   canRemove?: boolean
+  canVoidSent?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -56,6 +57,7 @@ export function TicketLineItem({
   onEditTap,
   onVoidTap,
   canRemove = true,
+  canVoidSent = false,
 }: TicketLineItemProps) {
   const modifierSummary = buildModifierSummary(item)
   const lineTotal = (item.basePrice * item.quantity).toFixed(0)
@@ -84,14 +86,15 @@ export function TicketLineItem({
         <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">
           Sent
         </span>
-        <button
-          onClick={() => canRemove && onVoidTap(item.lineId)}
-          disabled={!canRemove}
-          className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-          aria-label="Void item"
-        >
-          <TrashBinTrashLinear size={14} />
-        </button>
+        {canVoidSent && (
+          <button
+            onClick={() => onVoidTap(item.lineId)}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+            aria-label="Void item"
+          >
+            <TrashBinTrashLinear size={14} />
+          </button>
+        )}
       </div>
     )
   }

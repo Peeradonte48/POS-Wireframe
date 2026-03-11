@@ -129,6 +129,7 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
                     onEditTap={onEditLineItem}
                     onVoidTap={(lineId) => setVoidingLineId(lineId)}
                     canRemove={canDoAction(role, 'void-pre-send')}
+                    canVoidSent={canDoAction(role, 'void-post-send')}
                   />
                 ))}
               </div>
