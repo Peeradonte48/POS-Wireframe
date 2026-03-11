@@ -15,7 +15,7 @@
 - [x] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode (completed 2026-03-11)
 - [x] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle (completed 2026-03-11)
 - [x] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools (completed 2026-03-11)
-- [ ] **Phase 7: Polish** — Role gating audit, touch targets, toasts, empty/loading states
+- [ ] **Phase 7: Polish** — Hi-Fi & Brand: brand tokens, Solar icons, dark mode, role gating, toasts, touch targets, empty/loading states
 
 ---
 
@@ -29,7 +29,7 @@
 | 4. KDS | 3/3 | Complete    | 2026-03-11 |
 | 5. Payment | 3/3 | Complete | 2026-03-11 |
 | 6. Manager Layer | 4/4 | Complete   | 2026-03-11 |
-| 7. Polish | 0/? | Not started | - |
+| 7. Polish | 0/5 | Not started | - |
 
 ---
 
@@ -164,7 +164,7 @@ Plans:
 ---
 
 ### Phase 7: Polish
-**Goal:** The wireframe is demo-ready — role gating is complete, all screens handle edge states, and the interface meets touch target standards at tablet viewport
+**Goal:** The wireframe is Hi-Fi and demo-ready — A Ramen brand applied to all screens, role gating complete, touch targets met, toasts on all key actions, empty/loading states defined
 **Depends on:** Phases 1–6
 **Requirements:** POLISH-01, POLISH-02, POLISH-03, POLISH-04
 
@@ -174,7 +174,14 @@ Plans:
 3. Sonner toast notifications appear for key actions ("Order sent to kitchen", "Payment received") on every applicable screen
 4. Every major screen has a defined loading state and empty state — no screen ever shows a blank or broken layout when data is absent
 
-**Plans:** TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Brand tokens (OKLCH crimson), font swap (Inter + Noto JP), dark mode infra (next-themes + ThemeProvider), Unsplash remotePatterns (POLISH-01–04 foundation)
+- [ ] 07-02-PLAN.md — Solar Icon Set migration (all Lucide icons replaced), A Ramen wordmark in AppHeader, ThemeToggle wired (POLISH-01, POLISH-02)
+- [ ] 07-03-PLAN.md — ACTION_PERMISSIONS role gating on 10 in-screen actions, 8 new Sonner toasts, Unsplash photos in MenuPanel (POLISH-01, POLISH-03)
+- [ ] 07-04-PLAN.md — 9 touch target violations fixed, loading skeletons (TableGrid, MenuPanel), empty states (KDS columns, manager tabs) (POLISH-02, POLISH-04)
+- [ ] 07-05-PLAN.md — Full build verify + browser checkpoint: all 4 POLISH criteria across all roles (POLISH-01–04)
 
 ---
 
@@ -245,3 +252,4 @@ Phase 4 (KDS) and Phase 5 (Payment) are independent of each other — both depen
 *Updated: 2026-03-11 — Phase 5 plans created (3 plans, 3 waves)*
 *Updated: 2026-03-11 — Phase 5 complete — all 5 PAY criteria browser-verified*
 *Updated: 2026-03-11 — Phase 6 plans created (4 plans, 3 waves)*
+*Updated: 2026-03-11 — Phase 7 plans created (5 plans, 5 waves)*
