@@ -18,8 +18,8 @@ Requirements for v1.1 release. Each maps to roadmap phases.
 
 ### Flow Alignment
 
-- [ ] **FLOW-01**: Open Table sheet captures guest count to start table usage tracking
-- [ ] **FLOW-02**: Staff can tap "Served" on the tablet after delivering food + invoice to record actual service start time
+- [x] **FLOW-01**: Open Table sheet captures guest count to start table usage tracking
+- [x] **FLOW-02**: Staff can tap "Served" on the tablet after delivering food + invoice to record actual service start time
 - [x] **FLOW-03**: Payment screen lets staff scan customer QR coupon with back camera, within the POS app (no app switching)
 - [x] **FLOW-04**: After coupon scan, system displays a Dynamic QR Code with net amount for customer to scan and pay
 - [x] **FLOW-05**: Receipt state shows a smart QR code (CRM loyalty Type 2); POS displays member tier + point balance during checkout
@@ -75,8 +75,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUG-03 | Phase 8 | Complete |
 | BUG-04 | Phase 8 | Complete |
 | BUG-05 | Phase 8 | Complete |
-| FLOW-01 | Phase 9 | Pending |
-| FLOW-02 | Phase 9 | Pending |
+| FLOW-01 | Phase 9 | Complete |
+| FLOW-02 | Phase 9 | Complete |
 | FLOW-03 | Phase 9 | Complete |
 | FLOW-04 | Phase 9 | Complete |
 | FLOW-05 | Phase 9 | Complete |
@@ -97,4 +97,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-11*
-*Last updated: 2026-03-11 — traceability mapped to phases 8–11*
+*Last updated: 2026-03-12 — FLOW-01 and FLOW-02 marked complete (09-01 execution)*

@@ -36,7 +36,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 **Milestone Goal:** Close all known v1.0 tech debt and elevate the UI to a bold, energetic brand expression with polished components throughout.
 
 - [x] **Phase 8: Bug Fixes** — Resolve all five navigation, permissions, and toast defects before any CSS changes land (completed 2026-03-11)
-- [ ] **Phase 9: Flow Alignment** — Wire the five user-facing interactions missing from v1.0 (guest count, served state, camera coupon scan, dynamic QR, loyalty receipt)
+- [x] **Phase 9: Flow Alignment** — Wire the five user-facing interactions missing from v1.0 (guest count, served state, camera coupon scan, dynamic QR, loyalty receipt) (completed 2026-03-12)
 - [ ] **Phase 10: Brand Token Refresh** — Strengthen the crimson primary token, define semantic status and elevation tokens, and eliminate all hardcoded palette classes
 - [ ] **Phase 11: Component Polish** — Apply the bold brand expression to buttons, badges, cards, price readouts, and typography throughout all screens
 
