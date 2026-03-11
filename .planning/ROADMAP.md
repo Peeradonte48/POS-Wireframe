@@ -12,7 +12,7 @@
 - [x] **Phase 1: Foundation** — Scaffold, AppShell, PIN login, role routing, shift open
 - [x] **Phase 2: Table Map** — Floor plan with full table lifecycle state machine
 - [x] **Phase 3: Order Flow** — Order entry, ramen modifier sheet, void flows (completed 2026-03-10)
-- [ ] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode
+- [x] **Phase 4: KDS** — Kitchen display with bump, recall, and demo mode (completed 2026-03-11)
 - [ ] **Phase 5: Payment** — Bill, payment methods, post-payment table lifecycle
 - [ ] **Phase 6: Manager Layer** — Shift close, EOD summary, sales snapshot, manager tools
 - [ ] **Phase 7: Polish** — Role gating audit, touch targets, toasts, empty/loading states
@@ -26,7 +26,7 @@
 | 1. Foundation | 5/5 | Complete | 2026-03-10 |
 | 2. Table Map | 4/4 | Complete | 2026-03-10 |
 | 3. Order Flow | 4/4 | Complete    | 2026-03-10 |
-| 4. KDS | 2/3 | In Progress|  |
+| 4. KDS | 3/3 | Complete   | 2026-03-11 |
 | 5. Payment | 0/? | Not started | - |
 | 6. Manager Layer | 0/? | Not started | - |
 | 7. Polish | 0/? | Not started | - |
@@ -113,7 +113,7 @@ Plans:
 3. Every ticket displays an elapsed timer; allergy flags and special requests are visually distinct from regular item lines; post-send voided items appear struck-through
 4. In demo mode, new mock tickets appear automatically at a realistic cadence via setInterval without any manual input
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 04-01-PLAN.md — (kds) route group layout + kds.store.ts + useKdsTimer hook + Kitchen role auth routing (KDS-01, KDS-02)
