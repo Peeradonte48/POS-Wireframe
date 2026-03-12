@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: executing
-last_updated: "2026-03-12T07:37:19.030Z"
-last_activity: 2026-03-12 -- Completed 12-02 (SplitSheet.tsx + SeatPaymentPanel.tsx)
+last_updated: "2026-03-12T07:39:25Z"
+last_activity: 2026-03-12 -- Completed 12-03 (TableTile split progress badge — SPLIT-04)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** 12-02 complete -- SplitSheet.tsx + SeatPaymentPanel.tsx created
+**Session:** 12-03 complete -- TableTile split progress badge (SPLIT-04)
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 ## Current Position
 
 Phase: 12 -- Split Bill (in progress)
-Plan: 12-02 complete, 12-03 next
+Plan: 12-03 complete, 12-04 next (autonomous: false — requires human involvement)
 Status: In progress
-Last activity: 2026-03-12 -- Completed 12-02 (SplitSheet.tsx + SeatPaymentPanel.tsx)
+Last activity: 2026-03-12 -- Completed 12-03 (TableTile split progress badge — SPLIT-04)
 
 ```
-Progress: ████░░░░░░ 50%
+Progress: ███░░░░░░░ 75% (Phase 12: 3/4 plans done)
 Phases:   12 [.] | 13 [ ] | 14 [ ] | 15 [ ]
 ```
 
@@ -54,7 +54,7 @@ Phases:   12 [.] | 13 [ ] | 14 [ ] | 15 [ ]
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Not started |
+| 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | In Progress (3/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Not started |
 | 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Not started |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
@@ -78,6 +78,7 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[12-01] cancelSplit uses destructuring rest pattern**: `const { [tableId]: _, ...rest } = state.splits` to avoid Zustand mutation
 - **[12-02] SplitSheet view resets to mode-select on every open**: via `useEffect([open])` — clean state for each split session
 - **[12-02] handleSeatPaid reads fresh state via getState() after recordPayment**: to reliably detect all-paid condition without stale closure
+- **[12-03] showSplitBadge guards split! non-null assertion in TableTile**: TypeScript safety without runtime overhead — ternary badge slot prioritises split badge over orderStage badge during payment phase
 
 ### Blockers / Concerns
 
