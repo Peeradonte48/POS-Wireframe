@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useTableStore } from '@/stores/table.store'
+import { useOrderStore } from '@/stores/order.store'
 
 interface OpenTableModalProps {
   tableId: string | null  // null = modal closed
@@ -29,6 +30,7 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
 
   const handleConfirm = () => {
     if (typeof guestCount === 'number' && guestCount >= 1 && tableId) {
+      useOrderStore.getState().clearOrder(tableId)
       openTable(tableId, guestCount)
       const tableLabel = tables[tableId]?.label ?? tableId
       toast(`${tableLabel} opened — ${guestCount} guests`)

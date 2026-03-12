@@ -41,6 +41,7 @@ interface OrderStore {
   removeItem: (tableId: string, lineId: string) => void
   sendRound: (tableId: string) => void
   voidItem: (tableId: string, lineId: string) => void
+  clearOrder: (tableId: string) => void
   getOrder: (tableId: string) => ActiveOrder | undefined
 }
 
@@ -187,6 +188,12 @@ export const useOrderStore = create<OrderStore>()(
           [tableId]: { ...existing, rounds: newRounds },
         },
       }
+    }),
+
+  clearOrder: (tableId) =>
+    set((state) => {
+      const { [tableId]: _, ...rest } = state.orders
+      return { orders: rest }
     }),
 
   getOrder: (tableId) => get().orders[tableId],
