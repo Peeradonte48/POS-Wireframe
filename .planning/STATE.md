@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: executing
-last_updated: "2026-03-12T20:17:00.000Z"
-last_activity: 2026-03-13 -- Completed 14-02 (MergeSheet bottom-sheet component — MERGE-01)
+last_updated: "2026-03-13T00:00:00.000Z"
+last_activity: 2026-03-13 -- 14-03 tasks 1+2 complete, paused at human-verify checkpoint
 progress:
   total_phases: 4
   completed_phases: 2
@@ -16,7 +16,7 @@ progress:
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-13
-**Session:** 14-02 complete -- MergeSheet bottom-sheet component
+**Session:** 14-03 tasks 1+2 complete -- paused at human-verify checkpoint (Task 3)
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 ## Current Position
 
 Phase: 14 -- Merge Bill (in progress)
-Plan: 14-02 complete — 2/3 plans done
-Status: Phase 14 in progress — 14-02 complete
-Last activity: 2026-03-13 -- Completed 14-02 (MergeSheet bottom-sheet component)
+Plan: 14-03 tasks 1+2 done — paused at human-verify checkpoint (Task 3)
+Status: Phase 14 in progress — 14-03 at checkpoint
+Last activity: 2026-03-13 -- 14-03 wired all merge integration points, awaiting human verify
 
 ```
-Progress: [██████████] 95% (Phase 14: 2/3 plans done)
+Progress: [██████████] 97% (Phase 14: 2.5/3 plans done — checkpoint)
 Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 ```
 
@@ -56,7 +56,7 @@ Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 |-------|------|--------------|--------|
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
-| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (1/3) |
+| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (14-03 at checkpoint) |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
 
 ---
@@ -90,6 +90,11 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[14-01] merges map uses secondary→primary direction**: O(1) lookup for isMergedSecondary and getPrimaryTable; one-primary-per-secondary guard enforced at initMerge write-time
 - **[14-01] --status-merged hue 270° (indigo/violet)**: distinct from amber split (~60°) and crimson primary (~27°); getMergedSecondaries uses linear scan acceptable at POS table counts (<20)
 - **[14-02] MergeSheet in table-map/ directory**: merge is initiated from floor plan context, not payment flow; isMergedSecondary filter prevents double-assign of secondaries; LinkLinear solar icon (GitMerge unavailable)
+- **[14-03] useTableStore.getState() static read for merge badge primary label**: label never changes at runtime, no reactive subscription needed; avoids extra hook in TableTile
+- **[14-03] tableOrders for grouped render computed inline (not in memo)**: only used in JSX render; isMerged reactive flag already drives re-renders; billItems memo covers totals computation
+- **[14-03] TotalsSection Split Bill hidden (not disabled) when isMergeActive**: DOM removal is cleaner than disabled state per CONTEXT.md locked decision; Merge Bill always renders but disabled when active
+- **[14-03] SplitSheet auto-open useEffect guarded by getMergedSecondaries check**: prevents auto-opening SplitSheet when table is already part of an active merge group
+- **[14-03] paidCount lifted to component level in SplitSheet**: shared by renderCancelSection and Revert to Single Bill section without prop drilling
 
 ### Blockers / Concerns
 
