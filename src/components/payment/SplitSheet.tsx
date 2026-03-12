@@ -508,24 +508,64 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
               {assignedToSeat.map((a) => {
                 const item = billItems.find((it) => it.lineId === a.lineId)
                 if (!item) return null
+                const isReassigning = assigningLineId === a.lineId && assigningFromSeatIndex === seatIdx
                 return (
-                  <button
-                    key={a.lineId}
-                    onClick={() => {
-                      // Tap assigned item to re-assign — track source seat for targeted removal
-                      setAssigningLineId(a.lineId)
-                      setAssigningQty(a.assignedQty)
-                      setAssigningFromSeatIndex(seatIdx)
-                    }}
-                    className="w-full rounded-lg border px-3 py-2 text-left text-sm hover:border-primary/50 transition-colors"
-                  >
-                    <div className="flex justify-between">
-                      <span>{item.menuItemName}</span>
-                      <span className="text-muted-foreground">
-                        ×{a.assignedQty} · ฿{(a.assignedQty * item.basePrice).toLocaleString()}
-                      </span>
-                    </div>
-                  </button>
+                  <div key={a.lineId} className="space-y-2">
+                    <button
+                      onClick={() => {
+                        if (isReassigning) {
+                          setAssigningLineId(null)
+                          setAssigningFromSeatIndex(null)
+                        } else {
+                          setAssigningLineId(a.lineId)
+                          setAssigningQty(a.assignedQty)
+                          setAssigningFromSeatIndex(seatIdx)
+                        }
+                      }}
+                      className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors
+                        ${isReassigning ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}`}
+                    >
+                      <div className="flex justify-between">
+                        <span>{item.menuItemName}</span>
+                        <span className="text-muted-foreground">
+                          ×{a.assignedQty} · ฿{(a.assignedQty * item.basePrice).toLocaleString()}
+                        </span>
+                      </div>
+                    </button>
+
+                    {isReassigning && (
+                      <div
+                        className="rounded-lg border bg-muted/30 p-3 space-y-2"
+                        style={{ boxShadow: 'var(--shadow-card)' }}
+                      >
+                        <p className="text-xs text-muted-foreground text-center">Move to seat or unassign</p>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {seats.filter((s) => s !== seatIdx).map((s) => (
+                            <Button
+                              key={s}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAssignToSeat(s)}
+                            >
+                              Seat {s + 1}
+                            </Button>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive border-destructive/40 hover:bg-destructive/10"
+                            onClick={() => {
+                              removeAssignment(tableId, a.lineId, seatIdx)
+                              setAssigningLineId(null)
+                              setAssigningFromSeatIndex(null)
+                            }}
+                          >
+                            Unassign
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </div>
