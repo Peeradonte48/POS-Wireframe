@@ -461,7 +461,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                       )}
 
                       {/* Seat picker */}
-                      <div className="flex flex-wrap gap-2 justify-center">
+                      <div className="flex overflow-x-auto gap-2 pb-1 snap-x">
                         {seats.map((seatIdx) => (
                           <Button
                             key={seatIdx}
@@ -523,7 +523,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                         style={{ boxShadow: 'var(--shadow-card)' }}
                       >
                         <p className="text-xs text-muted-foreground text-center">Move to seat or unassign</p>
-                        <div className="flex flex-wrap gap-2 justify-center">
+                        <div className="flex overflow-x-auto gap-2 pb-1 snap-x">
                           {seats.filter((s) => s !== seatIdx).map((s) => (
                             <Button
                               key={s}
