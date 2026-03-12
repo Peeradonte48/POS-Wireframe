@@ -94,7 +94,11 @@ Plans:
   1. Staff can select 2+ occupied tables from a picker and merge them into one combined bill -- the payment page for the primary table shows all items from all merged tables with correct combined subtotal, VAT, and grand total
   2. Secondary tables in a merge group show a "Merged into T[X]" indicator on their table tile and route to the primary table's payment when tapped
   3. Staff can unsplit a previously separated bill back to a single bill, but only when no seats have been paid yet -- attempting to unsplit after partial payment shows a blocking message
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 14-01-PLAN.md — bill.store merges map + --status-merged CSS tokens (foundation)
+- [ ] 14-02-PLAN.md — MergeSheet.tsx: table picker bottom sheet component
+- [ ] 14-03-PLAN.md — Wiring: TableTile badge, TableBottomSheet, TotalsSection, payment page grouped items, SplitSheet revert + human verify
 
 ### Phase 15: Order Tracking
 **Goal**: Staff can see live order progress on the floor plan and drill into per-item timelines, with visual escalation for delayed orders
