@@ -17,7 +17,7 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 ### Polish
 
 - [x] **POLISH-01**: Split bill UI, merge bill UI, and order tracking timeline use consistent CVA variants, elevation tokens, and brand styling matching v1.1 quality bar
-- [ ] **POLISH-02**: All new screens (split/merge modals, tracking timeline) fit cleanly in AppShell at tablet and mobile breakpoints with no overflow or clipping
+- [x] **POLISH-02**: All new screens (split/merge modals, tracking timeline) fit cleanly in AppShell at tablet and mobile breakpoints with no overflow or clipping
 
 ### Merge Bill
 
@@ -66,7 +66,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SPLIT-03 | Phase 12 | Complete |
 | SPLIT-04 | Phase 12 | Complete |
 | POLISH-01 | Phase 13 | Complete |
-| POLISH-02 | Phase 13 | Pending |
+| POLISH-02 | Phase 13 | Complete |
 | MERGE-01 | Phase 14 | Pending |
 | MERGE-02 | Phase 14 | Pending |
 | TRACK-01 | Phase 15 | Pending |
