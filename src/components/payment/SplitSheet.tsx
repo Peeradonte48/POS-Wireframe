@@ -218,25 +218,25 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
         <h2 className="text-lg font-semibold text-center">Split Bill</h2>
         <div className="grid grid-cols-2 gap-3">
           {/* Equal Split card */}
-          <button
+          <Button
+            variant="option-card"
             onClick={() => setView('equal-config')}
-            className="rounded-xl border-2 border-border hover:border-primary transition-colors p-4 text-left space-y-1 focus:outline-none focus-visible:ring-2"
           >
             <p className="font-semibold text-sm">Equal Split</p>
             <p className="text-xs text-muted-foreground">Divide total equally among guests</p>
-          </button>
+          </Button>
 
           {/* Per Seat card */}
-          <button
+          <Button
+            variant="option-card"
             onClick={() => {
               initPerSeatSplit(tableId, defaultGuestCount)
               setView('per-seat-assign')
             }}
-            className="rounded-xl border-2 border-border hover:border-primary transition-colors p-4 text-left space-y-1 focus:outline-none focus-visible:ring-2"
           >
             <p className="font-semibold text-sm">Per Seat</p>
             <p className="text-xs text-muted-foreground">Assign each item to a seat</p>
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -250,12 +250,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
     return (
       <div className="px-4 py-4 space-y-4">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setView('mode-select')}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← Back
-          </button>
+          <Button variant="ghost" size="sm" onClick={() => setView('mode-select')}>← Back</Button>
           <h2 className="text-lg font-semibold">Equal Split</h2>
         </div>
 
@@ -339,9 +334,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">Seat {i + 1}</span>
                     {isSettled && (
-                      <Badge className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400">
-                        Settled
-                      </Badge>
+                      <Badge variant="settled">Settled</Badge>
                     )}
                     {isSettled && (
                       <span className="text-xs text-muted-foreground">{payment.method}</span>
@@ -412,20 +405,13 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
     return (
       <div className="px-4 py-4 space-y-4">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setView('mode-select')}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← Back
-          </button>
+          <Button variant="ghost" size="sm" onClick={() => setView('mode-select')}>← Back</Button>
           <h2 className="text-lg font-semibold">Assign Items</h2>
         </div>
 
         {/* Unassigned bucket */}
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Unassigned ({unassignedItems.length})
-          </p>
+          <p className="caps">Unassigned ({unassignedItems.length})</p>
           {unassignedItems.length === 0 ? (
             <p className="text-sm text-muted-foreground py-2">All items assigned</p>
           ) : (
@@ -502,9 +488,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
 
           return (
             <div key={seatIdx} className="space-y-1">
-              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                Seat {seatIdx + 1}
-              </p>
+              <p className="caps">Seat {seatIdx + 1}</p>
               {assignedToSeat.map((a) => {
                 const item = billItems.find((it) => it.lineId === a.lineId)
                 if (!item) return null
@@ -621,9 +605,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">Seat {i + 1}</span>
                     {isSettled && (
-                      <Badge className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400">
-                        Settled
-                      </Badge>
+                      <Badge variant="settled">Settled</Badge>
                     )}
                     {isSettled && (
                       <span className="text-xs text-muted-foreground">{payment.method}</span>
