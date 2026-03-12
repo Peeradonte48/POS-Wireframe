@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CameraLinear } from 'solar-icon-set'
+import { CameraLinear, ScissorsLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { CameraSheet } from './CameraSheet'
 
@@ -21,6 +21,7 @@ interface TotalsSectionProps {
   vatAmount: number
   grandTotal: number
   discountAmount: number
+  onSplitBill?: () => void
 }
 
 // ---------------------------------------------------------------------------
@@ -37,6 +38,7 @@ export function TotalsSection({
   setCouponApplied,
   vatAmount,
   grandTotal,
+  onSplitBill,
 }: TotalsSectionProps) {
   const [scannerOpen, setScannerOpen] = useState(false)
 
@@ -97,13 +99,11 @@ export function TotalsSection({
         <span className="text-2xl font-black text-primary">฿{grandTotal.toLocaleString()}</span>
       </div>
 
-      {/* PAY-05: Split Bill placeholder */}
-      <Button variant="outline" disabled className="w-full mt-4 opacity-50">
-        Split Bill → v2
+      {/* Split Bill */}
+      <Button variant="outline" className="w-full mt-4" onClick={onSplitBill}>
+        <ScissorsLinear size={16} className="mr-2" />
+        Split Bill
       </Button>
-      <p className="text-xs text-muted-foreground text-center mt-1">
-        ⓘ Seat-level split planned for v2
-      </p>
     </div>
   )
 }

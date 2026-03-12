@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
+import { useBillStore } from '@/stores/bill.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { useDwellTimer } from '@/components/table-map/useDwellTimer'
 import type { TableRecord } from '@/stores/table.store'
@@ -203,6 +204,7 @@ export function TableBottomSheet({
                 <Button
                   className="w-full"
                   onClick={() => {
+                    useBillStore.getState().cancelSplit(table.id)
                     markClean(table.id)
                     onClose()
                   }}

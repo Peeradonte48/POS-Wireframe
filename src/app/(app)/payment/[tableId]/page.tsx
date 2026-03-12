@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AltArrowLeftLinear } from 'solar-icon-set'
 import { toast } from 'sonner'
@@ -16,6 +16,8 @@ import { CashPanel } from '@/components/payment/CashPanel'
 import { QrPanel } from '@/components/payment/QrPanel'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
+import { SplitSheet } from '@/components/payment/SplitSheet'
+import { useBillStore } from '@/stores/bill.store'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -45,6 +47,17 @@ export default function PaymentPage() {
   const [couponAmount, setCouponAmount] = useState<number>(0)
   const [couponApplied, setCouponApplied] = useState(false)
   const [cashReceived, setCashReceived] = useState<number>(0)
+
+  // ---- Split sheet ----
+  const [splitSheetOpen, setSplitSheetOpen] = useState(false)
+
+  // Auto-open if an in-progress split already exists in bill.store (resume mid-split)
+  useEffect(() => {
+    const existingSplit = useBillStore.getState().getSplit(tableId)
+    if (existingSplit) {
+      setSplitSheetOpen(true)
+    }
+  }, [tableId])
 
   // Captured snapshot for receipt screen (built in Plan 02)
   const [receiptData, setReceiptData] = useState<{
@@ -185,6 +198,7 @@ export default function PaymentPage() {
             vatAmount={vatAmount}
             grandTotal={grandTotal}
             discountAmount={discountAmount}
+            onSplitBill={() => setSplitSheetOpen(true)}
           />
 
           {/* Payment method selector */}
@@ -223,6 +237,18 @@ export default function PaymentPage() {
           </div>
         </div>
       </div>
+
+      <SplitSheet
+        open={splitSheetOpen}
+        onClose={() => setSplitSheetOpen(false)}
+        tableId={tableId}
+        grandTotal={grandTotal}
+        billItems={billItems}
+        onAllPaid={() => {
+          setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
+          setViewState('receipt')
+        }}
+      />
     </>
   )
 }
