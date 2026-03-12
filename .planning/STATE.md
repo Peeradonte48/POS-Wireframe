@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
-status: in-progress
-last_updated: "2026-03-12T14:01:45Z"
-last_activity: 2026-03-12 -- Completed 12-01 (bill.store.ts + split CSS token)
+status: executing
+last_updated: "2026-03-12T07:37:19.030Z"
+last_activity: 2026-03-12 -- Completed 12-02 (SplitSheet.tsx + SeatPaymentPanel.tsx)
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 25
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** 12-01 complete -- bill.store.ts + amber split CSS token created
+**Session:** 12-02 complete -- SplitSheet.tsx + SeatPaymentPanel.tsx created
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 ## Current Position
 
 Phase: 12 -- Split Bill (in progress)
-Plan: 12-01 complete, 12-02 next
+Plan: 12-02 complete, 12-03 next
 Status: In progress
-Last activity: 2026-03-12 -- Completed 12-01 (bill.store.ts + split CSS token)
+Last activity: 2026-03-12 -- Completed 12-02 (SplitSheet.tsx + SeatPaymentPanel.tsx)
 
 ```
-Progress: ██░░░░░░░░ 25%
+Progress: ████░░░░░░ 50%
 Phases:   12 [.] | 13 [ ] | 14 [ ] | 15 [ ]
 ```
 
@@ -76,6 +76,8 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **Seat assignments in bill.store only**: Not on OrderLineItem -- payment-phase concern stays out of order data model
 - **[12-01] useTableStore imported into bill.store.ts**: For canonical guestCount lookup in initPerSeatSplit via getState() (not reactive subscription)
 - **[12-01] cancelSplit uses destructuring rest pattern**: `const { [tableId]: _, ...rest } = state.splits` to avoid Zustand mutation
+- **[12-02] SplitSheet view resets to mode-select on every open**: via `useEffect([open])` — clean state for each split session
+- **[12-02] handleSeatPaid reads fresh state via getState() after recordPayment**: to reliably detect all-paid condition without stale closure
 
 ### Blockers / Concerns
 
