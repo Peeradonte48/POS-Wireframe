@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Noto_Sans_JP, Noto_Sans_Thai } from 'next/font/google'
+import { IBM_Plex_Sans, Noto_Sans_JP, Noto_Sans_Thai } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 
-const inter = Inter({
-  variable: '--font-inter',
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: '--font-ibm-plex-sans',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -39,8 +40,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" suppressHydrationWarning>
+      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+      <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
       <body
-        className={`${inter.variable} ${notoSansJP.variable} ${notoSansThai.variable} antialiased`}
+        className={`${ibmPlexSans.variable} ${notoSansJP.variable} ${notoSansThai.variable} antialiased`}
       >
         <ThemeProvider>{children}</ThemeProvider>
       </body>
