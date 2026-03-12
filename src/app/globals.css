@@ -74,6 +74,8 @@
   --color-status-reserved-bg:        var(--status-reserved-bg);
   --color-status-check-requested:    var(--status-check-requested);
   --color-status-check-requested-bg: var(--status-check-requested-bg);
+  --color-status-split:              var(--status-split);
+  --color-status-split-bg:           var(--status-split-bg);
   --color-status-cleaning:           var(--status-cleaning);
   --color-status-cleaning-bg:        var(--status-cleaning-bg);
 }
@@ -121,6 +123,8 @@
   --status-reserved-bg:        oklch(0.95 0.05 240);
   --status-check-requested:    oklch(0.60 0.18 75);
   --status-check-requested-bg: oklch(0.97 0.05 75);
+  --status-split:              oklch(0.62 0.18 60);
+  --status-split-bg:           oklch(0.96 0.06 60);
   --status-cleaning:           oklch(0.55 0.06 50);
   --status-cleaning-bg:        oklch(0.95 0.03 50);
 
@@ -175,6 +179,8 @@
   --status-reserved-bg:        oklch(0.22 0.06 240);
   --status-check-requested:    oklch(0.75 0.16 75);
   --status-check-requested-bg: oklch(0.28 0.07 75);
+  --status-split:              oklch(0.78 0.16 60);
+  --status-split-bg:           oklch(0.28 0.08 60);
   --status-cleaning:           oklch(0.70 0.05 50);
   --status-cleaning-bg:        oklch(0.25 0.03 50);
 
