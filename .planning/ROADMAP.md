@@ -48,7 +48,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 **Milestone Goal:** Add split bill, merge bill, and real-time digital order tracking to complete the payment and service monitoring story. Staff can divide a check by equal shares or per-seat items, merge party tables into one bill, and see live order progress on the floor plan -- all built on a new `bill.store.ts` and pure derivation functions with zero new npm packages.
 
-- [ ] **Phase 12: Split Bill** -- bill.store.ts creation, equal split with VAT rounding, per-seat item assignment, partial payment tracking, split progress badge
+- [x] **Phase 12: Split Bill** -- bill.store.ts creation, equal split with VAT rounding, per-seat item assignment, partial payment tracking, split progress badge (completed 2026-03-12)
 - [ ] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens
 - [ ] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup
 - [ ] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders
@@ -68,10 +68,10 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
   4. The table tile on the floor plan shows a split progress badge (e.g. "2/4 paid") whenever a bill is partially settled, and the badge disappears when all seats are paid and the table transitions to Cleaning
 **Plans**: 4 plans
 Plans:
-- [ ] 12-01-PLAN.md — bill.store.ts creation + amber split color token
-- [ ] 12-02-PLAN.md — SplitSheet.tsx + SeatPaymentPanel.tsx (full split bottom sheet UI)
-- [ ] 12-03-PLAN.md — TableTile split progress badge
-- [ ] 12-04-PLAN.md — Wiring: TotalsSection, payment page, TableBottomSheet + human verify
+- [x] 12-01-PLAN.md — bill.store.ts creation + amber split color token
+- [x] 12-02-PLAN.md — SplitSheet.tsx + SeatPaymentPanel.tsx (full split bottom sheet UI)
+- [x] 12-03-PLAN.md — TableTile split progress badge
+- [x] 12-04-PLAN.md — Wiring: TotalsSection, payment page, TableBottomSheet + human verify
 
 ### Phase 13: Polish
 **Goal**: All new split bill, merge bill, and order tracking screens meet the v1.1 quality bar -- consistent CVA variants, elevation tokens, brand styling, and clean responsive layout at tablet and mobile breakpoints
@@ -119,7 +119,7 @@ Plans:
 | 9. Flow Alignment | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
-| 12. Split Bill | 3/4 | In Progress|  | - |
+| 12. Split Bill | v1.2 | 4/4 | Complete | 2026-03-12 |
 | 13. Polish | v1.2 | 0/? | Not started | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
