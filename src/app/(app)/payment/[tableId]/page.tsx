@@ -62,7 +62,13 @@ export default function PaymentPage() {
   }, [tableId])
 
   // ---- Merge state ----
-  const mergedSecondaryIds = useBillStore((s) => s.getMergedSecondaries(tableId))
+  // Select the raw merges record (stable reference) to avoid returning a new array
+  // on every render, which would cause an infinite useSyncExternalStore loop.
+  const merges = useBillStore((s) => s.merges)
+  const mergedSecondaryIds = useMemo(
+    () => Object.entries(merges).filter(([, primary]) => primary === tableId).map(([tid]) => tid),
+    [merges, tableId],
+  )
   const isMerged = mergedSecondaryIds.length > 0
   const { dissolveAll } = useBillStore()
   const tables = useTableStore((s) => s.tables)

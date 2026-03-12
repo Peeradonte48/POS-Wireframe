@@ -109,9 +109,11 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
     const updatedSplit = useBillStore.getState().getSplit(tableId)
     if (!updatedSplit) return
 
-    const allPaid = Array.from({ length: updatedSplit.seatCount }, (_, i) => i).every(
-      (i) => updatedSplit.payments[i] !== undefined,
+    // Only seats that have assigned items need to be paid
+    const seatsWithItems = Array.from({ length: updatedSplit.seatCount }, (_, i) => i).filter(
+      (i) => updatedSplit.assignments.some((a) => a.seatIndex === i),
     )
+    const allPaid = seatsWithItems.every((i) => updatedSplit.payments[i] !== undefined)
 
     if (allPaid) {
       useTableStore.getState().markCleaning(tableId)
@@ -591,6 +593,9 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
             const isActive = activeSeatIndex === i
             const seatTotal = computeSeatTotal(i)
 
+            // Skip seats with no assigned items
+            if (seatTotal === 0) return null
+
             // Mini-receipt breakdown
             const seatSubtotal = split.assignments
               .filter((a) => a.seatIndex === i)
@@ -698,54 +703,58 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
 
             {renderCancelSection()}
 
-            {/* Revert to Single Bill (MERGE-02) */}
-            <div className="border-t mx-4" />
-            <div className="px-4 pb-6 pt-3">
-              {!showRevertConfirm ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-muted-foreground"
-                    disabled={paidCount > 0}
-                    onClick={() => setShowRevertConfirm(true)}
-                  >
-                    Revert to Single Bill
-                  </Button>
-                  {paidCount > 0 && (
-                    <p className="text-xs text-muted-foreground text-center mt-1">
-                      Cannot revert — {paidCount} seat(s) already paid
-                    </p>
+            {/* Revert to Single Bill (MERGE-02) — only shown when a split is active */}
+            {split && (
+              <>
+                <div className="border-t mx-4" />
+                <div className="px-4 pb-6 pt-3">
+                  {!showRevertConfirm ? (
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="w-full text-muted-foreground"
+                        disabled={paidCount > 0}
+                        onClick={() => setShowRevertConfirm(true)}
+                      >
+                        Revert to Single Bill
+                      </Button>
+                      {paidCount > 0 && (
+                        <p className="text-xs text-muted-foreground text-center mt-1">
+                          Cannot revert — {paidCount} seat(s) already paid
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-sm text-center text-foreground">
+                        Revert to single bill? This will remove all seat assignments.
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => setShowRevertConfirm(false)}
+                        >
+                          Keep Split
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="flex-1"
+                          onClick={() => {
+                            cancelSplit(tableId)
+                            toast('Reverted to single bill')
+                            setShowRevertConfirm(false)
+                            onClose()
+                          }}
+                        >
+                          Revert
+                        </Button>
+                      </div>
+                    </div>
                   )}
-                </>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm text-center text-foreground">
-                    Revert to single bill? This will remove all seat assignments.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => setShowRevertConfirm(false)}
-                    >
-                      Keep Split
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      className="flex-1"
-                      onClick={() => {
-                        cancelSplit(tableId)
-                        toast('Reverted to single bill')
-                        setShowRevertConfirm(false)
-                        onClose()
-                      }}
-                    >
-                      Revert
-                    </Button>
-                  </div>
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </>
         )}
       </div>

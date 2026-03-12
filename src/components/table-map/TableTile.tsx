@@ -43,13 +43,13 @@ export function TableTile({ table, onTap }: TableTileProps) {
   const dwellTime = useDwellTimer(table.openedAt)
   const split = useBillStore((s) => s.getSplit(table.id))
   const paidCount = split ? Object.keys(split.payments).length : 0
-  const showSplitBadge = split !== undefined && table.status === 'CheckRequested'
-
   const isMergedSecondary = useBillStore((s) => s.isMergedSecondary(table.id))
   const primaryTableId = useBillStore((s) => s.getPrimaryTable(table.id))
   const router = useRouter()
 
+  // Merge badge takes priority; a secondary table's split is irrelevant (payment via primary)
   const showMergeBadge = isMergedSecondary
+  const showSplitBadge = !isMergedSecondary && split !== undefined && table.status === 'CheckRequested'
   const primaryLabel = showMergeBadge
     ? useTableStore.getState().tables[primaryTableId ?? '']?.label ?? primaryTableId
     : undefined
