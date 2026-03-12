@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: completed
-last_updated: "2026-03-12T09:18:16.287Z"
-last_activity: 2026-03-12 -- Completed 12-04 (Split bill wiring + end-to-end verification — SPLIT-01 through SPLIT-04)
+last_updated: "2026-03-12T11:48:57Z"
+last_activity: 2026-03-12 -- Completed 13-01 (CVA variants foundation — POLISH-01)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 7
+  completed_plans: 5
   percent: 100
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** 12-04 complete -- Split bill wiring + end-to-end verification (SPLIT-01 through SPLIT-04)
+**Session:** 13-01 complete -- CVA variants foundation (POLISH-01)
 
 ---
 
@@ -38,14 +38,14 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 12 -- Split Bill (complete)
-Plan: 12-04 complete — Phase 12 fully done
-Status: Phase 12 complete, Phase 13 next
-Last activity: 2026-03-12 -- Completed 12-04 (Split bill wiring + end-to-end verification — SPLIT-01 through SPLIT-04)
+Phase: 13 -- Polish (in progress)
+Plan: 13-01 complete — 1/3 plans done
+Status: Phase 13 in progress, Plan 13-02 next
+Last activity: 2026-03-12 -- Completed 13-01 (CVA variants foundation — POLISH-01)
 
 ```
-Progress: ██████████ 100% (Phase 12: 4/4 plans done — COMPLETE)
-Phases:   12 [x] | 13 [ ] | 14 [ ] | 15 [ ]
+Progress: [█████████░] 91% (Phase 13: 1/3 plans done)
+Phases:   12 [x] | 13 [.] | 14 [ ] | 15 [ ]
 ```
 
 ---
@@ -55,7 +55,7 @@ Phases:   12 [x] | 13 [ ] | 14 [ ] | 15 [ ]
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
-| 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Not started |
+| 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | In progress (1/3) |
 | 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Not started |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
 
@@ -82,6 +82,8 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[12-04] onAllPaid uses 'Cash' as placeholder paymentMethod on receipt**: Wireframe receipt shows full grand total regardless of per-seat payment method mix; tracking mixed methods at receipt level is out of scope
 - **[12-04] assignItem accumulates qty on existing seat assignment**: Allows splitting same-item quantities across multiple seats — consistent with how restaurants split shared dishes
 - **[12-04] Store cleanup before table lifecycle transitions**: cancelSplit called in TableBottomSheet before markClean — establishes the pattern for all future bill.store cleanup on table reset
+- **[13-01] settled OKLCH token**: hue 145 matching open but chroma 0.21/lightness 0.48 to visually distinguish terminal-state from available-state
+- **[13-01] option-card CVA variant**: uses [box-shadow:var(--shadow-card)] Tailwind v4 arbitrary property — no style prop needed at call sites; data-[selected=true] baked in for Phase 14 picker reuse
 
 ### Blockers / Concerns
 

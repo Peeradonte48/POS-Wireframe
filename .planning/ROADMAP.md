@@ -124,7 +124,7 @@ Plans:
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
-| 13. Polish | v1.2 | 0/3 | Not started | - |
+| 13. Polish | 1/3 | In Progress|  | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
 
