@@ -6,9 +6,11 @@ import {
   WalletLinear,
   StarLinear,
   ClockCircleLinear,
+  ScissorsLinear,
 } from 'solar-icon-set'
 import { Badge } from '@/components/ui/badge'
 import type { TableRecord, TableStatus } from '@/stores/table.store'
+import { useBillStore } from '@/stores/bill.store'
 import { useDwellTimer } from './useDwellTimer'
 
 type SolarIcon = React.ComponentType<{ size?: number; className?: string }>
@@ -36,6 +38,9 @@ export function TableTile({ table, onTap }: TableTileProps) {
   const { borderClass, textClass, bgClass, label, Icon } = STATUS_CONFIG[table.status]
   // Always call useDwellTimer unconditionally (React hooks rule)
   const dwellTime = useDwellTimer(table.openedAt)
+  const split = useBillStore((s) => s.getSplit(table.id))
+  const paidCount = split ? Object.keys(split.payments).length : 0
+  const showSplitBadge = split !== undefined && table.status === 'CheckRequested'
 
   return (
     <button
@@ -64,12 +69,19 @@ export function TableTile({ table, onTap }: TableTileProps) {
         </span>
       )}
 
-      {/* Order stage badge */}
-      {table.orderStage !== null && (
+      {/* Order stage badge / split progress badge */}
+      {showSplitBadge ? (
+        <Badge
+          className="absolute top-2 right-2 text-[10px] py-0 bg-status-split-bg text-status-split border-0"
+        >
+          <ScissorsLinear size={10} className="mr-0.5" />
+          {paidCount}/{split!.seatCount} paid
+        </Badge>
+      ) : table.orderStage !== null ? (
         <Badge variant="outline" className="absolute top-2 right-2 text-[10px] py-0">
           {table.orderStage}
         </Badge>
-      )}
+      ) : null}
     </button>
   )
 }
