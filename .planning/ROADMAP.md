@@ -50,7 +50,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 - [x] **Phase 12: Split Bill** -- bill.store.ts creation, equal split with VAT rounding, per-seat item assignment, partial payment tracking, split progress badge (completed 2026-03-12)
 - [x] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens (completed 2026-03-12)
-- [ ] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup
+- [x] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup (completed 2026-03-12)
 - [ ] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders
 
 ---
@@ -129,7 +129,7 @@ Plans:
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
 | 13. Polish | 3/3 | Complete    | 2026-03-12 | - |
-| 14. Merge Bill | 2/3 | In Progress|  | - |
+| 14. Merge Bill | 3/3 | Complete   | 2026-03-12 | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
 
 ---
