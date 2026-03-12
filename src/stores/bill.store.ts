@@ -81,12 +81,16 @@ export const useBillStore = create<BillStore>()(
           const existing = state.splits[tableId]
           if (!existing) return state
 
-          // Remove only the existing assignment for this lineId+seatIndex pair,
-          // preserving partial assignments to other seats
+          // Accumulate into existing seat assignment (don't replace — a seat can receive
+          // multiple partial assignments of the same item from the unassigned bucket)
+          const existingForSeat = existing.assignments.find(
+            (a) => a.lineId === lineId && a.seatIndex === seatIndex,
+          )
           const filtered = existing.assignments.filter(
             (a) => !(a.lineId === lineId && a.seatIndex === seatIndex),
           )
-          const updated: SeatAssignment[] = [...filtered, { lineId, seatIndex, assignedQty: qty }]
+          const newQty = existingForSeat ? existingForSeat.assignedQty + qty : qty
+          const updated: SeatAssignment[] = [...filtered, { lineId, seatIndex, assignedQty: newQty }]
 
           return {
             splits: {
