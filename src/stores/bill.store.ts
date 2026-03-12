@@ -31,6 +31,7 @@ interface BillStore {
   initEqualSplit: (tableId: string, grandTotal: number, seatCount: number) => void
   initPerSeatSplit: (tableId: string, seatCount: number) => void
   assignItem: (tableId: string, lineId: string, seatIndex: number, qty: number) => void
+  removeAssignment: (tableId: string, lineId: string, seatIndex: number) => void
   unassignItem: (tableId: string, lineId: string) => void
   recordPayment: (tableId: string, seatIndex: number, record: SeatPaymentRecord) => void
   cancelSplit: (tableId: string) => void
@@ -80,10 +81,29 @@ export const useBillStore = create<BillStore>()(
           const existing = state.splits[tableId]
           if (!existing) return state
 
-          // Remove any existing assignment for this lineId (any seatIndex)
-          const filtered = existing.assignments.filter((a) => a.lineId !== lineId)
+          // Remove only the existing assignment for this lineId+seatIndex pair,
+          // preserving partial assignments to other seats
+          const filtered = existing.assignments.filter(
+            (a) => !(a.lineId === lineId && a.seatIndex === seatIndex),
+          )
           const updated: SeatAssignment[] = [...filtered, { lineId, seatIndex, assignedQty: qty }]
 
+          return {
+            splits: {
+              ...state.splits,
+              [tableId]: { ...existing, assignments: updated },
+            },
+          }
+        }),
+
+      removeAssignment: (tableId, lineId, seatIndex) =>
+        set((state) => {
+          const existing = state.splits[tableId]
+          if (!existing) return state
+
+          const updated = existing.assignments.filter(
+            (a) => !(a.lineId === lineId && a.seatIndex === seatIndex),
+          )
           return {
             splits: {
               ...state.splits,

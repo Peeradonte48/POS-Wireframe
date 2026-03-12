@@ -42,11 +42,12 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   // Per-seat assign state
   const [assigningLineId, setAssigningLineId] = useState<string | null>(null)
   const [assigningQty, setAssigningQty] = useState<number>(1)
+  const [assigningFromSeatIndex, setAssigningFromSeatIndex] = useState<number | null>(null)
 
   // Cancel warning state (when partial payments exist)
   const [showCancelWarning, setShowCancelWarning] = useState(false)
 
-  const { initEqualSplit, initPerSeatSplit, assignItem, recordPayment, cancelSplit, getSplit } =
+  const { initEqualSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit } =
     useBillStore()
 
   const split = getSplit(tableId)
@@ -60,6 +61,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
       setView('mode-select')
       setActiveSeatIndex(null)
       setAssigningLineId(null)
+      setAssigningFromSeatIndex(null)
       setShowCancelWarning(false)
       setSeatCountInput(defaultGuestCount)
     }
@@ -386,19 +388,25 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
       (item) => getUnassignedQty(item.lineId, item.quantity) > 0,
     )
 
-    function handleItemTap(lineId: string, unassignedQty: number) {
-      if (assigningLineId === lineId) {
+    function handleItemTap(lineId: string) {
+      if (assigningLineId === lineId && assigningFromSeatIndex === null) {
         setAssigningLineId(null)
       } else {
         setAssigningLineId(lineId)
         setAssigningQty(1)
+        setAssigningFromSeatIndex(null)
       }
     }
 
     function handleAssignToSeat(seatIndex: number) {
       if (!assigningLineId) return
+      // If re-assigning from a seat, remove the old assignment first
+      if (assigningFromSeatIndex !== null) {
+        removeAssignment(tableId, assigningLineId, assigningFromSeatIndex)
+      }
       assignItem(tableId, assigningLineId, seatIndex, assigningQty)
       setAssigningLineId(null)
+      setAssigningFromSeatIndex(null)
     }
 
     return (
@@ -428,7 +436,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
               return (
                 <div key={item.lineId} className="space-y-2">
                   <button
-                    onClick={() => handleItemTap(item.lineId, unassignedQty)}
+                    onClick={() => handleItemTap(item.lineId)}
                     className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors
                       ${isAssigning ? 'border-primary bg-primary/5' : 'hover:border-primary/50'}`}
                   >
@@ -504,9 +512,10 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                   <button
                     key={a.lineId}
                     onClick={() => {
-                      // Tap assigned item to re-assign
+                      // Tap assigned item to re-assign — track source seat for targeted removal
                       setAssigningLineId(a.lineId)
                       setAssigningQty(a.assignedQty)
+                      setAssigningFromSeatIndex(seatIdx)
                     }}
                     className="w-full rounded-lg border px-3 py-2 text-left text-sm hover:border-primary/50 transition-colors"
                   >
