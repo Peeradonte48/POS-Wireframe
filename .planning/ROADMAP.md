@@ -49,7 +49,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 **Milestone Goal:** Add split bill, merge bill, and real-time digital order tracking to complete the payment and service monitoring story. Staff can divide a check by equal shares or per-seat items, merge party tables into one bill, and see live order progress on the floor plan -- all built on a new `bill.store.ts` and pure derivation functions with zero new npm packages.
 
 - [x] **Phase 12: Split Bill** -- bill.store.ts creation, equal split with VAT rounding, per-seat item assignment, partial payment tracking, split progress badge (completed 2026-03-12)
-- [ ] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens
+- [x] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens (completed 2026-03-12)
 - [ ] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup
 - [ ] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders
 
@@ -124,7 +124,7 @@ Plans:
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
-| 13. Polish | 1/3 | In Progress|  | - |
+| 13. Polish | 3/3 | Complete   | 2026-03-12 | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
 

@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
-status: completed
-last_updated: "2026-03-12T11:48:57Z"
-last_activity: 2026-03-12 -- Completed 13-01 (CVA variants foundation — POLISH-01)
+status: Phase 13 plans executed, awaiting phase close
+last_updated: "2026-03-12T11:54:45.575Z"
+last_activity: 2026-03-12 -- Completed 13-03 (IBM Plex Sans font swap — POLISH-01)
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 5
-  percent: 100
+  completed_plans: 7
+  percent: 94
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** 13-01 complete -- CVA variants foundation (POLISH-01)
+**Session:** 13-03 complete -- IBM Plex Sans font swap (POLISH-01)
 
 ---
 
@@ -39,13 +39,13 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 ## Current Position
 
 Phase: 13 -- Polish (in progress)
-Plan: 13-01 complete — 1/3 plans done
-Status: Phase 13 in progress, Plan 13-02 next
-Last activity: 2026-03-12 -- Completed 13-01 (CVA variants foundation — POLISH-01)
+Plan: 13-03 complete — 3/3 plans done (phase complete pending verification)
+Status: Phase 13 plans executed, awaiting phase close
+Last activity: 2026-03-12 -- Completed 13-03 (IBM Plex Sans font swap — POLISH-01)
 
 ```
-Progress: [█████████░] 91% (Phase 13: 1/3 plans done)
-Phases:   12 [x] | 13 [.] | 14 [ ] | 15 [ ]
+Progress: [█████████░] 94% (Phase 13: 3/3 plans done)
+Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 ```
 
 ---
@@ -55,7 +55,7 @@ Phases:   12 [x] | 13 [.] | 14 [ ] | 15 [ ]
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
-| 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | In progress (1/3) |
+| 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
 | 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Not started |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
 
@@ -84,6 +84,9 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[12-04] Store cleanup before table lifecycle transitions**: cancelSplit called in TableBottomSheet before markClean — establishes the pattern for all future bill.store cleanup on table reset
 - **[13-01] settled OKLCH token**: hue 145 matching open but chroma 0.21/lightness 0.48 to visually distinguish terminal-state from available-state
 - **[13-01] option-card CVA variant**: uses [box-shadow:var(--shadow-card)] Tailwind v4 arbitrary property — no style prop needed at call sites; data-[selected=true] baked in for Phase 14 picker reuse
+- **[13-02] SplitSheet horizontal scroll seat picker**: overflow-x-auto snap-x pb-1 replaces flex-wrap — single-row at all viewports, no reflow at 6+ seats; justify-center removed as inapplicable in scroll context
+- **[13-03] IBM Plex Sans static font**: requires explicit weight array ['400','500','600','700']; 600 included for font-semibold coverage; no variable font config
+- **[13-03] Noto Sans Thai in --font-sans token**: was in DOM via body className but missing from CSS token declaration — correctness fix, not new feature
 
 ### Blockers / Concerns
 
