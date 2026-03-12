@@ -21,7 +21,7 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 
 ### Merge Bill
 
-- [ ] **MERGE-01**: Staff can merge bills across 2+ tables into a combined bill showing all items with correct totals; source tables link to merged bill
+- [x] **MERGE-01**: Staff can merge bills across 2+ tables into a combined bill showing all items with correct totals; source tables link to merged bill
 - [ ] **MERGE-02**: Staff can unsplit previously separated seats back into a single bill before any seat is paid
 
 ### Order Tracking
@@ -67,7 +67,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SPLIT-04 | Phase 12 | Complete |
 | POLISH-01 | Phase 13 | Complete |
 | POLISH-02 | Phase 13 | Complete |
-| MERGE-01 | Phase 14 | Pending |
+| MERGE-01 | Phase 14 | Complete |
 | MERGE-02 | Phase 14 | Pending |
 | TRACK-01 | Phase 15 | Pending |
 | TRACK-02 | Phase 15 | Pending |

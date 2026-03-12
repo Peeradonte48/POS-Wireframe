@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
-status: Phase 13 plans executed, awaiting phase close
-last_updated: "2026-03-12T19:30:22.429Z"
-last_activity: 2026-03-12 -- Completed 13-03 (IBM Plex Sans font swap — POLISH-01)
+status: Phase 14 in progress — 14-01 complete
+last_updated: "2026-03-13T09:30:00.000Z"
+last_activity: 2026-03-13 -- Completed 14-01 (bill.store merge map + CSS tokens — MERGE-01)
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 94
+  total_plans: 10
+  completed_plans: 9
+  percent: 92
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
-**Last updated:** 2026-03-12
-**Session:** 13-03 complete -- IBM Plex Sans font swap (POLISH-01)
+**Last updated:** 2026-03-13
+**Session:** 14-01 complete -- bill.store merge map + CSS tokens (MERGE-01)
 
 ---
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 13 -- Polish (in progress)
-Plan: 13-03 complete — 3/3 plans done (phase complete pending verification)
-Status: Phase 13 plans executed, awaiting phase close
-Last activity: 2026-03-12 -- Completed 13-03 (IBM Plex Sans font swap — POLISH-01)
+Phase: 14 -- Merge Bill (in progress)
+Plan: 14-01 complete — 1/3 plans done
+Status: Phase 14 in progress — 14-01 complete
+Last activity: 2026-03-13 -- Completed 14-01 (bill.store merge map + CSS tokens — MERGE-01)
 
 ```
-Progress: [█████████░] 94% (Phase 13: 3/3 plans done)
+Progress: [█████████░] 92% (Phase 14: 1/3 plans done)
 Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 ```
 
@@ -56,7 +56,7 @@ Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 |-------|------|--------------|--------|
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
-| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Not started |
+| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (1/3) |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
 
 ---
@@ -87,6 +87,8 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[13-02] SplitSheet horizontal scroll seat picker**: overflow-x-auto snap-x pb-1 replaces flex-wrap — single-row at all viewports, no reflow at 6+ seats; justify-center removed as inapplicable in scroll context
 - **[13-03] IBM Plex Sans static font**: requires explicit weight array ['400','500','600','700']; 600 included for font-semibold coverage; no variable font config
 - **[13-03] Noto Sans Thai in --font-sans token**: was in DOM via body className but missing from CSS token declaration — correctness fix, not new feature
+- **[14-01] merges map uses secondary→primary direction**: O(1) lookup for isMergedSecondary and getPrimaryTable; one-primary-per-secondary guard enforced at initMerge write-time
+- **[14-01] --status-merged hue 270° (indigo/violet)**: distinct from amber split (~60°) and crimson primary (~27°); getMergedSecondaries uses linear scan acceptable at POS table counts (<20)
 
 ### Blockers / Concerns
 
