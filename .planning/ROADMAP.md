@@ -66,7 +66,12 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
   2. Staff can switch to per-seat mode and tap individual menu items to assign them to numbered seats -- each seat shows its own subtotal with correct VAT, and unassigned items remain in a shared bucket
   3. Staff can pay any single seat/share independently using Cash, QR, or Card -- paid seats show a settled state and cannot be paid again, while unpaid seats remain actionable
   4. The table tile on the floor plan shows a split progress badge (e.g. "2/4 paid") whenever a bill is partially settled, and the badge disappears when all seats are paid and the table transitions to Cleaning
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 12-01-PLAN.md — bill.store.ts creation + amber split color token
+- [ ] 12-02-PLAN.md — SplitSheet.tsx + SeatPaymentPanel.tsx (full split bottom sheet UI)
+- [ ] 12-03-PLAN.md — TableTile split progress badge
+- [ ] 12-04-PLAN.md — Wiring: TotalsSection, payment page, TableBottomSheet + human verify
 
 ### Phase 13: Polish
 **Goal**: All new split bill, merge bill, and order tracking screens meet the v1.1 quality bar -- consistent CVA variants, elevation tokens, brand styling, and clean responsive layout at tablet and mobile breakpoints
@@ -114,7 +119,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 | 9. Flow Alignment | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
-| 12. Split Bill | v1.2 | 0/? | Not started | - |
+| 12. Split Bill | v1.2 | 0/4 | Not started | - |
 | 13. Polish | v1.2 | 0/? | Not started | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
