@@ -13,6 +13,7 @@ import { useBillStore } from '@/stores/bill.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { useDwellTimer } from '@/components/table-map/useDwellTimer'
 import type { TableRecord } from '@/stores/table.store'
+import { MergeSheet } from '@/components/table-map/MergeSheet'
 
 interface TableBottomSheetProps {
   table: TableRecord | null  // null = sheet closed
@@ -33,6 +34,7 @@ export function TableBottomSheet({
   // Local editable state for waiter name and note (Occupied sheet)
   const [localWaiter, setLocalWaiter] = useState('')
   const [localNote, setLocalNote] = useState('')
+  const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
 
   // Sync local state when the selected table changes
   useEffect(() => {
@@ -188,11 +190,27 @@ export function TableBottomSheet({
                     Request Check
                   </Button>
                 </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setMergeSheetOpen(true)}
+                  disabled={!canDoAction(role, 'open-table')}
+                >
+                  Merge Bill
+                </Button>
               </div>
             )}
 
             {table.status === 'CheckRequested' && (
               <div className="px-4 pb-6 flex flex-col gap-3">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setMergeSheetOpen(true)}
+                  disabled={!canDoAction(role, 'open-table')}
+                >
+                  Merge Bill
+                </Button>
                 <Button className="w-full" onClick={() => router.push(`/payment/${table.id}`)}>
                   Go to Payment
                 </Button>
@@ -222,6 +240,13 @@ export function TableBottomSheet({
           </>
         )}
       </div>
+
+      <MergeSheet
+        open={mergeSheetOpen}
+        onClose={() => setMergeSheetOpen(false)}
+        primaryTableId={table?.id ?? ''}
+        onMergeConfirmed={() => { setMergeSheetOpen(false); onClose() }}
+      />
     </>
   )
 }

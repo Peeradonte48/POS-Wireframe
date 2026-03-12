@@ -17,6 +17,7 @@ import { QrPanel } from '@/components/payment/QrPanel'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 import { SplitSheet } from '@/components/payment/SplitSheet'
+import { MergeSheet } from '@/components/table-map/MergeSheet'
 import { useBillStore } from '@/stores/bill.store'
 
 // ---------------------------------------------------------------------------
@@ -52,12 +53,20 @@ export default function PaymentPage() {
   const [splitSheetOpen, setSplitSheetOpen] = useState(false)
 
   // Auto-open if an in-progress split already exists in bill.store (resume mid-split)
+  // Guard: do not auto-open SplitSheet when a merge is active
   useEffect(() => {
     const existingSplit = useBillStore.getState().getSplit(tableId)
-    if (existingSplit) {
+    if (existingSplit && !useBillStore.getState().getMergedSecondaries(tableId).length) {
       setSplitSheetOpen(true)
     }
   }, [tableId])
+
+  // ---- Merge state ----
+  const mergedSecondaryIds = useBillStore((s) => s.getMergedSecondaries(tableId))
+  const isMerged = mergedSecondaryIds.length > 0
+  const { dissolveAll } = useBillStore()
+  const tables = useTableStore((s) => s.tables)
+  const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
 
   // Captured snapshot for receipt screen (built in Plan 02)
   const [receiptData, setReceiptData] = useState<{
@@ -68,9 +77,31 @@ export default function PaymentPage() {
 
   // ---- Bill assembly ----
   const billItems = useMemo(() => {
-    if (!order) return []
-    return order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
-  }, [order])
+    const primaryItems = order
+      ? order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
+      : []
+    if (!isMerged) return primaryItems
+
+    const secondaryItems = mergedSecondaryIds.flatMap((tid) => {
+      const secOrder = useOrderStore.getState().getOrder(tid)
+      if (!secOrder) return []
+      return secOrder.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
+    })
+    return [...primaryItems, ...secondaryItems]
+  }, [order, isMerged, mergedSecondaryIds])
+
+  // tableOrders for grouped display when merge is active
+  const tableOrders = isMerged
+    ? [tableId, ...mergedSecondaryIds].map((tid) => ({
+        tableId: tid,
+        label: tables[tid]?.label ?? tid,
+        guestCount: tables[tid]?.guestCount ?? null,
+        items: (tid === tableId
+          ? (order?.rounds.flatMap((r) => r.items) ?? [])
+          : (useOrderStore.getState().getOrder(tid)?.rounds.flatMap((r) => r.items) ?? [])
+        ).filter((item) => item.status !== 'voided'),
+      }))
+    : null
 
   const subtotal = useMemo(
     () => billItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0),
@@ -178,11 +209,34 @@ export default function PaymentPage() {
             <p className="caps mb-2">
               Items
             </p>
-            <div className="divide-y">
-              {billItems.map((item) => (
-                <BillLineItem key={item.lineId} item={item} />
-              ))}
-            </div>
+            {isMerged && tableOrders ? (
+              tableOrders.map((group) => (
+                <section key={group.tableId} className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="caps">{group.label}{group.guestCount !== null ? ` — ${group.guestCount} guests` : ''}</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground text-xs h-auto py-0.5 px-2"
+                      onClick={() => dissolveAll(tableId)}
+                    >
+                      Dissolve Merge
+                    </Button>
+                  </div>
+                  <div className="divide-y">
+                    {group.items.map((item) => (
+                      <BillLineItem key={item.lineId} item={item} />
+                    ))}
+                  </div>
+                </section>
+              ))
+            ) : (
+              <div className="divide-y">
+                {billItems.map((item) => (
+                  <BillLineItem key={item.lineId} item={item} />
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Totals + coupon */}
@@ -199,6 +253,8 @@ export default function PaymentPage() {
             grandTotal={grandTotal}
             discountAmount={discountAmount}
             onSplitBill={() => setSplitSheetOpen(true)}
+            onMergeBill={() => setMergeSheetOpen(true)}
+            isMergeActive={isMerged}
           />
 
           {/* Payment method selector */}
@@ -248,6 +304,13 @@ export default function PaymentPage() {
           setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
           setViewState('receipt')
         }}
+      />
+
+      <MergeSheet
+        open={mergeSheetOpen}
+        onClose={() => setMergeSheetOpen(false)}
+        primaryTableId={tableId}
+        onMergeConfirmed={() => setMergeSheetOpen(false)}
       />
     </>
   )

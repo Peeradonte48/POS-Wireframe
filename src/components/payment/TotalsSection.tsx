@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CameraLinear, ScissorsLinear } from 'solar-icon-set'
+import { CameraLinear, ScissorsLinear, LinkLinear } from 'solar-icon-set'
 import { Button } from '@/components/ui/button'
 import { CameraSheet } from './CameraSheet'
 
@@ -22,6 +22,8 @@ interface TotalsSectionProps {
   grandTotal: number
   discountAmount: number
   onSplitBill?: () => void
+  onMergeBill?: () => void
+  isMergeActive?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -39,6 +41,8 @@ export function TotalsSection({
   vatAmount,
   grandTotal,
   onSplitBill,
+  onMergeBill,
+  isMergeActive,
 }: TotalsSectionProps) {
   const [scannerOpen, setScannerOpen] = useState(false)
 
@@ -99,10 +103,16 @@ export function TotalsSection({
         <span className="text-2xl font-black text-primary">฿{grandTotal.toLocaleString()}</span>
       </div>
 
-      {/* Split Bill */}
-      <Button variant="outline" className="w-full mt-4" onClick={onSplitBill}>
-        <ScissorsLinear size={16} className="mr-2" />
-        Split Bill
+      {/* Billing actions */}
+      {!isMergeActive && (
+        <Button variant="outline" className="w-full mt-4" onClick={onSplitBill}>
+          <ScissorsLinear size={16} className="mr-2" />
+          Split Bill
+        </Button>
+      )}
+      <Button variant="outline" className="w-full mt-2" onClick={onMergeBill} disabled={isMergeActive}>
+        <LinkLinear size={16} className="mr-2" />
+        Merge Bill
       </Button>
     </div>
   )
