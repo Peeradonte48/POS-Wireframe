@@ -39,12 +39,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th" suppressHydrationWarning>
+    <html lang="th" suppressHydrationWarning className={`${ibmPlexSans.variable} ${notoSansJP.variable} ${notoSansThai.variable}`}>
       {/* eslint-disable-next-line @next/next/no-sync-scripts */}
       <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
-      <body
-        className={`${ibmPlexSans.variable} ${notoSansJP.variable} ${notoSansThai.variable} antialiased`}
-      >
+      <body className="antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
