@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
-status: roadmap-complete
-last_updated: "2026-03-12T14:00:00Z"
-last_activity: 2026-03-12 — Roadmap created with 4 phases (12-15)
+status: in-progress
+last_updated: "2026-03-12T14:01:45Z"
+last_activity: 2026-03-12 -- Completed 12-01 (bill.store.ts + split CSS token)
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 1
+  percent: 25
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-12
-**Session:** v1.2 roadmap created -- ready for phase planning
+**Session:** 12-01 complete -- bill.store.ts + amber split CSS token created
 
 ---
 
@@ -38,14 +38,14 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 12 -- Split Bill (not started)
-Plan: --
-Status: Roadmap complete, awaiting phase planning
-Last activity: 2026-03-12 -- Roadmap created
+Phase: 12 -- Split Bill (in progress)
+Plan: 12-01 complete, 12-02 next
+Status: In progress
+Last activity: 2026-03-12 -- Completed 12-01 (bill.store.ts + split CSS token)
 
 ```
-Progress: ░░░░░░░░░░ 0%
-Phases:   12 [ ] | 13 [ ] | 14 [ ] | 15 [ ]
+Progress: ██░░░░░░░░ 25%
+Phases:   12 [.] | 13 [ ] | 14 [ ] | 15 [ ]
 ```
 
 ---
@@ -74,6 +74,8 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **Zero new npm packages**: Pure state modeling + UI composition on existing stack
 - **Shadow tokens via inline style**: `style={{ boxShadow: 'var(--shadow-*)' }}` pattern continues from v1.1
 - **Seat assignments in bill.store only**: Not on OrderLineItem -- payment-phase concern stays out of order data model
+- **[12-01] useTableStore imported into bill.store.ts**: For canonical guestCount lookup in initPerSeatSplit via getState() (not reactive subscription)
+- **[12-01] cancelSplit uses destructuring rest pattern**: `const { [tableId]: _, ...rest } = state.splits` to avoid Zustand mutation
 
 ### Blockers / Concerns
 

@@ -9,8 +9,8 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 
 ### Split Bill
 
-- [ ] **SPLIT-01**: Staff can split bill equally by N guests -- system divides total / N with correct VAT rounding (floor + remainder-on-last in satang)
-- [ ] **SPLIT-02**: Staff can split bill per-seat by assigning items to individual seats -- each seat sub-bill totals correctly with VAT
+- [x] **SPLIT-01**: Staff can split bill equally by N guests -- system divides total / N with correct VAT rounding (floor + remainder-on-last in satang)
+- [x] **SPLIT-02**: Staff can split bill per-seat by assigning items to individual seats -- each seat sub-bill totals correctly with VAT
 - [ ] **SPLIT-03**: Each seat can be paid independently (Cash/QR/Card) with paid seats showing settled state; table closes only when all seats paid
 - [ ] **SPLIT-04**: Table tile shows split progress badge (e.g. "2/4 paid") when bill is partially settled
 
@@ -61,8 +61,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SPLIT-01 | Phase 12 | Pending |
-| SPLIT-02 | Phase 12 | Pending |
+| SPLIT-01 | Phase 12 | Complete |
+| SPLIT-02 | Phase 12 | Complete |
 | SPLIT-03 | Phase 12 | Pending |
 | SPLIT-04 | Phase 12 | Pending |
 | POLISH-01 | Phase 13 | Pending |

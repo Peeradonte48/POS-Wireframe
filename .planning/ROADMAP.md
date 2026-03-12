@@ -119,7 +119,7 @@ Plans:
 | 9. Flow Alignment | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
-| 12. Split Bill | v1.2 | 0/4 | Not started | - |
+| 12. Split Bill | 1/4 | In Progress|  | - |
 | 13. Polish | v1.2 | 0/? | Not started | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
