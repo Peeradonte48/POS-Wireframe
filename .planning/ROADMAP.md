@@ -80,7 +80,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Split bill sheet, seat navigator, seat assignment view, merge table picker, and order timeline all use the same CVA variant patterns, elevation shadow tokens, and brand color tokens established in v1.1 -- no raw Tailwind palette classes or hardcoded shadows
   2. All new modals and sheets (split mode selector, merge picker, timeline detail) fit cleanly within the AppShell at both tablet (768px+) and mobile (375px) breakpoints with no horizontal overflow, clipped content, or broken scroll behavior
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 13-01-PLAN.md — Design tokens (--status-settled) + CVA variants (Badge settled, Button option-card)
+- [ ] 13-02-PLAN.md — SplitSheet.tsx conformance: replace all POLISH-01 violations + responsive seat picker fix
+- [ ] 13-03-PLAN.md — Font swap: Inter → IBM Plex Sans app-wide + font-sans token update
 
 ### Phase 14: Merge Bill
 **Goal**: Staff can combine bills from multiple tables into a single check for party seating, and reverse a split back to a single bill before any portion is paid
@@ -120,7 +124,7 @@ Plans:
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
-| 13. Polish | v1.2 | 0/? | Not started | - |
+| 13. Polish | v1.2 | 0/3 | Not started | - |
 | 14. Merge Bill | v1.2 | 0/? | Not started | - |
 | 15. Order Tracking | v1.2 | 0/? | Not started | - |
 
