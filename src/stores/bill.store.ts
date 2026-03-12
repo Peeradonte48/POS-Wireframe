@@ -28,6 +28,7 @@ export interface BillSplit {
 
 interface BillStore {
   splits: Record<string, BillSplit>
+  merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
   initEqualSplit: (tableId: string, grandTotal: number, seatCount: number) => void
   initPerSeatSplit: (tableId: string, seatCount: number) => void
   assignItem: (tableId: string, lineId: string, seatIndex: number, qty: number) => void
@@ -36,12 +37,18 @@ interface BillStore {
   recordPayment: (tableId: string, seatIndex: number, record: SeatPaymentRecord) => void
   cancelSplit: (tableId: string) => void
   getSplit: (tableId: string) => BillSplit | undefined
+  initMerge: (primaryTableId: string, secondaryTableIds: string[]) => void
+  dissolveAll: (primaryTableId: string) => void
+  isMergedSecondary: (tableId: string) => boolean
+  getPrimaryTable: (tableId: string) => string | undefined
+  getMergedSecondaries: (primaryTableId: string) => string[]
 }
 
 export const useBillStore = create<BillStore>()(
   persist(
     (set, get) => ({
       splits: {},
+      merges: {},
 
       initEqualSplit: (tableId, grandTotal, seatCount) =>
         set((state) => {
@@ -153,6 +160,32 @@ export const useBillStore = create<BillStore>()(
         }),
 
       getSplit: (tableId) => get().splits[tableId],
+
+      initMerge: (primaryTableId, secondaryTableIds) =>
+        set((state) => {
+          // One primary per secondary: filter out IDs already assigned to another primary
+          const eligibleIds = secondaryTableIds.filter((id) => !(id in state.merges))
+          return {
+            merges: {
+              ...state.merges,
+              ...Object.fromEntries(eligibleIds.map((id) => [id, primaryTableId])),
+            },
+          }
+        }),
+
+      dissolveAll: (primaryTableId) =>
+        set((state) => ({
+          merges: Object.fromEntries(
+            Object.entries(state.merges).filter(([, v]) => v !== primaryTableId),
+          ),
+        })),
+
+      isMergedSecondary: (tableId) => tableId in get().merges,
+
+      getPrimaryTable: (tableId) => get().merges[tableId],
+
+      getMergedSecondaries: (primaryTableId) =>
+        Object.keys(get().merges).filter((k) => get().merges[k] === primaryTableId),
     }),
     { name: 'bill-store' },
   ),
