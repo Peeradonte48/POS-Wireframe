@@ -108,7 +108,11 @@ Plans:
   1. Each occupied table tile shows a color-coded stage badge (Queued/Cooking/Ready/Served) derived from KDS ticket state and order store data -- the badge updates automatically when the kitchen bumps a ticket without staff intervention
   2. Tapping a table's order section reveals a per-item timeline showing each menu item with its current stage, the timestamp when it was sent to kitchen, and elapsed time since sent
   3. Any item that has been in its current stage for longer than 15 minutes displays a visual escalation warning (color shift to red/amber) on both the table tile badge and the timeline detail view
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 15-01-PLAN.md — CSS token pairs (ordered/cooking/ready/escalated) + Badge CVA variants
+- [ ] 15-02-PLAN.md — order-tracking.ts utils + useSentTimer hook + TableTile color-coded badge
+- [ ] 15-03-PLAN.md — OrderTimeline component + TableBottomSheet tab wiring + human verify
 
 ---
 
@@ -130,7 +134,7 @@ Plans:
 | 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
 | 13. Polish | 3/3 | Complete    | 2026-03-12 | - |
 | 14. Merge Bill | 3/3 | Complete    | 2026-03-13 | - |
-| 15. Order Tracking | v1.2 | 0/? | Not started | - |
+| 15. Order Tracking | v1.2 | 0/3 | Not started | - |
 
 ---
 
