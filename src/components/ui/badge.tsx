@@ -19,7 +19,11 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
-        settled: "bg-status-settled-bg text-status-settled border-status-settled/30",
+        settled:   "bg-status-settled-bg   text-status-settled   border-status-settled/30",
+        ordered:   "bg-status-ordered-bg   text-status-ordered   border-status-ordered/30",
+        cooking:   "bg-status-cooking-bg   text-status-cooking   border-status-cooking/30",
+        ready:     "bg-status-ready-bg     text-status-ready     border-status-ready/30",
+        escalated: "bg-status-escalated-bg text-status-escalated border-status-escalated/30",
       },
     },
     defaultVariants: {
