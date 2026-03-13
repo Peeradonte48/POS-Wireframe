@@ -8,6 +8,7 @@ import { canDoAction } from '@/lib/role-permissions'
 import { useKdsTimer } from '@/components/kds/useKdsTimer'
 import { KdsItemRow } from '@/components/kds/KdsItemRow'
 import { OrderLineItem } from '@/stores/order.store'
+import { useTableStore } from '@/stores/table.store'
 
 const KDS_STAGE_CONFIG = {
   New:        { bgClass: 'bg-status-open-bg',            textClass: 'text-status-open' },
@@ -44,6 +45,20 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
   // BUMP is blocked while InProgress until all non-voided items are checked, or by role
   const bumpBlocked = (ticket.stage === 'InProgress' && !allNonVoidedChecked) || !canDoAction(role, 'kds-bump')
 
+  function handleBump() {
+    if (bumpBlocked) return
+    const currentStage = ticket.stage  // capture BEFORE bump — stage advances synchronously
+    bumpTicket(ticket.ticketId)
+    // Write orderStage back to table.store — non-reactive getState() pattern (CLAUDE.md)
+    if (currentStage === 'New') {
+      useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Cooking' })
+    } else if (currentStage === 'InProgress') {
+      useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Ready' })
+    } else if (currentStage === 'Ready') {
+      useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Served' })
+    }
+  }
+
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shrink-0">
       {/* Header */}
@@ -77,7 +92,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       {/* Footer — BUMP button */}
       <div className="px-3 py-2 border-t border-border/40">
         <button
-          onClick={() => !bumpBlocked && bumpTicket(ticket.ticketId)}
+          onClick={handleBump}
           disabled={bumpBlocked}
           className={`w-full font-bold text-sm py-2 rounded text-white transition-all ${
             bumpBlocked
