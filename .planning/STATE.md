@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: executing
-last_updated: "2026-03-13T00:58:49.372Z"
-last_activity: 2026-03-13 -- 14-03 wired all merge integration points, awaiting human verify
+last_updated: "2026-03-13T03:17:00Z"
+last_activity: 2026-03-13 -- 15-01 complete — order-tracking token foundations (ordered/cooking/ready/escalated) added to globals.css + badge.tsx
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 97
+  total_plans: 13
+  completed_plans: 12
+  percent: 93
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-13
-**Session:** 14-03 tasks 1+2 complete -- paused at human-verify checkpoint (Task 3)
+**Session:** 15-01 complete — order-tracking token foundations done, ready for 15-02
 
 ---
 
@@ -38,14 +38,14 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 14 -- Merge Bill (in progress)
-Plan: 14-03 tasks 1+2 done — paused at human-verify checkpoint (Task 3)
-Status: Phase 14 in progress — 14-03 at checkpoint
-Last activity: 2026-03-13 -- 14-03 wired all merge integration points, awaiting human verify
+Phase: 15 -- Order Tracking (in progress)
+Plan: 15-01 complete — 15-02 is next
+Status: Phase 15 in progress — 15-01 done
+Last activity: 2026-03-13 -- 15-01 complete — token foundations added, badge variants ready
 
 ```
-Progress: [██████████] 97% (Phase 14: 2.5/3 plans done — checkpoint)
-Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
+Progress: [█████████░] 93% (Phase 15: 1/3 plans done)
+Phases:   12 [x] | 13 [x] | 14 [x] | 15 [ ]
 ```
 
 ---
@@ -57,7 +57,7 @@ Phases:   12 [x] | 13 [x] | 14 [ ] | 15 [ ]
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
 | 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (14-03 at checkpoint) |
-| 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Not started |
+| 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | In progress (1/3 done) |
 
 ---
 
@@ -95,6 +95,9 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[14-03] TotalsSection Split Bill hidden (not disabled) when isMergeActive**: DOM removal is cleaner than disabled state per CONTEXT.md locked decision; Merge Bill always renders but disabled when active
 - **[14-03] SplitSheet auto-open useEffect guarded by getMergedSecondaries check**: prevents auto-opening SplitSheet when table is already part of an active merge group
 - **[14-03] paidCount lifted to component level in SplitSheet**: shared by renderCancelSection and Revert to Single Bill section without prop drilling
+- **[15-01] cooking tokens reuse hue 75 (amber)**: shared with check-requested — semantically "in progress" states share warm amber family; differentiated by context
+- **[15-01] escalated tokens use brand red hue 27**: consistent with destructive/primary brand color, signals urgency without introducing a new hue
+- **[15-01] Order-stage hue assignments**: ordered=250(indigo), cooking=75(amber), ready=155(green), escalated=27(crimson)
 
 ### Blockers / Concerns
 

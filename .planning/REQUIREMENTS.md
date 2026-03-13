@@ -26,9 +26,9 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 
 ### Order Tracking
 
-- [ ] **TRACK-01**: Table tile shows live order stage badge (Queued -> Cooking -> Ready -> Served) derived from KDS + order store state
+- [x] **TRACK-01**: Table tile shows live order stage badge (Queued -> Cooking -> Ready -> Served) derived from KDS + order store state
 - [ ] **TRACK-02**: Tapping a table's order shows per-item timeline with timestamp trail (ordered -> cooking -> ready -> served)
-- [ ] **TRACK-03**: Items exceeding time threshold (e.g. 15 min) show visual escalation warning on both table tile and timeline view
+- [x] **TRACK-03**: Items exceeding time threshold (e.g. 15 min) show visual escalation warning on both table tile and timeline view
 
 ## v2 Requirements
 
@@ -69,9 +69,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POLISH-02 | Phase 13 | Complete |
 | MERGE-01 | Phase 14 | Complete |
 | MERGE-02 | Phase 14 | Pending |
-| TRACK-01 | Phase 15 | Pending |
+| TRACK-01 | Phase 15 | Complete |
 | TRACK-02 | Phase 15 | Pending |
-| TRACK-03 | Phase 15 | Pending |
+| TRACK-03 | Phase 15 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 11 total
