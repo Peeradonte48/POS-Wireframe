@@ -52,6 +52,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens (completed 2026-03-12)
 - [x] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup (completed 2026-03-12)
 - [x] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders (completed 2026-03-13)
+- [ ] **Phase 16: Integration Fix** -- Wire KDS bump → table.store orderStage, fix onAllPaid billed state, dissolveAll on markClean, close MERGE-02 human verify
 
 ---
 
@@ -114,6 +115,20 @@ Plans:
 - [ ] 15-02-PLAN.md — order-tracking.ts utils + useSentTimer hook + TableTile color-coded badge
 - [ ] 15-03-PLAN.md — OrderTimeline component + TableBottomSheet tab wiring + human verify
 
+### Phase 16: Integration Fix
+**Goal**: Close 3 integration gaps found in v1.2 audit — KDS bump writes orderStage to table.store, split onAllPaid sets Billed stage, markClean dissolves merge map, MERGE-02 human verified
+**Gap Closure:** Closes gaps from v1.2 audit
+**Requirements**: TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02
+**Success Criteria** (what must be TRUE):
+  1. Bumping a KDS ticket from New→InProgress writes orderStage:'Cooking', InProgress→Ready writes 'Ready', ticket removal writes 'Served' to table.store — TableTile badge color cycles through all 4 stages
+  2. Completing all split-bill seat payments sets orderStage:'Billed' on the primary table
+  3. Tapping "Mark Clean" on a merged primary table dissolves the merge map — secondary tiles show no stale merge badge after cleaning
+  4. MERGE-02 "Revert to Single Bill" flow verified in browser — REQUIREMENTS.md checkbox updated to [x]
+**Plans**: 1 plan
+Plans:
+- [ ] 16-01-PLAN.md — KDS orderStage writeback + onAllPaid Billed + markClean dissolveAll + MERGE-02 human verify
+
+
 ---
 
 ## Progress
@@ -135,6 +150,7 @@ Plans:
 | 13. Polish | 3/3 | Complete    | 2026-03-12 | - |
 | 14. Merge Bill | 3/3 | Complete    | 2026-03-13 | - |
 | 15. Order Tracking | 3/3 | Complete    | 2026-03-13 | - |
+| 16. Integration Fix | v1.2 | 0/1 | Pending | - |
 
 ---
 

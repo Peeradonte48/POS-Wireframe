@@ -11,7 +11,7 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 
 - [x] **SPLIT-01**: Staff can split bill equally by N guests -- system divides total / N with correct VAT rounding (floor + remainder-on-last in satang)
 - [x] **SPLIT-02**: Staff can split bill per-seat by assigning items to individual seats -- each seat sub-bill totals correctly with VAT
-- [x] **SPLIT-03**: Each seat can be paid independently (Cash/QR/Card) with paid seats showing settled state; table closes only when all seats paid
+- [ ] **SPLIT-03**: Each seat can be paid independently (Cash/QR/Card) with paid seats showing settled state; table closes only when all seats paid
 - [x] **SPLIT-04**: Table tile shows split progress badge (e.g. "2/4 paid") when bill is partially settled
 
 ### Polish
@@ -21,14 +21,14 @@ Requirements for v1.2 release. Each maps to roadmap phases.
 
 ### Merge Bill
 
-- [x] **MERGE-01**: Staff can merge bills across 2+ tables into a combined bill showing all items with correct totals; source tables link to merged bill
+- [ ] **MERGE-01**: Staff can merge bills across 2+ tables into a combined bill showing all items with correct totals; source tables link to merged bill
 - [ ] **MERGE-02**: Staff can unsplit previously separated seats back into a single bill before any seat is paid
 
 ### Order Tracking
 
-- [x] **TRACK-01**: Table tile shows live order stage badge (Queued -> Cooking -> Ready -> Served) derived from KDS + order store state
-- [ ] **TRACK-02**: Tapping a table's order shows per-item timeline with timestamp trail (ordered -> cooking -> ready -> served)
-- [x] **TRACK-03**: Items exceeding time threshold (e.g. 15 min) show visual escalation warning on both table tile and timeline view
+- [ ] **TRACK-01**: Table tile shows live order stage badge (Queued -> Cooking -> Ready -> Served) derived from KDS + order store state
+- [x] **TRACK-02**: Tapping a table's order shows per-item timeline with timestamp trail (ordered -> cooking -> ready -> served)
+- [ ] **TRACK-03**: Items exceeding time threshold (e.g. 15 min) show visual escalation warning on both table tile and timeline view
 
 ## v2 Requirements
 
@@ -63,15 +63,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | SPLIT-01 | Phase 12 | Complete |
 | SPLIT-02 | Phase 12 | Complete |
-| SPLIT-03 | Phase 12 | Complete |
+| SPLIT-03 | Phase 16 | Pending |
 | SPLIT-04 | Phase 12 | Complete |
 | POLISH-01 | Phase 13 | Complete |
 | POLISH-02 | Phase 13 | Complete |
-| MERGE-01 | Phase 14 | Complete |
-| MERGE-02 | Phase 14 | Pending |
-| TRACK-01 | Phase 15 | Complete |
-| TRACK-02 | Phase 15 | Pending |
-| TRACK-03 | Phase 15 | Complete |
+| MERGE-01 | Phase 16 | Pending |
+| MERGE-02 | Phase 16 | Pending |
+| TRACK-01 | Phase 16 | Pending |
+| TRACK-02 | Phase 15 | Complete |
+| TRACK-03 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 11 total
@@ -80,4 +80,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-12*
-*Last updated: 2026-03-12 after roadmap creation -- all 11 requirements mapped*
+*Last updated: 2026-03-13 -- gap closure phase 16 added; SPLIT-03, MERGE-01, MERGE-02, TRACK-01, TRACK-03 reset to Pending*
