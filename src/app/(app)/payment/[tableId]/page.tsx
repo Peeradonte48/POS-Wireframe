@@ -131,6 +131,8 @@ export default function PaymentPage() {
     if (!paymentMethod) return
     const { markCleaning, updateTable } = useTableStore.getState()
     markCleaning(tableId)
+    mergedSecondaryIds.forEach((id) => markCleaning(id))
+    dissolveAll(tableId)
     updateTable(tableId, { orderStage: 'Billed' })
     updateTable(tableId, {
       paidAmount: grandTotal,
@@ -307,6 +309,8 @@ export default function PaymentPage() {
         grandTotal={grandTotal}
         billItems={billItems}
         onAllPaid={() => {
+          mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
+          dissolveAll(tableId)
           setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
           setViewState('receipt')
         }}

@@ -102,6 +102,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[15-02] order-tracking.ts as shared pure-function module**: ESCALATION_THRESHOLD_MS + deriveRoundStage + isRoundEscalated imported by TableTile (Plan 02) and OrderTimeline (Plan 03)
 - **[15-02] Badge condition gated on Occupied|CheckRequested**: hides stale orderStage badges on non-active table statuses
 
+### Bug Fixes (post-phase)
+
+- **[2026-03-13] merged-table-status-not-clearing** — After paying a merged bill, secondary tables stayed in "Check Requested". Root cause: both handleConfirmPayment and the SplitSheet onAllPaid callback called markCleaning only on the primary tableId. Fix: added `mergedSecondaryIds.forEach((id) => markCleaning(id))` in both paths inside payment/[tableId]/page.tsx. Resolved.
+
+- **[2026-03-13] payment-redirect-loop-after-merge-pay** — After paying a merged bill, tapping the secondary table tile on the floor plan redirected back into /payment/[primaryTableId]. Root cause: bill.store merge records were never dissolved at payment time, so TableTile's isMergedSecondary guard kept firing the payment redirect. Fix: added `dissolveAll(tableId)` in both handleConfirmPayment and onAllPaid in payment/[tableId]/page.tsx. Resolved.
+
 ### Blockers / Concerns
 
 (None -- roadmap created, ready for phase planning)
