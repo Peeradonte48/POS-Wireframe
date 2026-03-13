@@ -309,6 +309,7 @@ export default function PaymentPage() {
         grandTotal={grandTotal}
         billItems={billItems}
         onAllPaid={() => {
+          useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
           mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
           dissolveAll(tableId)
           setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })

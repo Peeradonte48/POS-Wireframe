@@ -288,6 +288,7 @@ export function TableBottomSheet({
                   className="w-full"
                   onClick={() => {
                     useBillStore.getState().cancelSplit(table.id)
+                    useBillStore.getState().dissolveAll(table.id)
                     markClean(table.id)
                     onClose()
                   }}
