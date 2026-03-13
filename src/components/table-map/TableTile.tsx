@@ -1,4 +1,5 @@
 'use client'
+import { useMemo } from 'react'
 import {
   RadioLinear,
   UsersGroupRoundedLinear,
@@ -43,14 +44,20 @@ export function TableTile({ table, onTap }: TableTileProps) {
   const dwellTime = useDwellTimer(table.openedAt)
   const split = useBillStore((s) => s.getSplit(table.id))
   const paidCount = split ? Object.keys(split.payments).length : 0
-  const isMergedSecondary = useBillStore((s) => s.isMergedSecondary(table.id))
-  const primaryTableId = useBillStore((s) => s.getPrimaryTable(table.id))
+  const merges = useBillStore((s) => s.merges)
+  const isMergedSecondary = table.id in merges
+  const primaryTableId = merges[table.id] ?? null
+  const mergedSecondaryIds = useMemo(
+    () => Object.keys(merges).filter((k) => merges[k] === table.id),
+    [merges, table.id],
+  )
+  const isMergedPrimary = mergedSecondaryIds.length > 0
   const router = useRouter()
 
   // Merge badge takes priority; a secondary table's split is irrelevant (payment via primary)
-  const showMergeBadge = isMergedSecondary
-  const showSplitBadge = !isMergedSecondary && split !== undefined && table.status === 'CheckRequested'
-  const primaryLabel = showMergeBadge
+  const showMergeBadge = isMergedSecondary || isMergedPrimary
+  const showSplitBadge = !showMergeBadge && split !== undefined && table.status === 'CheckRequested'
+  const primaryLabel = isMergedSecondary
     ? useTableStore.getState().tables[primaryTableId ?? '']?.label ?? primaryTableId
     : undefined
 
@@ -98,7 +105,7 @@ export function TableTile({ table, onTap }: TableTileProps) {
       ) : showMergeBadge ? (
         <Badge className="absolute top-2 right-2 text-[10px] py-0 bg-status-merged-bg text-status-merged border-0">
           <LinkLinear size={10} className="mr-0.5" />
-          Merged→{primaryLabel}
+          {isMergedSecondary ? `Merged→${primaryLabel}` : `+${mergedSecondaryIds.length} merged`}
         </Badge>
       ) : table.orderStage !== null ? (
         <Badge variant="outline" className="absolute top-2 right-2 text-[10px] py-0">
