@@ -82,6 +82,14 @@
   --color-status-merged-bg:          var(--status-merged-bg);
   --color-status-cleaning:           var(--status-cleaning);
   --color-status-cleaning-bg:        var(--status-cleaning-bg);
+  --color-status-ordered:            var(--status-ordered);
+  --color-status-ordered-bg:         var(--status-ordered-bg);
+  --color-status-cooking:            var(--status-cooking);
+  --color-status-cooking-bg:         var(--status-cooking-bg);
+  --color-status-ready:              var(--status-ready);
+  --color-status-ready-bg:           var(--status-ready-bg);
+  --color-status-escalated:          var(--status-escalated);
+  --color-status-escalated-bg:       var(--status-escalated-bg);
 }
 
 :root {
@@ -135,6 +143,14 @@
   --status-merged-bg:          oklch(0.94 0.05 270);
   --status-cleaning:           oklch(0.55 0.06 50);
   --status-cleaning-bg:        oklch(0.95 0.03 50);
+  --status-ordered:            oklch(0.50 0.18 250);
+  --status-ordered-bg:         oklch(0.95 0.04 250);
+  --status-cooking:            oklch(0.60 0.18 75);
+  --status-cooking-bg:         oklch(0.97 0.05 75);
+  --status-ready:              oklch(0.50 0.20 155);
+  --status-ready-bg:           oklch(0.95 0.06 155);
+  --status-escalated:          oklch(0.52 0.26 27);
+  --status-escalated-bg:       oklch(0.96 0.06 27);
 
   /* Glow shadow for primary CTA buttons — two-layer: ring + blur */
   --shadow-glow-primary: 0 0 0 2px color-mix(in oklch, var(--primary) 35%, transparent), 0 0 14px 4px color-mix(in oklch, var(--primary) 30%, transparent);
@@ -195,6 +211,14 @@
   --status-merged-bg:          oklch(0.24 0.07 270);
   --status-cleaning:           oklch(0.70 0.05 50);
   --status-cleaning-bg:        oklch(0.25 0.03 50);
+  --status-ordered:            oklch(0.70 0.16 250);
+  --status-ordered-bg:         oklch(0.22 0.06 250);
+  --status-cooking:            oklch(0.75 0.16 75);
+  --status-cooking-bg:         oklch(0.28 0.07 75);
+  --status-ready:              oklch(0.70 0.18 155);
+  --status-ready-bg:           oklch(0.24 0.06 155);
+  --status-escalated:          oklch(0.72 0.22 27);
+  --status-escalated-bg:       oklch(0.24 0.08 27);
 
   /* Elevation shadows — dark mode uses glow/border instead of drop shadows */
   --shadow-card:     0 0 0 1px oklch(1 0 0 / 0.06);
