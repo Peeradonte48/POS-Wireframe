@@ -49,8 +49,16 @@ Each route group has its own `layout.tsx`. The `(app)` and `(kds)` groups destro
 | `session.store` | No | Role, staff identity, shift state |
 | `table.store` | Yes | Table status lifecycle (Open→Occupied→CheckRequested→Cleaning), guest count, servedAt |
 | `order.store` | Yes | Order rounds, line items with modifiers, void tracking |
+| `bill.store` | Yes | Split billing (equal/per-seat) and table merges — payment-phase concerns only |
 | `manager.store` | Yes | 86'd items, shift close state |
 | `kds.store` | No | Kitchen ticket board, bump/recall, demo mode |
+
+**Key state types:**
+- `TableStatus`: `Open | Occupied | Reserved | CheckRequested | Cleaning`
+- `OrderStage`: `Ordered | Cooking | Ready | Served | Billed` — lives on `TableRecord`, updated by KDS bump
+- `OrderLineItem`: `{ lineId, menuItemId, basePrice, modifiers: ModifierSelection[], spiceLevel, quantity, status: 'unsent'|'sent'|'voided' }`
+- `BillSplit`: `{ mode: 'equal'|'per-seat', seatCount, equalAmounts[], assignments[], payments: Record<seatIndex, SeatPaymentRecord> }`
+- `bill.store.merges`: `Record<secondaryTableId, primaryTableId>` — flat map; O(1) lookup for `isMergedSecondary`
 
 ### Permission System (src/lib/role-permissions.ts)
 
@@ -79,13 +87,27 @@ style={{ boxShadow: 'var(--shadow-card)' }}
 ```
 Multi-value CSS strings are incompatible with Tailwind v4 `@theme inline`.
 
-**CVA variants in `button.tsx` and `badge.tsx`:** Extend variants in place, never wrap these components.
+**CVA variants in `button.tsx` and `badge.tsx`:** Extend variants in place, never wrap these components. Notable non-obvious variants:
+- `button` → `variant="option-card"` — bordered card-style picker button with `data-[selected=true]` state baked in; use for mode/option selectors
+- `badge` → `variant="settled"` — green terminal-state badge for paid/closed tables
 
 **ThemedToaster:** Thin `'use client'` wrapper around sonner `Toaster` — uses `resolvedTheme` (not `theme`) because sonner doesn't handle `'system'`. Mount once per layout, never per page.
 
 **`@theme inline` must use `var(--token)` only** — never literal OKLCH values (dark mode breaks silently).
 
 **`@utility caps`** — defined in globals.css via `@apply`. Use the utility class, don't duplicate the pattern inline.
+
+**Zustand selector infinite loop:** Store actions that return new arrays/objects on every call (e.g. `getMergedSecondaries`) cause React's `useSyncExternalStore` to loop with "getSnapshot should be cached". Never call such functions inside a Zustand selector. Instead, select the raw primitive state and derive in `useMemo`:
+```tsx
+// ✗ infinite loop
+const ids = useBillStore((s) => s.getMergedSecondaries(tableId))
+
+// ✓ stable
+const merges = useBillStore((s) => s.merges)
+const ids = useMemo(() => Object.keys(merges).filter((k) => merges[k] === tableId), [merges, tableId])
+```
+
+**Non-reactive store reads:** Use `useXStore.getState().someValue` for values that don't change at runtime (e.g. a table's label in a badge). Avoids a subscription when the value is static.
 
 ## High-Level User Flow
 
