@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: executing
-last_updated: "2026-03-13T03:21:28.611Z"
-last_activity: 2026-03-13 -- 15-02 complete — color-coded stage badge + escalation in TableTile
+last_updated: "2026-03-13T10:45:00.000Z"
+last_activity: 2026-03-13 -- 15-03 complete — OrderTimeline + two-tab TableBottomSheet; Phase 15 fully done
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
   completed_plans: 13
-  percent: 95
+  percent: 100
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-13
-**Session:** 15-02 complete — color-coded stage badge + escalation in TableTile done, ready for 15-03
+**Session:** 15-03 complete — OrderTimeline component + two-tab TableBottomSheet; Phase 15 fully done; v1.2 milestone complete
 
 ---
 
@@ -38,14 +38,14 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 15 -- Order Tracking (in progress)
-Plan: 15-02 complete — 15-03 is next
-Status: Phase 15 in progress — 15-02 done
-Last activity: 2026-03-13 -- 15-02 complete — color-coded stage badge + escalation in TableTile
+Phase: 15 -- Order Tracking (complete)
+Plan: 15-03 complete — all plans done
+Status: All phases complete — v1.2 milestone done
+Last activity: 2026-03-13 -- 15-03 complete — OrderTimeline + two-tab TableBottomSheet
 
 ```
-Progress: [██████████] 95% (Phase 15: 2/3 plans done)
-Phases:   12 [x] | 13 [x] | 14 [x] | 15 [ ]
+Progress: [██████████] 100% (Phase 15: 3/3 plans done)
+Phases:   12 [x] | 13 [x] | 14 [x] | 15 [x]
 ```
 
 ---
@@ -57,7 +57,7 @@ Phases:   12 [x] | 13 [x] | 14 [x] | 15 [ ]
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
 | 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (14-03 at checkpoint) |
-| 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | In progress (1/3 done) |
+| 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Complete (3/3) |
 
 ---
 
@@ -101,6 +101,10 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[15-02] tickets in isEscalated useMemo deps intentionally**: KDS bump changes ticket existence/stage, warranting escalation recheck in TableTile even though tickets Record is not read inside memo body
 - **[15-02] order-tracking.ts as shared pure-function module**: ESCALATION_THRESHOLD_MS + deriveRoundStage + isRoundEscalated imported by TableTile (Plan 02) and OrderTimeline (Plan 03)
 - **[15-02] Badge condition gated on Occupied|CheckRequested**: hides stale orderStage badges on non-active table statuses
+- **[15-03] RoundSection sub-component for useSentTimer**: hooks-in-loop violation avoided by extracting a sub-component per round; useSentTimer called at component level not inside map callback
+- **[15-03] Tab bar as plain buttons with underline indicator**: two `<button>` elements with `border-b-2 border-primary -mb-px` — no new shadcn/Base UI imports; simpler than Tabs primitive
+- **[15-03] activeTab resets on table?.id change**: follows same useEffect pattern as localWaiter/localNote reset already in TableBottomSheet
+- **[15-03] Escalation banner uses flatMap across escalatedRounds**: flat item list under single banner — not per-round banners
 
 ### Bug Fixes (post-phase)
 
