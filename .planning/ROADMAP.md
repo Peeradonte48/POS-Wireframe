@@ -52,7 +52,7 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 - [x] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens (completed 2026-03-12)
 - [x] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup (completed 2026-03-12)
 - [x] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders (completed 2026-03-13)
-- [ ] **Phase 16: Integration Fix** -- Wire KDS bump → table.store orderStage, fix onAllPaid billed state, dissolveAll on markClean, close MERGE-02 human verify
+- [x] **Phase 16: Integration Fix** -- Wire KDS bump → table.store orderStage, fix onAllPaid billed state, dissolveAll on markClean, close MERGE-02 human verify (completed 2026-03-13)
 
 ---
 
@@ -126,7 +126,7 @@ Plans:
   4. MERGE-02 "Revert to Single Bill" flow verified in browser — REQUIREMENTS.md checkbox updated to [x]
 **Plans**: 1 plan
 Plans:
-- [ ] 16-01-PLAN.md — KDS orderStage writeback + onAllPaid Billed + markClean dissolveAll + MERGE-02 human verify
+- [x] 16-01-PLAN.md — KDS orderStage writeback + onAllPaid Billed + markClean dissolveAll + MERGE-02 human verify
 
 
 ---
@@ -150,7 +150,7 @@ Plans:
 | 13. Polish | 3/3 | Complete    | 2026-03-12 | - |
 | 14. Merge Bill | 3/3 | Complete    | 2026-03-13 | - |
 | 15. Order Tracking | 3/3 | Complete    | 2026-03-13 | - |
-| 16. Integration Fix | v1.2 | 0/1 | Pending | - |
+| 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
 
 ---
 

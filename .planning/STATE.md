@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: completed
-last_updated: "2026-03-13T10:41:19.312Z"
-last_activity: 2026-03-13 -- 15-03 complete — OrderTimeline + two-tab TableBottomSheet
+last_updated: "2026-03-13T11:35:44.206Z"
+last_activity: 2026-03-13 -- 16-01 complete — Integration fix done, all v1.2 requirements verified
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 14
+  completed_plans: 14
   percent: 100
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-13
-**Session:** 15-03 complete — OrderTimeline component + two-tab TableBottomSheet; Phase 15 fully done; v1.2 milestone complete
+**Session:** 16-01 complete — Integration fix done; all five v1.2 audit gaps closed (TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02); v1.2 milestone fully complete
 
 ---
 
@@ -38,14 +38,14 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 15 -- Order Tracking (complete)
-Plan: 15-03 complete — all plans done
-Status: All phases complete — v1.2 milestone done
-Last activity: 2026-03-13 -- 15-03 complete — OrderTimeline + two-tab TableBottomSheet
+Phase: 16 -- Integration Fix (complete)
+Plan: 16-01 complete — all plans done
+Status: All phases complete — v1.2 milestone fully done (all 11 requirements verified)
+Last activity: 2026-03-13 -- 16-01 complete — Integration fix, MERGE-02 human-verified
 
 ```
-Progress: [██████████] 100% (Phase 15: 3/3 plans done)
-Phases:   12 [x] | 13 [x] | 14 [x] | 15 [x]
+Progress: [██████████] 100% (Phase 16: 1/1 plans done)
+Phases:   12 [x] | 13 [x] | 14 [x] | 15 [x] | 16 [x]
 ```
 
 ---
@@ -56,8 +56,9 @@ Phases:   12 [x] | 13 [x] | 14 [x] | 15 [x]
 |-------|------|--------------|--------|
 | 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
 | 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
-| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | In progress (14-03 at checkpoint) |
+| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Complete (3/3) |
 | 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Complete (3/3) |
+| 16. Integration Fix | KDS write-back, Billed stage, dissolveAll, MERGE-02 verify | TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02 | Complete (1/1) |
 
 ---
 
@@ -105,6 +106,10 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[15-03] Tab bar as plain buttons with underline indicator**: two `<button>` elements with `border-b-2 border-primary -mb-px` — no new shadcn/Base UI imports; simpler than Tabs primitive
 - **[15-03] activeTab resets on table?.id change**: follows same useEffect pattern as localWaiter/localNote reset already in TableBottomSheet
 - **[15-03] Escalation banner uses flatMap across escalatedRounds**: flat item list under single banner — not per-round banners
+- **[16-01] handleBump pre-captures ticket.stage before bumpTicket()**: Zustand set is synchronous — post-capture yields the new stage, not the triggering stage; three-way conditional writes Cooking/Ready/Served
+- **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
+- **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose — all bill.store cleanup before table.store lifecycle change
+- **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
 
 ### Bug Fixes (post-phase)
 
