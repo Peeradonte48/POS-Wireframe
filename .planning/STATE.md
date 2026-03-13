@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Bill Management + Order Tracking
 status: executing
-last_updated: "2026-03-13T03:17:00Z"
-last_activity: 2026-03-13 -- 15-01 complete — order-tracking token foundations (ordered/cooking/ready/escalated) added to globals.css + badge.tsx
+last_updated: "2026-03-13T03:21:28.611Z"
+last_activity: 2026-03-13 -- 15-02 complete — color-coded stage badge + escalation in TableTile
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 12
-  percent: 93
+  completed_plans: 13
+  percent: 95
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-13
-**Session:** 15-01 complete — order-tracking token foundations done, ready for 15-02
+**Session:** 15-02 complete — color-coded stage badge + escalation in TableTile done, ready for 15-03
 
 ---
 
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 ## Current Position
 
 Phase: 15 -- Order Tracking (in progress)
-Plan: 15-01 complete — 15-02 is next
-Status: Phase 15 in progress — 15-01 done
-Last activity: 2026-03-13 -- 15-01 complete — token foundations added, badge variants ready
+Plan: 15-02 complete — 15-03 is next
+Status: Phase 15 in progress — 15-02 done
+Last activity: 2026-03-13 -- 15-02 complete — color-coded stage badge + escalation in TableTile
 
 ```
-Progress: [█████████░] 93% (Phase 15: 1/3 plans done)
+Progress: [██████████] 95% (Phase 15: 2/3 plans done)
 Phases:   12 [x] | 13 [x] | 14 [x] | 15 [ ]
 ```
 
@@ -98,6 +98,9 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[15-01] cooking tokens reuse hue 75 (amber)**: shared with check-requested — semantically "in progress" states share warm amber family; differentiated by context
 - **[15-01] escalated tokens use brand red hue 27**: consistent with destructive/primary brand color, signals urgency without introducing a new hue
 - **[15-01] Order-stage hue assignments**: ordered=250(indigo), cooking=75(amber), ready=155(green), escalated=27(crimson)
+- **[15-02] tickets in isEscalated useMemo deps intentionally**: KDS bump changes ticket existence/stage, warranting escalation recheck in TableTile even though tickets Record is not read inside memo body
+- **[15-02] order-tracking.ts as shared pure-function module**: ESCALATION_THRESHOLD_MS + deriveRoundStage + isRoundEscalated imported by TableTile (Plan 02) and OrderTimeline (Plan 03)
+- **[15-02] Badge condition gated on Occupied|CheckRequested**: hides stale orderStage badges on non-active table statuses
 
 ### Blockers / Concerns
 
