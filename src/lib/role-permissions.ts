@@ -1,11 +1,11 @@
 import type { Role } from '@/stores/session.store'
 
-export type NavSlug = 'table-map' | 'orders' | 'kds' | 'payment' | 'manager'
+export type NavSlug = 'table-map' | 'orders' | 'kds' | 'payment' | 'manager' | 'queue'
 
 export const ROLE_NAV_ACCESS: Record<Role, NavSlug[]> = {
-  Waiter:  ['table-map', 'orders'],
-  Cashier: ['table-map', 'orders', 'payment'],
-  Manager: ['table-map', 'orders', 'kds', 'payment', 'manager'],
+  Waiter:  ['table-map', 'orders', 'queue'],
+  Cashier: ['table-map', 'orders', 'payment', 'queue'],
+  Manager: ['table-map', 'orders', 'kds', 'payment', 'manager', 'queue'],
   Kitchen: ['kds'],
 }
 
@@ -29,6 +29,7 @@ export type ActionKey =
   | 'close-shift'
   | 'kds-bump'
   | 'mark-served'
+  | 'new-takeaway'
 
 export const ACTION_PERMISSIONS: Record<ActionKey, Role[]> = {
   'open-table':        ['Waiter', 'Cashier', 'Manager'],
@@ -42,6 +43,7 @@ export const ACTION_PERMISSIONS: Record<ActionKey, Role[]> = {
   'close-shift':       ['Manager'],
   'kds-bump':          ['Kitchen', 'Manager'],
   'mark-served':       ['Waiter', 'Cashier', 'Manager'],
+  'new-takeaway':      ['Waiter', 'Cashier', 'Manager'],
 }
 
 export function canDoAction(role: Role, action: ActionKey): boolean {
