@@ -4,9 +4,9 @@ milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: in_progress
 last_updated: "2026-03-15T00:00:00.000Z"
-last_activity: 2026-03-15 -- v1.3 milestone started — requirements defined, roadmap pending
+last_activity: 2026-03-15 -- v1.3 roadmap created — 3 phases (17-19), 21 requirements mapped
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -16,7 +16,7 @@ progress:
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** v1.3 milestone initialized — 21 requirements defined across 6 categories (NAV, DLVR, TKWY, COMBO, KDS, UI); roadmap creation next
+**Session:** v1.3 roadmap created — 3 phases (17-19) covering 21 requirements across NAV, DLVR, TKWY, COMBO, KDS, UI categories; Phase 17 planning is next
 
 ---
 
@@ -38,20 +38,26 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: Not started (defining roadmap)
-Plan: —
-Status: Defining roadmap — 21 requirements ready, roadmap creation in progress
-Last activity: 2026-03-15 -- v1.3 requirements finalized (NAV, DLVR, TKWY, COMBO, KDS, UI)
+Phase: 17 -- Queue Store + Floor Plan Tabs (not started)
+Plan: --
+Status: Roadmap complete, ready for Phase 17 planning
+Last activity: 2026-03-15 -- v1.3 roadmap created (3 phases, 21 requirements)
 
 ```
-Progress: [░░░░░░░░░░] 0% (roadmap pending)
+Progress: [░░░░░░░░░░] 0% (0/3 phases)
 ```
 
 ---
 
 ## Milestone Overview
 
-*Roadmap not yet created — phases TBD after roadmapper runs.*
+### v1.3 Delivery & Takeaway Orders
+
+| Phase | Goal | Requirements | Status |
+|-------|------|--------------|--------|
+| 17. Queue Store + Floor Plan Tabs | Staff can view/manage delivery queue and create takeaway orders from the floor plan | NAV-01, NAV-02, DLVR-01–09, TKWY-01 (12 total) | Not started |
+| 18. Order Entry + Payment Pipeline | Takeaway/delivery orders flow through existing order entry and payment with KDS write-back | TKWY-02, TKWY-03, TKWY-04, TKWY-05 (4 total) | Not started |
+| 19. KDS Differentiation + Combo Flag | Kitchen sees order type badge per ticket, can filter by channel, dine-in items can be flagged pack-to-go | COMBO-01, COMBO-02, KDS-01, KDS-02, UI-01 (5 total) | Not started |
 
 ---
 
@@ -70,17 +76,17 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **Seat assignments in bill.store only**: Not on OrderLineItem -- payment-phase concern stays out of order data model
 - **[12-01] useTableStore imported into bill.store.ts**: For canonical guestCount lookup in initPerSeatSplit via getState() (not reactive subscription)
 - **[12-01] cancelSplit uses destructuring rest pattern**: `const { [tableId]: _, ...rest } = state.splits` to avoid Zustand mutation
-- **[12-02] SplitSheet view resets to mode-select on every open**: via `useEffect([open])` — clean state for each split session
+- **[12-02] SplitSheet view resets to mode-select on every open**: via `useEffect([open])` -- clean state for each split session
 - **[12-02] handleSeatPaid reads fresh state via getState() after recordPayment**: to reliably detect all-paid condition without stale closure
-- **[12-03] showSplitBadge guards split! non-null assertion in TableTile**: TypeScript safety without runtime overhead — ternary badge slot prioritises split badge over orderStage badge during payment phase
+- **[12-03] showSplitBadge guards split! non-null assertion in TableTile**: TypeScript safety without runtime overhead -- ternary badge slot prioritises split badge over orderStage badge during payment phase
 - **[12-04] onAllPaid uses 'Cash' as placeholder paymentMethod on receipt**: Wireframe receipt shows full grand total regardless of per-seat payment method mix; tracking mixed methods at receipt level is out of scope
-- **[12-04] assignItem accumulates qty on existing seat assignment**: Allows splitting same-item quantities across multiple seats — consistent with how restaurants split shared dishes
-- **[12-04] Store cleanup before table lifecycle transitions**: cancelSplit called in TableBottomSheet before markClean — establishes the pattern for all future bill.store cleanup on table reset
+- **[12-04] assignItem accumulates qty on existing seat assignment**: Allows splitting same-item quantities across multiple seats -- consistent with how restaurants split shared dishes
+- **[12-04] Store cleanup before table lifecycle transitions**: cancelSplit called in TableBottomSheet before markClean -- establishes the pattern for all future bill.store cleanup on table reset
 - **[13-01] settled OKLCH token**: hue 145 matching open but chroma 0.21/lightness 0.48 to visually distinguish terminal-state from available-state
-- **[13-01] option-card CVA variant**: uses [box-shadow:var(--shadow-card)] Tailwind v4 arbitrary property — no style prop needed at call sites; data-[selected=true] baked in for Phase 14 picker reuse
-- **[13-02] SplitSheet horizontal scroll seat picker**: overflow-x-auto snap-x pb-1 replaces flex-wrap — single-row at all viewports, no reflow at 6+ seats; justify-center removed as inapplicable in scroll context
+- **[13-01] option-card CVA variant**: uses [box-shadow:var(--shadow-card)] Tailwind v4 arbitrary property -- no style prop needed at call sites; data-[selected=true] baked in for Phase 14 picker reuse
+- **[13-02] SplitSheet horizontal scroll seat picker**: overflow-x-auto snap-x pb-1 replaces flex-wrap -- single-row at all viewports, no reflow at 6+ seats; justify-center removed as inapplicable in scroll context
 - **[13-03] IBM Plex Sans static font**: requires explicit weight array ['400','500','600','700']; 600 included for font-semibold coverage; no variable font config
-- **[13-03] Noto Sans Thai in --font-sans token**: was in DOM via body className but missing from CSS token declaration — correctness fix, not new feature
+- **[13-03] Noto Sans Thai in --font-sans token**: was in DOM via body className but missing from CSS token declaration -- correctness fix, not new feature
 - **[14-01] merges map uses secondary→primary direction**: O(1) lookup for isMergedSecondary and getPrimaryTable; one-primary-per-secondary guard enforced at initMerge write-time
 - **[14-01] --status-merged hue 270° (indigo/violet)**: distinct from amber split (~60°) and crimson primary (~27°); getMergedSecondaries uses linear scan acceptable at POS table counts (<20)
 - **[14-02] MergeSheet in table-map/ directory**: merge is initiated from floor plan context, not payment flow; isMergedSecondary filter prevents double-assign of secondaries; LinkLinear solar icon (GitMerge unavailable)
@@ -89,35 +95,49 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[14-03] TotalsSection Split Bill hidden (not disabled) when isMergeActive**: DOM removal is cleaner than disabled state per CONTEXT.md locked decision; Merge Bill always renders but disabled when active
 - **[14-03] SplitSheet auto-open useEffect guarded by getMergedSecondaries check**: prevents auto-opening SplitSheet when table is already part of an active merge group
 - **[14-03] paidCount lifted to component level in SplitSheet**: shared by renderCancelSection and Revert to Single Bill section without prop drilling
-- **[15-01] cooking tokens reuse hue 75 (amber)**: shared with check-requested — semantically "in progress" states share warm amber family; differentiated by context
+- **[15-01] cooking tokens reuse hue 75 (amber)**: shared with check-requested -- semantically "in progress" states share warm amber family; differentiated by context
 - **[15-01] escalated tokens use brand red hue 27**: consistent with destructive/primary brand color, signals urgency without introducing a new hue
 - **[15-01] Order-stage hue assignments**: ordered=250(indigo), cooking=75(amber), ready=155(green), escalated=27(crimson)
 - **[15-02] tickets in isEscalated useMemo deps intentionally**: KDS bump changes ticket existence/stage, warranting escalation recheck in TableTile even though tickets Record is not read inside memo body
 - **[15-02] order-tracking.ts as shared pure-function module**: ESCALATION_THRESHOLD_MS + deriveRoundStage + isRoundEscalated imported by TableTile (Plan 02) and OrderTimeline (Plan 03)
 - **[15-02] Badge condition gated on Occupied|CheckRequested**: hides stale orderStage badges on non-active table statuses
 - **[15-03] RoundSection sub-component for useSentTimer**: hooks-in-loop violation avoided by extracting a sub-component per round; useSentTimer called at component level not inside map callback
-- **[15-03] Tab bar as plain buttons with underline indicator**: two `<button>` elements with `border-b-2 border-primary -mb-px` — no new shadcn/Base UI imports; simpler than Tabs primitive
+- **[15-03] Tab bar as plain buttons with underline indicator**: two `<button>` elements with `border-b-2 border-primary -mb-px` -- no new shadcn/Base UI imports; simpler than Tabs primitive
 - **[15-03] activeTab resets on table?.id change**: follows same useEffect pattern as localWaiter/localNote reset already in TableBottomSheet
-- **[15-03] Escalation banner uses flatMap across escalatedRounds**: flat item list under single banner — not per-round banners
-- **[16-01] handleBump pre-captures ticket.stage before bumpTicket()**: Zustand set is synchronous — post-capture yields the new stage, not the triggering stage; three-way conditional writes Cooking/Ready/Served
+- **[15-03] Escalation banner uses flatMap across escalatedRounds**: flat item list under single banner -- not per-round banners
+- **[16-01] handleBump pre-captures ticket.stage before bumpTicket()**: Zustand set is synchronous -- post-capture yields the new stage, not the triggering stage; three-way conditional writes Cooking/Ready/Served
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
-- **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose — all bill.store cleanup before table.store lifecycle change
+- **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (from research)
+
+- **queue.store as the only non-dine-in store**: table.store remains strictly physical-table-only; delivery/takeaway records live exclusively in queue.store to prevent floor tile contamination and merge candidate corruption
+- **QueueOrderStatus is its own type**: `Pending | Confirmed | Ready | Completed | Cancelled` -- never appended to OrderStage or TableStatus enums to avoid semantic corruption
+- **ID-agnostic order/kds stores**: order.store and kds.store already operate on opaque string keys; TK-001 and DL-grab-7821 flow through unchanged with only additive seam changes
+- **OrderContext discriminated union**: optional field on ActiveOrder (backward compatible); drives header label fallback and KDS orderType derivation
+- **KdsTicket extended with orderType + platform**: addTicket signature updated; KdsTicketCard.handleBump adds conditional write-back for non-dine-in (queue.store.markReady vs table.store orderStage)
+- **Zustand selector safety**: select raw `orders: Record<string, QueueOrder>` from queue.store; derive filtered lists in useMemo -- never call derived-list functions inside selectors (per CLAUDE.md infinite loop pattern)
+- **Sidebar badge for pending delivery**: pending count badge on queue nav item from day one (Phase 17) -- not deferred to polish phase
+- **Platform OKLCH tokens**: Grab green oklch(0.72 0.18 145), LINE MAN blue oklch(0.55 0.22 260); added to :root and .dark independently tuned
+- **Delivery payment in existing /payment/[tableId]**: conditional render block (`isDeliveryOrder`) avoids new route; coupon scan section hidden for delivery orders
+- **Zero new npm packages**: setInterval in useEffect for delivery simulation (~25 LOC factory); no faker, xstate, msw, or fake-timers
 
 ### Bug Fixes (post-phase)
 
-- **[2026-03-13] merged-table-status-not-clearing** — After paying a merged bill, secondary tables stayed in "Check Requested". Root cause: both handleConfirmPayment and the SplitSheet onAllPaid callback called markCleaning only on the primary tableId. Fix: added `mergedSecondaryIds.forEach((id) => markCleaning(id))` in both paths inside payment/[tableId]/page.tsx. Resolved.
+- **[2026-03-13] merged-table-status-not-clearing** -- After paying a merged bill, secondary tables stayed in "Check Requested". Root cause: both handleConfirmPayment and the SplitSheet onAllPaid callback called markCleaning only on the primary tableId. Fix: added `mergedSecondaryIds.forEach((id) => markCleaning(id))` in both paths inside payment/[tableId]/page.tsx. Resolved.
 
-- **[2026-03-13] payment-redirect-loop-after-merge-pay** — After paying a merged bill, tapping the secondary table tile on the floor plan redirected back into /payment/[primaryTableId]. Root cause: bill.store merge records were never dissolved at payment time, so TableTile's isMergedSecondary guard kept firing the payment redirect. Fix: added `dissolveAll(tableId)` in both handleConfirmPayment and onAllPaid in payment/[tableId]/page.tsx. Resolved.
+- **[2026-03-13] payment-redirect-loop-after-merge-pay** -- After paying a merged bill, tapping the secondary table tile on the floor plan redirected back into /payment/[primaryTableId]. Root cause: bill.store merge records were never dissolved at payment time, so TableTile's isMergedSecondary guard kept firing the payment redirect. Fix: added `dissolveAll(tableId)` in both handleConfirmPayment and onAllPaid in payment/[tableId]/page.tsx. Resolved.
 
 ### Blockers / Concerns
 
-(None -- roadmap created, ready for phase planning)
+- **Delivery payment page scope (open):** Research flags a conflict between reusing /payment/[tableId] with a conditional block vs a separate /payment/delivery/[orderId] route. Recommendation is conditional block. Confirm and lock during Phase 18 planning.
+- **KDS bump depth for delivery (open):** One post-Ready bump (Ready → PickedUp, removes from board) or two (Ready → ReadyForRider → PickedUp)? Confirm during Phase 18 planning to encode in getNextStage(current, orderType).
 
 ---
 
 *State initialized: 2026-03-10 during roadmap creation*
 *v1.0 archived: 2026-03-11*
 *v1.1 archived: 2026-03-12*
-*v1.2 roadmap created: 2026-03-12*
-*v1.3 milestone started: 2026-03-15*
+*v1.2 archived: 2026-03-13*
+*v1.3 roadmap created: 2026-03-15*

@@ -1,7 +1,7 @@
 # Roadmap: FIP POS Staff App Wireframe
 
 **Project:** POS Wireframe -- A Ramen / FIP Ecosystem
-**Current Status:** v1.2 in progress
+**Current Status:** v1.3 in progress
 
 ---
 
@@ -9,7 +9,8 @@
 
 - **v1.0 Staff App Wireframe** -- Phases 1-7 (shipped 2026-03-11)
 - **v1.1 Bug Fixes + Brand Polish** -- Phases 8-11 (shipped 2026-03-12)
-- **v1.2 Bill Management + Order Tracking** -- Phases 12-15 (in progress)
+- **v1.2 Bill Management + Order Tracking** -- Phases 12-16 (shipped 2026-03-13)
+- **v1.3 Delivery & Takeaway Orders** -- Phases 17-19 (in progress)
 
 ---
 
@@ -42,17 +43,28 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 </details>
 
----
-
-### v1.2 Bill Management + Order Tracking (In Progress)
-
-**Milestone Goal:** Add split bill, merge bill, and real-time digital order tracking to complete the payment and service monitoring story. Staff can divide a check by equal shares or per-seat items, merge party tables into one bill, and see live order progress on the floor plan -- all built on a new `bill.store.ts` and pure derivation functions with zero new npm packages.
+<details>
+<summary>v1.2 Bill Management + Order Tracking (Phases 12-16) -- SHIPPED 2026-03-13</summary>
 
 - [x] **Phase 12: Split Bill** -- bill.store.ts creation, equal split with VAT rounding, per-seat item assignment, partial payment tracking, split progress badge (completed 2026-03-12)
 - [x] **Phase 13: Polish** -- CVA variants, elevation tokens, brand styling, and responsive layout tuning for all new v1.2 screens (completed 2026-03-12)
-- [x] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup (completed 2026-03-12)
+- [x] **Phase 14: Merge Bill** -- Merge bills across 2+ tables, unsplit previously separated seats, secondary table cleanup (completed 2026-03-13)
 - [x] **Phase 15: Order Tracking** -- Live stage badge on table tiles, per-item timeline with timestamps, escalation indicator for delayed orders (completed 2026-03-13)
 - [x] **Phase 16: Integration Fix** -- Wire KDS bump → table.store orderStage, fix onAllPaid billed state, dissolveAll on markClean, close MERGE-02 human verify (completed 2026-03-13)
+
+Full archive: `.planning/milestones/v1.2-ROADMAP.md`
+
+</details>
+
+---
+
+### v1.3 Delivery & Takeaway Orders (In Progress)
+
+**Milestone Goal:** Add multi-channel order management — third-party delivery queue (Grab/LINE MAN), walk-in takeaway orders, and dine-in + takeaway combo items — so staff can manage all three channels from one interface and kitchen always knows whether to plate or bag.
+
+- [ ] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation
+- [ ] **Phase 18: Order Entry + Payment Pipeline** -- takeaway/delivery orders flow through existing order entry and payment, KDS write-back for non-dine-in channels
+- [ ] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants
 
 ---
 
@@ -69,10 +81,10 @@ Full archive: `.planning/milestones/v1.1-ROADMAP.md`
   4. The table tile on the floor plan shows a split progress badge (e.g. "2/4 paid") whenever a bill is partially settled, and the badge disappears when all seats are paid and the table transitions to Cleaning
 **Plans**: 4 plans
 Plans:
-- [x] 12-01-PLAN.md — bill.store.ts creation + amber split color token
-- [x] 12-02-PLAN.md — SplitSheet.tsx + SeatPaymentPanel.tsx (full split bottom sheet UI)
-- [x] 12-03-PLAN.md — TableTile split progress badge
-- [x] 12-04-PLAN.md — Wiring: TotalsSection, payment page, TableBottomSheet + human verify
+- [x] 12-01-PLAN.md -- bill.store.ts creation + amber split color token
+- [x] 12-02-PLAN.md -- SplitSheet.tsx + SeatPaymentPanel.tsx (full split bottom sheet UI)
+- [x] 12-03-PLAN.md -- TableTile split progress badge
+- [x] 12-04-PLAN.md -- Wiring: TotalsSection, payment page, TableBottomSheet + human verify
 
 ### Phase 13: Polish
 **Goal**: All new split bill, merge bill, and order tracking screens meet the v1.1 quality bar -- consistent CVA variants, elevation tokens, brand styling, and clean responsive layout at tablet and mobile breakpoints
@@ -83,9 +95,9 @@ Plans:
   2. All new modals and sheets (split mode selector, merge picker, timeline detail) fit cleanly within the AppShell at both tablet (768px+) and mobile (375px) breakpoints with no horizontal overflow, clipped content, or broken scroll behavior
 **Plans**: 3 plans
 Plans:
-- [ ] 13-01-PLAN.md — Design tokens (--status-settled) + CVA variants (Badge settled, Button option-card)
-- [ ] 13-02-PLAN.md — SplitSheet.tsx conformance: replace all POLISH-01 violations + responsive seat picker fix
-- [ ] 13-03-PLAN.md — Font swap: Inter → IBM Plex Sans app-wide + font-sans token update
+- [x] 13-01-PLAN.md -- Design tokens (--status-settled) + CVA variants (Badge settled, Button option-card)
+- [x] 13-02-PLAN.md -- SplitSheet.tsx conformance: replace all POLISH-01 violations + responsive seat picker fix
+- [x] 13-03-PLAN.md -- Font swap: Inter → IBM Plex Sans app-wide + font-sans token update
 
 ### Phase 14: Merge Bill
 **Goal**: Staff can combine bills from multiple tables into a single check for party seating, and reverse a split back to a single bill before any portion is paid
@@ -97,9 +109,9 @@ Plans:
   3. Staff can unsplit a previously separated bill back to a single bill, but only when no seats have been paid yet -- attempting to unsplit after partial payment shows a blocking message
 **Plans**: 3 plans
 Plans:
-- [ ] 14-01-PLAN.md — bill.store merges map + --status-merged CSS tokens (foundation)
-- [ ] 14-02-PLAN.md — MergeSheet.tsx: table picker bottom sheet component
-- [ ] 14-03-PLAN.md — Wiring: TableTile badge, TableBottomSheet, TotalsSection, payment page grouped items, SplitSheet revert + human verify
+- [x] 14-01-PLAN.md -- bill.store merges map + --status-merged CSS tokens (foundation)
+- [x] 14-02-PLAN.md -- MergeSheet.tsx: table picker bottom sheet component
+- [x] 14-03-PLAN.md -- Wiring: TableTile badge, TableBottomSheet, TotalsSection, payment page grouped items, SplitSheet revert + human verify
 
 ### Phase 15: Order Tracking
 **Goal**: Staff can see live order progress on the floor plan and drill into per-item timelines, with visual escalation for delayed orders
@@ -111,23 +123,55 @@ Plans:
   3. Any item that has been in its current stage for longer than 15 minutes displays a visual escalation warning (color shift to red/amber) on both the table tile badge and the timeline detail view
 **Plans**: 3 plans
 Plans:
-- [ ] 15-01-PLAN.md — CSS token pairs (ordered/cooking/ready/escalated) + Badge CVA variants
-- [ ] 15-02-PLAN.md — order-tracking.ts utils + useSentTimer hook + TableTile color-coded badge
-- [ ] 15-03-PLAN.md — OrderTimeline component + TableBottomSheet tab wiring + human verify
+- [x] 15-01-PLAN.md -- CSS token pairs (ordered/cooking/ready/escalated) + Badge CVA variants
+- [x] 15-02-PLAN.md -- order-tracking.ts utils + useSentTimer hook + TableTile color-coded badge
+- [x] 15-03-PLAN.md -- OrderTimeline component + TableBottomSheet tab wiring + human verify
 
 ### Phase 16: Integration Fix
-**Goal**: Close 3 integration gaps found in v1.2 audit — KDS bump writes orderStage to table.store, split onAllPaid sets Billed stage, markClean dissolves merge map, MERGE-02 human verified
+**Goal**: Close 3 integration gaps found in v1.2 audit -- KDS bump writes orderStage to table.store, split onAllPaid sets Billed stage, markClean dissolves merge map, MERGE-02 human verified
 **Gap Closure:** Closes gaps from v1.2 audit
 **Requirements**: TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02
 **Success Criteria** (what must be TRUE):
-  1. Bumping a KDS ticket from New→InProgress writes orderStage:'Cooking', InProgress→Ready writes 'Ready', ticket removal writes 'Served' to table.store — TableTile badge color cycles through all 4 stages
+  1. Bumping a KDS ticket from New→InProgress writes orderStage:'Cooking', InProgress→Ready writes 'Ready', ticket removal writes 'Served' to table.store -- TableTile badge color cycles through all 4 stages
   2. Completing all split-bill seat payments sets orderStage:'Billed' on the primary table
-  3. Tapping "Mark Clean" on a merged primary table dissolves the merge map — secondary tiles show no stale merge badge after cleaning
-  4. MERGE-02 "Revert to Single Bill" flow verified in browser — REQUIREMENTS.md checkbox updated to [x]
+  3. Tapping "Mark Clean" on a merged primary table dissolves the merge map -- secondary tiles show no stale merge badge after cleaning
+  4. MERGE-02 "Revert to Single Bill" flow verified in browser -- REQUIREMENTS.md checkbox updated to [x]
 **Plans**: 1 plan
 Plans:
-- [x] 16-01-PLAN.md — KDS orderStage writeback + onAllPaid Billed + markClean dissolveAll + MERGE-02 human verify
+- [x] 16-01-PLAN.md -- KDS orderStage writeback + onAllPaid Billed + markClean dissolveAll + MERGE-02 human verify
 
+### Phase 17: Queue Store + Floor Plan Tabs
+**Goal**: Staff can view and manage incoming delivery orders and create takeaway orders from the floor plan, backed by a new queue.store that owns all non-dine-in lifecycle state
+**Depends on**: Phase 16 (v1.2 complete -- stable KDS, order, and bill stores)
+**Requirements**: NAV-01, NAV-02, DLVR-01, DLVR-02, DLVR-03, DLVR-04, DLVR-05, DLVR-06, DLVR-07, DLVR-08, DLVR-09, TKWY-01
+**Success Criteria** (what must be TRUE):
+  1. The floor plan shows three tabs -- Dine-in, Takeaway, Delivery -- and the Takeaway and Delivery tabs display a live count badge reflecting the number of active orders in each channel
+  2. The Delivery tab shows a queue of incoming orders with platform badge (Grab / LINE MAN), customer name, items summary, and elapsed timer; staff can accept or reject each order (reject requires a reason selection)
+  3. An accepted delivery order progresses through Accepted → Preparing → Ready for Rider → Picked Up, and staff can trigger the "Ready for Rider" transition from the delivery queue card
+  4. Staff can trigger simulated incoming delivery orders for demo purposes; an auto-accept toggle is available to skip manual confirmation during rush; incoming orders show a countdown timer ring before auto-reject
+  5. Staff can open a "New Takeaway" modal from the Takeaway tab, enter customer name and phone, and receive an auto-assigned sequential order number (TK-001, TK-002, …)
+**Plans**: TBD
+
+### Phase 18: Order Entry + Payment Pipeline
+**Goal**: Takeaway and delivery orders flow through the full existing order entry and payment screens, with KDS write-back so kitchen tickets are correctly wired to queue lifecycle
+**Depends on**: Phase 17 (queue.store exists; TK/DL order IDs generated)
+**Requirements**: TKWY-02, TKWY-03, TKWY-04, TKWY-05
+**Success Criteria** (what must be TRUE):
+  1. Tapping a takeaway order in the Takeaway tab opens the existing order entry screen with the header showing the takeaway order number and customer name instead of a table label
+  2. A takeaway order progresses from Taking → Sent → Ready → Collected; staff can mark it Collected from the Takeaway tab once kitchen marks it Ready
+  3. Staff can complete payment for a takeaway order using the existing Cash/QR/Card payment flow; the back button routes to the Takeaway tab (not the floor plan) and completing payment marks the order Collected in queue.store
+**Plans**: TBD
+
+### Phase 19: KDS Differentiation + Combo Flag
+**Goal**: Kitchen staff can instantly tell whether to plate or bag every ticket, and dine-in orders can have individual items flagged as pack-to-go; all channel types are visually distinct using brand-consistent OKLCH tokens
+**Depends on**: Phase 18 (delivery and takeaway orders appearing on KDS board)
+**Requirements**: COMBO-01, COMBO-02, KDS-01, KDS-02, UI-01
+**Success Criteria** (what must be TRUE):
+  1. Every KDS ticket shows a colored order type badge -- "DINE-IN", "TAKEAWAY", or "DELIVERY + platform" -- in the ticket header so kitchen knows at a glance whether to plate or bag without reading order details
+  2. The KDS board has filter tabs (All / Dine-in / Takeaway / Delivery) that hide irrelevant tickets and show only the selected channel
+  3. Staff can flag individual items on a dine-in order as "pack to go"; flagged items show a "PACK" indicator on the KDS ticket so kitchen bags them separately on the same order
+  4. Grab and LINE MAN platform badges render in distinct brand colors (Grab green, LINE MAN blue) using OKLCH design tokens, consistent with the existing token system in globals.css
+**Plans**: TBD
 
 ---
 
@@ -146,17 +190,22 @@ Plans:
 | 9. Flow Alignment | v1.1 | 3/3 | Complete | 2026-03-12 |
 | 10. Brand Token Refresh | v1.1 | 2/2 | Complete | 2026-03-11 |
 | 11. Component Polish | v1.1 | 3/3 | Complete | 2026-03-12 |
-| 12. Split Bill | v1.2 | Complete    | 2026-03-12 | 2026-03-12 |
-| 13. Polish | 3/3 | Complete    | 2026-03-12 | - |
-| 14. Merge Bill | 3/3 | Complete    | 2026-03-13 | - |
-| 15. Order Tracking | 3/3 | Complete    | 2026-03-13 | - |
+| 12. Split Bill | v1.2 | 4/4 | Complete | 2026-03-12 |
+| 13. Polish | v1.2 | 3/3 | Complete | 2026-03-12 |
+| 14. Merge Bill | v1.2 | 3/3 | Complete | 2026-03-13 |
+| 15. Order Tracking | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
+| 17. Queue Store + Floor Plan Tabs | v1.3 | 0/? | Not started | - |
+| 18. Order Entry + Payment Pipeline | v1.3 | 0/? | Not started | - |
+| 19. KDS Differentiation + Combo Flag | v1.3 | 0/? | Not started | - |
 
 ---
 
 *Roadmap created: 2026-03-10*
 *v1.0 completed: 2026-03-11*
 *v1.1 completed: 2026-03-12*
-*v1.2 roadmap added: 2026-03-12*
+*v1.2 completed: 2026-03-13*
+*v1.3 roadmap added: 2026-03-15*
 *Full v1.0 archive: `.planning/milestones/v1.0-ROADMAP.md`*
 *Full v1.1 archive: `.planning/milestones/v1.1-ROADMAP.md`*
+*Full v1.2 archive: `.planning/milestones/v1.2-ROADMAP.md`*

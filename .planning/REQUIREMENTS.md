@@ -1,7 +1,7 @@
-# Requirements: FIP POS Staff App — v1.3
+# Requirements: FIP POS Staff App -- v1.3
 
 **Defined:** 2026-03-15
-**Core Value:** A restaurant staff member can manage dine-in, walk-in takeaway, and third-party delivery orders from a single interface — with clear channel separation so kitchen staff always knows whether to plate or bag.
+**Core Value:** A restaurant staff member can manage dine-in, walk-in takeaway, and third-party delivery orders from a single interface -- with clear channel separation so kitchen staff always knows whether to plate or bag.
 
 ## v1.3 Requirements
 
@@ -32,7 +32,7 @@
 
 ### Dine-in + Takeaway Combo
 
-- [ ] **COMBO-01**: Staff can flag individual items on a dine-in order as "pack to go" — flagged items appear on the same bill but are packed separately
+- [ ] **COMBO-01**: Staff can flag individual items on a dine-in order as "pack to go" -- flagged items appear on the same bill but are packed separately
 - [ ] **COMBO-02**: KDS tickets show a "PACK" indicator on flagged items so kitchen knows to bag them, not plate them
 
 ### KDS
@@ -42,7 +42,7 @@
 
 ### Visual Polish
 
-- [ ] **UI-01**: Delivery platform colors — Grab green and LINE MAN blue — applied as OKLCH design tokens and CVA badge variants
+- [ ] **UI-01**: Delivery platform colors -- Grab green and LINE MAN blue -- applied as OKLCH design tokens and CVA badge variants
 
 ## Future Requirements (v2+)
 
@@ -55,7 +55,7 @@
 
 ### Customer-Facing
 
-- **CUST-F01**: Customer-facing pickup display screen — separate hardware deliverable
+- **CUST-F01**: Customer-facing pickup display screen -- separate hardware deliverable
 - **CUST-F02**: Takeaway pickup SMS / LINE notification (real send)
 
 ## Out of Scope
@@ -64,44 +64,42 @@
 |---------|--------|
 | Real delivery platform API integration | No backend in wireframe; OAuth2/webhook is production FIP concern |
 | Delivery driver GPS / rider tracking | Requires maps API; rider-side UX is not staff POS territory |
-| Customer-facing pickup display | Separate hardware product — PROJECT.md explicit out of scope |
+| Customer-facing pickup display | Separate hardware product -- PROJECT.md explicit out of scope |
 | Multi-platform aggregation middleware (Deliverect-style) | Infrastructure layer, not UI wireframe scope |
 | Phone order intake channel | Adds caller ID concerns; out of scope for this milestone |
 | Promo / discount codes from delivery platform | Platform applies its own discounts before passing total |
 
 ## Traceability
 
-*Populated during roadmap creation.*
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| DLVR-01 | — | Pending |
-| DLVR-02 | — | Pending |
-| DLVR-03 | — | Pending |
-| DLVR-04 | — | Pending |
-| DLVR-05 | — | Pending |
-| DLVR-06 | — | Pending |
-| DLVR-07 | — | Pending |
-| DLVR-08 | — | Pending |
-| DLVR-09 | — | Pending |
-| TKWY-01 | — | Pending |
-| TKWY-02 | — | Pending |
-| TKWY-03 | — | Pending |
-| TKWY-04 | — | Pending |
-| TKWY-05 | — | Pending |
-| COMBO-01 | — | Pending |
-| COMBO-02 | — | Pending |
-| KDS-01 | — | Pending |
-| KDS-02 | — | Pending |
-| UI-01 | — | Pending |
+| NAV-01 | Phase 17 | Pending |
+| NAV-02 | Phase 17 | Pending |
+| DLVR-01 | Phase 17 | Pending |
+| DLVR-02 | Phase 17 | Pending |
+| DLVR-03 | Phase 17 | Pending |
+| DLVR-04 | Phase 17 | Pending |
+| DLVR-05 | Phase 17 | Pending |
+| DLVR-06 | Phase 17 | Pending |
+| DLVR-07 | Phase 17 | Pending |
+| DLVR-08 | Phase 17 | Pending |
+| DLVR-09 | Phase 17 | Pending |
+| TKWY-01 | Phase 17 | Pending |
+| TKWY-02 | Phase 18 | Pending |
+| TKWY-03 | Phase 18 | Pending |
+| TKWY-04 | Phase 18 | Pending |
+| TKWY-05 | Phase 18 | Pending |
+| COMBO-01 | Phase 19 | Pending |
+| COMBO-02 | Phase 19 | Pending |
+| KDS-01 | Phase 19 | Pending |
+| KDS-02 | Phase 19 | Pending |
+| UI-01 | Phase 19 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 ⚠️
+- Mapped to phases: 21
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-15 -- traceability populated during roadmap creation*
