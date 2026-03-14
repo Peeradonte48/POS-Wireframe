@@ -1,83 +1,107 @@
-# Requirements: FIP POS Staff App -- v1.2
+# Requirements: FIP POS Staff App — v1.3
 
-**Defined:** 2026-03-12
-**Core Value:** A restaurant staff member can split bills, merge party seating, and track order progress in real time -- completing the payment and service monitoring story.
+**Defined:** 2026-03-15
+**Core Value:** A restaurant staff member can manage dine-in, walk-in takeaway, and third-party delivery orders from a single interface — with clear channel separation so kitchen staff always knows whether to plate or bag.
 
-## v1.2 Requirements
+## v1.3 Requirements
 
-Requirements for v1.2 release. Each maps to roadmap phases.
+### Navigation
 
-### Split Bill
+- [ ] **NAV-01**: Staff can switch between Dine-in, Takeaway, and Delivery views via tabs on the floor plan
+- [ ] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
 
-- [x] **SPLIT-01**: Staff can split bill equally by N guests -- system divides total / N with correct VAT rounding (floor + remainder-on-last in satang)
-- [x] **SPLIT-02**: Staff can split bill per-seat by assigning items to individual seats -- each seat sub-bill totals correctly with VAT
-- [x] **SPLIT-03**: Each seat can be paid independently (Cash/QR/Card) with paid seats showing settled state; table closes only when all seats paid
-- [x] **SPLIT-04**: Table tile shows split progress badge (e.g. "2/4 paid") when bill is partially settled
+### Delivery Queue
 
-### Polish
+- [ ] **DLVR-01**: Staff can view incoming delivery orders from Grab/LINE MAN in a queue (simulated)
+- [ ] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
+- [ ] **DLVR-03**: Staff can reject an incoming delivery order with a reason
+- [ ] **DLVR-04**: Accepted delivery orders progress through: Accepted → Preparing → Ready for Rider → Picked Up
+- [ ] **DLVR-05**: Staff can mark a delivery order "Ready for Rider" when kitchen completes
+- [ ] **DLVR-06**: Staff can trigger simulated incoming delivery orders for demo (mirrors existing KDS demo mode)
+- [ ] **DLVR-07**: Delivery order cards show platform badge (Grab / LINE MAN), customer name, items summary, and elapsed timer
+- [ ] **DLVR-08**: Staff can enable auto-accept to skip the manual accept tap during rush
+- [ ] **DLVR-09**: Incoming delivery orders show a countdown timer ring before auto-reject
 
-- [x] **POLISH-01**: Split bill UI, merge bill UI, and order tracking timeline use consistent CVA variants, elevation tokens, and brand styling matching v1.1 quality bar
-- [x] **POLISH-02**: All new screens (split/merge modals, tracking timeline) fit cleanly in AppShell at tablet and mobile breakpoints with no overflow or clipping
+### Takeaway Orders
 
-### Merge Bill
+- [ ] **TKWY-01**: Staff can create a takeaway order with customer name, phone, and auto-assigned order number (TK-001…)
+- [ ] **TKWY-02**: Takeaway orders route through the existing order entry flow (menu, modifiers, KDS)
+- [ ] **TKWY-03**: Takeaway orders progress through: Taking → Sent → Ready → Collected
+- [ ] **TKWY-04**: Staff can complete payment for a takeaway order using the existing payment flow (cash/QR/card)
+- [ ] **TKWY-05**: Staff can mark a takeaway order as collected
 
-- [x] **MERGE-01**: Staff can merge bills across 2+ tables into a combined bill showing all items with correct totals; source tables link to merged bill
-- [x] **MERGE-02**: Staff can unsplit previously separated seats back into a single bill before any seat is paid
+### Dine-in + Takeaway Combo
 
-### Order Tracking
+- [ ] **COMBO-01**: Staff can flag individual items on a dine-in order as "pack to go" — flagged items appear on the same bill but are packed separately
+- [ ] **COMBO-02**: KDS tickets show a "PACK" indicator on flagged items so kitchen knows to bag them, not plate them
 
-- [x] **TRACK-01**: Table tile shows live order stage badge (Queued -> Cooking -> Ready -> Served) derived from KDS + order store state
-- [x] **TRACK-02**: Tapping a table's order shows per-item timeline with timestamp trail (ordered -> cooking -> ready -> served)
-- [x] **TRACK-03**: Items exceeding time threshold (e.g. 15 min) show visual escalation warning on both table tile and timeline view
+### KDS
 
-## v2 Requirements
+- [ ] **KDS-01**: KDS tickets show an order type badge (Dine-in / Takeaway / Delivery + platform) so kitchen knows to plate or bag
+- [ ] **KDS-02**: KDS board can be filtered by order type (All / Dine-in / Takeaway / Delivery)
 
-Deferred to future release. Tracked but not in current roadmap.
+### Visual Polish
 
-### Advanced Payment
+- [ ] **UI-01**: Delivery platform colors — Grab green and LINE MAN blue — applied as OKLCH design tokens and CVA badge variants
 
-- **PAY-01**: Split bill by custom amount (arbitrary baht per person)
-- **PAY-02**: Split bill by percentage (e.g. 60/40)
+## Future Requirements (v2+)
 
-### Loyalty
+### Delivery Platform Integration
 
-- **LOYAL-01**: Standalone manual loyalty (Type 1) -- static QR on receipt for web portal point claim
+- **DLVR-F01**: Real GrabFood / LINE MAN API integration (requires OAuth2 + backend)
+- **DLVR-F02**: Delivery driver GPS map / rider tracking
+- **DLVR-F03**: Dynamic ETA calculation (requires routing API)
+- **DLVR-F04**: Menu sync across delivery platforms (FIP Inventory concern)
+
+### Customer-Facing
+
+- **CUST-F01**: Customer-facing pickup display screen — separate hardware deliverable
+- **CUST-F02**: Takeaway pickup SMS / LINE notification (real send)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| FIP ecosystem integration screens | Focus is pure POS core |
-| Backend / real data | Wireframe only, no live API |
-| Mobile native app | Browser-based PWA only |
-| Kitchen hardware integration | KDS is a screen wireframe, not hardware spec |
-| Admin back office | Separate deliverable |
-| Customer POS / receipt tracker | Separate deliverable |
-| Real-time WebSocket sync | Wireframe uses in-memory state only |
+| Real delivery platform API integration | No backend in wireframe; OAuth2/webhook is production FIP concern |
+| Delivery driver GPS / rider tracking | Requires maps API; rider-side UX is not staff POS territory |
+| Customer-facing pickup display | Separate hardware product — PROJECT.md explicit out of scope |
+| Multi-platform aggregation middleware (Deliverect-style) | Infrastructure layer, not UI wireframe scope |
+| Phone order intake channel | Adds caller ID concerns; out of scope for this milestone |
+| Promo / discount codes from delivery platform | Platform applies its own discounts before passing total |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+*Populated during roadmap creation.*
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SPLIT-01 | Phase 12 | Complete |
-| SPLIT-02 | Phase 12 | Complete |
-| SPLIT-03 | Phase 16 | Complete |
-| SPLIT-04 | Phase 12 | Complete |
-| POLISH-01 | Phase 13 | Complete |
-| POLISH-02 | Phase 13 | Complete |
-| MERGE-01 | Phase 16 | Complete |
-| MERGE-02 | Phase 16 | Complete |
-| TRACK-01 | Phase 16 | Complete |
-| TRACK-02 | Phase 15 | Complete |
-| TRACK-03 | Phase 16 | Complete |
+| NAV-01 | — | Pending |
+| NAV-02 | — | Pending |
+| DLVR-01 | — | Pending |
+| DLVR-02 | — | Pending |
+| DLVR-03 | — | Pending |
+| DLVR-04 | — | Pending |
+| DLVR-05 | — | Pending |
+| DLVR-06 | — | Pending |
+| DLVR-07 | — | Pending |
+| DLVR-08 | — | Pending |
+| DLVR-09 | — | Pending |
+| TKWY-01 | — | Pending |
+| TKWY-02 | — | Pending |
+| TKWY-03 | — | Pending |
+| TKWY-04 | — | Pending |
+| TKWY-05 | — | Pending |
+| COMBO-01 | — | Pending |
+| COMBO-02 | — | Pending |
+| KDS-01 | — | Pending |
+| KDS-02 | — | Pending |
+| UI-01 | — | Pending |
 
 **Coverage:**
-- v1.2 requirements: 11 total
-- Mapped to phases: 11
-- Unmapped: 0
+- v1.3 requirements: 21 total
+- Mapped to phases: 0
+- Unmapped: 21 ⚠️
 
 ---
-*Requirements defined: 2026-03-12*
-*Last updated: 2026-03-13 -- gap closure phase 16 added; SPLIT-03, MERGE-01, MERGE-02, TRACK-01, TRACK-03 reset to Pending*
+*Requirements defined: 2026-03-15*
+*Last updated: 2026-03-15 after initial definition*

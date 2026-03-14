@@ -1,32 +1,32 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Bill Management + Order Tracking
-status: completed
-last_updated: "2026-03-13T11:35:44.206Z"
-last_activity: 2026-03-13 -- 16-01 complete — Integration fix done, all v1.2 requirements verified
+milestone: v1.3
+milestone_name: Delivery & Takeaway Orders
+status: in_progress
+last_updated: "2026-03-15T00:00:00.000Z"
+last_activity: 2026-03-15 -- v1.3 milestone started — requirements defined, roadmap pending
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
-**Last updated:** 2026-03-13
-**Session:** 16-01 complete — Integration fix done; all five v1.2 audit gaps closed (TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02); v1.2 milestone fully complete
+**Last updated:** 2026-03-15
+**Session:** v1.3 milestone initialized — 21 requirements defined across 6 categories (NAV, DLVR, TKWY, COMBO, KDS, UI); roadmap creation next
 
 ---
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
+See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 **Core value:** A restaurant staff member can open a shift, seat a table, take a full ramen order with modifiers, send it to the kitchen, and close the bill -- all from a mobile PWA that feels fast enough for real service conditions.
 
-**Current focus:** v1.2 -- Bill Management + Order Tracking
+**Current focus:** v1.3 -- Delivery & Takeaway Orders
 
 **Stack:** Next.js 16 (App Router) + TypeScript 5 (strict) + Tailwind CSS 4 + shadcn/ui (Base UI) + Zustand 5 (persist) + Solar icon set
 
@@ -38,27 +38,20 @@ See: .planning/PROJECT.md (updated 2026-03-12 -- Milestone v1.2 started)
 
 ## Current Position
 
-Phase: 16 -- Integration Fix (complete)
-Plan: 16-01 complete — all plans done
-Status: All phases complete — v1.2 milestone fully done (all 11 requirements verified)
-Last activity: 2026-03-13 -- 16-01 complete — Integration fix, MERGE-02 human-verified
+Phase: Not started (defining roadmap)
+Plan: —
+Status: Defining roadmap — 21 requirements ready, roadmap creation in progress
+Last activity: 2026-03-15 -- v1.3 requirements finalized (NAV, DLVR, TKWY, COMBO, KDS, UI)
 
 ```
-Progress: [██████████] 100% (Phase 16: 1/1 plans done)
-Phases:   12 [x] | 13 [x] | 14 [x] | 15 [x] | 16 [x]
+Progress: [░░░░░░░░░░] 0% (roadmap pending)
 ```
 
 ---
 
 ## Milestone Overview
 
-| Phase | Goal | Requirements | Status |
-|-------|------|--------------|--------|
-| 12. Split Bill | Equal split + per-seat assignment + partial payment | SPLIT-01 to SPLIT-04 | Complete (4/4) |
-| 13. Polish | CVA variants, elevation, brand styling, responsive layout | POLISH-01, POLISH-02 | Complete (3/3) |
-| 14. Merge Bill | Merge 2+ tables, unsplit seats | MERGE-01, MERGE-02 | Complete (3/3) |
-| 15. Order Tracking | Live stage badge, per-item timeline, escalation | TRACK-01 to TRACK-03 | Complete (3/3) |
-| 16. Integration Fix | KDS write-back, Billed stage, dissolveAll, MERGE-02 verify | TRACK-01, TRACK-03, SPLIT-03, MERGE-01, MERGE-02 | Complete (1/1) |
+*Roadmap not yet created — phases TBD after roadmapper runs.*
 
 ---
 
@@ -127,3 +120,4 @@ See `.planning/PROJECT.md` for full key decisions log.
 *v1.0 archived: 2026-03-11*
 *v1.1 archived: 2026-03-12*
 *v1.2 roadmap created: 2026-03-12*
+*v1.3 milestone started: 2026-03-15*

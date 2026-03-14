@@ -26,21 +26,28 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 - ✓ Guest count capture on Open Table, Served-at tracking, camera coupon scan, dynamic QR payment, CRM loyalty receipt — v1.1
 - ✓ Bold crimson brand tokens (chroma 0.26), semantic status tokens for 5 table states, 3-tier elevation shadow system — v1.1
 - ✓ CTA buttons with press scale + glow, filled status pill badges, hero price readouts, caps utility labels, elevation hierarchy — v1.1
+- ✓ Split bill by equal division or per-seat item assignment at checkout — v1.2
+- ✓ Merge bill across multiple tables and unsplit previously separated seats — v1.2
+- ✓ Digital order tracking — live stage badge on table tiles + per-item timeline detail — v1.2
 
-## Current Milestone: v1.2 Bill Management + Order Tracking
+## Current Milestone: v1.3 Delivery & Takeaway Orders
 
-**Goal:** Add split bill, merge bill, and real-time digital order tracking to complete the payment and service monitoring story.
+**Goal:** Add multi-channel order management — third-party delivery queue (Grab/LINE MAN), walk-in takeaway orders, and dine-in + takeaway combo items — to the existing POS core.
 
 **Target features:**
-- Split bill by equal division (÷ N guests) or per-seat item assignment
-- Merge bill across multiple tables (party seating) and unsplit previously separated seats
-- Digital order tracking — live order stage badge on table tiles + per-item timeline detail view
+- Floor plan tabs: Dine-in / Takeaway / Delivery with active order count badges
+- Delivery order queue — incoming orders from Grab/LINE MAN (simulated), accept/reject, status lifecycle through Ready for Rider
+- Takeaway walk-in orders — customer name + auto-number, full order entry + payment reuse
+- Dine-in + takeaway combo — item-level "pack to go" flag on dine-in orders
+- KDS order type badge + filter tabs so kitchen knows to plate or bag
 
 ### Active
 
-- [ ] Split bill by equal division or per-seat item assignment at checkout
-- [ ] Merge bill across multiple tables and unsplit previously separated seats
-- [ ] Digital order tracking — live stage badge on table tiles + per-item timeline detail
+- [ ] Floor plan 3 tabs (Dine-in / Takeaway / Delivery) + active count badges
+- [ ] Delivery order queue with accept/reject, status lifecycle, demo simulation mode
+- [ ] Takeaway walk-in orders with name/number, full order entry and payment flow
+- [ ] Dine-in + takeaway combo — "pack to go" item flag on dine-in orders
+- [ ] KDS order type badge and filter tabs
 
 ### Out of Scope
 
@@ -95,4 +102,4 @@ A restaurant staff member can walk in, open a shift, seat a table, take a full r
 | ThemedToaster thin client wrapper | Enables useTheme in server layout tree; mount once per layout | ✓ Good — sonner works correctly with resolvedTheme |
 
 ---
-*Last updated: 2026-03-12 — Milestone v1.2 started*
+*Last updated: 2026-03-15 — Milestone v1.3 started*
