@@ -150,7 +150,12 @@ Plans:
   3. An accepted delivery order progresses through Accepted → Preparing → Ready for Rider → Picked Up, and staff can trigger the "Ready for Rider" transition from the delivery queue card
   4. Staff can trigger simulated incoming delivery orders for demo purposes; an auto-accept toggle is available to skip manual confirmation during rush; incoming orders show a countdown timer ring before auto-reject
   5. Staff can open a "New Takeaway" modal from the Takeaway tab, enter customer name and phone, and receive an auto-assigned sequential order number (TK-001, TK-002, …)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 17-01-PLAN.md -- queue.store + delivery-demo factory + platform tokens + badge CVA variants + role-permissions
+- [ ] 17-02-PLAN.md -- DeliveryCard + RejectReasonDialog + DeliveryPanel (all DLVR requirements)
+- [ ] 17-03-PLAN.md -- NewTakeawayModal + TakeawayCard + TakeawayPanel (TKWY-01)
+- [ ] 17-04-PLAN.md -- table-map page 3-tab wrap + AppSidebar queue badge + human verify
 
 ### Phase 18: Order Entry + Payment Pipeline
 **Goal**: Takeaway and delivery orders flow through the full existing order entry and payment screens, with KDS write-back so kitchen tickets are correctly wired to queue lifecycle
@@ -160,7 +165,12 @@ Plans:
   1. Tapping a takeaway order in the Takeaway tab opens the existing order entry screen with the header showing the takeaway order number and customer name instead of a table label
   2. A takeaway order progresses from Taking → Sent → Ready → Collected; staff can mark it Collected from the Takeaway tab once kitchen marks it Ready
   3. Staff can complete payment for a takeaway order using the existing Cash/QR/Card payment flow; the back button routes to the Takeaway tab (not the floor plan) and completing payment marks the order Collected in queue.store
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 17-01-PLAN.md -- queue.store + delivery-demo factory + platform tokens + badge CVA variants + role-permissions
+- [ ] 17-02-PLAN.md -- DeliveryCard + RejectReasonDialog + DeliveryPanel (all DLVR requirements)
+- [ ] 17-03-PLAN.md -- NewTakeawayModal + TakeawayCard + TakeawayPanel (TKWY-01)
+- [ ] 17-04-PLAN.md -- table-map page 3-tab wrap + AppSidebar queue badge + human verify
 
 ### Phase 19: KDS Differentiation + Combo Flag
 **Goal**: Kitchen staff can instantly tell whether to plate or bag every ticket, and dine-in orders can have individual items flagged as pack-to-go; all channel types are visually distinct using brand-consistent OKLCH tokens
@@ -171,7 +181,12 @@ Plans:
   2. The KDS board has filter tabs (All / Dine-in / Takeaway / Delivery) that hide irrelevant tickets and show only the selected channel
   3. Staff can flag individual items on a dine-in order as "pack to go"; flagged items show a "PACK" indicator on the KDS ticket so kitchen bags them separately on the same order
   4. Grab and LINE MAN platform badges render in distinct brand colors (Grab green, LINE MAN blue) using OKLCH design tokens, consistent with the existing token system in globals.css
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 17-01-PLAN.md -- queue.store + delivery-demo factory + platform tokens + badge CVA variants + role-permissions
+- [ ] 17-02-PLAN.md -- DeliveryCard + RejectReasonDialog + DeliveryPanel (all DLVR requirements)
+- [ ] 17-03-PLAN.md -- NewTakeawayModal + TakeawayCard + TakeawayPanel (TKWY-01)
+- [ ] 17-04-PLAN.md -- table-map page 3-tab wrap + AppSidebar queue badge + human verify
 
 ---
 
