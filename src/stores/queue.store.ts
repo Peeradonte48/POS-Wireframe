@@ -106,9 +106,13 @@ export const useQueueStore = create<QueueStore>()(
         if (!order) return
 
         const transitions: Partial<Record<QueueOrderStatus, QueueOrderStatus>> = {
+          // Delivery transitions
           Confirmed: 'Preparing',
           Preparing: 'ReadyForRider',
           ReadyForRider: 'PickedUp',
+          // Takeaway transitions
+          Taking: 'Sent',
+          Ready: 'Collected',
         }
 
         const next = transitions[order.status]
