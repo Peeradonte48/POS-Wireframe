@@ -210,7 +210,7 @@ Plans:
 | 14. Merge Bill | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 15. Order Tracking | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
-| 17. Queue Store + Floor Plan Tabs | v1.3 | 0/? | Not started | - |
+| 17. Queue Store + Floor Plan Tabs | 1/4 | In Progress|  | - |
 | 18. Order Entry + Payment Pipeline | v1.3 | 0/? | Not started | - |
 | 19. KDS Differentiation + Combo Flag | v1.3 | 0/? | Not started | - |
 

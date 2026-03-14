@@ -8,23 +8,23 @@
 ### Navigation
 
 - [ ] **NAV-01**: Staff can switch between Dine-in, Takeaway, and Delivery views via tabs on the floor plan
-- [ ] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
+- [x] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
 
 ### Delivery Queue
 
-- [ ] **DLVR-01**: Staff can view incoming delivery orders from Grab/LINE MAN in a queue (simulated)
-- [ ] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
-- [ ] **DLVR-03**: Staff can reject an incoming delivery order with a reason
-- [ ] **DLVR-04**: Accepted delivery orders progress through: Accepted → Preparing → Ready for Rider → Picked Up
+- [x] **DLVR-01**: Staff can view incoming delivery orders from Grab/LINE MAN in a queue (simulated)
+- [x] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
+- [x] **DLVR-03**: Staff can reject an incoming delivery order with a reason
+- [x] **DLVR-04**: Accepted delivery orders progress through: Accepted → Preparing → Ready for Rider → Picked Up
 - [ ] **DLVR-05**: Staff can mark a delivery order "Ready for Rider" when kitchen completes
-- [ ] **DLVR-06**: Staff can trigger simulated incoming delivery orders for demo (mirrors existing KDS demo mode)
+- [x] **DLVR-06**: Staff can trigger simulated incoming delivery orders for demo (mirrors existing KDS demo mode)
 - [ ] **DLVR-07**: Delivery order cards show platform badge (Grab / LINE MAN), customer name, items summary, and elapsed timer
-- [ ] **DLVR-08**: Staff can enable auto-accept to skip the manual accept tap during rush
+- [x] **DLVR-08**: Staff can enable auto-accept to skip the manual accept tap during rush
 - [ ] **DLVR-09**: Incoming delivery orders show a countdown timer ring before auto-reject
 
 ### Takeaway Orders
 
-- [ ] **TKWY-01**: Staff can create a takeaway order with customer name, phone, and auto-assigned order number (TK-001…)
+- [x] **TKWY-01**: Staff can create a takeaway order with customer name, phone, and auto-assigned order number (TK-001…)
 - [ ] **TKWY-02**: Takeaway orders route through the existing order entry flow (menu, modifiers, KDS)
 - [ ] **TKWY-03**: Takeaway orders progress through: Taking → Sent → Ready → Collected
 - [ ] **TKWY-04**: Staff can complete payment for a takeaway order using the existing payment flow (cash/QR/card)
@@ -74,17 +74,17 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | NAV-01 | Phase 17 | Pending |
-| NAV-02 | Phase 17 | Pending |
-| DLVR-01 | Phase 17 | Pending |
-| DLVR-02 | Phase 17 | Pending |
-| DLVR-03 | Phase 17 | Pending |
-| DLVR-04 | Phase 17 | Pending |
+| NAV-02 | Phase 17 | Complete |
+| DLVR-01 | Phase 17 | Complete |
+| DLVR-02 | Phase 17 | Complete |
+| DLVR-03 | Phase 17 | Complete |
+| DLVR-04 | Phase 17 | Complete |
 | DLVR-05 | Phase 17 | Pending |
-| DLVR-06 | Phase 17 | Pending |
+| DLVR-06 | Phase 17 | Complete |
 | DLVR-07 | Phase 17 | Pending |
-| DLVR-08 | Phase 17 | Pending |
+| DLVR-08 | Phase 17 | Complete |
 | DLVR-09 | Phase 17 | Pending |
-| TKWY-01 | Phase 17 | Pending |
+| TKWY-01 | Phase 17 | Complete |
 | TKWY-02 | Phase 18 | Pending |
 | TKWY-03 | Phase 18 | Pending |
 | TKWY-04 | Phase 18 | Pending |
