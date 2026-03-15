@@ -47,11 +47,17 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
 
   // Zustand selector safety — raw Record, derive in useMemo
   const orders = useQueueStore((s) => s.orders)
-  const pendingDeliveryCount = useMemo(
+  const activeQueueCount = useMemo(
     () =>
-      Object.values(orders).filter(
-        (o) => o.channel === 'delivery' && o.status === 'Pending'
-      ).length,
+      Object.values(orders).filter((o) => {
+        if (o.channel === 'delivery') {
+          return ['Pending', 'Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
+        }
+        if (o.channel === 'takeaway') {
+          return ['Taking', 'Sent', 'Ready'].includes(o.status)
+        }
+        return false
+      }).length,
     [orders]
   )
 
@@ -96,9 +102,9 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
                   <Icon size={18} className="shrink-0" />
                   {!collapsed && <span className="truncate">{label}</span>}
                   {/* Queue badge — expanded: count label; collapsed: dot indicator */}
-                  {slug === 'queue' && !collapsed && pendingDeliveryCount > 0 && (
+                  {slug === 'queue' && !collapsed && activeQueueCount > 0 && (
                     <span className="ml-auto h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                      {pendingDeliveryCount}
+                      {activeQueueCount}
                     </span>
                   )}
                 </Link>
@@ -116,7 +122,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
                 </div>
               )}
               {/* Collapsed dot indicator for queue pending count */}
-              {slug === 'queue' && collapsed && pendingDeliveryCount > 0 && (
+              {slug === 'queue' && collapsed && activeQueueCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
               )}
             </li>
