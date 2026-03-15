@@ -16,7 +16,7 @@ progress:
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; Phase 18 Plan 03 (payment page confirmation) is next
+**Session:** 18-01 complete — KDS-to-queue write-back + store extensions (TKWY-03); 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; Phase 18 Plan 03 (payment page confirmation) is next
 
 ---
 
@@ -108,6 +108,13 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (18-01 execution)
+
+- **[18-01] queue.store Sent→Ready transition added**: Completes the takeaway KDS lifecycle -- transitions map now has the missing entry between Taking→Sent and Ready→Collected
+- **[18-01] KdsTicket orderType/platform optional fields**: Purely additive; Phase 19 reads these with zero additional store changes; all existing 2-arg addTicket callers continue unchanged
+- **[18-01] KdsBoard guard uses getState() inside useEffect, not in dep array**: Non-reactive read consistent with CLAUDE.md pattern; prevents phantom dine-in ticket registration for queue orders
+- **[18-01] KdsTicketCard queue write-back gated on InProgress only**: New→InProgress bump does not advance queue status; only InProgress→Ready bump calls advanceStatus
 
 ### Architecture Decisions for v1.3 (18-02 execution)
 
