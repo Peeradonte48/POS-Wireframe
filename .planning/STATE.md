@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: completed
-last_updated: "2026-03-15T00:12:39.097Z"
-last_activity: "2026-03-15 -- 17-04 tasks 1+2 complete: three-tab floor plan + AppSidebar Queue badge; awaiting human verify checkpoint"
+last_updated: "2026-03-15T09:30:00.000Z"
+last_activity: "2026-03-15 -- Phase 17 complete (checkpoint closed); Phase 18 TKWY CRUD implemented informally (9 commits: Cancelled status, createTakeaway returns orderId, ConfirmCancelDialog, EditCustomerModal, TakeawayCard navigate, NewTakeawayModal navigate, TicketPanel onSend/hideSend, order page takeaway context, TableGrid persistence bug fix)"
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 46
   completed_plans: 45
   percent: 98
@@ -38,13 +38,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 17 -- Queue Store + Floor Plan Tabs (awaiting checkpoint)
-Plan: 04 tasks 1+2 complete, awaiting Task 3 checkpoint:human-verify
-Status: 17-04 Tasks 1+2 done -- three-tab floor plan (Dine-in/Takeaway/Delivery) + AppSidebar Queue nav item with badge
-Last activity: 2026-03-15 -- 17-04: table-map wrapped in Tabs, AppSidebar gets Queue item with InboxLinear + pending delivery badge
+Phase: 17 ✅ complete | Phase 18 TKWY CRUD implemented (informal, not yet GSD-tracked)
+Status: Phase 17 fully closed. Phase 18 takeaway CRUD flow (TKWY-02 thru TKWY-05) implemented in one session via subagent-driven-development — 9 commits landed on main, browser verification pending.
+Last activity: 2026-03-15 -- Takeaway CRUD: createTakeaway→navigate, ConfirmCancelDialog, EditCustomerModal, TakeawayCard, TicketPanel onSend/hideSend, order page takeaway context + persistence bug fix
 
 ```
-Progress: [█████████░] 93% (43/46 plans — v1.3 in progress)
+Progress: [█████████░] ~96% (Phase 17 done, Phase 18 CRUD done, Phase 19 pending)
 ```
 
 ---
