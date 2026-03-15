@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
+import { useQueueStore } from '@/stores/queue.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { ManagerPinModal } from '@/components/auth/ManagerPinModal'
 import { TicketLineItem } from '@/components/order/TicketLineItem'
@@ -41,9 +42,13 @@ function computeTotal(allItems: OrderLineItem[]): number {
 export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: TicketPanelProps) {
   const order = useOrderStore((s) => s.orders[tableId])
   const table = useTableStore((s) => s.tables[tableId])
-  const { removeItem } = useOrderStore()
+  const { removeItem, togglePackToGo } = useOrderStore()
   const { updateTable } = useTableStore()
   const role = useSessionStore((s) => s.role)!
+
+  // Detect if this is a takeaway/delivery order — non-reactive read (CLAUDE.md getState() pattern)
+  // Pack-to-go toggle is dine-in only; isTakeaway is stable for the lifetime of this panel
+  const isTakeaway = !!useQueueStore.getState().orders[tableId]
 
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
   const voidAuthorizedRef = useRef(false)
@@ -136,6 +141,8 @@ export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: Ticke
                     onVoidTap={(lineId) => setVoidingLineId(lineId)}
                     canRemove={canDoAction(role, 'void-pre-send')}
                     canVoidSent={canDoAction(role, 'void-post-send')}
+                    showPackToGo={!isTakeaway}
+                    onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
                   />
                 ))}
               </div>

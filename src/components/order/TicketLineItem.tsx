@@ -1,7 +1,8 @@
 'use client'
 
-import { TrashBinTrashLinear } from 'solar-icon-set'
+import { TrashBinTrashLinear, Bag2Linear } from 'solar-icon-set'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import type { OrderLineItem } from '@/stores/order.store'
 
 // ---------------------------------------------------------------------------
@@ -44,6 +45,8 @@ interface TicketLineItemProps {
   onVoidTap: (lineId: string) => void
   canRemove?: boolean
   canVoidSent?: boolean
+  showPackToGo?: boolean
+  onTogglePackToGo?: (lineId: string) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -58,6 +61,8 @@ export function TicketLineItem({
   onVoidTap,
   canRemove = true,
   canVoidSent = false,
+  showPackToGo = false,
+  onTogglePackToGo,
 }: TicketLineItemProps) {
   const modifierSummary = buildModifierSummary(item)
   const lineTotal = (item.basePrice * item.quantity).toFixed(0)
@@ -93,6 +98,20 @@ export function TicketLineItem({
             aria-label="Void item"
           >
             <TrashBinTrashLinear size={14} />
+          </button>
+        )}
+        {showPackToGo && (
+          <button
+            onClick={() => onTogglePackToGo?.(item.lineId)}
+            className={cn(
+              'min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors shrink-0',
+              item.packToGo
+                ? 'text-status-cooking bg-status-cooking-bg'
+                : 'text-muted-foreground/50 hover:text-status-cooking hover:bg-status-cooking-bg'
+            )}
+            aria-label={item.packToGo ? 'Remove pack-to-go flag' : 'Flag as pack-to-go'}
+          >
+            <Bag2Linear size={14} />
           </button>
         )}
       </div>
@@ -148,6 +167,22 @@ export function TicketLineItem({
         >
           <TrashBinTrashLinear size={15} />
         </button>
+
+        {/* Pack-to-go toggle (dine-in only) */}
+        {showPackToGo && (
+          <button
+            onClick={() => onTogglePackToGo?.(item.lineId)}
+            className={cn(
+              'min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors',
+              item.packToGo
+                ? 'text-status-cooking bg-status-cooking-bg'
+                : 'text-muted-foreground/50 hover:text-status-cooking hover:bg-status-cooking-bg'
+            )}
+            aria-label={item.packToGo ? 'Remove pack-to-go flag' : 'Flag as pack-to-go'}
+          >
+            <Bag2Linear size={14} />
+          </button>
+        )}
       </div>
     </div>
   )
