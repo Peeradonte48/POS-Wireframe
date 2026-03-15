@@ -169,11 +169,11 @@ export default function PaymentPage() {
 
   // ---- Confirm button disabled logic ----
   const confirmDisabled =
-    !canDoAction(role, 'confirm-payment') ||
+    (!isTakeaway && !canDoAction(role, 'confirm-payment')) ||
     paymentMethod === null ||
     (paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal)
 
-  const confirmHint = !canDoAction(role, 'confirm-payment')
+  const confirmHint = (!isTakeaway && !canDoAction(role, 'confirm-payment'))
     ? `Role "${role}" cannot confirm payment — switch to Cashier or Manager`
     : paymentMethod === null
       ? 'Select a payment method above to continue'
