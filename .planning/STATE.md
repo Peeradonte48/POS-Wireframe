@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: in_progress
-last_updated: "2026-03-15T09:58:58Z"
-last_activity: "2026-03-15 -- 18-02 complete: onSend navigates to /payment/tableId (no advanceStatus); TakeawayCard live itemsSummary from order.store via useMemo"
+last_updated: "2026-03-15T10:06:16Z"
+last_activity: "2026-03-15 -- 18-03 auto tasks complete: isTakeaway detection, header override, Split/Merge hide, handleConfirmPayment takeaway branch; checkpoint:human-verify reached"
 progress:
   total_phases: 8
   completed_phases: 6
@@ -16,7 +16,7 @@ progress:
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** 18-01 complete — KDS-to-queue write-back + store extensions (TKWY-03); 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; Phase 18 Plan 03 (payment page confirmation) is next
+**Session:** 18-01 complete — KDS-to-queue write-back + store extensions (TKWY-03); 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; 18-03 auto tasks complete — isTakeaway detection, header override, Split/Merge hide, handleConfirmPayment takeaway branch; awaiting human verification checkpoint
 
 ---
 
@@ -115,6 +115,13 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[18-01] KdsTicket orderType/platform optional fields**: Purely additive; Phase 19 reads these with zero additional store changes; all existing 2-arg addTicket callers continue unchanged
 - **[18-01] KdsBoard guard uses getState() inside useEffect, not in dep array**: Non-reactive read consistent with CLAUDE.md pattern; prevents phantom dine-in ticket registration for queue orders
 - **[18-01] KdsTicketCard queue write-back gated on InProgress only**: New→InProgress bump does not advance queue status; only InProgress→Ready bump calls advanceStatus
+
+### Architecture Decisions for v1.3 (18-03 execution)
+
+- **[18-03] isTakeaway detected via non-reactive getState()**: Boolean is stable for the lifetime of the payment page — no reactive subscription needed; consistent with CLAUDE.md getState() pattern for static reads
+- **[18-03] TotalsSection billing action buttons gated on callback presence**: `onSplitBill !== undefined` / `onMergeBill !== undefined` gates render — passing `undefined` from parent hides buttons entirely; cleaner than a dedicated `hideBillingActions` prop
+- **[18-03] handleConfirmPayment takeaway branch returns early before setReceiptData**: Prevents receipt screen flash for takeaway path; `router.push('/table-map')` + `return` ensures dine-in path never executes for takeaway
+- **[18-03] SplitSheet/MergeSheet conditionally rendered (!isTakeaway)**: DOM removal matches established hide-not-disable pattern; avoids prop drilling or sheet-level gating
 
 ### Architecture Decisions for v1.3 (18-02 execution)
 
