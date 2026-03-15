@@ -65,6 +65,8 @@ Full archive: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation (completed 2026-03-15)
 - [x] **Phase 18: Order Entry + Payment Pipeline** -- takeaway/delivery orders flow through existing order entry and payment, KDS write-back for non-dine-in channels (completed 2026-03-15)
 - [x] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants (completed 2026-03-15)
+- [ ] **Phase 20: Integration Fix + Phase 17 Verification** -- Fix acceptOrder→addTicket channel arg drop, fix NAV-02 delivery badge undercount, run gsd-verifier on Phase 17
+- [ ] **Phase 21: Audit Housekeeping + Nyquist Sign-off** -- Fix 18-03-SUMMARY.md TKWY-04 frontmatter, run Nyquist validate-phase for phases 17/18/19
 
 ---
 
@@ -186,6 +188,26 @@ Plans:
 - [ ] 19-02-PLAN.md -- KdsTicketCard order type badge + KdsItemRow PACK chip + KdsBoard filter tabs
 - [ ] 19-03-PLAN.md -- TicketLineItem bag toggle + TicketPanel wiring + kds-demo.ts mixed-channel update
 
+### Phase 20: Integration Fix + Phase 17 Verification
+**Goal**: Close the critical delivery channel metadata drop and formally verify Phase 17 so all 12 Phase-17 requirements are backed by a VERIFICATION.md
+**Gap Closure:** Closes gaps from v1.3 audit
+**Requirements**: DLVR-02, KDS-01, KDS-02, NAV-02
+**Success Criteria** (what must be TRUE):
+  1. Accepting a live delivery order from the queue writes a KDS ticket with `orderType:'delivery'` and correct `platform` — the KDS badge shows `GRAB` or `LINE MAN` instead of `DIN`
+  2. The KDS Delivery filter tab shows live-accepted delivery orders (not just demo-injected ones)
+  3. The Delivery tab badge on the floor plan counts orders in all active states (Accepted, Preparing, ReadyForRider) — not only `Pending`
+  4. Phase 17 has a valid VERIFICATION.md produced by gsd-verifier — all 12 Phase-17 requirements are formally verified
+**Plans**: 2 plans
+
+### Phase 21: Audit Housekeeping + Nyquist Sign-off
+**Goal**: Close all remaining documentation gaps so the milestone can be cleanly archived — SUMMARY frontmatter corrected, Nyquist compliance signed off for all three v1.3 phases
+**Gap Closure:** Closes gaps from v1.3 audit
+**Requirements**: TKWY-04
+**Success Criteria** (what must be TRUE):
+  1. `18-03-SUMMARY.md` `requirements-completed` frontmatter lists TKWY-04
+  2. All three VALIDATION.md files (phases 17, 18, 19) have `nyquist_compliant: true` and `wave_0_complete: true`
+**Plans**: 2 plans
+
 ---
 
 ## Progress
@@ -211,6 +233,8 @@ Plans:
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
 | 19. KDS Differentiation + Combo Flag | 3/3 | Complete    | 2026-03-15 | - |
+| 20. Integration Fix + Phase 17 Verification | v1.3 | 0/2 | Pending | - |
+| 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 0/2 | Pending | - |
 
 ---
 
