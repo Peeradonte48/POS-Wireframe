@@ -42,4 +42,5 @@ next-env.d.ts
 
 .superpowers
 
-/superpowers/
+# Ignore files inside any superpowers directory
+superpowers/
