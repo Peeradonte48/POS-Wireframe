@@ -20,6 +20,7 @@ export interface OrderLineItem {
   spiceLevel: number | null
   specialRequest: string
   quantity: number
+  packToGo?: boolean
   status: LineItemStatus
 }
 
@@ -43,6 +44,7 @@ interface OrderStore {
   voidItem: (tableId: string, lineId: string) => void
   clearOrder: (tableId: string) => void
   getOrder: (tableId: string) => ActiveOrder | undefined
+  togglePackToGo: (tableId: string, lineId: string) => void
 }
 
 const newUUID = (): string =>
@@ -197,6 +199,23 @@ export const useOrderStore = create<OrderStore>()(
     }),
 
   getOrder: (tableId) => get().orders[tableId],
+
+  togglePackToGo: (tableId, lineId) =>
+    set((state) => {
+      const existing = state.orders[tableId]
+      if (!existing) return state
+      const newRounds = existing.rounds.map((round) => ({
+        ...round,
+        items: round.items.map((item) =>
+          item.lineId === lineId
+            ? { ...item, packToGo: !item.packToGo }
+            : item
+        ),
+      }))
+      return {
+        orders: { ...state.orders, [tableId]: { ...existing, rounds: newRounds } },
+      }
+    }),
     }),
     { name: 'order-store' },
   ),
