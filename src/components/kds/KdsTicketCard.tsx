@@ -9,6 +9,7 @@ import { useKdsTimer } from '@/components/kds/useKdsTimer'
 import { KdsItemRow } from '@/components/kds/KdsItemRow'
 import { OrderLineItem } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
+import { useQueueStore } from '@/stores/queue.store'
 
 const KDS_STAGE_CONFIG = {
   New:        { bgClass: 'bg-status-open-bg',            textClass: 'text-status-open' },
@@ -56,6 +57,12 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Ready' })
     } else if (currentStage === 'Ready') {
       useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Served' })
+    }
+    // Phase 18: parallel queue write-back for non-dine-in orders
+    const queueOrder = useQueueStore.getState().orders[ticket.tableId]
+    if (queueOrder && currentStage === 'InProgress') {
+      // Takeaway: Sent→Ready | Delivery (Confirming state): Preparing→ReadyForRider
+      useQueueStore.getState().advanceStatus(ticket.tableId)
     }
   }
 

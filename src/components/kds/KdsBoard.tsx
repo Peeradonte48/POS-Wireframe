@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useOrderStore } from '@/stores/order.store'
 import { useKdsStore, KdsStage, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
+import { useQueueStore } from '@/stores/queue.store'
 import { KdsTicketCard } from '@/components/kds/KdsTicketCard'
 import { OrderLineItem } from '@/stores/order.store'
 import { getDemoOrderItems } from '@/lib/mock-data/kds-demo'
@@ -30,6 +31,9 @@ export function KdsBoard() {
         (t) => t.tableId === order.tableId,
       )
       if (!alreadyRegistered) {
+        // Skip auto-registration for queue orders (takeaway/delivery)
+        // Their KDS ticket is created explicitly in handleConfirmPayment after payment
+        if (useQueueStore.getState().orders[order.tableId]) return
         const tableRecord = tables[order.tableId]
         const tableLabel = tableRecord?.label ?? order.tableId
         addTicket(order.tableId, tableLabel)
