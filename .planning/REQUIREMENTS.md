@@ -16,11 +16,11 @@
 - [x] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
 - [x] **DLVR-03**: Staff can reject an incoming delivery order with a reason
 - [x] **DLVR-04**: Accepted delivery orders progress through: Accepted → Preparing → Ready for Rider → Picked Up
-- [ ] **DLVR-05**: Staff can mark a delivery order "Ready for Rider" when kitchen completes
+- [x] **DLVR-05**: Staff can mark a delivery order "Ready for Rider" when kitchen completes
 - [x] **DLVR-06**: Staff can trigger simulated incoming delivery orders for demo (mirrors existing KDS demo mode)
-- [ ] **DLVR-07**: Delivery order cards show platform badge (Grab / LINE MAN), customer name, items summary, and elapsed timer
+- [x] **DLVR-07**: Delivery order cards show platform badge (Grab / LINE MAN), customer name, items summary, and elapsed timer
 - [x] **DLVR-08**: Staff can enable auto-accept to skip the manual accept tap during rush
-- [ ] **DLVR-09**: Incoming delivery orders show a countdown timer ring before auto-reject
+- [x] **DLVR-09**: Incoming delivery orders show a countdown timer ring before auto-reject
 
 ### Takeaway Orders
 
@@ -79,11 +79,11 @@
 | DLVR-02 | Phase 17 | Complete |
 | DLVR-03 | Phase 17 | Complete |
 | DLVR-04 | Phase 17 | Complete |
-| DLVR-05 | Phase 17 | Pending |
+| DLVR-05 | Phase 17 | Complete |
 | DLVR-06 | Phase 17 | Complete |
-| DLVR-07 | Phase 17 | Pending |
+| DLVR-07 | Phase 17 | Complete |
 | DLVR-08 | Phase 17 | Complete |
-| DLVR-09 | Phase 17 | Pending |
+| DLVR-09 | Phase 17 | Complete |
 | TKWY-01 | Phase 17 | Complete |
 | TKWY-02 | Phase 18 | Pending |
 | TKWY-03 | Phase 18 | Pending |

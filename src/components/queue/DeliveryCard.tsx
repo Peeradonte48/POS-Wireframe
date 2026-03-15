@@ -47,7 +47,7 @@ function CountdownRing({ pendingAt }: { pendingAt: number }) {
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="text-[9px] font-bold tabular-nums text-foreground">
-          {Math.max(0, Math.round((PENDING_WINDOW_MS - (Date.now() - pendingAt)) / 1000))}s
+          {Math.max(0, Math.round(PENDING_WINDOW_MS * (1 - progress) / 1000))}s
         </span>
       </div>
     </div>

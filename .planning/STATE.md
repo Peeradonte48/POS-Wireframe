@@ -115,6 +115,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[17-03] advanceStatus extended with takeaway transitions**: Taking→Sent and Ready→Collected added to the transitions Partial Record -- keeps single-action pattern; declarative map makes all transitions auditable
 - **[17-03] TakeawayCard "Start Order" CTA advances to Sent as Phase 17 placeholder**: Phase 18 will replace with navigation; comment documents hook-in point
 
+### Architecture Decisions for v1.3 (17-02 execution)
+
+- **[17-02] CountdownRing seconds derived from progress state**: `Date.now()` in JSX render triggers react-hooks/purity lint rule; fixed by computing `Math.round(PENDING_WINDOW_MS * (1 - progress) / 1000)` from existing RAF-driven progress state -- semantically identical
+- **[17-02] Simulate Order fires immediate + starts loop in one click**: When demo is not active, clicking "Simulate Order" fires both `simulateOrder()` and `toggleDemoActive()` -- demo panel immediately shows a card rather than waiting 10-15s for first loop tick
+- **[17-02] Active Orders heading conditional on coexistence**: "Active Orders" section label only renders when both pending and active orders are visible simultaneously to avoid redundant headers
+
 ### Architecture Decisions for v1.3 (17-01 execution)
 
 - **[17-01] queue.store partialize excludes demoActive/autoAccept**: Runtime-only session toggles -- resetting to false on page load is correct behavior; persisting would cause unexpected demo mode on app restart
