@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
-status: verifying
-last_updated: "2026-03-15T14:10:38.332Z"
-last_activity: "2026-03-15 -- 19-01: packToGo field on OrderLineItem + togglePackToGo action + order-type-din/tkwy/dlvr badge CVA variants"
+status: completed
+last_updated: "2026-03-15T14:44:00.000Z"
+last_activity: "2026-03-15 -- 19-03: pack-to-go bag toggle on order entry rows (dine-in only) + mixed-channel KDS demo factory (DIN/TKWY/GRAB/LINE MAN) with PACK items"
 progress:
   total_phases: 8
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 24
-  completed_plans: 22
-  percent: 96
+  completed_plans: 24
+  percent: 100
 ---
 
 # Project State: FIP POS Staff App Wireframe
@@ -38,12 +38,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 19-kds-differentiation-+-combo-flag — Plan 01 of 03 complete
-Status: Phase 18 complete. Phase 19 started — 19-01 (data model + badge variants foundation) done. Plans 19-02 and 19-03 pending.
-Last activity: 2026-03-15 -- 19-01: packToGo field on OrderLineItem + togglePackToGo action + order-type-din/tkwy/dlvr badge CVA variants
+Phase: 19-kds-differentiation-+-combo-flag — Plan 02 of 03 complete
+Status: Phase 18 complete. Phase 19 in progress — 19-01 (data model + badge variants) done, 19-02 (KDS badges + filter tabs) done. Plan 19-03 pending.
+Last activity: 2026-03-15 -- 19-02: order type badges (DIN/TKWY/GRAB/LINE MAN/DLVR) in KDS ticket headers + PACK chip in item rows + channel filter tabs in KdsBoard
 
 ```
-Progress: [█████████░] 94% (Phase 17+18 done, Phase 19 Plan 01/03 done)
+Progress: [█████████░] 96% (Phase 17+18 done, Phase 19 Plan 02/03 done)
 ```
 
 ---
@@ -108,6 +108,14 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (19-02 execution)
+
+- **[19-02] getOrderTypeBadgeVariant/getOrderTypeLabel as co-located helpers in KdsTicketCard**: Small, file-local helpers; badge string cast via `Parameters<typeof Badge>[0]['variant']` keeps TypeScript happy without hard-coding the variant union
+- **[19-02] PACK chip uses bg-status-cooking-bg/text-status-cooking tokens**: Amber family signals handle-differently; consistent with order-type-tkwy variant; distinct from ALLERGY orange-500 hardcode
+- **[19-02] channelCounts in useMemo([tickets]) not inside selector**: Follows CLAUDE.md Zustand selector infinite-loop prevention rule; tickets Record is stable reference when no mutation
+- **[19-02] effectiveType fallback to dine-in for undefined orderType**: Demo tickets and legacy dine-in tickets have no orderType field; treating undefined as dine-in matches the DIN badge label shown by getOrderTypeLabel
+- **[19-02] Channel filter as second pass in stageTickets filter**: Single filter chain; no new derived state; empty columns handled by existing No tickets placeholder — zero layout shift
 
 ### Architecture Decisions for v1.3 (19-01 execution)
 

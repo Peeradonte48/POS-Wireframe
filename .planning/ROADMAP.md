@@ -64,7 +64,7 @@ Full archive: `.planning/milestones/v1.2-ROADMAP.md`
 
 - [x] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation (completed 2026-03-15)
 - [x] **Phase 18: Order Entry + Payment Pipeline** -- takeaway/delivery orders flow through existing order entry and payment, KDS write-back for non-dine-in channels (completed 2026-03-15)
-- [ ] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants
+- [x] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants (completed 2026-03-15)
 
 ---
 
@@ -210,7 +210,7 @@ Plans:
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
-| 19. KDS Differentiation + Combo Flag | 1/3 | In Progress|  | - |
+| 19. KDS Differentiation + Combo Flag | 3/3 | Complete   | 2026-03-15 | - |
 
 ---
 
