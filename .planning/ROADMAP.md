@@ -210,7 +210,7 @@ Plans:
 | 15. Order Tracking | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
-| 18. Order Entry + Payment Pipeline | v1.3 | 0/? | Not started | - |
+| 18. Order Entry + Payment Pipeline | 2/3 | In Progress|  | - |
 | 19. KDS Differentiation + Combo Flag | v1.3 | 0/? | Not started | - |
 
 ---

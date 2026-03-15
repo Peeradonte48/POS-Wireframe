@@ -25,10 +25,10 @@
 ### Takeaway Orders
 
 - [x] **TKWY-01**: Staff can create a takeaway order with customer name, phone, and auto-assigned order number (TK-001…)
-- [ ] **TKWY-02**: Takeaway orders route through the existing order entry flow (menu, modifiers, KDS)
+- [x] **TKWY-02**: Takeaway orders route through the existing order entry flow (menu, modifiers, KDS)
 - [ ] **TKWY-03**: Takeaway orders progress through: Taking → Sent → Ready → Collected
 - [ ] **TKWY-04**: Staff can complete payment for a takeaway order using the existing payment flow (cash/QR/card)
-- [ ] **TKWY-05**: Staff can mark a takeaway order as collected
+- [x] **TKWY-05**: Staff can mark a takeaway order as collected
 
 ### Dine-in + Takeaway Combo
 
@@ -85,10 +85,10 @@
 | DLVR-08 | Phase 17 | Complete |
 | DLVR-09 | Phase 17 | Complete |
 | TKWY-01 | Phase 17 | Complete |
-| TKWY-02 | Phase 18 | Pending |
+| TKWY-02 | Phase 18 | Complete |
 | TKWY-03 | Phase 18 | Pending |
 | TKWY-04 | Phase 18 | Pending |
-| TKWY-05 | Phase 18 | Pending |
+| TKWY-05 | Phase 18 | Complete |
 | COMBO-01 | Phase 19 | Pending |
 | COMBO-02 | Phase 19 | Pending |
 | KDS-01 | Phase 19 | Pending |

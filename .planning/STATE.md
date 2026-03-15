@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
-status: completed
-last_updated: "2026-03-15T09:30:00.000Z"
-last_activity: "2026-03-15 -- Phase 17 complete (checkpoint closed); Phase 18 TKWY CRUD implemented informally (9 commits: Cancelled status, createTakeaway returns orderId, ConfirmCancelDialog, EditCustomerModal, TakeawayCard navigate, NewTakeawayModal navigate, TicketPanel onSend/hideSend, order page takeaway context, TableGrid persistence bug fix)"
+status: in_progress
+last_updated: "2026-03-15T09:58:58Z"
+last_activity: "2026-03-15 -- 18-02 complete: onSend navigates to /payment/tableId (no advanceStatus); TakeawayCard live itemsSummary from order.store via useMemo"
 progress:
   total_phases: 8
-  completed_phases: 7
-  total_plans: 46
-  completed_plans: 45
-  percent: 98
+  completed_phases: 6
+  total_plans: 49
+  completed_plans: 47
+  percent: 96
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** 17-04 Tasks 1+2 complete — three-tab floor plan + AppSidebar Queue badge; stopped at checkpoint:human-verify for Phase 17 full flow verification
+**Session:** 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; Phase 18 Plan 03 (payment page confirmation) is next
 
 ---
 
@@ -108,6 +108,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (18-02 execution)
+
+- **[18-02] onSend for takeaway navigates to /payment/tableId only**: advanceStatus removed from this callback -- queue status stays in Taking until payment is confirmed in Plan 03; enforces pay-at-ordering model (TKWY-02)
+- **[18-02] TakeawayCard useOrderStore raw selector + useMemo derivation**: select `orders[orderId]` raw object (stable reference on no-mutation); useMemo derives itemsSummary string; avoids Zustand selector infinite-loop anti-pattern per CLAUDE.md
+- **[18-02] itemsSummary "No items yet" guard**: shown when status is Taking (before order entry begins) or when order has zero non-voided items; truncates at 3 item groups with "+N more"
 
 ### Architecture Decisions for v1.3 (17-04 execution)
 
