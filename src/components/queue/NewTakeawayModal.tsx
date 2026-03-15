@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -21,13 +22,15 @@ export function NewTakeawayModal({ open, onClose }: NewTakeawayModalProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const createTakeaway = useQueueStore((s) => s.createTakeaway)
+  const router = useRouter()
 
   function handleConfirm() {
     if (!name.trim()) return
-    createTakeaway(name.trim(), phone.trim() || undefined)
+    const orderId = createTakeaway(name.trim(), phone.trim() || undefined)
     setName('')
     setPhone('')
     onClose()
+    router.push(`/order/${orderId}`)
   }
 
   function handleClose() {
