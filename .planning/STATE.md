@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: verifying
-last_updated: "2026-03-15T10:51:21.649Z"
-last_activity: "2026-03-15 -- Takeaway CRUD: createTakeaway→navigate, ConfirmCancelDialog, EditCustomerModal, TakeawayCard, TicketPanel onSend/hideSend, order page takeaway context + persistence bug fix"
+last_updated: "2026-03-15T14:10:38.332Z"
+last_activity: "2026-03-15 -- 19-01: packToGo field on OrderLineItem + togglePackToGo action + order-type-din/tkwy/dlvr badge CVA variants"
 progress:
   total_phases: 8
   completed_phases: 7
-  total_plans: 21
-  completed_plans: 21
+  total_plans: 24
+  completed_plans: 22
   percent: 96
 ---
 
@@ -38,12 +38,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 17 ✅ complete | Phase 18 TKWY CRUD implemented (informal, not yet GSD-tracked)
-Status: Phase 17 fully closed. Phase 18 takeaway CRUD flow (TKWY-02 thru TKWY-05) implemented in one session via subagent-driven-development — 9 commits landed on main, browser verification pending.
-Last activity: 2026-03-15 -- Takeaway CRUD: createTakeaway→navigate, ConfirmCancelDialog, EditCustomerModal, TakeawayCard, TicketPanel onSend/hideSend, order page takeaway context + persistence bug fix
+Phase: 19-kds-differentiation-+-combo-flag — Plan 01 of 03 complete
+Status: Phase 18 complete. Phase 19 started — 19-01 (data model + badge variants foundation) done. Plans 19-02 and 19-03 pending.
+Last activity: 2026-03-15 -- 19-01: packToGo field on OrderLineItem + togglePackToGo action + order-type-din/tkwy/dlvr badge CVA variants
 
 ```
-Progress: [█████████░] ~96% (Phase 17 done, Phase 18 CRUD done, Phase 19 pending)
+Progress: [█████████░] 94% (Phase 17+18 done, Phase 19 Plan 01/03 done)
 ```
 
 ---
@@ -108,6 +108,13 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (19-01 execution)
+
+- **[19-01] packToGo?: boolean placed after quantity in OrderLineItem**: Optional field hydrates safely from existing persisted localStorage data without migration; undefined is falsy so all logic gates on truthy check
+- **[19-01] order-type-din reuses status-ordered token family (indigo hue 250)**: Semantically aligns dine-in with an ordered state; token class names used (not raw OKLCH) for correct dark/light mode via @theme inline
+- **[19-01] order-type-tkwy reuses status-cooking token family (amber hue 75)**: Warm channel feel for takeaway; follows established token reuse pattern from Phase 15
+- **[19-01] order-type-dlvr uses bg-muted/text-muted-foreground/border-border**: Neutral fallback when delivery platform is null or unknown
 
 ### Architecture Decisions for v1.3 (18-01 execution)
 

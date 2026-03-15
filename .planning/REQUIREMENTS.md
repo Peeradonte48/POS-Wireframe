@@ -37,12 +37,12 @@
 
 ### KDS
 
-- [ ] **KDS-01**: KDS tickets show an order type badge (Dine-in / Takeaway / Delivery + platform) so kitchen knows to plate or bag
+- [x] **KDS-01**: KDS tickets show an order type badge (Dine-in / Takeaway / Delivery + platform) so kitchen knows to plate or bag
 - [ ] **KDS-02**: KDS board can be filtered by order type (All / Dine-in / Takeaway / Delivery)
 
 ### Visual Polish
 
-- [ ] **UI-01**: Delivery platform colors -- Grab green and LINE MAN blue -- applied as OKLCH design tokens and CVA badge variants
+- [x] **UI-01**: Delivery platform colors -- Grab green and LINE MAN blue -- applied as OKLCH design tokens and CVA badge variants
 
 ## Future Requirements (v2+)
 
@@ -91,9 +91,9 @@
 | TKWY-05 | Phase 18 | Complete |
 | COMBO-01 | Phase 19 | Pending |
 | COMBO-02 | Phase 19 | Pending |
-| KDS-01 | Phase 19 | Pending |
+| KDS-01 | Phase 19 | Complete |
 | KDS-02 | Phase 19 | Pending |
-| UI-01 | Phase 19 | Pending |
+| UI-01 | Phase 19 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 21 total
