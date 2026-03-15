@@ -198,6 +198,9 @@ Plans:
   3. The Delivery tab badge on the floor plan counts orders in all active states (Accepted, Preparing, ReadyForRider) — not only `Pending`
   4. Phase 17 has a valid VERIFICATION.md produced by gsd-verifier — all 12 Phase-17 requirements are formally verified
 **Plans**: 2 plans
+Plans:
+- [ ] 20-01-PLAN.md — Fix acceptOrder channel metadata drop + widen Delivery tab badge count
+- [ ] 20-02-PLAN.md — Run Phase 17 gsd-verifier + write Phase 20 VERIFICATION.md
 
 ### Phase 21: Audit Housekeeping + Nyquist Sign-off
 **Goal**: Close all remaining documentation gaps so the milestone can be cleanly archived — SUMMARY frontmatter corrected, Nyquist compliance signed off for all three v1.3 phases
