@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: in_progress
-last_updated: "2026-03-15T10:06:16Z"
-last_activity: "2026-03-15 -- 18-03 auto tasks complete: isTakeaway detection, header override, Split/Merge hide, handleConfirmPayment takeaway branch; checkpoint:human-verify reached"
+last_updated: "2026-03-15T11:00:00Z"
+last_activity: "2026-03-15 -- 18-03 complete: role permission fixes for Waiter/Cashier takeaway flow, queue badge expanded to active takeaway+delivery; human-verify checkpoint resolved; Phase 18 fully complete"
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 49
-  completed_plans: 47
-  percent: 96
+  completed_phases: 7
+  total_plans: 21
+  completed_plans: 21
+  percent: 98
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** 18-01 complete — KDS-to-queue write-back + store extensions (TKWY-03); 18-02 complete — onSend payment navigation + TakeawayCard live itemsSummary; 18-03 auto tasks complete — isTakeaway detection, header override, Split/Merge hide, handleConfirmPayment takeaway branch; awaiting human verification checkpoint
+**Session:** Phase 18 complete — 18-01 (queue/kds store extensions), 18-02 (order entry onSend→payment), 18-03 (payment page takeaway branch + role permission fixes + queue badge fix); full takeaway flow verified end-to-end
 
 ---
 
@@ -122,6 +122,9 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[18-03] TotalsSection billing action buttons gated on callback presence**: `onSplitBill !== undefined` / `onMergeBill !== undefined` gates render — passing `undefined` from parent hides buttons entirely; cleaner than a dedicated `hideBillingActions` prop
 - **[18-03] handleConfirmPayment takeaway branch returns early before setReceiptData**: Prevents receipt screen flash for takeaway path; `router.push('/table-map')` + `return` ensures dine-in path never executes for takeaway
 - **[18-03] SplitSheet/MergeSheet conditionally rendered (!isTakeaway)**: DOM removal matches established hide-not-disable pattern; avoids prop drilling or sheet-level gating
+- **[18-03] TicketPanel send-to-kitchen bypass via onSend prop presence**: `(!onSend && !canDoAction(role, 'send-to-kitchen'))` — when a custom onSend is wired in, action is navigation not kitchen dispatch; permission gate is semantically inapplicable
+- **[18-03] Takeaway confirm-payment bypass via !isTakeaway guard**: `(!isTakeaway && !canDoAction(role, 'confirm-payment'))` — all roles involved in takeaway creation (Waiter, Cashier, Manager) can complete payment; no role restriction needed for takeaway checkout
+- **[18-03] activeQueueCount replaces pendingDeliveryCount**: sidebar badge now reflects total active queue load — delivery (Pending/Confirmed/Preparing/ReadyForRider) + takeaway (Taking/Sent/Ready); Completed/Cancelled/Collected statuses excluded as they require no staff attention
 
 ### Architecture Decisions for v1.3 (18-02 execution)
 

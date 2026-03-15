@@ -24,16 +24,16 @@ decisions:
   - "SplitSheet and MergeSheet conditionally rendered (!isTakeaway) rather than prop-disabled — DOM removal matches established pattern for hiding dine-in-only controls"
   - "handleConfirmPayment takeaway branch returns early before setReceiptData/setViewState — ensures no receipt flash for takeaway path"
 metrics:
-  duration: "8 minutes"
+  duration: "35 minutes"
   completed_date: "2026-03-15"
-  tasks_completed: 2
+  tasks_completed: 3
   tasks_total: 3
-  files_modified: 2
+  files_modified: 5
 ---
 
 # Phase 18 Plan 03: Payment Page Takeaway Integration Summary
 
-**One-liner:** Payment page detects takeaway orders via non-reactive queue.store read, shows `TK-001 · Jane Smith` header, hides Split/Merge controls, and confirms payment by advancing queue Taking→Sent + creating KDS ticket with orderType:'takeaway', routing back to table-map without a receipt screen.
+**One-liner:** Payment page detects takeaway orders via non-reactive queue.store read, shows `TK-001 · Jane Smith` header, hides Split/Merge controls, confirms payment for any role on takeaway; queue badge counts all active takeaway + delivery orders.
 
 ---
 
@@ -66,7 +66,7 @@ Wired the payment page (`/payment/[tableId]`) to handle takeaway orders as a dis
 |---|------|--------|--------|
 | 1 | isTakeaway detection, header override, Split/Merge conditional render | f4b16c5 | Complete |
 | 2 | handleConfirmPayment takeaway branch | a1dd12e | Complete |
-| 3 | Human verification checkpoint | — | Awaiting |
+| 3 | Post-checkpoint bug fixes (3 bugs) + checkpoint resolution | a1bec5c, 62369a9, df9d795 | Complete |
 
 ---
 
@@ -82,12 +82,46 @@ Wired the payment page (`/payment/[tableId]`) to handle takeaway orders as a dis
 - **Files modified:** `src/components/payment/TotalsSection.tsx`
 - **Commit:** f4b16c5
 
+### Post-Checkpoint Bug Fixes (human verification)
+
+**2. [Rule 1 - Bug] Role permission blocked Cashier from sending takeaway order**
+- **Found during:** Human verification checkpoint
+- **Issue:** `send-to-kitchen` permission check in TicketPanel disabled the Send button for Cashier even when `onSend` (navigate-to-payment) was provided. Gate was semantically incorrect for navigation context.
+- **Fix:** `disabled={!hasUnsentItems || (!onSend && !canDoAction(role, 'send-to-kitchen'))}` — bypass permission when custom handler is present
+- **Files modified:** `src/components/order/TicketPanel.tsx`
+- **Commit:** a1bec5c
+
+**3. [Rule 1 - Bug] Role permission blocked Waiter from confirming takeaway payment**
+- **Found during:** Human verification checkpoint
+- **Issue:** `confirm-payment` gate in payment page was unconditional; Waiter lacks this permission so Confirm Payment button was always disabled for Waiter.
+- **Fix:** `(!isTakeaway && !canDoAction(role, 'confirm-payment'))` — permission only enforced for dine-in path
+- **Files modified:** `src/app/(app)/payment/[tableId]/page.tsx`
+- **Commit:** 62369a9
+
+**4. [Rule 1 - Bug] Queue badge only counted delivery Pending, missing active takeaway orders**
+- **Found during:** Human verification checkpoint
+- **Issue:** `pendingDeliveryCount` filtered `channel === 'delivery' && status === 'Pending'` only; all active takeaway orders (Taking/Sent/Ready) were excluded from the count.
+- **Fix:** Renamed to `activeQueueCount`; expanded filter to delivery (Pending/Confirmed/Preparing/ReadyForRider) and takeaway (Taking/Sent/Ready)
+- **Files modified:** `src/components/app-shell/AppSidebar.tsx`
+- **Commit:** df9d795
+
+---
+
+**Total deviations:** 4 auto-fixed (1 Rule 2 missing critical from Task 1, 3 Rule 1 bugs from human verification)
+**Impact on plan:** All fixes required for correctness. No scope creep.
+
 ---
 
 ## Self-Check: PASSED
 
 - FOUND: src/app/(app)/payment/[tableId]/page.tsx
 - FOUND: src/components/payment/TotalsSection.tsx
+- FOUND: src/components/order/TicketPanel.tsx
+- FOUND: src/components/app-shell/AppSidebar.tsx
 - FOUND: .planning/phases/18-order-entry-payment-pipeline/18-03-SUMMARY.md
 - FOUND commit f4b16c5 (Task 1)
 - FOUND commit a1dd12e (Task 2)
+- FOUND commit a1bec5c (bug fix 1)
+- FOUND commit 62369a9 (bug fix 2)
+- FOUND commit df9d795 (bug fix 3)
+- npm run build: PASSED (zero TypeScript errors)
