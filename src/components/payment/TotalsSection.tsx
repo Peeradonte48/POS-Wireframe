@@ -103,17 +103,19 @@ export function TotalsSection({
         <span className="text-2xl font-black text-primary">฿{grandTotal.toLocaleString()}</span>
       </div>
 
-      {/* Billing actions */}
-      {!isMergeActive && (
+      {/* Billing actions — hidden for takeaway orders (onSplitBill/onMergeBill are undefined) */}
+      {onSplitBill !== undefined && !isMergeActive && (
         <Button variant="outline" className="w-full mt-4" onClick={onSplitBill}>
           <ScissorsLinear size={16} className="mr-2" />
           Split Bill
         </Button>
       )}
-      <Button variant="outline" className="w-full mt-2" onClick={onMergeBill} disabled={isMergeActive}>
-        <LinkLinear size={16} className="mr-2" />
-        Merge Bill
-      </Button>
+      {onMergeBill !== undefined && (
+        <Button variant="outline" className="w-full mt-2" onClick={onMergeBill} disabled={isMergeActive}>
+          <LinkLinear size={16} className="mr-2" />
+          Merge Bill
+        </Button>
+      )}
     </div>
   )
 }

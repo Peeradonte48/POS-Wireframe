@@ -19,6 +19,8 @@ import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 import { SplitSheet } from '@/components/payment/SplitSheet'
 import { MergeSheet } from '@/components/table-map/MergeSheet'
 import { useBillStore } from '@/stores/bill.store'
+import { useQueueStore } from '@/stores/queue.store'
+import { useKdsStore } from '@/stores/kds.store'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -34,6 +36,10 @@ export default function PaymentPage() {
   const params = useParams<{ tableId: string }>()
   const tableId = params.tableId
   const router = useRouter()
+
+  // ---- Takeaway detection (non-reactive: boolean is stable for the lifetime of this page) ----
+  const isTakeaway = Boolean(useQueueStore.getState().orders[tableId])
+  const queueOrder = isTakeaway ? useQueueStore.getState().orders[tableId] : undefined
 
   // ---- Stores ----
   const order = useOrderStore((s) => s.getOrder(tableId))
@@ -53,13 +59,14 @@ export default function PaymentPage() {
   const [splitSheetOpen, setSplitSheetOpen] = useState(false)
 
   // Auto-open if an in-progress split already exists in bill.store (resume mid-split)
-  // Guard: do not auto-open SplitSheet when a merge is active
+  // Guard: do not auto-open SplitSheet when a merge is active or when this is a takeaway order
   useEffect(() => {
+    if (isTakeaway) return
     const existingSplit = useBillStore.getState().getSplit(tableId)
     if (existingSplit && !useBillStore.getState().getMergedSecondaries(tableId).length) {
       setSplitSheetOpen(true)
     }
-  }, [tableId])
+  }, [tableId, isTakeaway])
 
   // ---- Merge state ----
   // Select the raw merges record (stable reference) to avoid returning a new array
@@ -203,7 +210,9 @@ export default function PaymentPage() {
             <AltArrowLeftLinear size={20} />
           </button>
 
-          <span className="text-sm font-medium">Table {tableId} — Bill</span>
+          <span className="text-sm font-medium">
+            {isTakeaway ? `${tableId} · ${queueOrder?.customerName ?? ''}` : `Table ${tableId} — Bill`}
+          </span>
 
           {/* Right spacer for symmetry */}
           <div className="w-8" />
@@ -260,8 +269,8 @@ export default function PaymentPage() {
             vatAmount={vatAmount}
             grandTotal={grandTotal}
             discountAmount={discountAmount}
-            onSplitBill={() => setSplitSheetOpen(true)}
-            onMergeBill={() => setMergeSheetOpen(true)}
+            onSplitBill={isTakeaway ? undefined : () => setSplitSheetOpen(true)}
+            onMergeBill={isTakeaway ? undefined : () => setMergeSheetOpen(true)}
             isMergeActive={isMerged}
           />
 
@@ -302,27 +311,31 @@ export default function PaymentPage() {
         </div>
       </div>
 
-      <SplitSheet
-        open={splitSheetOpen}
-        onClose={() => setSplitSheetOpen(false)}
-        tableId={tableId}
-        grandTotal={grandTotal}
-        billItems={billItems}
-        onAllPaid={() => {
-          useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
-          mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
-          dissolveAll(tableId)
-          setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
-          setViewState('receipt')
-        }}
-      />
+      {!isTakeaway && (
+        <SplitSheet
+          open={splitSheetOpen}
+          onClose={() => setSplitSheetOpen(false)}
+          tableId={tableId}
+          grandTotal={grandTotal}
+          billItems={billItems}
+          onAllPaid={() => {
+            useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
+            mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
+            dissolveAll(tableId)
+            setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
+            setViewState('receipt')
+          }}
+        />
+      )}
 
-      <MergeSheet
-        open={mergeSheetOpen}
-        onClose={() => setMergeSheetOpen(false)}
-        primaryTableId={tableId}
-        onMergeConfirmed={() => setMergeSheetOpen(false)}
-      />
+      {!isTakeaway && (
+        <MergeSheet
+          open={mergeSheetOpen}
+          onClose={() => setMergeSheetOpen(false)}
+          primaryTableId={tableId}
+          onMergeConfirmed={() => setMergeSheetOpen(false)}
+        />
+      )}
     </>
   )
 }
