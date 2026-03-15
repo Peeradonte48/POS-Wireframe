@@ -17,6 +17,32 @@ const KDS_STAGE_CONFIG = {
   Ready:      { bgClass: 'bg-status-reserved-bg',        textClass: 'text-status-reserved' },
 } as const
 
+function getOrderTypeBadgeVariant(
+  orderType: KdsTicket['orderType'],
+  platform: KdsTicket['platform']
+): string {
+  if (orderType === 'delivery') {
+    if (platform === 'grab') return 'grab'
+    if (platform === 'lineman') return 'lineman'
+    return 'order-type-dlvr'
+  }
+  if (orderType === 'takeaway') return 'order-type-tkwy'
+  return 'order-type-din'  // dine-in or undefined — all tickets show a badge
+}
+
+function getOrderTypeLabel(
+  orderType: KdsTicket['orderType'],
+  platform: KdsTicket['platform']
+): string {
+  if (orderType === 'delivery') {
+    if (platform === 'grab') return 'GRAB'
+    if (platform === 'lineman') return 'LINE MAN'
+    return 'DLVR'
+  }
+  if (orderType === 'takeaway') return 'TKWY'
+  return 'DIN'
+}
+
 interface KdsTicketCardProps {
   ticket: KdsTicket
   orderItems: OrderLineItem[]
@@ -72,6 +98,9 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       <div className="px-3 py-2 bg-muted/30 flex justify-between items-center border-b border-border/40">
         <div className="flex items-center gap-2">
           <span className="font-bold text-base">{ticket.tableLabel}</span>
+          <Badge variant={getOrderTypeBadgeVariant(ticket.orderType, ticket.platform) as Parameters<typeof Badge>[0]['variant']}>
+            {getOrderTypeLabel(ticket.orderType, ticket.platform)}
+          </Badge>
           <Badge className={`${KDS_STAGE_CONFIG[ticket.stage].bgClass} ${KDS_STAGE_CONFIG[ticket.stage].textClass} border-0 text-xs`}>
             {ticket.stage === 'InProgress' ? 'In Progress' : ticket.stage}
           </Badge>

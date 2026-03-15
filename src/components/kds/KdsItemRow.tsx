@@ -68,6 +68,11 @@ export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }:
           {modifierSummary && (
             <p className="text-xs text-muted-foreground mt-0.5 truncate">{modifierSummary}</p>
           )}
+          {item.packToGo && (
+            <span className="inline-flex items-center text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded shrink-0 bg-status-cooking-bg text-status-cooking mt-0.5">
+              PACK
+            </span>
+          )}
           {item.specialRequest && (
             <div className="flex items-center gap-1.5 mt-1">
               <span className="bg-orange-500 text-white text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded shrink-0">
