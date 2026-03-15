@@ -19,6 +19,8 @@ import type { OrderLineItem } from '@/stores/order.store'
 interface TicketPanelProps {
   tableId: string
   onEditLineItem: (lineId: string) => void
+  onSend?: () => void      // if provided: called instead of updateTable; sendRound still fires
+  hideSend?: boolean       // if true: hides the Send button entirely (read-only state)
 }
 
 // ---------------------------------------------------------------------------
@@ -36,7 +38,7 @@ function computeTotal(allItems: OrderLineItem[]): number {
 // TicketPanel
 // ---------------------------------------------------------------------------
 
-export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
+export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: TicketPanelProps) {
   const order = useOrderStore((s) => s.orders[tableId])
   const table = useTableStore((s) => s.tables[tableId])
   const { removeItem } = useOrderStore()
@@ -72,7 +74,11 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
   // ---- Send to Kitchen ----
   function handleSend() {
     useOrderStore.getState().sendRound(tableId)
-    updateTable(tableId, { orderStage: 'Ordered' })
+    if (onSend) {
+      onSend()
+    } else {
+      updateTable(tableId, { orderStage: 'Ordered' })
+    }
     toast('Order sent to kitchen')
   }
 
@@ -144,14 +150,16 @@ export function TicketPanel({ tableId, onEditLineItem }: TicketPanelProps) {
           <p className="caps">Total</p>
           <p className="text-xl font-black text-primary">฿{runningTotal.toFixed(0)}</p>
         </div>
-        <Button
-          size="cta"
-          className="w-full"
-          onClick={handleSend}
-          disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
-        >
-          Send to Kitchen
-        </Button>
+        {!hideSend && (
+          <Button
+            size="cta"
+            className="w-full"
+            onClick={handleSend}
+            disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
+          >
+            Send to Kitchen
+          </Button>
+        )}
       </div>
 
       {/* Manager PIN modal for void authorization */}
