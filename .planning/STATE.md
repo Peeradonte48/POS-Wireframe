@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: completed
-last_updated: "2026-03-15T14:38:58.435Z"
-last_activity: "2026-03-15 -- 19-03: pack-to-go bag toggle on order entry rows (dine-in only) + mixed-channel KDS demo factory (DIN/TKWY/GRAB/LINE MAN) with PACK items"
+last_updated: "2026-03-15T15:32:57.206Z"
+last_activity: "2026-03-15 -- 20-01: two surgical fixes closing DLVR-02/KDS-01/KDS-02/NAV-02 — delivery KDS tickets now carry orderType+platform, Delivery tab badge spans all active states"
 progress:
-  total_phases: 8
+  total_phases: 10
   completed_phases: 8
-  total_plans: 24
-  completed_plans: 24
+  total_plans: 26
+  completed_plans: 25
   percent: 100
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** Phase 18 complete — 18-01 (queue/kds store extensions), 18-02 (order entry onSend→payment), 18-03 (payment page takeaway branch + role permission fixes + queue badge fix); full takeaway flow verified end-to-end
+**Session:** Phase 20 plan 01 complete — 20-01 (two surgical integration fixes: acceptOrder 4-arg addTicket + activeDeliveryCount widened filter); DLVR-02, KDS-01, KDS-02, NAV-02 requirements closed
 
 ---
 
@@ -38,12 +38,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 19-kds-differentiation-+-combo-flag — Plan 03 of 03 complete (PHASE COMPLETE)
-Status: Phase 19 complete. All 3 plans done — 19-01 (data model + badge variants), 19-02 (KDS badges + filter tabs), 19-03 (order entry toggle + demo factory). Milestone v1.3 complete.
-Last activity: 2026-03-15 -- 19-03: pack-to-go bag toggle on order entry rows (dine-in only) + mixed-channel KDS demo factory (DIN/TKWY/GRAB/LINE MAN) with PACK items
+Phase: 20-integration-fix-phase17-verification — Plan 01 of 01 complete (PHASE COMPLETE)
+Status: Phase 20 complete. Plan 20-01 done — two surgical integration fixes closing DLVR-02, KDS-01, KDS-02, NAV-02. acceptOrder now passes orderType+platform to addTicket; floor plan Delivery tab badge widened to all active states.
+Last activity: 2026-03-15 -- 20-01: two surgical fixes closing DLVR-02/KDS-01/KDS-02/NAV-02 — delivery KDS tickets now carry orderType+platform, Delivery tab badge spans all active states
 
 ```
-Progress: [██████████] 100% (All phases complete — v1.3 Delivery & Takeaway Orders done)
+Progress: [█████████░] 96% (25/26 plans complete — Phase 20 integration fix done)
 ```
 
 ---
@@ -108,6 +108,11 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (20-01 execution)
+
+- **[20-01] acceptOrder passes 'delivery' and order.platform as 3rd/4th args to addTicket**: Explicit channel metadata required at write-time; addTicket signature already accepted optional args -- this fix makes explicit what was silently omitted; closes DLVR-02
+- **[20-01] activeDeliveryCount replaces pendingDeliveryCount**: Floor plan Delivery tab badge widened from `status === 'Pending'` to `['Pending','Confirmed','Preparing','ReadyForRider'].includes(o.status)` -- matches AppSidebar.tsx activeQueueCount delivery branch exactly; badge no longer disappears on order accept; closes NAV-02
 
 ### Architecture Decisions for v1.3 (19-02 execution)
 

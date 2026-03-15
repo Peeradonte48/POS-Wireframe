@@ -236,7 +236,7 @@ Plans:
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
 | 19. KDS Differentiation + Combo Flag | 3/3 | Complete    | 2026-03-15 | - |
-| 20. Integration Fix + Phase 17 Verification | v1.3 | 0/2 | Pending | - |
+| 20. Integration Fix + Phase 17 Verification | 1/2 | In Progress|  | - |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 0/2 | Pending | - |
 
 ---

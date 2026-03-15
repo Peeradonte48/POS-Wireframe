@@ -8,12 +8,12 @@
 ### Navigation
 
 - [x] **NAV-01**: Staff can switch between Dine-in, Takeaway, and Delivery views via tabs on the floor plan
-- [ ] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
+- [x] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
 
 ### Delivery Queue
 
 - [x] **DLVR-01**: Staff can view incoming delivery orders from Grab/LINE MAN in a queue (simulated)
-- [ ] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
+- [x] **DLVR-02**: Staff can accept an incoming delivery order (auto-routes to KDS)
 - [x] **DLVR-03**: Staff can reject an incoming delivery order with a reason
 - [x] **DLVR-04**: Accepted delivery orders progress through: Accepted → Preparing → Ready for Rider → Picked Up
 - [x] **DLVR-05**: Staff can mark a delivery order "Ready for Rider" when kitchen completes
@@ -37,8 +37,8 @@
 
 ### KDS
 
-- [ ] **KDS-01**: KDS tickets show an order type badge (Dine-in / Takeaway / Delivery + platform) so kitchen knows to plate or bag
-- [ ] **KDS-02**: KDS board can be filtered by order type (All / Dine-in / Takeaway / Delivery)
+- [x] **KDS-01**: KDS tickets show an order type badge (Dine-in / Takeaway / Delivery + platform) so kitchen knows to plate or bag
+- [x] **KDS-02**: KDS board can be filtered by order type (All / Dine-in / Takeaway / Delivery)
 
 ### Visual Polish
 
@@ -74,9 +74,9 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | NAV-01 | Phase 17 | Complete |
-| NAV-02 | Phase 20 | Pending |
+| NAV-02 | Phase 20 | Complete |
 | DLVR-01 | Phase 17 | Complete |
-| DLVR-02 | Phase 20 | Pending |
+| DLVR-02 | Phase 20 | Complete |
 | DLVR-03 | Phase 17 | Complete |
 | DLVR-04 | Phase 17 | Complete |
 | DLVR-05 | Phase 17 | Complete |
@@ -91,8 +91,8 @@
 | TKWY-05 | Phase 18 | Complete |
 | COMBO-01 | Phase 19 | Complete |
 | COMBO-02 | Phase 19 | Complete |
-| KDS-01 | Phase 20 | Pending |
-| KDS-02 | Phase 20 | Pending |
+| KDS-01 | Phase 20 | Complete |
+| KDS-02 | Phase 20 | Complete |
 | UI-01 | Phase 19 | Complete |
 
 **Coverage:**
