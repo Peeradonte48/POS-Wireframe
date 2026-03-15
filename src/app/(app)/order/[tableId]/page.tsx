@@ -2,12 +2,17 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { AltArrowLeftLinear } from 'solar-icon-set'
+import { AltArrowLeftLinear, PenLinear, CloseCircleLinear } from 'solar-icon-set'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
+import { useQueueStore } from '@/stores/queue.store'
+import type { QueueOrderStatus } from '@/stores/queue.store'
 import { MenuPanel } from '@/components/order/MenuPanel'
 import { ModifierSheet } from '@/components/order/ModifierSheet'
 import { TicketPanel } from '@/components/order/TicketPanel'
+import { Badge } from '@/components/ui/badge'
+import { EditCustomerModal } from '@/components/queue/EditCustomerModal'
+import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mock-data/menu'
 import { cn } from '@/lib/utils'
 
@@ -18,10 +23,30 @@ const CATEGORY_NAV = [
   ...MENU_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
 ]
 
+function queueStatusLabel(status: QueueOrderStatus | undefined): string {
+  switch (status) {
+    case 'Sent':      return 'Sent to Kitchen'
+    case 'Ready':     return 'Ready for Collection'
+    case 'Collected': return 'Collected'
+    default:          return status ?? ''
+  }
+}
+
 export default function OrderPage() {
   const params = useParams<{ tableId: string }>()
   const tableId = params.tableId
   const router = useRouter()
+
+  // Takeaway context detection
+  const isTakeaway = Boolean(useQueueStore.getState().orders[tableId])
+  const queueStatus = useQueueStore((s) => s.orders[tableId]?.status)
+  const queueCustomerName = useQueueStore((s) => s.orders[tableId]?.customerName)
+  const queueCustomerPhone = useQueueStore((s) => s.orders[tableId]?.customerPhone)
+  const isTakingStatus = queueStatus === 'Taking'
+
+  // Takeaway modal state
+  const [showEditCustomer, setShowEditCustomer] = useState(false)
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false)
 
   const table = useTableStore((s) => s.tables[tableId])
 
@@ -39,9 +64,11 @@ export default function OrderPage() {
         .find((i) => i.lineId === editingLineId) ?? null)
     : null
 
-  const headerLabel = table
-    ? `${table.label} \u2022 ${table.guestCount ?? 0} guests`
-    : tableId
+  const headerLabel = isTakeaway
+    ? `${tableId} · ${queueCustomerName ?? ''}`
+    : table
+      ? `${table.label} \u2022 ${table.guestCount ?? 0} guests`
+      : tableId
 
   function handleCloseModifier() {
     setSelectedMenuItemId(null)
@@ -61,9 +88,39 @@ export default function OrderPage() {
             <AltArrowLeftLinear size={20} />
           </button>
 
-          <span className="text-sm font-semibold">{headerLabel}</span>
+          <div className="flex flex-col items-center">
+            <span className="text-sm font-semibold">{headerLabel}</span>
+            {isTakeaway && queueCustomerPhone && (
+              <span className="text-xs text-muted-foreground">{queueCustomerPhone}</span>
+            )}
+            {isTakeaway && !isTakingStatus && (
+              <Badge variant="outline" className="text-xs mt-0.5">
+                {queueStatusLabel(queueStatus)}
+              </Badge>
+            )}
+          </div>
 
-          <div className="w-11" />
+          <div className="flex items-center gap-1">
+            {isTakeaway && isTakingStatus && (
+              <>
+                <button
+                  onClick={() => setShowEditCustomer(true)}
+                  className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg hover:bg-muted transition-colors"
+                  aria-label="Edit customer"
+                >
+                  <PenLinear size={18} />
+                </button>
+                <button
+                  onClick={() => setShowConfirmCancel(true)}
+                  className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg hover:bg-muted text-destructive transition-colors"
+                  aria-label="Cancel order"
+                >
+                  <CloseCircleLinear size={18} />
+                </button>
+              </>
+            )}
+            {!isTakeaway && <div className="w-11" />}
+          </div>
         </header>
 
         {/* 3-column body */}
@@ -92,10 +149,12 @@ export default function OrderPage() {
 
           {/* Column 2: Menu photo grid */}
           <div className="flex-1 overflow-y-auto bg-background">
-            <MenuPanel
-              onItemTap={(itemId) => setSelectedMenuItemId(itemId)}
-              activeCategory={activeCategory}
-            />
+            <div className={isTakeaway && !isTakingStatus ? 'pointer-events-none opacity-50' : ''}>
+              <MenuPanel
+                onItemTap={(itemId) => setSelectedMenuItemId(itemId)}
+                activeCategory={activeCategory}
+              />
+            </div>
           </div>
 
           {/* Column 3: Ticket */}
@@ -112,6 +171,11 @@ export default function OrderPage() {
                   setSelectedMenuItemId(item.menuItemId)
                 }
               }}
+              onSend={isTakeaway ? () => {
+                useQueueStore.getState().advanceStatus(tableId)
+                router.push('/table-map')
+              } : undefined}
+              hideSend={isTakeaway && !isTakingStatus}
             />
           </div>
         </div>
@@ -125,6 +189,29 @@ export default function OrderPage() {
           editingLineId={editingLineId}
           editingLineItem={editingLineItem}
         />
+
+        {isTakeaway && (
+          <>
+            <EditCustomerModal
+              open={showEditCustomer}
+              onClose={() => setShowEditCustomer(false)}
+              orderId={tableId}
+              initialName={queueCustomerName ?? ''}
+              initialPhone={queueCustomerPhone}
+            />
+            <ConfirmCancelDialog
+              open={showConfirmCancel}
+              onClose={() => setShowConfirmCancel(false)}
+              onConfirm={() => {
+                useQueueStore.getState().cancelOrder(tableId)
+                setShowConfirmCancel(false)
+                router.push('/table-map')
+              }}
+              orderId={tableId}
+              customerName={queueCustomerName ?? ''}
+            />
+          </>
+        )}
       </div>
     </>
   )
