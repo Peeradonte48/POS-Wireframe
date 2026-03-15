@@ -16,10 +16,12 @@ export default function TableMapPage() {
   // Zustand selector safety — raw Record, derive in useMemo
   const orders = useQueueStore((s) => s.orders)
 
-  const pendingDeliveryCount = useMemo(
+  const activeDeliveryCount = useMemo(
     () =>
       Object.values(orders).filter(
-        (o) => o.channel === 'delivery' && o.status === 'Pending'
+        (o) =>
+          o.channel === 'delivery' &&
+          ['Pending', 'Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
       ).length,
     [orders]
   )
@@ -65,9 +67,9 @@ export default function TableMapPage() {
         </TabsTrigger>
         <TabsTrigger value="delivery" className="flex items-center gap-1">
           Delivery
-          {pendingDeliveryCount > 0 && (
+          {activeDeliveryCount > 0 && (
             <span className="h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-              {pendingDeliveryCount}
+              {activeDeliveryCount}
             </span>
           )}
         </TabsTrigger>
