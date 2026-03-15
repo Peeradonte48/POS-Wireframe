@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: completed
-last_updated: "2026-03-15T00:05:00.000Z"
-last_activity: "2026-03-15 -- 17-03 complete: NewTakeawayModal + TakeawayCard + TakeawayPanel + advanceStatus takeaway transitions"
+last_updated: "2026-03-15T00:12:39.097Z"
+last_activity: "2026-03-15 -- 17-04 tasks 1+2 complete: three-tab floor plan + AppSidebar Queue badge; awaiting human verify checkpoint"
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 46
-  completed_plans: 43
-  percent: 93
+  completed_plans: 45
+  percent: 98
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-15
-**Session:** v1.3 roadmap created — 3 phases (17-19) covering 21 requirements across NAV, DLVR, TKWY, COMBO, KDS, UI categories; Phase 17 planning is next
+**Session:** 17-04 Tasks 1+2 complete — three-tab floor plan + AppSidebar Queue badge; stopped at checkpoint:human-verify for Phase 17 full flow verification
 
 ---
 
@@ -38,10 +38,10 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 17 -- Queue Store + Floor Plan Tabs (in progress)
-Plan: 03 complete, next: 04 (QueueBoard UI integration)
-Status: 17-03 complete -- NewTakeawayModal + TakeawayCard + TakeawayPanel built
-Last activity: 2026-03-15 -- 17-03 complete: takeaway creation flow with FAB + advanceStatus takeaway transitions patched
+Phase: 17 -- Queue Store + Floor Plan Tabs (awaiting checkpoint)
+Plan: 04 tasks 1+2 complete, awaiting Task 3 checkpoint:human-verify
+Status: 17-04 Tasks 1+2 done -- three-tab floor plan (Dine-in/Takeaway/Delivery) + AppSidebar Queue nav item with badge
+Last activity: 2026-03-15 -- 17-04: table-map wrapped in Tabs, AppSidebar gets Queue item with InboxLinear + pending delivery badge
 
 ```
 Progress: [█████████░] 93% (43/46 plans — v1.3 in progress)
@@ -109,6 +109,12 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (17-04 execution)
+
+- **[17-04] Option C for dual-active nav**: both `table-map` and `queue` nav items show active on `/table-map` — wireframe acceptable; documented with code comment `// Both table-map and queue point to /table-map — both show as active on this route (wireframe acceptable)`
+- **[17-04] InboxLinear for Queue icon**: available in solar-icon-set; semantically appropriate for an incoming orders queue view; first-choice icon from plan was available
+- **[17-04] Collapsed sidebar dot indicator**: 8px absolute `span -top-0.5 -right-0.5` on relative `<li>`; count badge omitted in collapsed (64px) mode — no room; matches pattern for tight sidebar badges
 
 ### Architecture Decisions for v1.3 (17-03 execution)
 

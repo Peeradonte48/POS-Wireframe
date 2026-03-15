@@ -62,7 +62,7 @@ Full archive: `.planning/milestones/v1.2-ROADMAP.md`
 
 **Milestone Goal:** Add multi-channel order management — third-party delivery queue (Grab/LINE MAN), walk-in takeaway orders, and dine-in + takeaway combo items — so staff can manage all three channels from one interface and kitchen always knows whether to plate or bag.
 
-- [ ] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation
+- [x] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation (completed 2026-03-15)
 - [ ] **Phase 18: Order Entry + Payment Pipeline** -- takeaway/delivery orders flow through existing order entry and payment, KDS write-back for non-dine-in channels
 - [ ] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants
 
@@ -210,7 +210,7 @@ Plans:
 | 14. Merge Bill | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 15. Order Tracking | v1.2 | 3/3 | Complete | 2026-03-13 |
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
-| 17. Queue Store + Floor Plan Tabs | 3/4 | In Progress|  | - |
+| 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | v1.3 | 0/? | Not started | - |
 | 19. KDS Differentiation + Combo Flag | v1.3 | 0/? | Not started | - |
 

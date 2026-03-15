@@ -7,7 +7,7 @@
 
 ### Navigation
 
-- [ ] **NAV-01**: Staff can switch between Dine-in, Takeaway, and Delivery views via tabs on the floor plan
+- [x] **NAV-01**: Staff can switch between Dine-in, Takeaway, and Delivery views via tabs on the floor plan
 - [x] **NAV-02**: Takeaway and Delivery tabs show a live badge count of active orders
 
 ### Delivery Queue
@@ -73,7 +73,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 17 | Pending |
+| NAV-01 | Phase 17 | Complete |
 | NAV-02 | Phase 17 | Complete |
 | DLVR-01 | Phase 17 | Complete |
 | DLVR-02 | Phase 17 | Complete |
