@@ -26,6 +26,9 @@ const badgeVariants = cva(
         escalated: "bg-status-escalated-bg text-status-escalated border-status-escalated/30",
         grab:    "bg-[var(--platform-grab-bg)]    text-[var(--platform-grab)]    border-[var(--platform-grab)]/30",
         lineman: "bg-[var(--platform-lineman-bg)] text-[var(--platform-lineman)] border-[var(--platform-lineman)]/30",
+        "order-type-din":  "bg-status-ordered-bg  text-status-ordered  border-status-ordered/30",
+        "order-type-tkwy": "bg-status-cooking-bg  text-status-cooking  border-status-cooking/30",
+        "order-type-dlvr": "bg-muted             text-muted-foreground border-border",
       },
     },
     defaultVariants: {
