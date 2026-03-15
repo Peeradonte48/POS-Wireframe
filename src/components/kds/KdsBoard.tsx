@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useOrderStore } from '@/stores/order.store'
 import { useKdsStore, KdsStage, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
@@ -8,6 +8,16 @@ import { useQueueStore } from '@/stores/queue.store'
 import { KdsTicketCard } from '@/components/kds/KdsTicketCard'
 import { OrderLineItem } from '@/stores/order.store'
 import { getDemoOrderItems } from '@/lib/mock-data/kds-demo'
+import { cn } from '@/lib/utils'
+
+const CHANNEL_FILTERS = [
+  { key: 'all',      label: 'All' },
+  { key: 'dine-in',  label: 'Dine-in' },
+  { key: 'takeaway', label: 'Takeaway' },
+  { key: 'delivery', label: 'Delivery' },
+] as const
+
+type ChannelFilter = typeof CHANNEL_FILTERS[number]['key']
 
 const STAGES: { stage: KdsStage; label: string }[] = [
   { stage: 'New', label: 'New' },
@@ -19,6 +29,19 @@ export function KdsBoard() {
   const allOrders = useOrderStore((s) => s.orders)
   const { tickets, addTicket } = useKdsStore()
   const tables = useTableStore((s) => s.tables)
+
+  const [activeChannelFilter, setActiveChannelFilter] = useState<ChannelFilter>('all')
+
+  // Counts use useMemo on raw tickets record — never call derived functions inside selectors (CLAUDE.md infinite loop rule)
+  const channelCounts = useMemo(() => {
+    const ticketList = Object.values(tickets)
+    return {
+      all:        ticketList.length,
+      'dine-in':  ticketList.filter((t) => !t.orderType || t.orderType === 'dine-in').length,
+      takeaway:   ticketList.filter((t) => t.orderType === 'takeaway').length,
+      delivery:   ticketList.filter((t) => t.orderType === 'delivery').length,
+    }
+  }, [tickets])
 
   // Auto-register tickets for tables that have sent rounds but no KDS ticket yet.
   // useEffect is required — calling store actions during render is a React violation.
@@ -54,10 +77,35 @@ export function KdsBoard() {
   }
 
   return (
-    <div className="flex flex-1 h-full gap-2 p-3 overflow-hidden">
+    <div className="flex flex-col flex-1 h-full overflow-hidden">
+      {/* Channel filter tab row */}
+      <div className="flex gap-0 border-b border-border px-3 shrink-0">
+        {CHANNEL_FILTERS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setActiveChannelFilter(key)}
+            className={cn(
+              'px-4 py-2.5 text-sm font-medium transition-colors -mb-px border-b-2',
+              activeChannelFilter === key
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            )}
+          >
+            {label} ({channelCounts[key]})
+          </button>
+        ))}
+      </div>
+
+      {/* Ticket board — 3 stage columns */}
+      <div className="flex flex-1 gap-2 p-3 overflow-hidden">
       {STAGES.map(({ stage, label }) => {
         const stageTickets = Object.values(tickets).filter((t) => {
           if (t.stage !== stage) return false
+          // Apply channel filter
+          if (activeChannelFilter !== 'all') {
+            const effectiveType = t.orderType ?? 'dine-in'
+            if (effectiveType !== activeChannelFilter) return false
+          }
           // Hide tickets where every item is voided
           const items = getOrderItems(t)
           return items.some((item) => item.status !== 'voided')
@@ -89,6 +137,7 @@ export function KdsBoard() {
           </div>
         )
       })}
+      </div>
     </div>
   )
 }
