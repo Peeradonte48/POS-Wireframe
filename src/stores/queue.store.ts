@@ -21,6 +21,7 @@ export type QueueOrderStatus =
   | 'Sent'          // takeaway sent to KDS
   | 'Ready'         // takeaway ready for collection (KDS complete)
   | 'Collected'     // takeaway collected by customer
+  | 'Cancelled'     // takeaway cancelled before sending to kitchen
 
 export interface QueueOrder {
   orderId: string           // 'DL-grab-7821' or 'TK-001'
@@ -47,7 +48,9 @@ interface QueueStore {
   acceptOrder: (orderId: string) => void
   rejectOrder: (orderId: string, reason: string) => void
   advanceStatus: (orderId: string) => void
-  createTakeaway: (customerName: string, customerPhone?: string) => void
+  createTakeaway: (customerName: string, customerPhone?: string) => string
+  updateCustomer: (orderId: string, name: string, phone?: string) => void
+  cancelOrder: (orderId: string) => void
   toggleDemoActive: () => void
   toggleAutoAccept: () => void
 }
@@ -126,24 +129,44 @@ export const useQueueStore = create<QueueStore>()(
         }))
       },
 
-      createTakeaway: (customerName, customerPhone) =>
-        set((state) => {
-          const counter = state.takeawayCounter + 1
-          const orderId = `TK-${String(counter).padStart(3, '0')}`
-          const order: QueueOrder = {
-            orderId,
-            channel: 'takeaway',
-            customerName,
-            customerPhone,
-            itemsSummary: 'No items yet',
-            status: 'Taking',
-            createdAt: Date.now(),
-          }
-          return {
-            takeawayCounter: counter,
-            orders: { ...state.orders, [orderId]: order },
-          }
-        }),
+      createTakeaway: (customerName, customerPhone) => {
+        const counter = get().takeawayCounter + 1
+        const orderId = `TK-${String(counter).padStart(3, '0')}`
+        const order: QueueOrder = {
+          orderId,
+          channel: 'takeaway',
+          customerName,
+          customerPhone,
+          itemsSummary: 'No items yet',
+          status: 'Taking',
+          createdAt: Date.now(),
+        }
+        set((state) => ({
+          takeawayCounter: counter,
+          orders: { ...state.orders, [orderId]: order },
+        }))
+        return orderId
+      },
+
+      updateCustomer: (orderId, name, phone) => {
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], customerName: name, customerPhone: phone },
+          },
+        }))
+      },
+
+      cancelOrder: (orderId) => {
+        const order = get().orders[orderId]
+        if (!order || order.status !== 'Taking') return
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], status: 'Cancelled' },
+          },
+        }))
+      },
 
       toggleDemoActive: () => set((state) => ({ demoActive: !state.demoActive })),
       toggleAutoAccept: () => set((state) => ({ autoAccept: !state.autoAccept })),
