@@ -32,7 +32,7 @@
 
 ### Dine-in + Takeaway Combo
 
-- [ ] **COMBO-01**: Staff can flag individual items on a dine-in order as "pack to go" -- flagged items appear on the same bill but are packed separately
+- [x] **COMBO-01**: Staff can flag individual items on a dine-in order as "pack to go" -- flagged items appear on the same bill but are packed separately
 - [x] **COMBO-02**: KDS tickets show a "PACK" indicator on flagged items so kitchen knows to bag them, not plate them
 
 ### KDS
@@ -89,7 +89,7 @@
 | TKWY-03 | Phase 18 | Complete |
 | TKWY-04 | Phase 18 | Complete |
 | TKWY-05 | Phase 18 | Complete |
-| COMBO-01 | Phase 19 | Pending |
+| COMBO-01 | Phase 19 | Complete |
 | COMBO-02 | Phase 19 | Complete |
 | KDS-01 | Phase 19 | Complete |
 | KDS-02 | Phase 19 | Complete |

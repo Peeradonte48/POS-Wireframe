@@ -38,12 +38,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 
 ## Current Position
 
-Phase: 19-kds-differentiation-+-combo-flag — Plan 02 of 03 complete
-Status: Phase 18 complete. Phase 19 in progress — 19-01 (data model + badge variants) done, 19-02 (KDS badges + filter tabs) done. Plan 19-03 pending.
-Last activity: 2026-03-15 -- 19-02: order type badges (DIN/TKWY/GRAB/LINE MAN/DLVR) in KDS ticket headers + PACK chip in item rows + channel filter tabs in KdsBoard
+Phase: 19-kds-differentiation-+-combo-flag — Plan 03 of 03 complete (PHASE COMPLETE)
+Status: Phase 19 complete. All 3 plans done — 19-01 (data model + badge variants), 19-02 (KDS badges + filter tabs), 19-03 (order entry toggle + demo factory). Milestone v1.3 complete.
+Last activity: 2026-03-15 -- 19-03: pack-to-go bag toggle on order entry rows (dine-in only) + mixed-channel KDS demo factory (DIN/TKWY/GRAB/LINE MAN) with PACK items
 
 ```
-Progress: [█████████░] 96% (Phase 17+18 done, Phase 19 Plan 02/03 done)
+Progress: [██████████] 100% (All phases complete — v1.3 Delivery & Takeaway Orders done)
 ```
 
 ---
