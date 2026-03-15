@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CloseSquareLinear } from 'solar-icon-set'
 import { useQueueStore } from '@/stores/queue.store'
 import type { QueueOrder } from '@/stores/queue.store'
+import { useOrderStore } from '@/stores/order.store'
+import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
 
 function getStatusBadgeVariant(status: QueueOrder['status']): 'outline' | 'ordered' | 'ready' | 'settled' {
@@ -39,6 +41,26 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
   const cancelOrder = useQueueStore((s) => s.cancelOrder)
   const [showCancel, setShowCancel] = useState(false)
 
+  const orderData = useOrderStore((s) => s.orders[order.orderId])
+  const itemsSummary = useMemo(() => {
+    if (!orderData || order.status === 'Taking') return 'No items yet'
+    const items = orderData.rounds
+      .flatMap((r) => r.items)
+      .filter((i) => i.status !== 'voided')
+    if (items.length === 0) return 'No items yet'
+    const grouped = items.reduce<Record<string, number>>((acc, item) => {
+      acc[item.menuItemId] = (acc[item.menuItemId] ?? 0) + item.quantity
+      return acc
+    }, {})
+    const parts = Object.entries(grouped).map(([id, qty]) => {
+      const label = MENU_ITEMS.find((m) => m.id === id)?.name ?? id
+      return `${qty}x ${label}`
+    })
+    const MAX_ITEMS = 3
+    if (parts.length <= MAX_ITEMS) return parts.join(', ')
+    return `${parts.slice(0, MAX_ITEMS).join(', ')} +${parts.length - MAX_ITEMS} more`
+  }, [orderData, order.status])
+
   return (
     <div
       className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3"
@@ -58,7 +80,7 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
         {order.customerPhone && (
           <span className="text-xs text-muted-foreground">{order.customerPhone}</span>
         )}
-        <span className="text-xs text-muted-foreground mt-0.5">{order.itemsSummary}</span>
+        <span className="text-xs text-muted-foreground mt-0.5">{itemsSummary}</span>
       </div>
 
       {/* CTA */}
