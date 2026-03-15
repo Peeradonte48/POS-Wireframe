@@ -15,7 +15,7 @@ export function TakeawayPanel() {
   const activeTakeawayOrders = useMemo(
     () =>
       Object.values(orders)
-        .filter((o) => o.channel === 'takeaway' && o.status !== 'Collected')
+        .filter((o) => o.channel === 'takeaway' && o.status !== 'Collected' && o.status !== 'Cancelled')
         .sort((a, b) => b.createdAt - a.createdAt),
     [orders]
   )
