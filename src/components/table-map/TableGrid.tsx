@@ -20,7 +20,7 @@ function TableTileSkeleton() {
 
 export function TableGrid({ onTableTap }: TableGridProps) {
   const { tables } = useTableStore()
-  const tableList = Object.values(tables).sort((a, b) => a.id.localeCompare(b.id))
+  const tableList = Object.values(tables).filter((t): t is TableRecord => Boolean(t?.id)).sort((a, b) => a.id.localeCompare(b.id))
   const availableCount = tableList.filter((t) => t.status === 'Open').length
 
   const [isLoading, setIsLoading] = useState(true)

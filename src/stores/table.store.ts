@@ -134,15 +134,15 @@ export const useTableStore = create<TableStore>()(
     })),
 
   updateTable: (id, patch) =>
-    set((state) => ({
-      tables: {
-        ...state.tables,
-        [id]: {
-          ...state.tables[id],
-          ...patch,
+    set((state) => {
+      if (!state.tables[id]) return state
+      return {
+        tables: {
+          ...state.tables,
+          [id]: { ...state.tables[id], ...patch },
         },
-      },
-    })),
+      }
+    }),
     }),
     { name: 'table-store' },
   ),
