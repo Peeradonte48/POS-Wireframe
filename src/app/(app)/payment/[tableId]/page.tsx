@@ -136,6 +136,17 @@ export default function PaymentPage() {
   // ---- Confirm payment ----
   function handleConfirmPayment() {
     if (!paymentMethod) return
+
+    // Takeaway: pay-at-ordering model — advance queue status, add KDS ticket, navigate back
+    if (isTakeaway) {
+      useQueueStore.getState().advanceStatus(tableId)  // Taking → Sent
+      useKdsStore.getState().addTicket(tableId, tableId, 'takeaway')
+      toast.success('Payment confirmed')
+      router.push('/table-map')
+      return  // CRITICAL: early exit — no receipt screen for takeaway
+    }
+
+    // Existing dine-in path — unchanged below this point
     const { markCleaning, updateTable } = useTableStore.getState()
     markCleaning(tableId)
     mergedSecondaryIds.forEach((id) => markCleaning(id))
