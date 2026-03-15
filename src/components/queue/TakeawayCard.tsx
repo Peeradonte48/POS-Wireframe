@@ -1,9 +1,13 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { CloseSquareLinear } from 'solar-icon-set'
 import { useQueueStore } from '@/stores/queue.store'
 import type { QueueOrder } from '@/stores/queue.store'
+import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
 
 function getStatusBadgeVariant(status: QueueOrder['status']): 'outline' | 'ordered' | 'ready' | 'settled' {
   switch (status) {
@@ -30,7 +34,10 @@ interface TakeawayCardProps {
 }
 
 export function TakeawayCard({ order }: TakeawayCardProps) {
+  const router = useRouter()
   const advanceStatus = useQueueStore((s) => s.advanceStatus)
+  const cancelOrder = useQueueStore((s) => s.cancelOrder)
+  const [showCancel, setShowCancel] = useState(false)
 
   return (
     <div
@@ -56,19 +63,41 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
 
       {/* CTA */}
       {order.status === 'Taking' && (
-        <Button size="sm" variant="outline" onClick={() => {
-          // Phase 18 will wire this to order entry navigation
-          // For now: advance to 'Sent' as a placeholder
-          advanceStatus(order.orderId)
-        }}>
-          Start Order
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1"
+            onClick={() => router.push(`/order/${order.orderId}`)}
+          >
+            Start Order
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="min-w-[36px] text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={() => setShowCancel(true)}
+            aria-label="Cancel order"
+          >
+            <CloseSquareLinear size={16} />
+          </Button>
+        </div>
       )}
       {order.status === 'Ready' && (
         <Button size="sm" onClick={() => advanceStatus(order.orderId)}>
           Mark Collected
         </Button>
       )}
+      <ConfirmCancelDialog
+        open={showCancel}
+        onClose={() => setShowCancel(false)}
+        onConfirm={() => {
+          cancelOrder(order.orderId)
+          setShowCancel(false)
+        }}
+        orderId={order.orderId}
+        customerName={order.customerName}
+      />
     </div>
   )
 }
