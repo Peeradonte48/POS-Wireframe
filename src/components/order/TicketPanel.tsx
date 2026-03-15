@@ -155,7 +155,7 @@ export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: Ticke
             size="cta"
             className="w-full"
             onClick={handleSend}
-            disabled={!hasUnsentItems || !canDoAction(role, 'send-to-kitchen')}
+            disabled={!hasUnsentItems || (!onSend && !canDoAction(role, 'send-to-kitchen'))}
           >
             Send to Kitchen
           </Button>
