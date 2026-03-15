@@ -165,12 +165,11 @@ Plans:
   1. Tapping a takeaway order in the Takeaway tab opens the existing order entry screen with the header showing the takeaway order number and customer name instead of a table label
   2. A takeaway order progresses from Taking → Sent → Ready → Collected; staff can mark it Collected from the Takeaway tab once kitchen marks it Ready
   3. Staff can complete payment for a takeaway order using the existing Cash/QR/Card payment flow; the back button routes to the Takeaway tab (not the floor plan) and completing payment marks the order Collected in queue.store
-**Plans**: 4 plans
+**Plans**: 3 plans
 Plans:
-- [ ] 17-01-PLAN.md -- queue.store + delivery-demo factory + platform tokens + badge CVA variants + role-permissions
-- [ ] 17-02-PLAN.md -- DeliveryCard + RejectReasonDialog + DeliveryPanel (all DLVR requirements)
-- [ ] 17-03-PLAN.md -- NewTakeawayModal + TakeawayCard + TakeawayPanel (TKWY-01)
-- [ ] 17-04-PLAN.md -- table-map page 3-tab wrap + AppSidebar queue badge + human verify
+- [ ] 18-01-PLAN.md -- queue.store Sent→Ready + kds.store orderType + KdsBoard guard + KdsTicketCard write-back (TKWY-03)
+- [ ] 18-02-PLAN.md -- order entry onSend redirect to payment + TakeawayCard live itemsSummary (TKWY-02, TKWY-05)
+- [ ] 18-03-PLAN.md -- payment page isTakeaway branch: header, Split/Merge hide, handleConfirmPayment + human verify (TKWY-04)
 
 ### Phase 19: KDS Differentiation + Combo Flag
 **Goal**: Kitchen staff can instantly tell whether to plate or bag every ticket, and dine-in orders can have individual items flagged as pack-to-go; all channel types are visually distinct using brand-consistent OKLCH tokens
