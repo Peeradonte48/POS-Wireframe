@@ -65,7 +65,7 @@ Full archive: `.planning/milestones/v1.2-ROADMAP.md`
 - [x] **Phase 17: Queue Store + Floor Plan Tabs** -- queue.store foundation, floor plan 3-tab layout, delivery queue UI with full lifecycle, takeaway order creation (completed 2026-03-15)
 - [x] **Phase 18: Order Entry + Payment Pipeline** -- takeaway/delivery orders flow through existing order entry and payment, KDS write-back for non-dine-in channels (completed 2026-03-15)
 - [x] **Phase 19: KDS Differentiation + Combo Flag** -- KDS order type badge, filter tabs, pack-to-go item flag, platform OKLCH tokens, CVA badge variants (completed 2026-03-15)
-- [ ] **Phase 20: Integration Fix + Phase 17 Verification** -- Fix acceptOrder→addTicket channel arg drop, fix NAV-02 delivery badge undercount, run gsd-verifier on Phase 17
+- [x] **Phase 20: Integration Fix + Phase 17 Verification** -- Fix acceptOrder→addTicket channel arg drop, fix NAV-02 delivery badge undercount, run gsd-verifier on Phase 17 (completed 2026-03-15)
 - [ ] **Phase 21: Audit Housekeeping + Nyquist Sign-off** -- Fix 18-03-SUMMARY.md TKWY-04 frontmatter, run Nyquist validate-phase for phases 17/18/19
 
 ---
@@ -236,7 +236,7 @@ Plans:
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
 | 19. KDS Differentiation + Combo Flag | 3/3 | Complete    | 2026-03-15 | - |
-| 20. Integration Fix + Phase 17 Verification | 1/2 | In Progress|  | - |
+| 20. Integration Fix + Phase 17 Verification | 2/2 | Complete   | 2026-03-15 | - |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 0/2 | Pending | - |
 
 ---
