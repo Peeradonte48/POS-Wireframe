@@ -200,7 +200,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [ ] 20-01-PLAN.md — Fix acceptOrder channel metadata drop + widen Delivery tab badge count
-- [ ] 20-02-PLAN.md — Run Phase 17 gsd-verifier + write Phase 20 VERIFICATION.md
+- [x] 20-02-PLAN.md — Run Phase 17 gsd-verifier + write Phase 20 VERIFICATION.md (completed 2026-03-15)
 
 ### Phase 21: Audit Housekeeping + Nyquist Sign-off
 **Goal**: Close all remaining documentation gaps so the milestone can be cleanly archived — SUMMARY frontmatter corrected, Nyquist compliance signed off for all three v1.3 phases
@@ -236,7 +236,7 @@ Plans:
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
 | 19. KDS Differentiation + Combo Flag | 3/3 | Complete    | 2026-03-15 | - |
-| 20. Integration Fix + Phase 17 Verification | 2/2 | Complete   | 2026-03-15 | - |
+| 20. Integration Fix + Phase 17 Verification | 2/2 | Complete    | 2026-03-15 | - |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 0/2 | Pending | - |
 
 ---
