@@ -172,8 +172,7 @@ export default function OrderPage() {
                 }
               }}
               onSend={isTakeaway ? () => {
-                useQueueStore.getState().advanceStatus(tableId)
-                router.push('/table-map')
+                router.push(`/payment/${tableId}`)
               } : undefined}
               hideSend={isTakeaway && !isTakingStatus}
             />
