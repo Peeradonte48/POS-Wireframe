@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
-status: in_progress
-last_updated: "2026-03-15T11:00:00Z"
-last_activity: "2026-03-15 -- 18-03 complete: role permission fixes for Waiter/Cashier takeaway flow, queue badge expanded to active takeaway+delivery; human-verify checkpoint resolved; Phase 18 fully complete"
+status: verifying
+last_updated: "2026-03-15T10:51:21.649Z"
+last_activity: "2026-03-15 -- Takeaway CRUD: createTakeaway→navigate, ConfirmCancelDialog, EditCustomerModal, TakeawayCard, TicketPanel onSend/hideSend, order page takeaway context + persistence bug fix"
 progress:
   total_phases: 8
   completed_phases: 7
   total_plans: 21
   completed_plans: 21
-  percent: 98
+  percent: 96
 ---
 
 # Project State: FIP POS Staff App Wireframe
