@@ -86,7 +86,8 @@ export const useQueueStore = create<QueueStore>()(
             [orderId]: { ...state.orders[orderId], status: 'Confirmed' },
           },
         }))
-        useKdsStore.getState().addTicket(order.orderId, order.orderId)
+        // pass channel metadata so KDS badge and filter render correctly (gap DLVR-02)
+        useKdsStore.getState().addTicket(order.orderId, order.orderId, 'delivery', order.platform)
       },
 
       rejectOrder: (orderId, reason) => {
