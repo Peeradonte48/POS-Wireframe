@@ -115,6 +115,7 @@ export const useQueueStore = create<QueueStore>()(
           ReadyForRider: 'PickedUp',
           // Takeaway transitions
           Taking: 'Sent',
+          Sent: 'Ready',
           Ready: 'Collected',
         }
 

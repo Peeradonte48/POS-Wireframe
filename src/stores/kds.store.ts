@@ -13,6 +13,8 @@ export interface KdsTicket {
   addedAt: number
   stage: KdsStage
   checkedItems: Set<string>
+  orderType?: 'dine-in' | 'takeaway' | 'delivery'
+  platform?: 'grab' | 'lineman'
 }
 
 export interface RecalledTicket {
@@ -28,7 +30,7 @@ interface KdsStore {
   demoActive: boolean
 
   // Actions
-  addTicket: (tableId: string, tableLabel: string) => void
+  addTicket: (tableId: string, tableLabel: string, orderType?: 'dine-in' | 'takeaway' | 'delivery', platform?: 'grab' | 'lineman') => void
   injectDemoTicket: (ticket: KdsTicket) => void
   bumpTicket: (ticketId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
@@ -47,7 +49,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
   recallTray: [],
   demoActive: false,
 
-  addTicket: (tableId, tableLabel) =>
+  addTicket: (tableId, tableLabel, orderType, platform) =>
     set((state) => {
       const ticketId = `ticket-${Date.now()}-${tableId}`
       const ticket: KdsTicket = {
@@ -57,6 +59,8 @@ export const useKdsStore = create<KdsStore>((set) => ({
         addedAt: Date.now(),
         stage: 'New',
         checkedItems: new Set<string>(),
+        orderType,
+        platform,
       }
       return {
         tickets: { ...state.tickets, [ticketId]: ticket },
