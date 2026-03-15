@@ -180,12 +180,11 @@ Plans:
   2. The KDS board has filter tabs (All / Dine-in / Takeaway / Delivery) that hide irrelevant tickets and show only the selected channel
   3. Staff can flag individual items on a dine-in order as "pack to go"; flagged items show a "PACK" indicator on the KDS ticket so kitchen bags them separately on the same order
   4. Grab and LINE MAN platform badges render in distinct brand colors (Grab green, LINE MAN blue) using OKLCH design tokens, consistent with the existing token system in globals.css
-**Plans**: 4 plans
+**Plans**: 3 plans
 Plans:
-- [ ] 17-01-PLAN.md -- queue.store + delivery-demo factory + platform tokens + badge CVA variants + role-permissions
-- [ ] 17-02-PLAN.md -- DeliveryCard + RejectReasonDialog + DeliveryPanel (all DLVR requirements)
-- [ ] 17-03-PLAN.md -- NewTakeawayModal + TakeawayCard + TakeawayPanel (TKWY-01)
-- [ ] 17-04-PLAN.md -- table-map page 3-tab wrap + AppSidebar queue badge + human verify
+- [ ] 19-01-PLAN.md -- OrderLineItem packToGo field + togglePackToGo action + order-type badge CVA variants (foundation)
+- [ ] 19-02-PLAN.md -- KdsTicketCard order type badge + KdsItemRow PACK chip + KdsBoard filter tabs
+- [ ] 19-03-PLAN.md -- TicketLineItem bag toggle + TicketPanel wiring + kds-demo.ts mixed-channel update
 
 ---
 
@@ -211,7 +210,7 @@ Plans:
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
-| 19. KDS Differentiation + Combo Flag | v1.3 | 0/? | Not started | - |
+| 19. KDS Differentiation + Combo Flag | v1.3 | 0/3 | Not started | - |
 
 ---
 
