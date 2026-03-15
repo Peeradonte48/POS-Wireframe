@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
 status: completed
-last_updated: "2026-03-15T14:44:00.000Z"
+last_updated: "2026-03-15T14:38:58.435Z"
 last_activity: "2026-03-15 -- 19-03: pack-to-go bag toggle on order entry rows (dine-in only) + mixed-channel KDS demo factory (DIN/TKWY/GRAB/LINE MAN) with PACK items"
 progress:
   total_phases: 8

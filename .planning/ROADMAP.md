@@ -210,7 +210,7 @@ Plans:
 | 16. Integration Fix | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Queue Store + Floor Plan Tabs | 4/4 | Complete   | 2026-03-15 | - |
 | 18. Order Entry + Payment Pipeline | 3/3 | Complete    | 2026-03-15 | - |
-| 19. KDS Differentiation + Combo Flag | 3/3 | Complete   | 2026-03-15 | - |
+| 19. KDS Differentiation + Combo Flag | 3/3 | Complete    | 2026-03-15 | - |
 
 ---
 
