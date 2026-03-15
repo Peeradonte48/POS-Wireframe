@@ -32,6 +32,20 @@ export function buildMockDemoTicket(): KdsTicket {
 
   const ticketId = `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`
 
+  // Channel distribution: 60% dine-in, 25% takeaway, 15% delivery
+  const rand = Math.random()
+  let orderType: KdsTicket['orderType']
+  let platform: KdsTicket['platform']
+
+  if (rand < 0.60) {
+    orderType = 'dine-in'
+  } else if (rand < 0.85) {
+    orderType = 'takeaway'
+  } else {
+    orderType = 'delivery'
+    platform = Math.random() < 0.6 ? 'grab' : 'lineman'
+  }
+
   const orderItems: OrderLineItem[] = picked.map((menuItem) => ({
     lineId: `demo-line-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     menuItemId: menuItem.id,
@@ -42,6 +56,8 @@ export function buildMockDemoTicket(): KdsTicket {
     specialRequest: '',
     quantity: 1,
     status: 'sent' as LineItemStatus,
+    // packToGo on ~30% of dine-in items so PACK badges appear in demo
+    packToGo: orderType === 'dine-in' && Math.random() < 0.30,
   }))
 
   demoItemsMap.set(ticketId, orderItems)
@@ -53,6 +69,8 @@ export function buildMockDemoTicket(): KdsTicket {
     addedAt: Date.now(),
     stage: 'New',
     checkedItems: new Set(),
+    orderType,
+    platform,
   }
 }
 
