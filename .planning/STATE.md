@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Delivery & Takeaway Orders
-status: in_progress
-last_updated: "2026-03-15T00:15:00.000Z"
-last_activity: 2026-03-15 -- 17-01 complete: queue.store foundation + platform tokens + badge variants + role-permissions
+status: completed
+last_updated: "2026-03-15T00:05:00.000Z"
+last_activity: "2026-03-15 -- 17-03 complete: NewTakeawayModal + TakeawayCard + TakeawayPanel + advanceStatus takeaway transitions"
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 18
-  completed_plans: 15
-  percent: 0
+  total_plans: 46
+  completed_plans: 43
+  percent: 93
 ---
 
 # Project State: FIP POS Staff App Wireframe
@@ -39,12 +39,12 @@ See: .planning/PROJECT.md (updated 2026-03-15 -- Milestone v1.3 started)
 ## Current Position
 
 Phase: 17 -- Queue Store + Floor Plan Tabs (in progress)
-Plan: 01 complete, next: 02 (QueueBoard UI)
-Status: 17-01 complete -- queue.store foundation built
-Last activity: 2026-03-15 -- 17-01 complete: useQueueStore, delivery-demo.ts, platform OKLCH tokens, grab/lineman badge CVA variants, queue NavSlug + new-takeaway ActionKey
+Plan: 03 complete, next: 04 (QueueBoard UI integration)
+Status: 17-03 complete -- NewTakeawayModal + TakeawayCard + TakeawayPanel built
+Last activity: 2026-03-15 -- 17-03 complete: takeaway creation flow with FAB + advanceStatus takeaway transitions patched
 
 ```
-Progress: [█████████░] 91% (42/46 plans — v1.3 in progress)
+Progress: [█████████░] 93% (43/46 plans — v1.3 in progress)
 ```
 
 ---
@@ -55,7 +55,7 @@ Progress: [█████████░] 91% (42/46 plans — v1.3 in progress
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 17. Queue Store + Floor Plan Tabs | Staff can view/manage delivery queue and create takeaway orders from the floor plan | NAV-01, NAV-02, DLVR-01–09, TKWY-01 (12 total) | In progress (01/03 plans done) |
+| 17. Queue Store + Floor Plan Tabs | Staff can view/manage delivery queue and create takeaway orders from the floor plan | NAV-01, NAV-02, DLVR-01–09, TKWY-01 (12 total) | In progress (03/04 plans done) |
 | 18. Order Entry + Payment Pipeline | Takeaway/delivery orders flow through existing order entry and payment with KDS write-back | TKWY-02, TKWY-03, TKWY-04, TKWY-05 (4 total) | Not started |
 | 19. KDS Differentiation + Combo Flag | Kitchen sees order type badge per ticket, can filter by channel, dine-in items can be flagged pack-to-go | COMBO-01, COMBO-02, KDS-01, KDS-02, UI-01 (5 total) | Not started |
 
@@ -109,6 +109,11 @@ See `.planning/PROJECT.md` for full key decisions log.
 - **[16-01] KDS orderStage write-back at KdsTicketCard callsite**: avoids coupling kds.store to table.store at module-definition time; consistent with CLAUDE.md getState() pattern
 - **[16-01] Cleanup ordering in markClean**: cancelSplit → dissolveAll → markClean → onClose -- all bill.store cleanup before table.store lifecycle change
 - **[16-01] orderStage Billed set as first statement in onAllPaid**: primary table must reach terminal stage before secondary markCleaning and dissolveAll run
+
+### Architecture Decisions for v1.3 (17-03 execution)
+
+- **[17-03] advanceStatus extended with takeaway transitions**: Taking→Sent and Ready→Collected added to the transitions Partial Record -- keeps single-action pattern; declarative map makes all transitions auditable
+- **[17-03] TakeawayCard "Start Order" CTA advances to Sent as Phase 17 placeholder**: Phase 18 will replace with navigation; comment documents hook-in point
 
 ### Architecture Decisions for v1.3 (17-01 execution)
 
