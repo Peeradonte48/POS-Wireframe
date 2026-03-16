@@ -2,8 +2,6 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { buildMockDeliveryOrder } from '@/lib/mock-data/delivery-demo'
-import { useKdsStore } from '@/stores/kds.store'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,12 +9,10 @@ export type OrderChannel = 'delivery' | 'takeaway'
 export type DeliveryPlatform = 'grab' | 'lineman'
 
 export type QueueOrderStatus =
-  | 'Pending'       // delivery incoming, awaiting staff accept/reject
   | 'Confirmed'     // delivery accepted by staff
   | 'Preparing'     // delivery being cooked (KDS in progress)
   | 'ReadyForRider' // delivery ready, waiting for rider pickup
   | 'PickedUp'      // delivery complete
-  | 'Rejected'      // delivery rejected by staff
   | 'Taking'        // takeaway being created / order entry not yet sent
   | 'Sent'          // takeaway sent to KDS
   | 'Ready'         // takeaway ready for collection (KDS complete)
@@ -24,35 +20,29 @@ export type QueueOrderStatus =
   | 'Cancelled'     // takeaway cancelled before sending to kitchen
 
 export interface QueueOrder {
-  orderId: string           // 'DL-grab-7821' or 'TK-001'
+  orderId: string
   channel: OrderChannel
-  platform?: DeliveryPlatform   // delivery only
-  customerName: string
-  customerPhone?: string        // takeaway only, optional
-  itemsSummary: string          // e.g. "2x Tonkotsu, 1x Karaage"
+  platform?: DeliveryPlatform
+  externalId?: string           // delivery only: platform order ref e.g. "GR-4401"
+  customerName?: string
+  customerPhone?: string
+  itemsSummary: string
   status: QueueOrderStatus
-  createdAt: number             // Date.now() timestamp
-  pendingAt?: number            // delivery only: when entered Pending state
-  rejectionReason?: string
+  createdAt: number
 }
 
 // ─── Store Interface ──────────────────────────────────────────────────────────
 
 interface QueueStore {
   orders: Record<string, QueueOrder>
-  demoActive: boolean
-  autoAccept: boolean
   takeawayCounter: number
 
-  simulateOrder: () => void
-  acceptOrder: (orderId: string) => void
-  rejectOrder: (orderId: string, reason: string) => void
+  createDeliveryOrder: (platform: DeliveryPlatform, externalId: string, customerName?: string, customerPhone?: string) => string
+  updateItemsSummary: (orderId: string, summary: string) => void
   advanceStatus: (orderId: string) => void
   createTakeaway: (customerName: string, customerPhone?: string) => string
   updateCustomer: (orderId: string, name: string, phone?: string) => void
   cancelOrder: (orderId: string) => void
-  toggleDemoActive: () => void
-  toggleAutoAccept: () => void
 }
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
@@ -61,46 +51,30 @@ export const useQueueStore = create<QueueStore>()(
   persist(
     (set, get) => ({
       orders: {},
-      demoActive: false,
-      autoAccept: false,
       takeawayCounter: 0,
 
-      simulateOrder: () => {
-        const newOrder = buildMockDeliveryOrder()
-        newOrder.status = 'Pending'
-        newOrder.pendingAt = Date.now()
-        set((state) => ({
-          orders: { ...state.orders, [newOrder.orderId]: newOrder },
-        }))
-        if (get().autoAccept) {
-          get().acceptOrder(newOrder.orderId)
+      createDeliveryOrder: (platform, externalId, customerName, customerPhone) => {
+        const orderId = `DL-${platform}-${Date.now()}`
+        const order: QueueOrder = {
+          orderId,
+          channel: 'delivery',
+          platform,
+          externalId,
+          customerName,
+          customerPhone,
+          itemsSummary: '',
+          status: 'Confirmed',
+          createdAt: Date.now(),
         }
+        set((state) => ({ orders: { ...state.orders, [orderId]: order } }))
+        return orderId
       },
 
-      acceptOrder: (orderId) => {
-        const order = get().orders[orderId]
-        if (!order || order.status !== 'Pending') return
+      updateItemsSummary: (orderId, summary) => {
         set((state) => ({
           orders: {
             ...state.orders,
-            [orderId]: { ...state.orders[orderId], status: 'Confirmed' },
-          },
-        }))
-        // pass channel metadata so KDS badge and filter render correctly (gap DLVR-02)
-        useKdsStore.getState().addTicket(order.orderId, order.orderId, 'delivery', order.platform)
-      },
-
-      rejectOrder: (orderId, reason) => {
-        const order = get().orders[orderId]
-        if (!order || order.status !== 'Pending') return
-        set((state) => ({
-          orders: {
-            ...state.orders,
-            [orderId]: {
-              ...state.orders[orderId],
-              status: 'Rejected',
-              rejectionReason: reason,
-            },
+            [orderId]: { ...state.orders[orderId], itemsSummary: summary },
           },
         }))
       },
@@ -110,11 +84,9 @@ export const useQueueStore = create<QueueStore>()(
         if (!order) return
 
         const transitions: Partial<Record<QueueOrderStatus, QueueOrderStatus>> = {
-          // Delivery transitions
           Confirmed: 'Preparing',
           Preparing: 'ReadyForRider',
           ReadyForRider: 'PickedUp',
-          // Takeaway transitions
           Taking: 'Sent',
           Sent: 'Ready',
           Ready: 'Collected',
@@ -169,9 +141,6 @@ export const useQueueStore = create<QueueStore>()(
           },
         }))
       },
-
-      toggleDemoActive: () => set((state) => ({ demoActive: !state.demoActive })),
-      toggleAutoAccept: () => set((state) => ({ autoAccept: !state.autoAccept })),
     }),
     {
       name: 'queue-store',
