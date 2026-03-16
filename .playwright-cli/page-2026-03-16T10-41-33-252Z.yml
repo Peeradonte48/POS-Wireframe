@@ -1,0 +1,123 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e39]
+  - generic [ref=e68]:
+    - region "Notifications alt+T"
+    - banner [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]: A
+        - generic [ref=e72]: A Ramen — Thonglor
+      - generic [ref=e73]: Waiter
+      - generic [ref=e74]: Somchai
+      - button "Toggle theme" [ref=e75]:
+        - img
+        - img
+      - button "Log out" [ref=e76]:
+        - img
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - navigation [ref=e79]:
+          - list [ref=e84]:
+            - listitem [ref=e85]:
+              - link [ref=e147] [cursor=pointer]:
+                - /url: /table-map
+                - img [ref=e148]
+            - listitem [ref=e89]:
+              - link [ref=e150] [cursor=pointer]:
+                - /url: /orders
+                - img [ref=e151]
+            - listitem [ref=e95]:
+              - link [ref=e155] [cursor=pointer]:
+                - /url: /table-map
+                - img [ref=e156]
+            - listitem [ref=e100]:
+              - generic "KDS — not available for Waiter" [ref=e101]:
+                - img [ref=e102]
+            - listitem [ref=e106]:
+              - generic "Payment — not available for Waiter" [ref=e107]:
+                - img [ref=e108]
+        - button "Expand sidebar" [ref=e112]:
+          - img
+      - main [ref=e113]:
+        - generic [ref=e159]:
+          - tablist [ref=e160]:
+            - tab "Dine-in" [selected] [ref=e161]
+            - tab "Takeaway" [ref=e162]
+            - tab "Delivery" [ref=e163]
+          - tabpanel "Dine-in" [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]:
+                - generic [ref=e167]:
+                  - heading "Floor Plan" [level=1] [ref=e168]
+                  - generic [ref=e169]: 10 / 12 tables available
+                - generic [ref=e170]:
+                  - button "T01 Open" [ref=e171]:
+                    - generic [ref=e172]: T01
+                    - generic [ref=e173]:
+                      - img
+                      - text: Open
+                  - button "T02 Open" [ref=e174]:
+                    - generic [ref=e175]: T02
+                    - generic [ref=e176]:
+                      - img
+                      - text: Open
+                  - button "T03 Open" [ref=e177]:
+                    - generic [ref=e178]: T03
+                    - generic [ref=e179]:
+                      - img
+                      - text: Open
+                  - button "T04 Open" [ref=e180]:
+                    - generic [ref=e181]: T04
+                    - generic [ref=e182]:
+                      - img
+                      - text: Open
+                  - button "T05 Open" [ref=e183]:
+                    - generic [ref=e184]: T05
+                    - generic [ref=e185]:
+                      - img
+                      - text: Open
+                  - button "T06 Open" [ref=e186]:
+                    - generic [ref=e187]: T06
+                    - generic [ref=e188]:
+                      - img
+                      - text: Open
+                  - button "T07 Open" [ref=e189]:
+                    - generic [ref=e190]: T07
+                    - generic [ref=e191]:
+                      - img
+                      - text: Open
+                  - button "T08 Open" [ref=e192]:
+                    - generic [ref=e193]: T08
+                    - generic [ref=e194]:
+                      - img
+                      - text: Open
+                  - button "T09 Open" [ref=e195]:
+                    - generic [ref=e196]: T09
+                    - generic [ref=e197]:
+                      - img
+                      - text: Open
+                  - button "T10 Reserved" [ref=e198]:
+                    - generic [ref=e199]: T10
+                    - generic [ref=e200]:
+                      - img
+                      - text: Reserved
+                  - button "T11 Reserved" [ref=e201]:
+                    - generic [ref=e202]: T11
+                    - generic [ref=e203]:
+                      - img
+                      - text: Reserved
+                  - button "T12 Open" [ref=e204]:
+                    - generic [ref=e205]: T12
+                    - generic [ref=e206]:
+                      - img
+                      - text: Open
+              - generic [ref=e210]:
+                - heading "Merge Bill" [level=2] [ref=e213]
+                - paragraph [ref=e214]: Select tables to combine into one bill
+                - paragraph [ref=e215]: No eligible tables to merge. Only Occupied or Check Requested tables can be merged.
+                - generic [ref=e216]:
+                  - button "Merge" [disabled]:
+                    - img
+                    - text: Merge
+                  - button "Cancel" [ref=e217]

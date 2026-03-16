@@ -1,0 +1,24 @@
+- generic [ref=e1]:
+  - generic [ref=e40]:
+    - button "Back" [ref=e42]:
+      - img
+      - text: Back
+    - generic [ref=e43]:
+      - heading "Waiter" [level=2] [ref=e44]
+      - paragraph [ref=e45]: Enter your PIN
+    - generic [ref=e52]:
+      - button "1" [ref=e53]
+      - button "2" [active] [ref=e54]
+      - button "3" [ref=e55]
+      - button "4" [ref=e56]
+      - button "5" [ref=e57]
+      - button "6" [ref=e58]
+      - button "7" [ref=e59]
+      - button "8" [ref=e60]
+      - button "9" [ref=e61]
+      - button "Backspace" [ref=e62]:
+        - img [ref=e63]
+      - button "0" [ref=e66]
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e39]

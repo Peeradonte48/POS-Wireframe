@@ -1,0 +1,59 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e39]
+  - generic [ref=e68]:
+    - region "Notifications alt+T"
+    - banner [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]: A
+        - generic [ref=e72]: Ramen
+      - generic [ref=e73]: Waiter
+      - generic [ref=e74]: Somchai
+      - button "Toggle theme" [ref=e75]:
+        - img
+        - img
+      - button "Log out" [ref=e76]:
+        - img
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - navigation [ref=e79]:
+          - img [ref=e81]
+          - list [ref=e84]:
+            - listitem [ref=e85]:
+              - generic "Open a shift first" [ref=e86]:
+                - img [ref=e87]
+            - listitem [ref=e89]:
+              - generic "Open a shift first" [ref=e90]:
+                - img [ref=e91]
+            - listitem [ref=e95]:
+              - generic "Open a shift first" [ref=e96]:
+                - img [ref=e97]
+            - listitem [ref=e100]:
+              - generic "KDS — not available for Waiter" [ref=e101]:
+                - img [ref=e102]
+            - listitem [ref=e106]:
+              - generic "Payment — not available for Waiter" [ref=e107]:
+                - img [ref=e108]
+        - button "Expand sidebar" [ref=e112]:
+          - img
+      - main [ref=e113]:
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - img [ref=e117]
+            - heading "Open Your Shift" [level=1] [ref=e120]
+            - paragraph [ref=e121]: Select your branch and enter the opening cash amount to begin service.
+          - generic [ref=e122]:
+            - generic [ref=e123]:
+              - generic [ref=e124]: Branch
+              - combobox "Branch" [active] [ref=e125]:
+                - generic [ref=e126]: b1
+                - img
+              - textbox [ref=e127]: b1
+            - generic [ref=e128]:
+              - generic [ref=e129]: Opening Cash
+              - generic [ref=e130]:
+                - generic [ref=e131]: ฿
+                - spinbutton "Opening Cash" [ref=e132]
+              - paragraph [ref=e133]: Enter 0 if starting with no float.
+            - button "Open Shift" [disabled]

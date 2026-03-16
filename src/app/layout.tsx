@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans, Noto_Sans_JP, Noto_Sans_Thai } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 
@@ -40,9 +41,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" suppressHydrationWarning className={`${ibmPlexSans.variable} ${notoSansJP.variable} ${notoSansThai.variable}`}>
-      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-      <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
       <body className="antialiased">
+        <Script src="https://mcp.figma.com/mcp/html-to-design/capture.js" strategy="afterInteractive" />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

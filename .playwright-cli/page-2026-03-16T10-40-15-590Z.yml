@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - heading "A Ramen POS" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Select your role to continue
+    - generic [ref=e8]:
+      - button "Waiter" [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e15]: Waiter
+      - button "Cashier" [ref=e16]:
+        - img [ref=e17]
+        - generic [ref=e20]: Cashier
+      - button "Manager" [ref=e21]:
+        - img [ref=e22]
+        - generic [ref=e25]: Manager
+      - button "Kitchen" [ref=e26]:
+        - img [ref=e27]
+        - generic [ref=e29]: Kitchen
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e39]
