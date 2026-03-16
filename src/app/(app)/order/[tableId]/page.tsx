@@ -38,7 +38,7 @@ export default function OrderPage() {
   const router = useRouter()
 
   // Takeaway context detection
-  const isTakeaway = Boolean(useQueueStore.getState().orders[tableId])
+  const isTakeaway = useQueueStore.getState().orders[tableId]?.channel === 'takeaway'
   const queueStatus = useQueueStore((s) => s.orders[tableId]?.status)
   const queueCustomerName = useQueueStore((s) => s.orders[tableId]?.customerName)
   const queueCustomerPhone = useQueueStore((s) => s.orders[tableId]?.customerPhone)

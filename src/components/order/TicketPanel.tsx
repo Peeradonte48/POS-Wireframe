@@ -20,8 +20,10 @@ import type { OrderLineItem } from '@/stores/order.store'
 interface TicketPanelProps {
   tableId: string
   onEditLineItem: (lineId: string) => void
-  onSend?: () => void      // if provided: called instead of updateTable; sendRound still fires
-  hideSend?: boolean       // if true: hides the Send button entirely (read-only state)
+  onSend?: () => void
+  hideSend?: boolean
+  sendLabel?: string    // overrides "Send to Kitchen" button text
+  headerLabel?: string  // overrides table?.label ?? tableId in panel header
 }
 
 // ---------------------------------------------------------------------------
@@ -39,7 +41,7 @@ function computeTotal(allItems: OrderLineItem[]): number {
 // TicketPanel
 // ---------------------------------------------------------------------------
 
-export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: TicketPanelProps) {
+export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend, sendLabel, headerLabel }: TicketPanelProps) {
   const order = useOrderStore((s) => s.orders[tableId])
   const table = useTableStore((s) => s.tables[tableId])
   const { removeItem, togglePackToGo } = useOrderStore()
@@ -48,7 +50,7 @@ export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: Ticke
 
   // Detect if this is a takeaway/delivery order — non-reactive read (CLAUDE.md getState() pattern)
   // Pack-to-go toggle is dine-in only; isTakeaway is stable for the lifetime of this panel
-  const isTakeaway = !!useQueueStore.getState().orders[tableId]
+  const isTakeaway = useQueueStore.getState().orders[tableId]?.channel === 'takeaway'
 
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
   const voidAuthorizedRef = useRef(false)
@@ -106,7 +108,7 @@ export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: Ticke
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-sm leading-tight truncate">
-              {table?.label ?? tableId}
+              {headerLabel ?? table?.label ?? tableId}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">{subtitleText()}</p>
           </div>
@@ -164,7 +166,7 @@ export function TicketPanel({ tableId, onEditLineItem, onSend, hideSend }: Ticke
             onClick={handleSend}
             disabled={!hasUnsentItems || (!onSend && !canDoAction(role, 'send-to-kitchen'))}
           >
-            Send to Kitchen
+            {sendLabel ?? 'Send to Kitchen'}
           </Button>
         )}
       </div>

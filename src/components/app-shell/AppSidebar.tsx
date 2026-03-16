@@ -51,7 +51,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
     () =>
       Object.values(orders).filter((o) => {
         if (o.channel === 'delivery') {
-          return ['Pending', 'Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
+          return ['Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
         }
         if (o.channel === 'takeaway') {
           return ['Taking', 'Sent', 'Ready'].includes(o.status)

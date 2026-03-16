@@ -1,5 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { TableGrid } from '@/components/table-map/TableGrid'
 import { TableBottomSheet } from '@/components/table-map/TableBottomSheet'
@@ -12,6 +13,8 @@ import type { TableRecord } from '@/stores/table.store'
 export default function TableMapPage() {
   const [selectedTable, setSelectedTable] = useState<TableRecord | null>(null)
   const [openModalTableId, setOpenModalTableId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'dine-in')
 
   // Zustand selector safety — raw Record, derive in useMemo
   const orders = useQueueStore((s) => s.orders)
@@ -21,7 +24,7 @@ export default function TableMapPage() {
       Object.values(orders).filter(
         (o) =>
           o.channel === 'delivery' &&
-          ['Pending', 'Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
+          ['Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
       ).length,
     [orders]
   )
@@ -54,7 +57,7 @@ export default function TableMapPage() {
   }
 
   return (
-    <Tabs defaultValue="dine-in" className="flex flex-col h-full">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
       <TabsList className="shrink-0 mx-4 mt-3 mb-0 self-start">
         <TabsTrigger value="dine-in">Dine-in</TabsTrigger>
         <TabsTrigger value="takeaway" className="flex items-center gap-1">
