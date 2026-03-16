@@ -54,7 +54,8 @@ export const useQueueStore = create<QueueStore>()(
       takeawayCounter: 0,
 
       createDeliveryOrder: (platform, externalId, customerName, customerPhone) => {
-        const orderId = `DL-${platform}-${Date.now()}`
+        const now = Date.now()
+        const orderId = `DL-${platform}-${now}`
         const order: QueueOrder = {
           orderId,
           channel: 'delivery',
@@ -64,13 +65,15 @@ export const useQueueStore = create<QueueStore>()(
           customerPhone,
           itemsSummary: '',
           status: 'Confirmed',
-          createdAt: Date.now(),
+          createdAt: now,
         }
         set((state) => ({ orders: { ...state.orders, [orderId]: order } }))
         return orderId
       },
 
       updateItemsSummary: (orderId, summary) => {
+        const order = get().orders[orderId]
+        if (!order) return
         set((state) => ({
           orders: {
             ...state.orders,
