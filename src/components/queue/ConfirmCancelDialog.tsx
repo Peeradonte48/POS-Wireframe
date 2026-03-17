@@ -14,7 +14,7 @@ interface ConfirmCancelDialogProps {
   onClose: () => void
   onConfirm: () => void
   orderId: string
-  customerName: string
+  customerName?: string
 }
 
 export function ConfirmCancelDialog({
@@ -31,7 +31,7 @@ export function ConfirmCancelDialog({
           <DialogTitle>Cancel this order?</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground py-2">
-          {orderId} · {customerName} will be removed.
+          {orderId}{customerName ? ` · ${customerName}` : ''} will be removed.
         </p>
         <DialogFooter>
           <Button variant="outline" size="lg" onClick={onClose}>
