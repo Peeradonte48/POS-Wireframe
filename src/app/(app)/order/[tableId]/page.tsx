@@ -171,8 +171,9 @@ export default function OrderPage() {
                   setSelectedMenuItemId(item.menuItemId)
                 }
               }}
-              onSend={isTakeaway ? () => {
-                router.push(`/payment/${tableId}`)
+              onSend={isTakeaway && isTakingStatus ? () => {
+                useQueueStore.getState().advanceStatus(tableId)
+                router.push('/table-map')
               } : undefined}
               hideSend={isTakeaway && !isTakingStatus}
             />
