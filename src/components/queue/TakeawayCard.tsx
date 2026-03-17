@@ -8,8 +8,8 @@ import { CloseSquareLinear } from 'solar-icon-set'
 import { useQueueStore } from '@/stores/queue.store'
 import type { QueueOrder } from '@/stores/queue.store'
 import { useOrderStore } from '@/stores/order.store'
-import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
+import { ConfirmStepBackDialog } from '@/components/queue/ConfirmStepBackDialog'
 
 function getStatusBadgeVariant(status: QueueOrder['status']): 'outline' | 'ordered' | 'ready' | 'settled' {
   switch (status) {
@@ -27,8 +27,17 @@ function getStatusLabel(status: QueueOrder['status']): string {
     case 'Sent':      return 'Sent to Kitchen'
     case 'Ready':     return 'Ready'
     case 'Collected': return 'Collected'
+    case 'Cancelled': return 'Cancelled'
     default:          return status
   }
+}
+
+function formatTime(ts: number): string {
+  return new Date(ts).toLocaleTimeString('th-TH', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
 }
 
 interface TakeawayCardProps {
@@ -38,28 +47,23 @@ interface TakeawayCardProps {
 export function TakeawayCard({ order }: TakeawayCardProps) {
   const router = useRouter()
   const advanceStatus = useQueueStore((s) => s.advanceStatus)
+  const stepBack = useQueueStore((s) => s.stepBack)
   const cancelOrder = useQueueStore((s) => s.cancelOrder)
+
   const [showCancel, setShowCancel] = useState(false)
+  const [showStepBack, setShowStepBack] = useState(false)
 
   const orderData = useOrderStore((s) => s.orders[order.orderId])
-  const itemsSummary = useMemo(() => {
-    if (!orderData || order.status === 'Taking') return 'No items yet'
-    const items = orderData.rounds
+
+  const itemCount = useMemo(() => {
+    if (!orderData) return 0
+    return orderData.rounds
       .flatMap((r) => r.items)
-      .filter((i) => i.status !== 'voided')
-    if (items.length === 0) return 'No items yet'
-    const grouped = items.reduce<Record<string, number>>((acc, item) => {
-      acc[item.menuItemId] = (acc[item.menuItemId] ?? 0) + item.quantity
-      return acc
-    }, {})
-    const parts = Object.entries(grouped).map(([id, qty]) => {
-      const label = MENU_ITEMS.find((m) => m.id === id)?.name ?? id
-      return `${qty}x ${label}`
-    })
-    const MAX_ITEMS = 3
-    if (parts.length <= MAX_ITEMS) return parts.join(', ')
-    return `${parts.slice(0, MAX_ITEMS).join(', ')} +${parts.length - MAX_ITEMS} more`
-  }, [orderData, order.status])
+      .filter((i) => i.status !== 'voided').length
+  }, [orderData])
+
+  const customerLabel = order.customerName ?? 'Guest'
+  const isTerminal = order.status === 'Collected' || order.status === 'Cancelled'
 
   return (
     <div
@@ -72,44 +76,73 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
         <Badge variant={getStatusBadgeVariant(order.status)}>
           {getStatusLabel(order.status)}
         </Badge>
+        <span className="text-xs text-muted-foreground ml-auto shrink-0">
+          {formatTime(order.createdAt)}
+        </span>
       </div>
 
-      {/* Customer info */}
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold text-foreground">{order.customerName}</span>
-        {order.customerPhone && (
-          <span className="text-xs text-muted-foreground">{order.customerPhone}</span>
-        )}
-        <span className="text-xs text-muted-foreground mt-0.5">{itemsSummary}</span>
-      </div>
+      {/* Body row: customer · item count */}
+      <p className="text-sm font-semibold text-foreground">
+        {customerLabel}
+        <span className="font-normal text-muted-foreground"> · {itemCount} items</span>
+      </p>
 
-      {/* CTA */}
-      {order.status === 'Taking' && (
+      {/* Action bar */}
+      {!isTerminal && (
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex-1"
-            onClick={() => router.push(`/order/${order.orderId}`)}
-          >
-            Start Order
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="min-w-[36px] text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={() => setShowCancel(true)}
-            aria-label="Cancel order"
-          >
-            <CloseSquareLinear size={16} />
-          </Button>
+          {/* Left: cancel (Taking) or Step Back (Sent / Ready) */}
+          {order.status === 'Taking' && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="min-w-[36px] text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setShowCancel(true)}
+              aria-label="Cancel order"
+            >
+              <CloseSquareLinear size={16} />
+            </Button>
+          )}
+          {(order.status === 'Sent' || order.status === 'Ready') && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowStepBack(true)}
+            >
+              ← Step Back
+            </Button>
+          )}
+
+          {/* Right: primary action */}
+          {order.status === 'Taking' && (
+            <Button
+              size="sm"
+              className="flex-1"
+              onClick={() => router.push(`/order/${order.orderId}`)}
+            >
+              Start Order
+            </Button>
+          )}
+          {order.status === 'Sent' && (
+            <Button
+              size="sm"
+              className="flex-1"
+              onClick={() => advanceStatus(order.orderId)}
+            >
+              Mark Ready
+            </Button>
+          )}
+          {order.status === 'Ready' && (
+            <Button
+              size="sm"
+              className="flex-1"
+              onClick={() => advanceStatus(order.orderId)}
+            >
+              Mark Collected
+            </Button>
+          )}
         </div>
       )}
-      {order.status === 'Ready' && (
-        <Button size="sm" onClick={() => advanceStatus(order.orderId)}>
-          Mark Collected
-        </Button>
-      )}
+
       <ConfirmCancelDialog
         open={showCancel}
         onClose={() => setShowCancel(false)}
@@ -120,6 +153,18 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
         orderId={order.orderId}
         customerName={order.customerName}
       />
+
+      {(order.status === 'Sent' || order.status === 'Ready') && (
+        <ConfirmStepBackDialog
+          open={showStepBack}
+          onClose={() => setShowStepBack(false)}
+          onConfirm={() => {
+            stepBack(order.orderId)
+            setShowStepBack(false)
+          }}
+          currentStatus={order.status}
+        />
+      )}
     </div>
   )
 }
