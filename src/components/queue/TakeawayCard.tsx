@@ -102,11 +102,20 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
               <CloseSquareLinear size={16} />
             </Button>
           )}
-          {(order.status === 'Sent' || order.status === 'Ready') && (
+          {order.status === 'Sent' && (
             <Button
               size="sm"
               variant="outline"
               onClick={() => setShowStepBack(true)}
+            >
+              ← Step Back
+            </Button>
+          )}
+          {order.status === 'Ready' && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => stepBack(order.orderId)}
             >
               ← Step Back
             </Button>
@@ -154,7 +163,7 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
         customerName={order.customerName}
       />
 
-      {(order.status === 'Sent' || order.status === 'Ready') && (
+      {order.status === 'Sent' && (
         <ConfirmStepBackDialog
           open={showStepBack}
           onClose={() => setShowStepBack(false)}
