@@ -29,7 +29,7 @@ export function TableBottomSheet({
   const open = table !== null
   const router = useRouter()
   const role = useSessionStore((s) => s.role)!
-  const { markReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
+  const { markReserved, undoReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
 
   // Local editable state for waiter name and note (Occupied sheet)
   const [localWaiter, setLocalWaiter] = useState('')
@@ -299,9 +299,21 @@ export function TableBottomSheet({
             )}
 
             {table.status === 'Reserved' && (
-              <p className="text-sm text-muted-foreground px-4 pb-4">
-                Table is reserved
-              </p>
+              <div className="px-4 pb-6 flex flex-col gap-3">
+                <p className="text-sm text-muted-foreground">Table is reserved</p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    undoReserved(table.id)
+                    toast('Table unreserved')
+                    onClose()
+                  }}
+                  disabled={!canDoAction(role, 'undo-reserved')}
+                >
+                  Release Reservation
+                </Button>
+              </div>
             )}
           </>
         )}
