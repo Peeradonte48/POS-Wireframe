@@ -20,6 +20,7 @@ export function canAccess(role: Role, slug: NavSlug): boolean {
 export type ActionKey =
   | 'open-table'
   | 'mark-reserved'
+  | 'undo-reserved'
   | 'request-check'
   | 'send-to-kitchen'
   | 'void-pre-send'
@@ -34,6 +35,7 @@ export type ActionKey =
 export const ACTION_PERMISSIONS: Record<ActionKey, Role[]> = {
   'open-table':        ['Waiter', 'Cashier', 'Manager'],
   'mark-reserved':     ['Waiter', 'Cashier', 'Manager'],
+  'undo-reserved':     ['Waiter', 'Cashier', 'Manager'],
   'request-check':     ['Waiter', 'Cashier', 'Manager'],
   'send-to-kitchen':   ['Waiter', 'Manager'],
   'void-pre-send':     ['Waiter', 'Cashier', 'Manager'],
