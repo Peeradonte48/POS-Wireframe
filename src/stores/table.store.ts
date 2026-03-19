@@ -37,6 +37,7 @@ interface TableStore {
   tables: Record<string, TableRecord>
   openTable: (id: string, guestCount: number) => void
   markReserved: (id: string) => void
+  undoReserved: (id: string) => void
   requestCheck: (id: string) => void
   markCleaning: (id: string) => void
   markClean: (id: string) => void
@@ -74,6 +75,17 @@ export const useTableStore = create<TableStore>()(
         [id]: {
           ...state.tables[id],
           status: 'Reserved',
+        },
+      },
+    })),
+
+  undoReserved: (id) =>
+    set((state) => ({
+      tables: {
+        ...state.tables,
+        [id]: {
+          ...state.tables[id],
+          status: 'Open',
         },
       },
     })),
