@@ -7,7 +7,7 @@ import { AlarmLinear } from 'solar-icon-set' // Solar equivalent for Lucide Alar
 
 export default function ShiftOpenPage() {
   const router = useRouter()
-  const { openShift } = useSessionStore()
+  const { openShift, role } = useSessionStore()
 
   const handleShiftOpen = (branchId: string, branchName: string, openingCash: number) => {
     openShift(branchId, branchName, openingCash)
@@ -26,7 +26,7 @@ export default function ShiftOpenPage() {
         </p>
       </div>
 
-      <ShiftOpenForm onSubmit={handleShiftOpen} />
+      <ShiftOpenForm onSubmit={handleShiftOpen} showOpeningCash={role === 'Manager'} />
     </div>
   )
 }

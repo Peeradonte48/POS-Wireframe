@@ -15,20 +15,23 @@ import { Label } from '@/components/ui/label'
 
 interface ShiftOpenFormProps {
   onSubmit: (branchId: string, branchName: string, openingCash: number) => void
+  showOpeningCash?: boolean
 }
 
-export function ShiftOpenForm({ onSubmit }: ShiftOpenFormProps) {
+export function ShiftOpenForm({ onSubmit, showOpeningCash = false }: ShiftOpenFormProps) {
   const [branchId, setBranchId] = useState<string>('')
   const [cashValue, setCashValue] = useState<string>('')
 
   const selectedBranch = BRANCHES.find((b) => b.id === branchId)
   const cashNum = parseFloat(cashValue)
-  const isValid = !!branchId && cashValue.trim() !== '' && !isNaN(cashNum)
+  const isValid = showOpeningCash
+    ? !!branchId && cashValue.trim() !== '' && !isNaN(cashNum)
+    : !!branchId
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!isValid || !selectedBranch) return
-    onSubmit(branchId, selectedBranch.name, cashNum)
+    onSubmit(branchId, selectedBranch.name, showOpeningCash ? cashNum : 0)
   }
 
   return (
@@ -50,8 +53,8 @@ export function ShiftOpenForm({ onSubmit }: ShiftOpenFormProps) {
         </Select>
       </div>
 
-      {/* Opening cash input */}
-      <div className="flex flex-col gap-2">
+      {/* Opening cash input — manager only */}
+      <div className={showOpeningCash ? 'flex flex-col gap-2' : 'hidden'}>
         <Label htmlFor="opening-cash">Opening Cash</Label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium select-none">
