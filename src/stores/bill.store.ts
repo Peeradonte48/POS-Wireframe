@@ -30,6 +30,7 @@ interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
   initCustomSplit: (tableId: string, payerCount: number) => void
+  addCustomPayer: (tableId: string) => void
   setCustomAmount: (tableId: string, payerIndex: number, amount: number) => void
   initPerSeatSplit: (tableId: string, seatCount: number) => void
   assignItem: (tableId: string, lineId: string, seatIndex: number, qty: number) => void
@@ -62,6 +63,22 @@ export const useBillStore = create<BillStore>()(
             payments: {},
           }
           return { splits: { ...state.splits, [tableId]: split } }
+        }),
+
+      addCustomPayer: (tableId) =>
+        set((state) => {
+          const existing = state.splits[tableId]
+          if (!existing) return state
+          return {
+            splits: {
+              ...state.splits,
+              [tableId]: {
+                ...existing,
+                seatCount: existing.seatCount + 1,
+                customAmounts: [...existing.customAmounts, 0],
+              },
+            },
+          }
         }),
 
       setCustomAmount: (tableId, payerIndex, amount) =>

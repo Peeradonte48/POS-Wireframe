@@ -16,7 +16,6 @@ import type { OrderLineItem } from '@/stores/order.store'
 
 type ViewState =
   | 'mode-select'
-  | 'custom-config'
   | 'custom-pay'
   | 'per-seat-assign'
   | 'per-seat-pay'
@@ -50,7 +49,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   // Revert to single bill confirm state
   const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
-  const { initCustomSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit, setCustomAmount } =
+  const { initCustomSplit, addCustomPayer, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit, setCustomAmount } =
     useBillStore()
 
   const split = getSplit(tableId)
@@ -233,7 +232,10 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
           {/* Split by Value card */}
           <Button
             variant="option-card"
-            onClick={() => setView('custom-config')}
+            onClick={() => {
+              initCustomSplit(tableId, 2)
+              setView('custom-pay')
+            }}
           >
             <p className="font-semibold text-sm">Split by Value</p>
             <p className="text-xs text-muted-foreground">Each person pays a custom amount</p>
@@ -251,70 +253,6 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
             <p className="text-xs text-muted-foreground">Assign each item to a seat</p>
           </Button>
         </div>
-      </div>
-    )
-  }
-
-  // ---------------------------------------------------------------------------
-  // View: custom-config
-  // ---------------------------------------------------------------------------
-
-  function renderCustomConfig() {
-    return (
-      <div className="px-4 py-4 space-y-4">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => setView('mode-select')}>← Back</Button>
-          <h2 className="text-lg font-semibold">Split by Value</h2>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="payer-count-input">
-            Number of payers
-          </label>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSeatCountInput(Math.max(2, seatCountInput - 1))}
-              disabled={seatCountInput <= 2}
-            >
-              −
-            </Button>
-            <input
-              id="payer-count-input"
-              type="number"
-              min={2}
-              max={20}
-              value={seatCountInput}
-              onChange={(e) => {
-                const v = Math.min(20, Math.max(2, Number(e.target.value) || 2))
-                setSeatCountInput(v)
-              }}
-              className="w-16 text-center border rounded-md px-2 py-1 text-base bg-background"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSeatCountInput(Math.min(20, seatCountInput + 1))}
-              disabled={seatCountInput >= 20}
-            >
-              +
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Total: ฿{grandTotal.toLocaleString()}
-          </p>
-        </div>
-
-        <Button
-          className="w-full"
-          onClick={() => {
-            initCustomSplit(tableId, seatCountInput)
-            setView('custom-pay')
-          }}
-        >
-          Continue — {seatCountInput} payers
-        </Button>
       </div>
     )
   }
@@ -353,13 +291,14 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
             const balanceBefore = sumBefore(i)
             const remainingForThis = grandTotal - balanceBefore
 
-            // Last payer: auto-fill with exact remainder
-            const displayAmount = isLast ? remainingForThis : amountEntered
+            // Last payer: auto-fill with exact remainder (clamped to 0 — never show negative)
+            const displayAmount = isLast ? Math.max(0, remainingForThis) : amountEntered
+            const lastPayerOverflow = isLast && remainingForThis < 0
 
             // Validation for non-last payers
             const isOverAmount = !isLast && amountEntered > remainingForThis
             const canPay = isLast
-              ? payers.slice(0, i).every((j) => split.payments[j] !== undefined)
+              ? !lastPayerOverflow && payers.slice(0, i).every((j) => split.payments[j] !== undefined)
               : amountEntered > 0 && !isOverAmount
 
             return (
@@ -418,6 +357,13 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                   </p>
                 )}
 
+                {/* Error hint for last payer when prior amounts exceed total */}
+                {!isSettled && lastPayerOverflow && (
+                  <p className="text-xs text-destructive">
+                    Other payers exceed the total — reduce their amounts first
+                  </p>
+                )}
+
                 {/* Payment panel */}
                 {isActive && !isSettled && (
                   <SeatPaymentPanel
@@ -431,6 +377,17 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
             )
           })}
         </div>
+
+        {/* Add payer — disabled once any payment is confirmed */}
+        {paidCount === 0 && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => addCustomPayer(tableId)}
+          >
+            + Add Payer
+          </Button>
+        )}
 
         {/* Remaining balance footer */}
         <div
@@ -765,7 +722,6 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
         {open && (
           <>
             {view === 'mode-select' && renderModeSelect()}
-            {view === 'custom-config' && renderCustomConfig()}
             {view === 'custom-pay' && renderCustomPay()}
             {view === 'per-seat-assign' && renderPerSeatAssign()}
             {view === 'per-seat-pay' && renderPerSeatPay()}

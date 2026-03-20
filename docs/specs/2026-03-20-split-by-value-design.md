@@ -103,7 +103,7 @@ Displays one card per payer:
 
 | Case | Handling |
 |------|----------|
-| Resume mid-split | `customAmounts[]` is persisted in `bill.store` (Zustand persist); page auto-reopens SplitSheet if split exists |
+| Resume mid-split | `customAmounts[]` is persisted in `bill.store` (Zustand persist); page auto-reopens SplitSheet if split exists. `grandTotal` on resume is re-derived from the payment page's order + discount state (same as initial load) — it is NOT stored in `BillSplit`. |
 | Cancel with partial payments | Existing warning dialog — no change |
 | Revert to Single Bill | Disabled once ≥ 1 payer has paid — no change |
 | Coupon/discount | Applied before split; `grandTotal` passed to SplitSheet is already post-discount |
@@ -114,7 +114,7 @@ Displays one card per payer:
 
 | File | Change |
 |------|--------|
-| `src/stores/bill.store.ts` | Add `'custom'` to `SplitMode`; rename `equalAmounts` → `customAmounts`; add `initCustomSplit`, `setCustomAmount`; remove `initEqualSplit` |
+| `src/stores/bill.store.ts` | Add `'custom'` to `SplitMode`; rename `equalAmounts` → `customAmounts` in **both** `BillSplit` interface and `initPerSeatSplit` (which initialises it as `[]`); add `initCustomSplit`, `setCustomAmount`; remove `initEqualSplit` |
 | `src/components/payment/SplitSheet.tsx` | Update `ViewState` type; replace `equal-config`/`equal-seats` render functions with `custom-config`/`custom-pay`; update mode-select card |
 
 ## Files Not Changed
