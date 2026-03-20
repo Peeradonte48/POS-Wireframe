@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useTableStore } from './table.store'
 
-export type SplitMode = 'equal' | 'per-seat'
+export type SplitMode = 'custom' | 'per-seat'
 
 export interface SeatAssignment {
   lineId: string        // references OrderLineItem.lineId
@@ -21,7 +21,7 @@ export interface BillSplit {
   tableId: string
   mode: SplitMode
   seatCount: number
-  equalAmounts: number[]                          // for equal mode: pre-computed [seat0, seat1, ...], length === seatCount
+  customAmounts: number[]                         // for custom mode: payer amounts, length === seatCount, initialized to 0s
   assignments: SeatAssignment[]                   // for per-seat mode
   payments: Record<number, SeatPaymentRecord>     // keyed by seatIndex; undefined = unpaid
 }
@@ -29,7 +29,8 @@ export interface BillSplit {
 interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
-  initEqualSplit: (tableId: string, grandTotal: number, seatCount: number) => void
+  initCustomSplit: (tableId: string, payerCount: number) => void
+  setCustomAmount: (tableId: string, payerIndex: number, amount: number) => void
   initPerSeatSplit: (tableId: string, seatCount: number) => void
   assignItem: (tableId: string, lineId: string, seatIndex: number, qty: number) => void
   removeAssignment: (tableId: string, lineId: string, seatIndex: number) => void
@@ -50,22 +51,31 @@ export const useBillStore = create<BillStore>()(
       splits: {},
       merges: {},
 
-      initEqualSplit: (tableId, grandTotal, seatCount) =>
+      initCustomSplit: (tableId, payerCount) =>
         set((state) => {
-          const base = Math.floor(grandTotal / seatCount)
-          const remainder = grandTotal - base * seatCount
-          const equalAmounts = Array.from({ length: seatCount }, (_, i) =>
-            i === seatCount - 1 ? base + remainder : base,
-          )
           const split: BillSplit = {
             tableId,
-            mode: 'equal',
-            seatCount,
-            equalAmounts,
+            mode: 'custom',
+            seatCount: payerCount,
+            customAmounts: Array.from({ length: payerCount }, () => 0),
             assignments: [],
             payments: {},
           }
           return { splits: { ...state.splits, [tableId]: split } }
+        }),
+
+      setCustomAmount: (tableId, payerIndex, amount) =>
+        set((state) => {
+          const existing = state.splits[tableId]
+          if (!existing) return state
+          const updated = [...existing.customAmounts]
+          updated[payerIndex] = amount
+          return {
+            splits: {
+              ...state.splits,
+              [tableId]: { ...existing, customAmounts: updated },
+            },
+          }
         }),
 
       initPerSeatSplit: (tableId, seatCount) =>
@@ -76,7 +86,7 @@ export const useBillStore = create<BillStore>()(
             tableId,
             mode: 'per-seat',
             seatCount: canonicalSeatCount,
-            equalAmounts: [],
+            customAmounts: [],
             assignments: [],
             payments: {},
           }

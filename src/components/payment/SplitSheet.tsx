@@ -50,7 +50,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   // Revert to single bill confirm state
   const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
-  const { initEqualSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit } =
+  const { initCustomSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit } =
     useBillStore()
 
   const split = getSplit(tableId)
@@ -303,7 +303,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
         <Button
           className="w-full"
           onClick={() => {
-            initEqualSplit(tableId, grandTotal, seatCountInput)
+            initCustomSplit(tableId, seatCountInput)
             setView('equal-seats')
           }}
         >
@@ -326,7 +326,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
         <h2 className="text-lg font-semibold">Equal Split — {split.seatCount} seats</h2>
         <div className="space-y-2">
           {seats.map((i) => {
-            const amount = split.equalAmounts[i] ?? 0
+            const amount = split.customAmounts[i] ?? 0
             const payment = split.payments[i]
             const isSettled = payment !== undefined
             const isActive = activeSeatIndex === i
