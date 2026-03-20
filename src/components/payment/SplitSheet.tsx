@@ -16,8 +16,8 @@ import type { OrderLineItem } from '@/stores/order.store'
 
 type ViewState =
   | 'mode-select'
-  | 'equal-config'
-  | 'equal-seats'
+  | 'custom-config'
+  | 'custom-pay'
   | 'per-seat-assign'
   | 'per-seat-pay'
 
@@ -50,7 +50,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   // Revert to single bill confirm state
   const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
-  const { initCustomSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit } =
+  const { initCustomSplit, initPerSeatSplit, assignItem, removeAssignment, recordPayment, cancelSplit, getSplit, setCustomAmount } =
     useBillStore()
 
   const split = getSplit(tableId)
@@ -224,13 +224,13 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
       <div className="px-4 py-4 space-y-4">
         <h2 className="text-lg font-semibold text-center">Split Bill</h2>
         <div className="grid grid-cols-2 gap-3">
-          {/* Equal Split card */}
+          {/* Split by Value card */}
           <Button
             variant="option-card"
-            onClick={() => setView('equal-config')}
+            onClick={() => setView('custom-config')}
           >
-            <p className="font-semibold text-sm">Equal Split</p>
-            <p className="text-xs text-muted-foreground">Divide total equally among guests</p>
+            <p className="font-semibold text-sm">Split by Value</p>
+            <p className="text-xs text-muted-foreground">Each person pays a custom amount</p>
           </Button>
 
           {/* Per Seat card */}
@@ -250,20 +250,20 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   }
 
   // ---------------------------------------------------------------------------
-  // View: equal-config
+  // View: custom-config
   // ---------------------------------------------------------------------------
 
-  function renderEqualConfig() {
+  function renderCustomConfig() {
     return (
       <div className="px-4 py-4 space-y-4">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={() => setView('mode-select')}>← Back</Button>
-          <h2 className="text-lg font-semibold">Equal Split</h2>
+          <h2 className="text-lg font-semibold">Split by Value</h2>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="seat-count-input">
-            Number of seats
+          <label className="text-sm font-medium" htmlFor="payer-count-input">
+            Number of payers
           </label>
           <div className="flex items-center gap-3">
             <Button
@@ -275,7 +275,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
               −
             </Button>
             <input
-              id="seat-count-input"
+              id="payer-count-input"
               type="number"
               min={2}
               max={20}
@@ -296,7 +296,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Each seat: ฿{Math.floor(grandTotal / seatCountInput).toLocaleString()} – ฿{Math.ceil(grandTotal / seatCountInput).toLocaleString()}
+            Total: ฿{grandTotal.toLocaleString()}
           </p>
         </div>
 
@@ -304,77 +304,20 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
           className="w-full"
           onClick={() => {
             initCustomSplit(tableId, seatCountInput)
-            setView('equal-seats')
+            setView('custom-pay')
           }}
         >
-          Confirm — {seatCountInput} seats
+          Continue — {seatCountInput} payers
         </Button>
       </div>
     )
   }
 
   // ---------------------------------------------------------------------------
-  // View: equal-seats
+  // View: custom-pay (stub — implemented in Task 3)
   // ---------------------------------------------------------------------------
 
-  function renderEqualSeats() {
-    if (!split) return null
-    const seats = Array.from({ length: split.seatCount }, (_, i) => i)
-
-    return (
-      <div className="px-4 py-4 space-y-3">
-        <h2 className="text-lg font-semibold">Equal Split — {split.seatCount} seats</h2>
-        <div className="space-y-2">
-          {seats.map((i) => {
-            const amount = split.customAmounts[i] ?? 0
-            const payment = split.payments[i]
-            const isSettled = payment !== undefined
-            const isActive = activeSeatIndex === i
-
-            return (
-              <div
-                key={i}
-                className={`rounded-xl border p-3 space-y-2 transition-opacity ${isSettled ? 'opacity-60' : ''}`}
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">Seat {i + 1}</span>
-                    {isSettled && (
-                      <Badge variant="settled">Settled</Badge>
-                    )}
-                    {isSettled && (
-                      <span className="text-xs text-muted-foreground">{payment.method}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">฿{amount.toLocaleString()}</span>
-                    {!isSettled && (
-                      <Button
-                        size="sm"
-                        onClick={() => setActiveSeatIndex(isActive ? null : i)}
-                      >
-                        {isActive ? 'Close' : 'Pay'}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {isActive && !isSettled && (
-                  <SeatPaymentPanel
-                    seatIndex={i}
-                    seatTotal={amount}
-                    tableId={tableId}
-                    onPaid={(record) => handleSeatPaid(i, record)}
-                  />
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
+  function renderCustomPay() { return null }
 
   // ---------------------------------------------------------------------------
   // View: per-seat-assign
@@ -696,8 +639,8 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
         {open && (
           <>
             {view === 'mode-select' && renderModeSelect()}
-            {view === 'equal-config' && renderEqualConfig()}
-            {view === 'equal-seats' && renderEqualSeats()}
+            {view === 'custom-config' && renderCustomConfig()}
+            {view === 'custom-pay' && renderCustomPay()}
             {view === 'per-seat-assign' && renderPerSeatAssign()}
             {view === 'per-seat-pay' && renderPerSeatPay()}
 
