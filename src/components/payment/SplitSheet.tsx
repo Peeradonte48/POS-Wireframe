@@ -105,15 +105,21 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
     recordPayment(tableId, seatIndex, record)
     setActiveSeatIndex(null)
 
-    // Check if all seats paid after recording
     const updatedSplit = useBillStore.getState().getSplit(tableId)
     if (!updatedSplit) return
 
-    // Only seats that have assigned items need to be paid
-    const seatsWithItems = Array.from({ length: updatedSplit.seatCount }, (_, i) => i).filter(
-      (i) => updatedSplit.assignments.some((a) => a.seatIndex === i),
-    )
-    const allPaid = seatsWithItems.every((i) => updatedSplit.payments[i] !== undefined)
+    let allPaid: boolean
+    if (updatedSplit.mode === 'custom') {
+      // All payers (0..seatCount-1) must have a payment record
+      allPaid = Array.from({ length: updatedSplit.seatCount }, (_, i) => i)
+        .every((i) => updatedSplit.payments[i] !== undefined)
+    } else {
+      // per-seat: only seats that have assigned items need to be paid
+      const seatsWithItems = Array.from({ length: updatedSplit.seatCount }, (_, i) => i).filter(
+        (i) => updatedSplit.assignments.some((a) => a.seatIndex === i),
+      )
+      allPaid = seatsWithItems.every((i) => updatedSplit.payments[i] !== undefined)
+    }
 
     if (allPaid) {
       useTableStore.getState().markCleaning(tableId)
@@ -314,10 +320,130 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   }
 
   // ---------------------------------------------------------------------------
-  // View: custom-pay (stub — implemented in Task 3)
+  // View: custom-pay
   // ---------------------------------------------------------------------------
 
-  function renderCustomPay() { return null }
+  function renderCustomPay() {
+    if (!split) return null
+    const payers = Array.from({ length: split.seatCount }, (_, i) => i)
+
+    // Running sum of amounts for payers 0..i-1 (confirmed or entered)
+    const sumBefore = (upToIndex: number) =>
+      split.customAmounts.slice(0, upToIndex).reduce((s, a) => s + a, 0)
+
+    // Remaining = unpaid portion. Use paid amounts from payments record so the
+    // footer correctly shows ฿0 once all payers have paid.
+    const totalPaid = Object.values(split.payments).reduce((s, p) => s + p.amount, 0)
+    const remaining = grandTotal - totalPaid
+
+    return (
+      <div className="px-4 py-4 space-y-3">
+        <h2 className="text-lg font-semibold">Split by Value</h2>
+
+        <div className="space-y-2">
+          {payers.map((i) => {
+            const isLast = i === split.seatCount - 1
+            const payment = split.payments[i]
+            const isSettled = payment !== undefined
+            const isActive = activeSeatIndex === i
+
+            // Amount for this payer
+            const amountEntered = split.customAmounts[i] ?? 0
+            // Remaining balance before this payer (sum of all payers before i)
+            const balanceBefore = sumBefore(i)
+            const remainingForThis = grandTotal - balanceBefore
+
+            // Last payer: auto-fill with exact remainder
+            const displayAmount = isLast ? remainingForThis : amountEntered
+
+            // Validation for non-last payers
+            const isOverAmount = !isLast && amountEntered > remainingForThis
+            const canPay = isLast
+              ? payers.slice(0, i).every((j) => split.payments[j] !== undefined)
+              : amountEntered > 0 && !isOverAmount
+
+            return (
+              <div
+                key={i}
+                className={`rounded-xl border p-3 space-y-2 transition-opacity ${isSettled ? 'opacity-60' : ''}`}
+                style={{ boxShadow: 'var(--shadow-card)' }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">Payer {i + 1}</span>
+                    {isSettled && <Badge variant="settled">Settled</Badge>}
+                    {isSettled && <span className="text-xs text-muted-foreground">{payment.method}</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* Amount input or read-only display */}
+                    {!isSettled && !isLast && (
+                      <input
+                        type="number"
+                        min={1}
+                        max={remainingForThis}
+                        value={amountEntered === 0 ? '' : amountEntered}
+                        placeholder="฿0"
+                        onChange={(e) => {
+                          const v = Math.max(0, Number(e.target.value) || 0)
+                          setCustomAmount(tableId, i, v)
+                        }}
+                        className="w-24 text-right border rounded-md px-2 py-1 text-sm bg-background"
+                      />
+                    )}
+                    {!isSettled && isLast && (
+                      <span className="font-semibold text-sm">
+                        ฿{displayAmount.toLocaleString()}
+                        <span className="text-xs text-muted-foreground ml-1">remainder</span>
+                      </span>
+                    )}
+                    {isSettled && (
+                      <span className="font-semibold">฿{payment.amount.toLocaleString()}</span>
+                    )}
+                    {!isSettled && (
+                      <Button
+                        size="sm"
+                        disabled={!canPay}
+                        onClick={() => setActiveSeatIndex(isActive ? null : i)}
+                      >
+                        {isActive ? 'Close' : 'Pay'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Validation hint for non-last payers */}
+                {!isSettled && !isLast && isOverAmount && (
+                  <p className="text-xs text-destructive">
+                    Amount exceeds ฿{remainingForThis.toLocaleString()} remaining
+                  </p>
+                )}
+
+                {/* Payment panel */}
+                {isActive && !isSettled && (
+                  <SeatPaymentPanel
+                    seatIndex={i}
+                    seatTotal={isLast ? displayAmount : amountEntered}
+                    tableId={tableId}
+                    onPaid={(record) => handleSeatPaid(i, record)}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Remaining balance footer */}
+        <div
+          className="flex justify-between text-sm border-t pt-3"
+        >
+          <span className="text-muted-foreground">Remaining</span>
+          <span className={remaining === 0 ? 'text-green-600 font-semibold' : 'font-semibold'}>
+            {remaining === 0 ? '฿0 — all covered' : `฿${remaining.toLocaleString()}`}
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   // ---------------------------------------------------------------------------
   // View: per-seat-assign
