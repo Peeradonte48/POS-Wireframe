@@ -1,7 +1,7 @@
 'use client'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
-import { SunLinear, MoonLinear } from 'solar-icon-set'
+import { Sun, Moon } from 'lucide-react'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
@@ -13,8 +13,8 @@ export function ThemeToggle() {
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       aria-label="Toggle theme"
     >
-      <SunLinear size={16} className="dark:hidden" />
-      <MoonLinear size={16} className="hidden dark:block" />
+      <Sun size={16} className="dark:hidden" />
+      <Moon size={16} className="hidden dark:block" />
     </Button>
   )
 }

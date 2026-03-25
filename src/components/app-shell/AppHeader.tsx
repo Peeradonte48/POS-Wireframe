@@ -2,7 +2,7 @@
 
 import { useSessionStore } from '@/stores/session.store'
 import { Badge } from '@/components/ui/badge'
-import { Logout3Linear } from 'solar-icon-set'
+import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useRouter } from 'next/navigation'
@@ -58,7 +58,7 @@ export function AppHeader() {
         className="shrink-0"
         aria-label="Log out"
       >
-        <Logout3Linear size={16} />
+        <LogOut size={16} />
       </Button>
     </header>
   )

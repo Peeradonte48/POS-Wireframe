@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useQueueStore } from '@/stores/queue.store'
 import { TakeawayCard } from './TakeawayCard'
 import { NewTakeawayModal } from './NewTakeawayModal'
-import { AddSquareLinear } from 'solar-icon-set'
+import { Plus } from 'lucide-react'
 
 export function TakeawayPanel() {
   const [showNewModal, setShowNewModal] = useState(false)
@@ -46,7 +46,7 @@ export function TakeawayPanel() {
         style={{ boxShadow: 'var(--shadow-floating)' }}
         aria-label="New Takeaway Order"
       >
-        <AddSquareLinear size={24} />
+        <Plus size={24} />
       </button>
 
       <NewTakeawayModal

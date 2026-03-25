@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
-import { BackspaceLinear } from 'solar-icon-set'
+import { Delete } from 'lucide-react'
 
 export interface PinNumpadProps {
   onComplete: (pin: string) => void
@@ -88,7 +88,7 @@ export function PinNumpad({ onComplete, error = false, onErrorClear, label }: Pi
                 className="flex items-center justify-center w-16 h-16 rounded-xl bg-muted hover:bg-muted/80 active:scale-95 transition-all text-foreground"
                 aria-label="Backspace"
               >
-                <BackspaceLinear size={20} />
+                <Delete size={20} />
               </button>
             )
           }

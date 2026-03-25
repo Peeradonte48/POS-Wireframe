@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { CloseSquareLinear } from 'solar-icon-set'
+import { X } from 'lucide-react'
 import { useQueueStore } from '@/stores/queue.store'
 import type { QueueOrder } from '@/stores/queue.store'
 import { useOrderStore } from '@/stores/order.store'
@@ -99,7 +99,7 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
               onClick={() => setShowCancel(true)}
               aria-label="Cancel order"
             >
-              <CloseSquareLinear size={16} />
+              <X size={16} />
             </Button>
           )}
           {order.status === 'Sent' && (

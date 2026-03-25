@@ -9,19 +9,28 @@ interface TableGridProps {
   onTableTap: (table: TableRecord) => void
 }
 
+const LEGEND = [
+  { label: 'ว่าง',         dotClass: 'bg-card border border-border' },
+  { label: 'มีลูกค้า',     dotClass: 'bg-status-occupied' },
+  { label: 'รออาหาร',      dotClass: 'bg-status-check-requested' },
+  { label: 'ต้องเก็บโต๊ะ', dotClass: 'bg-status-cleaning' },
+]
+
 function TableTileSkeleton() {
   return (
-    <div className="rounded-xl border bg-card p-3 min-h-[88px] space-y-2">
-      <Skeleton className="h-3 w-[60px]" />
-      <Skeleton className="h-3 w-[80px]" />
+    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border bg-card p-6 min-h-[110px] space-y-2">
+      <Skeleton className="h-6 w-6 rounded" />
+      <Skeleton className="h-3 w-10" />
+      <Skeleton className="h-3 w-8" />
     </div>
   )
 }
 
 export function TableGrid({ onTableTap }: TableGridProps) {
   const { tables } = useTableStore()
-  const tableList = Object.values(tables).filter((t): t is TableRecord => Boolean(t?.id)).sort((a, b) => a.id.localeCompare(b.id))
-  const availableCount = tableList.filter((t) => t.status === 'Open').length
+  const tableList = Object.values(tables)
+    .filter((t): t is TableRecord => Boolean(t?.id))
+    .sort((a, b) => a.id.localeCompare(b.id))
 
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
@@ -30,27 +39,32 @@ export function TableGrid({ onTableTap }: TableGridProps) {
   }, [])
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Floor Plan</h1>
-        <span className="text-sm text-muted-foreground">
-          {availableCount} / {tableList.length} tables available
-        </span>
-      </div>
-      {/* Grid: 3 cols mobile, 4 cols tablet */}
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-        {isLoading ? (
-          Array.from({ length: 12 }).map((_, i) => <TableTileSkeleton key={i} />)
-        ) : tableList.length === 0 ? (
-          <div className="col-span-full flex items-center justify-center h-40 text-muted-foreground">
-            No tables configured
-          </div>
-        ) : (
-          tableList.map((table) => (
-            <TableTile key={table.id} table={table} onTap={onTableTap} />
-          ))
-        )}
+    <div className="h-full overflow-y-auto p-4">
+      <div className="bg-muted border border-border rounded-lg overflow-hidden h-full min-h-[400px] p-3 flex flex-col gap-3">
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-4">
+          {LEGEND.map(({ label, dotClass }) => (
+            <div key={label} className="flex items-center gap-1.5">
+              <div className={`size-2 rounded-[2px] shrink-0 ${dotClass}`} />
+              <span className="text-xs text-foreground whitespace-nowrap">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-5 gap-[10px]">
+          {isLoading ? (
+            Array.from({ length: 10 }).map((_, i) => <TableTileSkeleton key={i} />)
+          ) : tableList.length === 0 ? (
+            <div className="col-span-5 flex items-center justify-center h-40 text-muted-foreground text-sm">
+              No tables configured
+            </div>
+          ) : (
+            tableList.map((table) => (
+              <TableTile key={table.id} table={table} onTap={onTableTap} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

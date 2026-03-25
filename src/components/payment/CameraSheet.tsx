@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { CameraLinear, CloseSquareLinear } from 'solar-icon-set'
+import { Camera, X } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Props
@@ -49,7 +49,7 @@ export function CameraSheet({ open, onClose, onCouponScanned }: CameraSheetProps
           {/* Header row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CameraLinear size={20} />
+              <Camera size={20} />
               <span className="font-medium">Scan Coupon QR</span>
             </div>
             <button
@@ -57,7 +57,7 @@ export function CameraSheet({ open, onClose, onCouponScanned }: CameraSheetProps
               className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md hover:bg-accent transition-colors"
               aria-label="Close camera scanner"
             >
-              <CloseSquareLinear size={20} />
+              <X size={20} />
             </button>
           </div>
 

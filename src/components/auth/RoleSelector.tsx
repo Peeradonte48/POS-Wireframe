@@ -1,18 +1,18 @@
 'use client'
 
 import type { Role } from '@/stores/session.store'
-import { UsersGroupRoundedLinear, DollarMinimalisticLinear, ShieldCheckLinear, ChefHatLinear } from 'solar-icon-set'
+import { Users, DollarSign, ShieldCheck, ChefHat, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface RoleSelectorProps {
   onSelect: (role: Role) => void
 }
 
-const ROLE_CONFIG: { role: Role; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
-  { role: 'Waiter',   label: 'Waiter',   icon: UsersGroupRoundedLinear },
-  { role: 'Cashier',  label: 'Cashier',  icon: DollarMinimalisticLinear },
-  { role: 'Manager',  label: 'Manager',  icon: ShieldCheckLinear },
-  { role: 'Kitchen',  label: 'Kitchen',  icon: ChefHatLinear },
+const ROLE_CONFIG: { role: Role; label: string; icon: LucideIcon }[] = [
+  { role: 'Waiter',   label: 'Waiter',   icon: Users },
+  { role: 'Cashier',  label: 'Cashier',  icon: DollarSign },
+  { role: 'Manager',  label: 'Manager',  icon: ShieldCheck },
+  { role: 'Kitchen',  label: 'Kitchen',  icon: ChefHat },
 ]
 
 export function RoleSelector({ onSelect }: RoleSelectorProps) {

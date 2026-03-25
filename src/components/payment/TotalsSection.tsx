@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CameraLinear, ScissorsLinear, LinkLinear } from 'solar-icon-set'
+import { Camera, Scissors, Link } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CameraSheet } from './CameraSheet'
 
@@ -66,7 +66,7 @@ export function TotalsSection({
       {/* Scan Coupon QR button — active when not yet applied */}
       {!couponApplied && (
         <Button variant="outline" className="w-full" onClick={() => setScannerOpen(true)}>
-          <CameraLinear size={16} className="mr-2" />
+          <Camera size={16} className="mr-2" />
           Scan Coupon QR
         </Button>
       )}
@@ -74,7 +74,7 @@ export function TotalsSection({
       {/* Scan Coupon QR button — disabled when coupon already applied */}
       {couponApplied && (
         <Button variant="outline" className="w-full" disabled>
-          <CameraLinear size={16} className="mr-2" />
+          <Camera size={16} className="mr-2" />
           Scan Coupon QR
         </Button>
       )}
@@ -106,13 +106,13 @@ export function TotalsSection({
       {/* Billing actions — hidden for takeaway orders (onSplitBill/onMergeBill are undefined) */}
       {onSplitBill !== undefined && !isMergeActive && (
         <Button variant="outline" className="w-full mt-4" onClick={onSplitBill}>
-          <ScissorsLinear size={16} className="mr-2" />
+          <Scissors size={16} className="mr-2" />
           Split Bill
         </Button>
       )}
       {onMergeBill !== undefined && (
         <Button variant="outline" className="w-full mt-2" onClick={onMergeBill} disabled={isMergeActive}>
-          <LinkLinear size={16} className="mr-2" />
+          <Link size={16} className="mr-2" />
           Merge Bill
         </Button>
       )}

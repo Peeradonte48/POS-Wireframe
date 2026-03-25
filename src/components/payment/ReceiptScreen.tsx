@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircleLinear } from 'solar-icon-set'
+import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // ---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ export function ReceiptScreen({
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-6">
       {/* Success icon block */}
       <div className="flex flex-col items-center gap-2">
-        <CheckCircleLinear size={64} className="text-green-500" />
+        <CheckCircle size={64} className="text-green-500" />
         <h1 className="text-2xl font-bold">Payment Received</h1>
       </div>
 

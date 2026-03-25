@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { AppSidebar } from './AppSidebar'
 import { ThemedToaster } from './ThemedToaster'
-import { SidebarMinimalisticLinear } from 'solar-icon-set'
+import { PanelLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className="absolute bottom-3 right-2 h-10 w-10"
             aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <SidebarMinimalisticLinear size={18} />
+            <PanelLeft size={18} />
           </Button>
         </div>
 

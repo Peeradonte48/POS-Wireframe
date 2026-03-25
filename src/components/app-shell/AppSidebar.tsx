@@ -9,32 +9,31 @@ import { canAccess } from '@/lib/role-permissions'
 import type { NavSlug } from '@/lib/role-permissions'
 import { cn } from '@/lib/utils'
 import {
-  Widget5Linear,
-  NotesLinear,
-  MonitorSmartphoneLinear,
-  CardTransferLinear,
-  ChartSquareLinear,
-  LockPasswordLinear,
-  InboxLinear,
-} from 'solar-icon-set'
-
-type SolarIcon = React.ComponentType<{ size?: number; className?: string; color?: string }>
+  LayoutGrid,
+  FileText,
+  Monitor,
+  CreditCard,
+  BarChart2,
+  Lock,
+  Inbox,
+  type LucideIcon,
+} from 'lucide-react'
 
 interface NavItem {
   slug: NavSlug
   label: string
   href: string
-  icon: SolarIcon
+  icon: LucideIcon
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { slug: 'table-map', label: 'Table Map',  href: '/table-map', icon: Widget5Linear },
-  { slug: 'orders',    label: 'Orders',     href: '/orders',    icon: NotesLinear },
+  { slug: 'table-map', label: 'Table Map',  href: '/table-map', icon: LayoutGrid },
+  { slug: 'orders',    label: 'Orders',     href: '/orders',    icon: FileText },
   // Both table-map and queue point to /table-map — both show as active on this route (wireframe acceptable)
-  { slug: 'queue',     label: 'Queue',      href: '/table-map', icon: InboxLinear },
-  { slug: 'kds',       label: 'KDS',        href: '/kds',       icon: MonitorSmartphoneLinear },
-  { slug: 'payment',   label: 'Payment',    href: '/payment',   icon: CardTransferLinear },
-  { slug: 'manager',   label: 'Manager',    href: '/manager',   icon: ChartSquareLinear },
+  { slug: 'queue',     label: 'Queue',      href: '/table-map', icon: Inbox },
+  { slug: 'kds',       label: 'KDS',        href: '/kds',       icon: Monitor },
+  { slug: 'payment',   label: 'Payment',    href: '/payment',   icon: CreditCard },
+  { slug: 'manager',   label: 'Manager',    href: '/manager',   icon: BarChart2 },
 ]
 
 interface AppSidebarProps {
@@ -74,7 +73,7 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
           'flex items-center gap-2 px-3 py-2 bg-status-check-requested-bg border-b border-status-check-requested/30 text-status-check-requested text-xs',
           collapsed && 'justify-center px-0'
         )}>
-          <LockPasswordLinear size={12} className="shrink-0" />
+          <Lock size={12} className="shrink-0" />
           {!collapsed && <span>Open a shift first</span>}
         </div>
       )}

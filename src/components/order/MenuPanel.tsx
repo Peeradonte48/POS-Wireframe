@@ -41,7 +41,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
 
   if (isLoading) {
     return (
-      <div className="p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="p-4 grid grid-cols-3 gap-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <MenuCardSkeleton key={i} />
         ))}
@@ -58,7 +58,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
   }
 
   return (
-    <div className="p-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className="p-4 grid grid-cols-3 gap-3">
       {filteredItems.map((item) => {
         const is86d = eightySixedIds.includes(item.id)
         return (
@@ -76,13 +76,21 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
           >
             {/* Photo */}
             <div className="aspect-[4/3] relative bg-muted overflow-hidden">
-              {item.unsplashId ? (
+              {item.imagePath ? (
+                <Image
+                  src={item.imagePath}
+                  alt={item.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="33vw"
+                />
+              ) : item.unsplashId ? (
                 <Image
                   src={`https://images.unsplash.com/photo-${item.unsplashId}?auto=format&fit=crop&w=400&q=80`}
                   alt={item.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 1280px) 25vw, 200px"
+                  sizes="33vw"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-4xl bg-muted">
@@ -99,9 +107,9 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
             </div>
 
             {/* Info */}
-            <div className="p-3">
-              <p className="text-sm font-semibold leading-snug line-clamp-1">{item.name}</p>
-              <p className="text-sm font-bold text-primary mt-1">฿{item.basePrice}</p>
+            <div className="p-4 flex flex-col gap-2">
+              <p className="text-[18px] font-semibold leading-snug line-clamp-2">{item.name}</p>
+              <p className="text-sm font-bold text-primary">฿{item.basePrice}</p>
             </div>
           </button>
         )

@@ -2,15 +2,15 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { AltArrowLeftLinear } from 'solar-icon-set'
+import { ChevronLeft, ChevronDown, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { BillLineItem } from '@/components/payment/BillLineItem'
-import { TotalsSection } from '@/components/payment/TotalsSection'
 import { PaymentMethodSelector } from '@/components/payment/PaymentMethodSelector'
 import { CashPanel } from '@/components/payment/CashPanel'
 import { QrPanel } from '@/components/payment/QrPanel'
@@ -27,6 +27,7 @@ import { useKdsStore } from '@/stores/kds.store'
 // ---------------------------------------------------------------------------
 
 type PaymentMethod = 'Cash' | 'QR PromptPay' | 'Card'
+type ViewState = 'checkBill' | 'checkout' | 'receipt'
 
 // ---------------------------------------------------------------------------
 // PaymentPage
@@ -37,7 +38,7 @@ export default function PaymentPage() {
   const tableId = params.tableId
   const router = useRouter()
 
-  // ---- Takeaway detection (non-reactive: boolean is stable for the lifetime of this page) ----
+  // ---- Takeaway detection ----
   const isTakeaway = Boolean(useQueueStore.getState().orders[tableId])
   const queueOrder = isTakeaway ? useQueueStore.getState().orders[tableId] : undefined
 
@@ -46,7 +47,7 @@ export default function PaymentPage() {
   const role = useSessionStore((s) => s.role)!
 
   // ---- View state machine ----
-  const [viewState, setViewState] = useState<'payment' | 'receipt'>('payment')
+  const [viewState, setViewState] = useState<ViewState>('checkBill')
 
   // ---- Payment state ----
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
@@ -58,8 +59,6 @@ export default function PaymentPage() {
   // ---- Split sheet ----
   const [splitSheetOpen, setSplitSheetOpen] = useState(false)
 
-  // Auto-open if an in-progress split already exists in bill.store (resume mid-split)
-  // Guard: do not auto-open SplitSheet when a merge is active or when this is a takeaway order
   useEffect(() => {
     if (isTakeaway) return
     const existingSplit = useBillStore.getState().getSplit(tableId)
@@ -69,8 +68,6 @@ export default function PaymentPage() {
   }, [tableId, isTakeaway])
 
   // ---- Merge state ----
-  // Select the raw merges record (stable reference) to avoid returning a new array
-  // on every render, which would cause an infinite useSyncExternalStore loop.
   const merges = useBillStore((s) => s.merges)
   const mergedSecondaryIds = useMemo(
     () => Object.entries(merges).filter(([, primary]) => primary === tableId).map(([tid]) => tid),
@@ -81,7 +78,7 @@ export default function PaymentPage() {
   const tables = useTableStore((s) => s.tables)
   const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
 
-  // Captured snapshot for receipt screen (built in Plan 02)
+  // ---- Receipt data ----
   const [receiptData, setReceiptData] = useState<{
     grandTotal: number
     paymentMethod: PaymentMethod
@@ -94,7 +91,6 @@ export default function PaymentPage() {
       ? order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
       : []
     if (!isMerged) return primaryItems
-
     const secondaryItems = mergedSecondaryIds.flatMap((tid) => {
       const secOrder = useOrderStore.getState().getOrder(tid)
       if (!secOrder) return []
@@ -103,9 +99,10 @@ export default function PaymentPage() {
     return [...primaryItems, ...secondaryItems]
   }, [order, isMerged, mergedSecondaryIds])
 
-  // tableOrders for grouped display when merge is active
-  const tableOrders = isMerged
-    ? [tableId, ...mergedSecondaryIds].map((tid) => ({
+  // tableOrders for grouped display
+  const tableOrders = useMemo(() => {
+    if (isMerged) {
+      return [tableId, ...mergedSecondaryIds].map((tid) => ({
         tableId: tid,
         label: tables[tid]?.label ?? tid,
         guestCount: tables[tid]?.guestCount ?? null,
@@ -114,7 +111,14 @@ export default function PaymentPage() {
           : (useOrderStore.getState().getOrder(tid)?.rounds.flatMap((r) => r.items) ?? [])
         ).filter((item) => item.status !== 'voided'),
       }))
-    : null
+    }
+    return [{
+      tableId,
+      label: tables[tableId]?.label ?? tableId,
+      guestCount: tables[tableId]?.guestCount ?? null,
+      items: billItems,
+    }]
+  }, [isMerged, mergedSecondaryIds, tableId, tables, order, billItems])
 
   const subtotal = useMemo(
     () => billItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0),
@@ -126,27 +130,18 @@ export default function PaymentPage() {
   const vatAmount = Math.round(discountedSubtotal * 0.07)
   const grandTotal = discountedSubtotal + vatAmount
 
-  // ---- Coupon ----
-  function handleApplyCoupon() {
-    if (couponCode.trim() && couponAmount > 0) {
-      setCouponApplied(true)
-    }
-  }
-
   // ---- Confirm payment ----
   function handleConfirmPayment() {
     if (!paymentMethod) return
 
-    // Takeaway: pay-at-ordering model — advance queue status, add KDS ticket, navigate back
     if (isTakeaway) {
-      useQueueStore.getState().advanceStatus(tableId)  // Taking → Sent
+      useQueueStore.getState().advanceStatus(tableId)
       useKdsStore.getState().addTicket(tableId, tableId, 'takeaway')
       toast.success('Payment confirmed')
       router.push('/table-map')
-      return  // CRITICAL: early exit — no receipt screen for takeaway
+      return
     }
 
-    // Existing dine-in path — unchanged below this point
     const { markCleaning, updateTable } = useTableStore.getState()
     markCleaning(tableId)
     mergedSecondaryIds.forEach((id) => markCleaning(id))
@@ -162,12 +157,10 @@ export default function PaymentPage() {
     setViewState('receipt')
   }
 
-  // ---- Reprint receipt ----
   function handleReprint() {
     toast('Receipt sent to printer')
   }
 
-  // ---- Confirm button disabled logic ----
   const confirmDisabled =
     (!isTakeaway && !canDoAction(role, 'confirm-payment')) ||
     paymentMethod === null ||
@@ -194,130 +187,292 @@ export default function PaymentPage() {
   // ---- Receipt view ----
   if (viewState === 'receipt' && receiptData) {
     return (
+      <ReceiptScreen
+        tableId={tableId}
+        grandTotal={receiptData.grandTotal}
+        paymentMethod={receiptData.paymentMethod}
+        paidAt={receiptData.paidAt}
+        onReprint={handleReprint}
+        onBackToFloor={() => router.push('/table-map')}
+      />
+    )
+  }
+
+  // ---- Checkout view ----
+  if (viewState === 'checkout') {
+    return (
       <>
-        <ReceiptScreen
-          tableId={tableId}
-          grandTotal={receiptData.grandTotal}
-          paymentMethod={receiptData.paymentMethod}
-          paidAt={receiptData.paidAt}
-          onReprint={handleReprint}
-          onBackToFloor={() => router.push('/table-map')}
-        />
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <header className="h-[52px] border-b flex items-center gap-2 px-6 shrink-0">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-9"
+              onClick={() => setViewState('checkBill')}
+              aria-label="Back to bill summary"
+            >
+              <ChevronLeft size={16} />
+            </Button>
+            <span className="font-medium text-base leading-none">
+              {isTakeaway ? `${tableId} · ${queueOrder?.customerName ?? ''}` : 'ชำระเงิน'}
+            </span>
+          </header>
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto pb-24">
+            <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
+              <PaymentMethodSelector selected={paymentMethod} onChange={setPaymentMethod} />
+              {paymentMethod === 'Cash' && (
+                <CashPanel
+                  grandTotal={grandTotal}
+                  cashReceived={cashReceived}
+                  setCashReceived={setCashReceived}
+                />
+              )}
+              {paymentMethod === 'QR PromptPay' && (
+                <QrPanel grandTotal={grandTotal} discountApplied={discountAmount} />
+              )}
+              {paymentMethod === 'Card' && <CardPanel grandTotal={grandTotal} />}
+            </div>
+          </div>
+
+          {/* Sticky bottom */}
+          <div className="sticky bottom-0 bg-background border-t p-4">
+            <div className="max-w-2xl mx-auto space-y-2">
+              <Button
+                size="cta"
+                className="w-full text-base"
+                disabled={confirmDisabled}
+                onClick={handleConfirmPayment}
+              >
+                Confirm Payment — ฿{grandTotal.toLocaleString()}
+              </Button>
+              {confirmHint && (
+                <p className="text-xs text-center text-muted-foreground">{confirmHint}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {!isTakeaway && (
+          <SplitSheet
+            open={splitSheetOpen}
+            onClose={() => setSplitSheetOpen(false)}
+            tableId={tableId}
+            grandTotal={grandTotal}
+            billItems={billItems}
+            onAllPaid={() => {
+              useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
+              mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
+              dissolveAll(tableId)
+              setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
+              setViewState('receipt')
+            }}
+          />
+        )}
       </>
     )
   }
 
-  // ---- Payment view ----
+  // ---- Check Bill view (default) ----
   return (
     <>
-      <div className="flex flex-col h-screen">
-        {/* Header */}
-        <header className="h-14 border-b flex items-center justify-between px-4 shrink-0">
-          <button
+      <div className="flex flex-col h-full">
+        {/* Sub-header */}
+        <header className="border-b flex items-center gap-2 px-6 py-2 shrink-0">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9"
             onClick={() => router.push('/table-map')}
-            className="flex items-center justify-center min-h-[44px] min-w-[44px] -ml-1 rounded-md hover:bg-accent transition-colors"
             aria-label="Back to floor plan"
           >
-            <AltArrowLeftLinear size={20} />
-          </button>
-
-          <span className="text-sm font-medium">
-            {isTakeaway ? `${tableId} · ${queueOrder?.customerName ?? ''}` : `Table ${tableId} — Bill`}
-          </span>
-
-          {/* Right spacer for symmetry */}
-          <div className="w-8" />
+            <ChevronLeft size={16} />
+          </Button>
+          <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
         </header>
 
-        {/* Scrollable main content — centered on wide tablets */}
-        <main className="overflow-y-auto flex-1 pb-24">
-          <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
-          {/* Items section */}
-          <section>
-            <p className="caps mb-2">
-              Items
-            </p>
-            {isMerged && tableOrders ? (
-              tableOrders.map((group) => (
-                <section key={group.tableId} className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="caps">{group.label}{group.guestCount !== null ? ` — ${group.guestCount} guests` : ''}</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground text-xs h-auto py-0.5 px-2"
-                      onClick={() => dissolveAll(tableId)}
-                    >
-                      Dissolve Merge
-                    </Button>
+        {/* Two-column content */}
+        <div className="flex flex-1 min-h-0">
+          {/* Left panel – scrollable order items */}
+          <div className="flex-1 min-w-0 overflow-y-auto px-4 py-6 flex flex-col gap-6">
+            {/* Summary totals */}
+            <div className="flex flex-col gap-4">
+              {/* ราคารวม */}
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
+                <div className="w-20 flex justify-end">
+                  <p className="font-semibold text-base text-foreground leading-6">
+                    ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              {/* ส่วนลดท้ายใบเสร็จ */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
+                  <ChevronDown size={16} className="text-muted-foreground" />
+                </div>
+                <div className="w-20 flex justify-end">
+                  <p className="font-semibold text-base text-foreground leading-6">
+                    ฿{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              {/* VAT */}
+              <div className="flex items-start justify-between">
+                <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
+                <div className="w-20 flex justify-end">
+                  <p className="font-semibold text-base text-foreground leading-6">
+                    ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="py-2">
+              <Separator />
+            </div>
+
+            {/* Table groups with line items */}
+            <div className="flex flex-col gap-4">
+              {tableOrders.map((group) => {
+                const groupSubtotal = group.items.reduce(
+                  (sum, item) => sum + item.basePrice * item.quantity,
+                  0,
+                )
+                return (
+                  <div key={group.tableId} className="flex flex-col gap-4">
+                    {/* Table header row */}
+                    <div className="flex items-center gap-[10px] py-2">
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="size-8 rounded-md shrink-0"
+                        aria-label="Table"
+                      >
+                        <HandPlatter size={16} />
+                      </Button>
+                      <div className="flex flex-1 items-center gap-2 min-w-0">
+                        <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>
+                        {group.guestCount !== null && (
+                          <p className="text-sm text-muted-foreground leading-5 shrink-0">
+                            ลูกค้า {group.guestCount} คน
+                          </p>
+                        )}
+                      </div>
+                      <div className="w-20 flex justify-end shrink-0">
+                        <p className="font-medium text-lg leading-7 text-right">
+                          ฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Line items */}
+                    <div className="flex flex-col gap-4">
+                      {group.items.map((item) => (
+                        <BillLineItem key={item.lineId} item={item} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="divide-y">
-                    {group.items.map((item) => (
-                      <BillLineItem key={item.lineId} item={item} />
-                    ))}
-                  </div>
-                </section>
-              ))
-            ) : (
-              <div className="divide-y">
-                {billItems.map((item) => (
-                  <BillLineItem key={item.lineId} item={item} />
-                ))}
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Right panel – totals & actions */}
+          <div
+            className="border-l flex flex-col gap-6 px-4 py-6 shrink-0 w-[282px]"
+            style={{ boxShadow: 'var(--shadow-panel)' }}
+          >
+            {/* Grand total display */}
+            <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
+              <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
+              <p className="font-semibold text-3xl text-destructive">
+                ฿{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+
+            {/* Add member button */}
+            <div className="border border-border rounded-[14px] p-4">
+              <Button
+                variant="ghost"
+                className="w-full h-10 text-primary gap-2"
+                onClick={() => toast('Member lookup coming soon')}
+              >
+                <Crown size={16} />
+                เพิ่มเบอร์สมาชิกลูกค้า
+              </Button>
+            </div>
+
+            {/* Coupon button */}
+            {!isTakeaway && (
+              <div>
+                <Button
+                  variant="outline"
+                  className="w-full h-10 gap-2"
+                  onClick={() => toast('Coupon scan coming soon')}
+                >
+                  <TicketPercent size={16} />
+                  ใช้คูปองส่วนลด
+                </Button>
               </div>
             )}
-          </section>
 
-          {/* Totals + coupon */}
-          <TotalsSection
-            subtotal={subtotal}
-            couponCode={couponCode}
-            setCouponCode={setCouponCode}
-            couponAmount={couponAmount}
-            setCouponAmount={setCouponAmount}
-            couponApplied={couponApplied}
-            onApplyCoupon={handleApplyCoupon}
-            setCouponApplied={setCouponApplied}
-            vatAmount={vatAmount}
-            grandTotal={grandTotal}
-            discountAmount={discountAmount}
-            onSplitBill={isTakeaway ? undefined : () => setSplitSheetOpen(true)}
-            onMergeBill={isTakeaway ? undefined : () => setMergeSheetOpen(true)}
-            isMergeActive={isMerged}
-          />
+            {/* Separator */}
+            <div className="py-2">
+              <Separator />
+            </div>
 
-          {/* Payment method selector */}
-          <PaymentMethodSelector selected={paymentMethod} onChange={setPaymentMethod} />
-
-          {/* Conditional sub-panel */}
-          {paymentMethod === 'Cash' && (
-            <CashPanel
-              grandTotal={grandTotal}
-              cashReceived={cashReceived}
-              setCashReceived={setCashReceived}
-            />
-          )}
-          {/* discountApplied = discountAmount (page state) → QrPanel prop naming differs intentionally */}
-          {paymentMethod === 'QR PromptPay' && (
-            <QrPanel grandTotal={grandTotal} discountApplied={discountAmount} />
-          )}
-          {paymentMethod === 'Card' && <CardPanel grandTotal={grandTotal} />}
-          </div>
-        </main>
-
-        {/* Sticky bottom bar */}
-        <div className="sticky bottom-0 bg-background border-t p-4">
-          <div className="max-w-2xl mx-auto space-y-2">
-            <Button
-              size="cta"
-              className="w-full text-base"
-              disabled={confirmDisabled}
-              onClick={handleConfirmPayment}
-            >
-              Confirm Payment — ฿{grandTotal.toLocaleString()}
-            </Button>
-            {confirmHint && (
-              <p className="text-xs text-center text-muted-foreground">{confirmHint}</p>
+            {/* Bill management */}
+            {!isTakeaway && (
+              <div className="flex flex-col gap-2">
+                <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 gap-2"
+                    onClick={() => setSplitSheetOpen(true)}
+                    disabled={isMerged}
+                  >
+                    <Coins size={16} />
+                    แบ่งจ่าย
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 gap-2"
+                    onClick={() => toast('Separate bill coming soon')}
+                  >
+                    <ScissorsLineDashed size={16} />
+                    แยกบิล
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 gap-2"
+                    onClick={() => setMergeSheetOpen(true)}
+                    disabled={isMerged}
+                  >
+                    <Link size={16} />
+                    รวมบิล
+                  </Button>
+                </div>
+              </div>
             )}
+
+            {/* Spacer to push proceed button to bottom */}
+            <div className="flex-1" />
+
+            {/* Proceed to payment button */}
+            <Button
+              className="w-full h-14 text-base font-semibold gap-2"
+              onClick={() => setViewState('checkout')}
+            >
+              ดำเนินการชำระเงิน
+            </Button>
           </div>
         </div>
       </div>

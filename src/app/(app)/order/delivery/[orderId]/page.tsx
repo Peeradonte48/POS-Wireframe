@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { AltArrowLeftLinear } from 'solar-icon-set'
+import { ChevronLeft } from 'lucide-react'
 import { useOrderStore } from '@/stores/order.store'
 import { useQueueStore } from '@/stores/queue.store'
 import { useKdsStore } from '@/stores/kds.store'
@@ -91,7 +91,7 @@ export default function DeliveryOrderPage() {
             className="flex items-center justify-center min-h-[44px] min-w-[44px] -ml-2 rounded-lg hover:bg-muted transition-colors"
             aria-label="Back to delivery queue"
           >
-            <AltArrowLeftLinear size={20} />
+            <ChevronLeft size={20} />
           </button>
 
           <div className="flex flex-col items-center">

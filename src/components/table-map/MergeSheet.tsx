@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { LinkLinear } from 'solar-icon-set'
+import { Link } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
@@ -126,7 +126,7 @@ export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: 
             disabled={selectedIds.size === 0}
             onClick={handleConfirm}
           >
-            <LinkLinear />
+            <Link />
             {mergeLabel}
           </Button>
           <Button

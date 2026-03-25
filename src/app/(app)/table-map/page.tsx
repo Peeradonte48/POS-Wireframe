@@ -1,9 +1,9 @@
 'use client'
 import { useState, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Armchair, ShoppingBag, Truck } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { TableGrid } from '@/components/table-map/TableGrid'
-import { TableBottomSheet } from '@/components/table-map/TableBottomSheet'
 import { OpenTableModal } from '@/components/table-map/OpenTableModal'
 import { DeliveryPanel } from '@/components/queue/DeliveryPanel'
 import { TakeawayPanel } from '@/components/queue/TakeawayPanel'
@@ -11,7 +11,7 @@ import { useQueueStore } from '@/stores/queue.store'
 import type { TableRecord } from '@/stores/table.store'
 
 export default function TableMapPage() {
-  const [selectedTable, setSelectedTable] = useState<TableRecord | null>(null)
+  const router = useRouter()
   const [openModalTableId, setOpenModalTableId] = useState<string | null>(null)
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'dine-in')
@@ -38,17 +38,10 @@ export default function TableMapPage() {
   )
 
   const handleTableTap = (table: TableRecord) => {
-    setSelectedTable(table)
-  }
-
-  const handleCloseSheet = () => {
-    setSelectedTable(null)
-  }
-
-  const handleOpenTableModal = () => {
-    if (selectedTable) {
-      setOpenModalTableId(selectedTable.id)
-      setSelectedTable(null) // close bottom sheet while modal is open
+    if (table.status === 'Open') {
+      setOpenModalTableId(table.id)
+    } else {
+      router.push(`/order/${table.id}`)
     }
   }
 
@@ -58,35 +51,36 @@ export default function TableMapPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-      <TabsList className="shrink-0 mx-4 mt-3 mb-0 self-start">
-        <TabsTrigger value="dine-in">Dine-in</TabsTrigger>
-        <TabsTrigger value="takeaway" className="flex items-center gap-1">
-          Takeaway
+      {/* Full-width tab bar with icons */}
+      <TabsList className="shrink-0 mx-4 mt-3 mb-0 w-[calc(100%-2rem)]">
+        <TabsTrigger value="dine-in" className="flex-1 flex items-center gap-2">
+          <Armchair size={16} />
+          <span>Dine-in</span>
+        </TabsTrigger>
+        <TabsTrigger value="takeaway" className="flex-1 flex items-center gap-2">
+          <ShoppingBag size={16} />
+          <span>Take-away</span>
           {activeTakeawayCount > 0 && (
-            <span className="h-4 min-w-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
+            <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
               {activeTakeawayCount}
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="delivery" className="flex items-center gap-1">
-          Delivery
+        <TabsTrigger value="delivery" className="flex-1 flex items-center gap-2">
+          <Truck size={16} />
+          <span>Delivery</span>
           {activeDeliveryCount > 0 && (
-            <span className="h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+            <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
               {activeDeliveryCount}
             </span>
           )}
         </TabsTrigger>
       </TabsList>
 
-      {/* Dine-in tab — existing triplet, completely unchanged behavior */}
+      {/* Dine-in tab */}
       <TabsContent value="dine-in" className="flex-1 min-h-0 mt-0">
-        <div className="min-h-full relative">
+        <div className="min-h-full h-full relative">
           <TableGrid onTableTap={handleTableTap} />
-          <TableBottomSheet
-            table={selectedTable}
-            onClose={handleCloseSheet}
-            onOpenTableModal={handleOpenTableModal}
-          />
           <OpenTableModal
             tableId={openModalTableId}
             onClose={handleCloseModal}
