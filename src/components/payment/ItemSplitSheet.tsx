@@ -11,6 +11,15 @@ import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import type { OrderLineItem } from '@/stores/order.store'
 import { Shell, Soup, Ham, Salad, Flame, Droplets, Sprout, Tag } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+} from '@dnd-kit/core'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -45,6 +54,51 @@ const MODIFIER_ICONS: Record<string, LucideIcon> = {
 }
 
 // ---------------------------------------------------------------------------
+// GhostCard
+// ---------------------------------------------------------------------------
+
+function GhostCard({
+  lineId,
+  orderItems,
+}: {
+  lineId: string
+  orderItems: OrderLineItem[]
+}) {
+  const item = orderItems.find((i) => i.lineId === lineId)
+  const menuItem = item ? MENU_ITEMS.find((m) => m.id === item.menuItemId) : null
+  if (!item) return null
+  return (
+    <div
+      className="bg-card border border-primary rounded-xl overflow-hidden opacity-90 w-[280px]"
+      style={{ boxShadow: 'var(--shadow-panel)' }}
+    >
+      <div className="flex gap-3 items-center p-4">
+        <div className="relative rounded-md shrink-0 size-[40px] overflow-hidden bg-accent">
+          {menuItem?.imagePath ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={menuItem.imagePath}
+              alt={item.menuItemName}
+              className="absolute inset-0 size-full object-cover rounded-md"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-lg">
+              {menuItem?.thumbnailPlaceholder ?? '🍜'}
+            </div>
+          )}
+        </div>
+        <p className="font-medium text-sm leading-5 text-foreground flex-1 min-w-0 truncate">
+          {item.menuItemName}
+        </p>
+        <div className="bg-background border border-border rounded-md px-2 py-0.5 shrink-0">
+          <span className="text-xs font-semibold text-foreground">1×</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // ItemSplitSheet
 // ---------------------------------------------------------------------------
 
@@ -62,6 +116,7 @@ export function ItemSplitSheet({
   ])
   const [nextBillId, setNextBillId] = useState(4)
   const [selectedLineId, setSelectedLineId] = useState<string | null>(null)
+  const [activeDragLineId, setActiveDragLineId] = useState<string | null>(null)
 
   // Reset when sheet opens
   const handleOpenChange = (o: boolean) => {
@@ -77,6 +132,10 @@ export function ItemSplitSheet({
       setSelectedLineId(null)
     }
   }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  )
 
   // ---------------------------------------------------------------------------
   // Derived state
@@ -192,6 +251,26 @@ export function ItemSplitSheet({
     setNextBillId((n) => n + 1)
   }
 
+  function handleDragStart(event: DragStartEvent) {
+    setActiveDragLineId(event.active.id as string)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    setActiveDragLineId(null)
+    if (!over) return
+    const lineId = active.id as string
+    const billId = Number(over.id)
+    const item = orderItems.find((i) => i.lineId === lineId)
+    if (!item) return
+    const totalAssigned = bills.reduce((sum, b) => {
+      const a = b.assignments.find((a) => a.lineId === lineId)
+      return sum + (a?.qty ?? 0)
+    }, 0)
+    if (totalAssigned >= item.quantity) return
+    handleAddToBill(billId, lineId)
+  }
+
   // ---------------------------------------------------------------------------
   // Confirm
   // ---------------------------------------------------------------------------
@@ -243,6 +322,7 @@ export function ItemSplitSheet({
         </div>
 
         {/* Two-column body */}
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex flex-1 min-h-0 gap-6 px-6 pb-4 overflow-hidden">
 
           {/* Left: order items */}
@@ -550,6 +630,13 @@ export function ItemSplitSheet({
             </ScrollArea>
           </div>
         </div>
+
+          <DragOverlay>
+            {activeDragLineId ? (
+              <GhostCard lineId={activeDragLineId} orderItems={orderItems} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
 
         {/* Footer */}
         <div className="flex flex-col gap-2 items-start px-6 pb-6 pt-2 shrink-0">
