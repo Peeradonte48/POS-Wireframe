@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { BillLineItem } from '@/components/payment/BillLineItem'
 import { PaymentMethodSelector } from '@/components/payment/PaymentMethodSelector'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { CashPanel } from '@/components/payment/CashPanel'
+import { CashDialog } from '@/components/payment/CashDialog'
 import { QrPanel } from '@/components/payment/QrPanel'
 import { QrSheet } from '@/components/payment/QrSheet'
 import { CardPanel } from '@/components/payment/CardPanel'
@@ -58,7 +58,8 @@ export default function PaymentPage() {
   const [couponCode, setCouponCode] = useState('')
   const [couponAmount, setCouponAmount] = useState<number>(0)
   const [couponApplied, setCouponApplied] = useState(false)
-  const [cashReceived, setCashReceived] = useState<number>(0)
+  // ---- Cash dialog ----
+  const [cashDialogOpen, setCashDialogOpen] = useState(false)
 
   // ---- Payment method dialog ----
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
@@ -75,6 +76,17 @@ export default function PaymentPage() {
 
   // ---- Item split sheet ----
   const [itemSplitSheetOpen, setItemSplitSheetOpen] = useState(false)
+
+  // ---- Accordion: which table groups are collapsed (empty = all expanded) ----
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  function toggleGroup(tid: string) {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev)
+      if (next.has(tid)) next.delete(tid)
+      else next.add(tid)
+      return next
+    })
+  }
 
   useEffect(() => {
     if (isTakeaway) return
@@ -93,8 +105,6 @@ export default function PaymentPage() {
   const isMerged = mergedSecondaryIds.length > 0
   const { dissolveAll } = useBillStore()
   const tables = useTableStore((s) => s.tables)
-  const guestCount = tables[tableId]?.guestCount ?? null
-  const splitDisabled = isMerged || (guestCount !== null && guestCount <= 1)
   const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
 
   // ---- Receipt data ----
@@ -117,6 +127,7 @@ export default function PaymentPage() {
     })
     return [...primaryItems, ...secondaryItems]
   }, [order, isMerged, mergedSecondaryIds])
+  const itemSplitDisabled = isMerged || billItems.length <= 1
 
   // tableOrders for grouped display
   const tableOrders = useMemo(() => {
@@ -183,15 +194,13 @@ export default function PaymentPage() {
   const confirmDisabled =
     (!isTakeaway && !canDoAction(role, 'confirm-payment')) ||
     paymentMethod === null ||
-    (paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal)
+    paymentMethod === 'Cash'
 
   const confirmHint = (!isTakeaway && !canDoAction(role, 'confirm-payment'))
     ? `Role "${role}" cannot confirm payment — switch to Cashier or Manager`
     : paymentMethod === null
       ? 'Select a payment method above to continue'
-      : paymentMethod === 'Cash' && cashReceived > 0 && cashReceived < grandTotal
-        ? 'Cash received is less than the total'
-        : null
+      : null
 
   // ---- Empty order guard ----
   if (!order || billItems.length === 0) {
@@ -241,14 +250,13 @@ export default function PaymentPage() {
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto pb-24">
             <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
-              <PaymentMethodSelector selected={paymentMethod} onChange={setPaymentMethod} />
-              {paymentMethod === 'Cash' && (
-                <CashPanel
-                  grandTotal={grandTotal}
-                  cashReceived={cashReceived}
-                  setCashReceived={setCashReceived}
-                />
-              )}
+              <PaymentMethodSelector
+                selected={paymentMethod}
+                onChange={(m) => {
+                  setPaymentMethod(m)
+                  if (m === 'Cash') setCashDialogOpen(true)
+                }}
+              />
               {paymentMethod === 'QR PromptPay' && (
                 <QrPanel grandTotal={grandTotal} discountApplied={discountAmount} />
               )}
@@ -290,6 +298,7 @@ export default function PaymentPage() {
             }}
           />
         )}
+
       </>
     )
   }
@@ -365,14 +374,18 @@ export default function PaymentPage() {
                     (sum, item) => sum + item.basePrice * item.quantity,
                     0,
                   )
+                  const isOpen = !collapsedGroups.has(group.tableId)
                   return (
                     <div key={group.tableId} className="flex flex-col gap-4">
                       {/* Table header row */}
-                      <div className="flex items-center gap-[10px] py-2">
+                      <div
+                        className={`flex items-center gap-[10px] py-2 ${isMerged ? 'cursor-pointer' : ''}`}
+                        onClick={isMerged ? () => toggleGroup(group.tableId) : undefined}
+                      >
                         <Button
                           variant="outline"
                           size="icon"
-                          className="size-8 rounded-md shrink-0"
+                          className="size-8 rounded-md shrink-0 pointer-events-none"
                           aria-label="Table"
                         >
                           <HandPlatter size={16} />
@@ -385,18 +398,35 @@ export default function PaymentPage() {
                             </p>
                           )}
                         </div>
-                        <div className="w-20 flex justify-end shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           <p className="font-semibold text-lg leading-7 text-right">
                             ฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </p>
+                          {isMerged && (
+                            isOpen
+                              ? <ChevronUp size={16} className="text-muted-foreground" />
+                              : <ChevronDown size={16} className="text-muted-foreground" />
+                          )}
                         </div>
                       </div>
 
-                      {/* Line items */}
-                      <div className="flex flex-col gap-4">
-                        {group.items.map((item) => (
-                          <BillLineItem key={item.lineId} item={item} />
-                        ))}
+                      {/* Line items — height collapses while content slides up into header */}
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                          isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <div
+                            className={`flex flex-col gap-4 transition-[transform,opacity] duration-300 ease-in-out ${
+                              isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+                            }`}
+                          >
+                            {group.items.map((item) => (
+                              <BillLineItem key={item.lineId} item={item} />
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )
@@ -446,7 +476,7 @@ export default function PaymentPage() {
                       variant="outline"
                       className="w-full h-10 gap-2"
                       onClick={() => setSplitConfirmDialogOpen(true)}
-                      disabled={splitDisabled}
+                      disabled={isMerged}
                     >
                       <Coins size={16} />
                       แบ่งจ่าย
@@ -455,7 +485,7 @@ export default function PaymentPage() {
                       variant="outline"
                       className="w-full h-10 gap-2"
                       onClick={() => setItemSplitSheetOpen(true)}
-                      disabled={splitDisabled}
+                      disabled={itemSplitDisabled}
                     >
                       <ScissorsLineDashed size={16} />
                       แยกบิล
@@ -583,6 +613,14 @@ export default function PaymentPage() {
         }}
       />
 
+      {/* Cash payment dialog */}
+      <CashDialog
+        open={cashDialogOpen}
+        onClose={() => { setCashDialogOpen(false); setPaymentMethod(null) }}
+        grandTotal={grandTotal}
+        onConfirm={() => { setCashDialogOpen(false); handleConfirmPayment() }}
+      />
+
       {/* Payment method selection dialog */}
       <Dialog open={paymentMethodDialogOpen} onOpenChange={setPaymentMethodDialogOpen}>
         <DialogContent className="sm:max-w-sm" showCloseButton>
@@ -603,7 +641,9 @@ export default function PaymentPage() {
                 onClick={() => {
                   setPaymentMethod(method)
                   setPaymentMethodDialogOpen(false)
-                  if (method === 'QR PromptPay') {
+                  if (method === 'Cash') {
+                    setCashDialogOpen(true)
+                  } else if (method === 'QR PromptPay') {
                     setQrSheetOpen(true)
                   } else {
                     setViewState('checkout')

@@ -1,8 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Link } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
 
@@ -18,7 +25,7 @@ interface MergeSheetProps {
 }
 
 // ---------------------------------------------------------------------------
-// MergeSheet
+// MergeSheet (Dialog)
 // ---------------------------------------------------------------------------
 
 export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: MergeSheetProps) {
@@ -27,20 +34,11 @@ export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: 
   const tables = useTableStore((s) => s.tables)
   const { initMerge, isMergedSecondary } = useBillStore()
 
-  // Reset selection state on every open
-  useEffect(() => {
-    if (open) {
-      setSelectedIds(new Set())
-    }
-  }, [open])
+  const primaryLabel = tables[primaryTableId]?.label ?? primaryTableId
 
-  // Body scroll lock (matches SplitSheet pattern)
+  // Reset selection on every open
   useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
-    return () => {
-      document.body.style.overflow = ''
-    }
+    if (open) setSelectedIds(new Set())
   }, [open])
 
   // Eligible tables: Occupied or CheckRequested, not the primary, not already a secondary
@@ -66,78 +64,64 @@ export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: 
     })
   }
 
-  const mergeLabel =
-    selectedIds.size > 0 ? `Merge (${selectedIds.size} table${selectedIds.size > 1 ? 's' : ''})` : 'Merge'
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-200
-          ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-      />
-
-      {/* Panel */}
-      <div
-        style={{ boxShadow: 'var(--shadow-floating)' }}
-        className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-background
-          transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto
-          ${open ? 'translate-y-0' : 'translate-y-full'}`}
-      >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
-        </div>
-
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent className="max-w-sm gap-0 p-6" showCloseButton>
         {/* Header */}
-        <h2 className="text-base font-semibold px-4 pb-2">Merge Bill</h2>
-        <p className="text-xs text-muted-foreground px-4 pb-3">
-          Select tables to combine into one bill
-        </p>
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-semibold leading-none">
+            รวมบิล {primaryLabel} กับโต๊ะอื่น
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            เลือกโต๊ะต้องการรวมบิล
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Table picker */}
+        {/* Table grid */}
         {eligibleTables.length === 0 ? (
-          <p className="px-4 pb-4 text-sm text-muted-foreground">
-            No eligible tables to merge. Only Occupied or Check Requested tables can be merged.
+          <p className="pb-4 text-sm text-muted-foreground">
+            ไม่มีโต๊ะที่สามารถรวมบิลได้ เฉพาะโต๊ะที่มีลูกค้าหรือรอเช็คบิลเท่านั้น
           </p>
         ) : (
-          <div className="px-4 pb-2 grid grid-cols-2 gap-2">
-            {eligibleTables.map((table) => (
-              <Button
-                key={table.id}
-                variant="option-card"
-                data-selected={selectedIds.has(table.id)}
-                onClick={() => toggleTable(table.id)}
-              >
-                <p className="font-semibold text-sm">{table.label}</p>
-                <p className="text-xs text-muted-foreground">
-                  {table.guestCount ?? '—'} guests
-                </p>
-              </Button>
-            ))}
+          <div className="grid grid-cols-2 gap-[10px] mb-4">
+            {eligibleTables.map((table) => {
+              const selected = selectedIds.has(table.id)
+              return (
+                <button
+                  key={table.id}
+                  onClick={() => toggleTable(table.id)}
+                  className={`flex flex-col gap-1.5 rounded-lg border p-3 text-left transition-colors ${
+                    selected
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-background hover:bg-muted/50'
+                  }`}
+                >
+                  <span className="text-sm font-medium leading-none">{table.label}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {table.guestCount ?? '—'} คน
+                  </span>
+                </button>
+              )
+            })}
           </div>
         )}
 
-        {/* Confirm section */}
-        <div className="px-4 pb-6 pt-3 border-t flex flex-col gap-2">
+        <Separator className="mb-4" />
+
+        {/* Footer */}
+        <div className="flex flex-col gap-2">
           <Button
             className="w-full"
             disabled={selectedIds.size === 0}
             onClick={handleConfirm}
           >
-            <Link />
-            {mergeLabel}
+            รวมบิล
           </Button>
-          <Button
-            variant="ghost"
-            className="w-full"
-            onClick={onClose}
-          >
-            Cancel
+          <Button variant="outline" className="w-full" onClick={onClose}>
+            ยกเลิก
           </Button>
         </div>
-      </div>
-    </>
+      </DialogContent>
+    </Dialog>
   )
 }
