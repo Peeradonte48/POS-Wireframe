@@ -93,6 +93,7 @@ export default function PaymentPage() {
   const isMerged = mergedSecondaryIds.length > 0
   const { dissolveAll } = useBillStore()
   const tables = useTableStore((s) => s.tables)
+  const guestCount = tables[tableId]?.guestCount ?? null
   const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
 
   // ---- Receipt data ----
@@ -444,7 +445,7 @@ export default function PaymentPage() {
                       variant="outline"
                       className="w-full h-10 gap-2"
                       onClick={() => setSplitConfirmDialogOpen(true)}
-                      disabled={isMerged}
+                      disabled={isMerged || (guestCount !== null && guestCount <= 1)}
                     >
                       <Coins size={16} />
                       แบ่งจ่าย
@@ -453,6 +454,7 @@ export default function PaymentPage() {
                       variant="outline"
                       className="w-full h-10 gap-2"
                       onClick={() => setItemSplitSheetOpen(true)}
+                      disabled={guestCount !== null && guestCount <= 1}
                     >
                       <ScissorsLineDashed size={16} />
                       แยกบิล
