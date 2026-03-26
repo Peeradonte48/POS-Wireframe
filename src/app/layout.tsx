@@ -42,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="th" suppressHydrationWarning className={`${ibmPlexSans.variable} ${notoSansJP.variable} ${notoSansThai.variable}`}>
       <body className="antialiased">
+        {/* Clears stale Zustand localStorage data before React hydration. Bump POS_STORE_VER when store shapes change. */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var v=localStorage.getItem('pos-store-ver');if(v!=='1'){['table-store','order-store','bill-store','manager-store','queue-store'].forEach(function(k){localStorage.removeItem(k)});localStorage.setItem('pos-store-ver','1')}})()` }} />
         <Script src="https://mcp.figma.com/mcp/html-to-design/capture.js" strategy="afterInteractive" />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
