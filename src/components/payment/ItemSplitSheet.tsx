@@ -15,6 +15,8 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  useDraggable,
+  useDroppable,
   useSensor,
   useSensors,
   type DragStartEvent,
@@ -51,6 +53,130 @@ const MODIFIER_ICONS: Record<string, LucideIcon> = {
   'spice-level': Flame,
   'garlic': Sprout,
   'broth-oil': Droplets,
+}
+
+// ---------------------------------------------------------------------------
+// DraggableItemCard
+// ---------------------------------------------------------------------------
+
+function DraggableItemCard({
+  item,
+  isSelected,
+  assignedQty,
+  onSelect,
+}: {
+  item: OrderLineItem
+  isSelected: boolean
+  assignedQty: number
+  onSelect: (lineId: string) => void
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: item.lineId,
+  })
+  const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
+  const remaining = item.quantity - assignedQty
+  const isPartial = assignedQty > 0
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={`bg-card border rounded-xl overflow-hidden transition-colors ${
+        isDragging
+          ? 'opacity-40 border-border'
+          : isSelected
+            ? 'border-primary bg-primary/5'
+            : 'border-border'
+      }`}
+      style={{ boxShadow: 'var(--shadow-card)', touchAction: 'none' }}
+    >
+      {/* Item content */}
+      <div className="flex flex-col gap-4 items-start p-6">
+        <div className="flex gap-2 items-start w-full">
+          {/* Thumbnail */}
+          <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
+            {menuItem?.imagePath ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={menuItem.imagePath}
+                alt={item.menuItemName}
+                className="absolute inset-0 size-full object-cover rounded-md"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-xl">
+                {menuItem?.thumbnailPlaceholder ?? '🍜'}
+              </div>
+            )}
+          </div>
+          {/* Name + modifiers */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <p className="font-medium text-sm leading-5 text-foreground whitespace-nowrap">
+              {item.menuItemName}
+            </p>
+            {item.modifiers.length > 0 && (
+              <div className="flex flex-wrap gap-x-2 gap-y-0">
+                {item.modifiers.map((mod) => {
+                  const Icon = MODIFIER_ICONS[mod.groupId] ?? Tag
+                  return (
+                    <span
+                      key={`${mod.groupId}-${mod.optionId}`}
+                      className="flex items-center gap-1 py-0.5"
+                    >
+                      <Icon size={12} className="text-muted-foreground shrink-0" />
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {mod.optionLabel}
+                      </span>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Qty + remaining + price */}
+        <div className="flex items-center gap-2 w-full">
+          <div className="bg-background border border-border rounded-md shrink-0 px-2 py-0.5">
+            <span className="text-xs font-semibold text-foreground">
+              {item.quantity}×
+            </span>
+          </div>
+          {isPartial && (
+            <div className="flex items-center gap-1 bg-amber-50 border border-amber-300 rounded-md shrink-0 px-2 py-0.5">
+              <span className="text-xs font-semibold text-amber-600">
+                เหลือ {remaining}
+              </span>
+            </div>
+          )}
+          <p className="text-sm text-foreground ml-auto">
+            ฿{(item.basePrice * item.quantity).toLocaleString()}
+          </p>
+        </div>
+      </div>
+      {/* Footer: select button — stop propagation so click doesn't trigger drag listeners */}
+      <div
+        className="border-t border-border flex gap-2 items-center justify-center p-4"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        {isSelected ? (
+          <Button
+            variant="outline"
+            className="flex-1 h-9 text-sm"
+            onClick={() => onSelect(item.lineId)}
+          >
+            เลือกแล้ว
+          </Button>
+        ) : (
+          <Button
+            className="flex-1 h-9 text-sm"
+            onClick={() => onSelect(item.lineId)}
+          >
+            เลือก
+          </Button>
+        )}
+      </div>
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -347,107 +473,15 @@ export function ItemSplitSheet({
                 ) : (
                   <ScrollArea className="h-full px-3 py-2">
                     <div className="flex flex-col gap-2">
-                      {orderItems.filter((item) => !isFullyAssigned(item.lineId)).map((item) => {
-                        const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
-                        const isSelected = selectedLineId === item.lineId
-                        const assigned = assignedQtyFor(item.lineId)
-                        const remaining = item.quantity - assigned
-                        const isPartial = assigned > 0
-                        return (
-                          <div
-                            key={item.lineId}
-                            className={`bg-card border rounded-xl overflow-hidden transition-colors ${
-                              isSelected
-                                ? 'border-primary bg-primary/5'
-                                : 'border-border'
-                            }`}
-                            style={{ boxShadow: 'var(--shadow-card)' }}
-                          >
-                            {/* Item content */}
-                            <div className="flex flex-col gap-4 items-start p-6">
-                              <div className="flex gap-2 items-start w-full">
-                                {/* Thumbnail */}
-                                <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
-                                  {menuItem?.imagePath ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                      src={menuItem.imagePath}
-                                      alt={item.menuItemName}
-                                      className="absolute inset-0 size-full object-cover rounded-md"
-                                    />
-                                  ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-xl">
-                                      {menuItem?.thumbnailPlaceholder ?? '🍜'}
-                                    </div>
-                                  )}
-                                </div>
-                                {/* Name + modifiers */}
-                                <div className="flex-1 min-w-0 flex flex-col gap-1">
-                                  <p className="font-medium text-sm leading-5 text-foreground whitespace-nowrap">
-                                    {item.menuItemName}
-                                  </p>
-                                  {item.modifiers.length > 0 && (
-                                    <div className="flex flex-wrap gap-x-2 gap-y-0">
-                                      {item.modifiers.map((mod) => {
-                                        const Icon = MODIFIER_ICONS[mod.groupId] ?? Tag
-                                        return (
-                                          <span
-                                            key={`${mod.groupId}-${mod.optionId}`}
-                                            className="flex items-center gap-1 py-0.5"
-                                          >
-                                            <Icon size={12} className="text-muted-foreground shrink-0" />
-                                            <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                              {mod.optionLabel}
-                                            </span>
-                                          </span>
-                                        )
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              {/* Qty + remaining + price */}
-                              <div className="flex items-center gap-2 w-full">
-                                <div className="bg-background border border-border rounded-md shrink-0 px-2 py-0.5">
-                                  <span className="text-xs font-semibold text-foreground">
-                                    {item.quantity}×
-                                  </span>
-                                </div>
-                                {/* Remaining badge — only shown when partially assigned */}
-                                {isPartial && (
-                                  <div className="flex items-center gap-1 bg-amber-50 border border-amber-300 rounded-md shrink-0 px-2 py-0.5">
-                                    <span className="text-xs font-semibold text-amber-600">
-                                      เหลือ {remaining}
-                                    </span>
-                                  </div>
-                                )}
-                                <p className="text-sm text-foreground ml-auto">
-                                  ฿{(item.basePrice * item.quantity).toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                            {/* Footer: select button */}
-                            <div className="border-t border-border flex gap-2 items-center justify-center p-4">
-                              {isSelected ? (
-                                <Button
-                                  variant="outline"
-                                  className="flex-1 h-9 text-sm"
-                                  onClick={() => setSelectedLineId(null)}
-                                >
-                                  เลือกแล้ว
-                                </Button>
-                              ) : (
-                                <Button
-                                  className="flex-1 h-9 text-sm"
-                                  onClick={() => handleSelectItem(item.lineId)}
-                                >
-                                  เลือก
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
+                      {orderItems.filter((item) => !isFullyAssigned(item.lineId)).map((item) => (
+                        <DraggableItemCard
+                          key={item.lineId}
+                          item={item}
+                          isSelected={selectedLineId === item.lineId}
+                          assignedQty={assignedQtyFor(item.lineId)}
+                          onSelect={handleSelectItem}
+                        />
+                      ))}
                     </div>
                   </ScrollArea>
                 )}
