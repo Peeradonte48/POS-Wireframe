@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, Pen, XCircle, ShoppingBasket, ReceiptText } from 'lucide-react'
 import { useTableStore } from '@/stores/table.store'
@@ -52,6 +52,16 @@ export default function OrderPage() {
   const [showConfirmCancel, setShowConfirmCancel] = useState(false)
 
   const table = useTableStore((s) => s.tables[tableId])
+
+  const orderRounds = useOrderStore((s) => s.orders[tableId]?.rounds)
+  const itemCount = useMemo(
+    () =>
+      orderRounds
+        ?.flatMap((r) => r.items)
+        .filter((i) => i.status !== 'voided')
+        .reduce((sum, i) => sum + i.quantity, 0) ?? 0,
+    [orderRounds],
+  )
 
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_ID)
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<string | null>(null)
@@ -135,6 +145,11 @@ export default function OrderPage() {
             >
               <ShoppingBasket size={16} data-icon="inline-start" />
               อาหารที่สั่ง
+              {itemCount > 0 && (
+                <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+                  {itemCount}
+                </span>
+              )}
             </Button>
             {!isTakeaway && (
               <Button

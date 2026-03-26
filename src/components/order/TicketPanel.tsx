@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { FileText, X, Printer, ReceiptText, ArrowRight } from 'lucide-react'
+import { HandPlatter, X, Printer, ReceiptText, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -108,6 +108,7 @@ export function TicketPanel({
       onSend()
     } else {
       updateTable(tableId, { orderStage: 'Ordered' })
+      setActiveTab('sent')
     }
     toast('Order sent to kitchen')
   }
@@ -119,10 +120,10 @@ export function TicketPanel({
 
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3.5 border-b shrink-0">
-        <div className="size-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <FileText size={18} className="text-primary" />
+        <div className="bg-secondary p-2 rounded-md flex items-center justify-center shrink-0">
+          <HandPlatter size={16} className="text-foreground" />
         </div>
-        <p className="flex-1 font-bold text-base leading-tight truncate">{label}</p>
+        <p className="flex-1 font-semibold text-lg leading-tight truncate">{label}</p>
         {onClose && (
           <Button
             variant="ghost"
@@ -147,8 +148,13 @@ export function TicketPanel({
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="sent" className="flex-1">
+            <TabsTrigger value="sent" className="flex-1 gap-1.5">
               สั่งแล้ว
+              {sentItems.length > 0 && (
+                <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+                  {sentItems.length}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -158,25 +164,26 @@ export function TicketPanel({
       <ScrollArea className="flex-1 min-h-0">
         {displayItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
-            <FileText size={28} className="opacity-30" />
+            <HandPlatter size={28} className="opacity-30" />
             <p className="text-sm">
               {activeTab === 'unsent' ? 'No unsent items' : 'No sent items'}
             </p>
           </div>
         ) : (
           displayItems.map((item) => (
-            <TicketLineItem
-              key={item.lineId}
-              item={item}
-              onRemove={(lineId) => removeItem(tableId, lineId)}
-              onQtyChange={handleQtyChange}
-              onEditTap={onEditLineItem}
-              onVoidTap={(lineId) => setVoidingLineId(lineId)}
-              canRemove={canDoAction(role, 'void-pre-send')}
-              canVoidSent={canDoAction(role, 'void-post-send')}
-              showPackToGo={!isTakeaway}
-              onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
-            />
+            <div key={item.lineId} className={item.status === 'sent' ? 'px-4 pt-3' : ''}>
+              <TicketLineItem
+                item={item}
+                onRemove={(lineId) => removeItem(tableId, lineId)}
+                onQtyChange={handleQtyChange}
+                onEditTap={onEditLineItem}
+                onVoidTap={(lineId) => setVoidingLineId(lineId)}
+                canRemove={canDoAction(role, 'void-pre-send')}
+                canVoidSent={canDoAction(role, 'void-post-send')}
+                showPackToGo={!isTakeaway}
+                onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
+              />
+            </div>
           ))
         )}
       </ScrollArea>
@@ -222,10 +229,10 @@ export function TicketPanel({
               size="cta"
               className="w-full"
               onClick={handleSend}
-              disabled={unsentCount === 0 || (!onSend && !canDoAction(role, 'send-to-kitchen'))}
+              disabled={unsentCount === 0}
             >
               <ArrowRight data-icon="inline-start" />
-              {sendLabel ?? `ส่งออร์เดอร์เข้าครัว ${unsentCount} รายการ`}
+              {sendLabel ?? 'ส่งออร์เดอร์เข้าครัว'}
             </Button>
           </div>
         )}

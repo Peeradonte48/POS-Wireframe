@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { Trash2, ShoppingBag } from 'lucide-react'
+import { Trash2, ShoppingBag, CircleX, CookingPot } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import type { OrderLineItem } from '@/stores/order.store'
 import { MENU_ITEMS } from '@/lib/mock-data/menu'
@@ -42,17 +44,20 @@ export function buildModifierSummary(item: OrderLineItem): string {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function ItemThumbnail({ item }: { item: OrderLineItem }) {
+function ItemThumbnail({ item, size = 60, rounded = 'rounded-xl' }: { item: OrderLineItem; size?: number; rounded?: string }) {
   const menuItem = MENU_ITEM_MAP.get(item.menuItemId)
   return (
-    <div className="w-[60px] h-[60px] rounded-xl overflow-hidden shrink-0 bg-muted relative">
+    <div
+      className={cn('overflow-hidden shrink-0 bg-muted relative', rounded)}
+      style={{ width: size, height: size }}
+    >
       {menuItem?.imagePath ? (
         <Image
           src={menuItem.imagePath}
           alt={item.menuItemName}
           fill
           className="object-cover"
-          sizes="60px"
+          sizes={`${size}px`}
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-2xl">
@@ -137,47 +142,54 @@ export function TicketLineItem({
   // ── Sent ────────────────────────────────────────────────────────────────
   if (item.status === 'sent') {
     return (
-      <div className="flex items-start gap-3 px-4 py-3 border-b">
-        <ItemThumbnail item={item} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <span className="text-sm font-semibold leading-snug">{item.menuItemName}</span>
-            <span className="text-sm font-bold shrink-0">฿{lineTotal}</span>
-          </div>
-          <ModifierChips item={item} />
-          <div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-0 bg-muted rounded-lg p-0.5">
-              <span className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground/50 text-base font-medium">−</span>
-              <span className="w-6 text-center text-sm font-bold tabular-nums text-muted-foreground">{item.quantity}</span>
-              <span className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground/50 text-base font-medium">+</span>
-            </div>
-            <div className="flex-1" />
-            {showPackToGo && (
-              <button
-                onClick={() => onTogglePackToGo?.(item.lineId)}
-                className={cn(
-                  'h-8 px-2.5 flex items-center gap-1.5 rounded-lg border text-[11px] font-medium transition-colors',
-                  item.packToGo
-                    ? 'border-primary text-primary bg-primary/5'
-                    : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
+      <div className="flex flex-col gap-3 w-full">
+        {/* Details row */}
+        <div className="flex gap-2 items-start">
+          <ItemThumbnail item={item} size={84} rounded="rounded-md" />
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            {/* Name + qty badge + price */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="text-sm font-medium text-foreground truncate">{item.menuItemName}</span>
+                <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 h-auto shrink-0">
+                  {item.quantity}×
+                </Badge>
+                {showPackToGo && item.packToGo && (
+                  <Badge variant="outline" className="h-5 w-5 p-0 flex items-center justify-center shrink-0">
+                    <ShoppingBag size={12} />
+                  </Badge>
                 )}
-                aria-label={item.packToGo ? 'Remove pack-to-go flag' : 'Flag as pack-to-go'}
-              >
-                <ShoppingBag size={12} />
-                ส่งกลับบ้าน
-              </button>
-            )}
-            {canVoidSent && (
-              <button
-                onClick={() => onVoidTap(item.lineId)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors"
-                aria-label="Void item"
-              >
-                <Trash2 size={14} />
-              </button>
-            )}
+              </div>
+              <span className="text-sm text-card-foreground shrink-0">฿{lineTotal}</span>
+            </div>
+            {/* Modifier chips */}
+            <ModifierChips item={item} />
           </div>
         </div>
+
+        {/* Action row */}
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 shrink-0"
+            onClick={() => onVoidTap(item.lineId)}
+            aria-label="Void item"
+          >
+            <CircleX size={16} />
+          </Button>
+          <Button
+            variant="secondary"
+            className="flex-1 h-9 gap-2 opacity-50 cursor-default"
+            disabled
+            aria-label="Sent to kitchen"
+          >
+            <CookingPot size={16} />
+            ส่งเข้าครัวแล้ว
+          </Button>
+        </div>
+
+        <Separator />
       </div>
     )
   }

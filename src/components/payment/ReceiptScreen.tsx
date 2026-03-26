@@ -1,7 +1,13 @@
 'use client'
 
-import { CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Printer, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
+
+const IMG_CHECKMARK = 'https://www.figma.com/api/mcp/asset/f9fa5459-bab2-4284-b6f8-71a6e33e04e0'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -14,6 +20,7 @@ interface ReceiptScreenProps {
   paidAt: Date
   onReprint: () => void
   onBackToFloor: () => void
+  ctaLabel?: string
 }
 
 // ---------------------------------------------------------------------------
@@ -27,83 +34,141 @@ export function ReceiptScreen({
   paidAt,
   onReprint,
   onBackToFloor,
+  ctaLabel = 'เสร็จสิ้น',
 }: ReceiptScreenProps) {
+  const [tip, setTip] = useState('')
+  const [fullTaxInvoice, setFullTaxInvoice] = useState(false)
+
+  // Simple mock receipt number
+  const receiptNo = 'P6X' + Math.abs(paidAt.getTime() % 1000).toString().padStart(3, '0')
+
+  const formattedDate = paidAt.toLocaleString('th-TH', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-6">
-      {/* Success icon block */}
-      <div className="flex flex-col items-center gap-2">
-        <CheckCircle size={64} className="text-green-500" />
-        <h1 className="text-2xl font-bold">Payment Received</h1>
-      </div>
+    <div className="flex flex-col items-center justify-center h-full bg-muted overflow-y-auto py-12 px-4">
+      <div className="flex flex-col gap-6 items-center w-full">
 
-      {/* Details card */}
-      <div className="rounded-xl border bg-card p-6 w-full max-w-sm space-y-3" style={{ boxShadow: 'var(--shadow-panel)' }}>
-        {/* Table row */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Table</span>
-          <span className="text-sm font-medium">{tableId}</span>
+        {/* Header */}
+        <div className="flex flex-col gap-3 items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={IMG_CHECKMARK} alt="Payment complete" className="size-12 block" />
+          <p className="font-semibold text-2xl text-foreground leading-none">ใบเสร็จชำระเงิน</p>
         </div>
 
-        {/* Total paid row */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Total Paid</span>
-          <span className="text-sm font-bold">฿{grandTotal.toLocaleString()}</span>
+        <div className="flex flex-col gap-4 items-start w-[384px]">
+
+          {/* Receipt details card */}
+          <div className="bg-background border border-border rounded-[14px] flex flex-col gap-5 items-start p-6 w-full">
+
+            {/* Row: โต๊ะ */}
+            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
+              <p className="font-medium text-muted-foreground">โต๊ะ</p>
+              <p className="font-semibold text-foreground">{tableId}</p>
+            </div>
+
+            {/* Row: Receipt No */}
+            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
+              <p className="font-medium text-muted-foreground">Receipt No</p>
+              <p className="font-semibold text-foreground">{receiptNo}</p>
+            </div>
+
+            {/* Row: ช่องทางการชำระ */}
+            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
+              <p className="font-medium text-muted-foreground">ช่องทางการชำระ</p>
+              <p className="font-semibold text-foreground">{paymentMethod}</p>
+            </div>
+
+            {/* Row: ยอดชำระ */}
+            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
+              <p className="font-medium text-muted-foreground">ยอดชำระ</p>
+              <p className="font-semibold text-foreground">฿{grandTotal.toLocaleString()}</p>
+            </div>
+
+            {/* Row: เวลา */}
+            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
+              <p className="font-medium text-muted-foreground">เวลา</p>
+              <p className="font-semibold text-foreground">{formattedDate}</p>
+            </div>
+
+            {/* Row: ทิป */}
+            <div className="flex items-center justify-between w-full gap-4">
+              <p className="font-medium text-muted-foreground text-base leading-6 shrink-0">ทิป</p>
+              <Input
+                className="text-right h-9"
+                placeholder="฿0.00"
+                inputMode="decimal"
+                value={tip}
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (/^\d*\.?\d{0,2}$/.test(val)) setTip(val)
+                }}
+              />
+            </div>
+
+            {/* Auto-print note */}
+            <div className="flex items-center justify-center gap-2 w-full">
+              <Printer size={16} className="text-muted-foreground shrink-0" />
+              <p className="text-sm text-muted-foreground leading-none">ใบเสร็จจะพิมพ์อัตโนมัติ</p>
+            </div>
+
+            <div className="py-2 w-full"><Separator /></div>
+
+            {/* Full tax invoice checkbox */}
+            <button
+              className="flex items-start gap-2 cursor-pointer"
+              onClick={() => setFullTaxInvoice((v) => !v)}
+            >
+              <div
+                className={`size-4 rounded-[4px] border border-input shrink-0 flex items-center justify-center mt-px transition-colors ${
+                  fullTaxInvoice ? 'bg-primary border-primary' : 'bg-background'
+                }`}
+              >
+                {fullTaxInvoice && (
+                  <svg viewBox="0 0 12 12" className="size-3 text-primary-foreground" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+              <p className="font-medium text-sm text-foreground leading-none">ต้องการใบกำกับภาษีเต็มรูปแบบ</p>
+            </button>
+          </div>
+
+          {/* Member card */}
+          <div className="bg-background border border-border rounded-[14px] flex flex-col items-start p-4 w-full">
+            <button
+              className="flex items-center justify-center gap-2 h-10 w-full"
+              onClick={() => toast('Member lookup coming soon')}
+            >
+              <Crown size={16} className="text-primary shrink-0" />
+              <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
+            </button>
+          </div>
         </div>
 
-        {/* Method row */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Method</span>
-          <span className="text-sm font-medium">{paymentMethod}</span>
+        {/* Action buttons */}
+        <div className="flex flex-col gap-4 w-[384px]">
+          <Button
+            variant="outline"
+            className="w-full h-14 text-base font-semibold"
+            onClick={onReprint}
+          >
+            พิมพ์ใบเสร็จอีกครั้ง
+          </Button>
+          <Button
+            className="w-full h-14 text-base font-semibold"
+            onClick={onBackToFloor}
+          >
+            {ctaLabel}
+          </Button>
         </div>
-
-        {/* Time row */}
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">Time</span>
-          <span className="text-xs font-medium">{paidAt.toLocaleString('th-TH')}</span>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t" />
-
-        {/* Auto-print annotation */}
-        <p className="text-xs text-muted-foreground text-center">
-          🖶 Invoice auto-printed <span className="italic">[annotated]</span>
-        </p>
-      </div>
-
-      {/* Loyalty Section — CRM Type 2 (Smart Loyalty) */}
-      <div className="rounded-xl border bg-card p-4 w-full max-w-sm space-y-3" style={{ boxShadow: 'var(--shadow-panel)' }}>
-        {/* Member tier and point balance */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-amber-500">Gold Member</span>
-          <span className="text-sm text-muted-foreground">1,240 pts</span>
-        </div>
-
-        {/* QR placeholder — customer scans to earn points */}
-        <div className="border-2 border-dashed rounded-lg h-24 flex items-center justify-center bg-muted/30">
-          <span className="text-xs text-muted-foreground text-center px-2">
-            Customer scans to earn points
-          </span>
-        </div>
-
-        {/* Wireframe annotation */}
-        <p className="text-xs text-muted-foreground text-center">
-          [Smart loyalty QR — unique per bill, baked with spend + branch]
-        </p>
-      </div>
-
-      {/* Actions block */}
-      <div className="w-full max-w-sm space-y-3">
-        <Button variant="outline" className="w-full" onClick={onReprint}>
-          Reprint Receipt
-        </Button>
-        <p className="text-xs text-muted-foreground text-center -mt-2">
-          (annotated — no printer)
-        </p>
-
-        <Button className="w-full" onClick={onBackToFloor}>
-          Back to Floor Plan
-        </Button>
       </div>
     </div>
   )

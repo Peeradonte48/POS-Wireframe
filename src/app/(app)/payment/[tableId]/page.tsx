@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -12,11 +12,15 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { BillLineItem } from '@/components/payment/BillLineItem'
 import { PaymentMethodSelector } from '@/components/payment/PaymentMethodSelector'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { CashPanel } from '@/components/payment/CashPanel'
 import { QrPanel } from '@/components/payment/QrPanel'
+import { QrSheet } from '@/components/payment/QrSheet'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 import { SplitSheet } from '@/components/payment/SplitSheet'
+import { ValueSplitSheet } from '@/components/payment/ValueSplitSheet'
+import { ItemSplitSheet } from '@/components/payment/ItemSplitSheet'
 import { MergeSheet } from '@/components/table-map/MergeSheet'
 import { useBillStore } from '@/stores/bill.store'
 import { useQueueStore } from '@/stores/queue.store'
@@ -56,8 +60,21 @@ export default function PaymentPage() {
   const [couponApplied, setCouponApplied] = useState(false)
   const [cashReceived, setCashReceived] = useState<number>(0)
 
+  // ---- Payment method dialog ----
+  const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
+
+  // ---- QR sheet ----
+  const [qrSheetOpen, setQrSheetOpen] = useState(false)
+
   // ---- Split sheet ----
   const [splitSheetOpen, setSplitSheetOpen] = useState(false)
+
+  // ---- Value split confirm dialog + sheet ----
+  const [splitConfirmDialogOpen, setSplitConfirmDialogOpen] = useState(false)
+  const [valueSplitSheetOpen, setValueSplitSheetOpen] = useState(false)
+
+  // ---- Item split sheet ----
+  const [itemSplitSheetOpen, setItemSplitSheetOpen] = useState(false)
 
   useEffect(() => {
     if (isTakeaway) return
@@ -294,124 +311,120 @@ export default function PaymentPage() {
         </header>
 
         {/* Two-column content */}
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0 overflow-hidden">
           {/* Left panel – scrollable order items */}
-          <div className="flex-1 min-w-0 overflow-y-auto px-4 py-6 flex flex-col gap-6">
-            {/* Summary totals */}
-            <div className="flex flex-col gap-4">
-              {/* ราคารวม */}
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
-                <div className="w-20 flex justify-end">
-                  <p className="font-semibold text-base text-foreground leading-6">
-                    ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </p>
-                </div>
-              </div>
-
-              {/* ส่วนลดท้ายใบเสร็จ */}
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
-                  <ChevronDown size={16} className="text-muted-foreground" />
-                </div>
-                <div className="w-20 flex justify-end">
-                  <p className="font-semibold text-base text-foreground leading-6">
-                    ฿{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </p>
-                </div>
-              </div>
-
-              {/* VAT */}
-              <div className="flex items-start justify-between">
-                <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
-                <div className="w-20 flex justify-end">
-                  <p className="font-semibold text-base text-foreground leading-6">
-                    ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Separator */}
-            <div className="py-2">
-              <Separator />
-            </div>
-
-            {/* Table groups with line items */}
-            <div className="flex flex-col gap-4">
-              {tableOrders.map((group) => {
-                const groupSubtotal = group.items.reduce(
-                  (sum, item) => sum + item.basePrice * item.quantity,
-                  0,
-                )
-                return (
-                  <div key={group.tableId} className="flex flex-col gap-4">
-                    {/* Table header row */}
-                    <div className="flex items-center gap-[10px] py-2">
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="size-8 rounded-md shrink-0"
-                        aria-label="Table"
-                      >
-                        <HandPlatter size={16} />
-                      </Button>
-                      <div className="flex flex-1 items-center gap-2 min-w-0">
-                        <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>
-                        {group.guestCount !== null && (
-                          <p className="text-sm text-muted-foreground leading-5 shrink-0">
-                            ลูกค้า {group.guestCount} คน
-                          </p>
-                        )}
-                      </div>
-                      <div className="w-20 flex justify-end shrink-0">
-                        <p className="font-medium text-lg leading-7 text-right">
-                          ฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Line items */}
-                    <div className="flex flex-col gap-4">
-                      {group.items.map((item) => (
-                        <BillLineItem key={item.lineId} item={item} />
-                      ))}
-                    </div>
+          <div className="flex-1 min-w-0 bg-muted overflow-y-auto px-2 py-4">
+            <div className="flex flex-col gap-4 px-2">
+              {/* Summary totals */}
+              <div className="flex flex-col gap-4">
+                {/* ราคารวม */}
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
+                  <div className="w-20 flex justify-end">
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
                   </div>
-                )
-              })}
+                </div>
+
+                {/* ส่วนลดท้ายใบเสร็จ */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
+                    <ChevronDown size={16} className="text-muted-foreground" />
+                  </div>
+                  <div className="w-20 flex justify-end">
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+
+                {/* VAT */}
+                <div className="flex items-start justify-between">
+                  <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
+                  <div className="w-20 flex justify-end">
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Separator */}
+              <div className="py-2">
+                <Separator />
+              </div>
+
+              {/* Table groups with line items */}
+              <div className="flex flex-col gap-4">
+                {tableOrders.map((group) => {
+                  const groupSubtotal = group.items.reduce(
+                    (sum, item) => sum + item.basePrice * item.quantity,
+                    0,
+                  )
+                  return (
+                    <div key={group.tableId} className="flex flex-col gap-4">
+                      {/* Table header row */}
+                      <div className="flex items-center gap-[10px] py-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="size-8 rounded-md shrink-0"
+                          aria-label="Table"
+                        >
+                          <HandPlatter size={16} />
+                        </Button>
+                        <div className="flex flex-1 items-center gap-2 min-w-0">
+                          <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>
+                          {group.guestCount !== null && (
+                            <p className="text-sm text-muted-foreground leading-5 shrink-0">
+                              ลูกค้า {group.guestCount} คน
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-20 flex justify-end shrink-0">
+                          <p className="font-semibold text-lg leading-7 text-right">
+                            ฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Line items */}
+                      <div className="flex flex-col gap-4">
+                        {group.items.map((item) => (
+                          <BillLineItem key={item.lineId} item={item} />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
           {/* Right panel – totals & actions */}
-          <div
-            className="border-l flex flex-col gap-6 px-4 py-6 shrink-0 w-[282px]"
-            style={{ boxShadow: 'var(--shadow-panel)' }}
-          >
-            {/* Grand total display */}
-            <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
-              <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
-              <p className="font-semibold text-3xl text-destructive">
-                ฿{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </p>
-            </div>
+          <div className="bg-muted flex flex-col h-full px-2 py-4 shrink-0 w-[282px]">
+            <div className="bg-background border border-border rounded-2xl p-3 overflow-hidden flex flex-col gap-6 flex-1">
+              {/* Grand total display */}
+              <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
+                <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
+                <p className="font-semibold text-3xl text-destructive">
+                  ฿{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </p>
+              </div>
 
-            {/* Add member button */}
-            <div className="border border-border rounded-[14px] p-4">
-              <Button
-                variant="ghost"
-                className="w-full h-10 text-primary gap-2"
+              {/* Add member button */}
+              <button
+                className="border border-border rounded-[14px] flex items-center justify-center gap-2 min-h-[104px] p-4 w-full cursor-pointer hover:bg-accent transition-colors"
                 onClick={() => toast('Member lookup coming soon')}
               >
-                <Crown size={16} />
-                เพิ่มเบอร์สมาชิกลูกค้า
-              </Button>
-            </div>
+                <Crown size={16} className="text-primary shrink-0" />
+                <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
+              </button>
 
-            {/* Coupon button */}
-            {!isTakeaway && (
-              <div>
+              {/* Coupon button */}
+              {!isTakeaway && (
                 <Button
                   variant="outline"
                   className="w-full h-10 gap-2"
@@ -420,59 +433,54 @@ export default function PaymentPage() {
                   <TicketPercent size={16} />
                   ใช้คูปองส่วนลด
                 </Button>
-              </div>
-            )}
+              )}
 
-            {/* Separator */}
-            <div className="py-2">
-              <Separator />
-            </div>
-
-            {/* Bill management */}
-            {!isTakeaway && (
-              <div className="flex flex-col gap-2">
-                <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
+              {/* Bill management */}
+              {!isTakeaway && (
                 <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 gap-2"
-                    onClick={() => setSplitSheetOpen(true)}
-                    disabled={isMerged}
-                  >
-                    <Coins size={16} />
-                    แบ่งจ่าย
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 gap-2"
-                    onClick={() => toast('Separate bill coming soon')}
-                  >
-                    <ScissorsLineDashed size={16} />
-                    แยกบิล
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full h-10 gap-2"
-                    onClick={() => setMergeSheetOpen(true)}
-                    disabled={isMerged}
-                  >
-                    <Link size={16} />
-                    รวมบิล
-                  </Button>
+                  <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 gap-2"
+                      onClick={() => setSplitConfirmDialogOpen(true)}
+                      disabled={isMerged}
+                    >
+                      <Coins size={16} />
+                      แบ่งจ่าย
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 gap-2"
+                      onClick={() => setItemSplitSheetOpen(true)}
+                    >
+                      <ScissorsLineDashed size={16} />
+                      แยกบิล
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 gap-2"
+                      onClick={() => setMergeSheetOpen(true)}
+                      disabled={isMerged}
+                    >
+                      <Link size={16} />
+                      รวมบิล
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Spacer to push proceed button to bottom */}
-            <div className="flex-1" />
+              {/* Spacer to push proceed button to bottom */}
+              <div className="flex-1" />
 
-            {/* Proceed to payment button */}
-            <Button
-              className="w-full h-14 text-base font-semibold gap-2"
-              onClick={() => setViewState('checkout')}
-            >
-              ดำเนินการชำระเงิน
-            </Button>
+              {/* Proceed to payment button */}
+              <Button
+                className="w-full h-14 text-base font-semibold gap-2"
+                onClick={() => setPaymentMethodDialogOpen(true)}
+              >
+                ดำเนินการชำระเงิน
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -502,6 +510,110 @@ export default function PaymentPage() {
           onMergeConfirmed={() => setMergeSheetOpen(false)}
         />
       )}
+
+      {/* Split payment confirm dialog */}
+      <Dialog open={splitConfirmDialogOpen} onOpenChange={setSplitConfirmDialogOpen}>
+        <DialogContent className="sm:max-w-sm" showCloseButton>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">ยืนยันการแบ่งจ่าย</DialogTitle>
+            <DialogDescription>
+              หลังจากดำเนินการแบ่งจ่ายแล้วจะไม่สามารถใช้ส่วนลดได้ คุณต้องการดำเนินการต่อหรือไม่?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              className="w-full"
+              onClick={() => {
+                setSplitConfirmDialogOpen(false)
+                setValueSplitSheetOpen(true)
+              }}
+            >
+              ยืนยัน
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setSplitConfirmDialogOpen(false)}
+            >
+              ยกเลิก
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Value split sheet */}
+      {!isTakeaway && (
+        <ValueSplitSheet
+          open={valueSplitSheetOpen}
+          onClose={() => setValueSplitSheetOpen(false)}
+          grandTotal={grandTotal}
+          tableId={tableId}
+          onProceed={() => {
+            setValueSplitSheetOpen(false)
+            router.push(`/payment/${tableId}/split-summary`)
+          }}
+        />
+      )}
+
+      {/* Item split sheet */}
+      {!isTakeaway && (
+        <ItemSplitSheet
+          open={itemSplitSheetOpen}
+          onClose={() => setItemSplitSheetOpen(false)}
+          tableId={tableId}
+          orderItems={billItems}
+          onProceed={() => {
+            setItemSplitSheetOpen(false)
+            router.push(`/payment/${tableId}/split-summary`)
+          }}
+        />
+      )}
+
+      {/* QR PromptPay bottom sheet */}
+      <QrSheet
+        open={qrSheetOpen}
+        onClose={() => setQrSheetOpen(false)}
+        grandTotal={grandTotal}
+        onConfirm={() => {
+          setQrSheetOpen(false)
+          handleConfirmPayment()
+        }}
+      />
+
+      {/* Payment method selection dialog */}
+      <Dialog open={paymentMethodDialogOpen} onOpenChange={setPaymentMethodDialogOpen}>
+        <DialogContent className="sm:max-w-sm" showCloseButton>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">วิธีการชำระเงิน</DialogTitle>
+            <DialogDescription>เลือกวิธีการชำระเงิน</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            {([
+              { method: 'Cash' as PaymentMethod, label: 'เงินสด', icon: Banknote },
+              { method: 'QR PromptPay' as PaymentMethod, label: 'QR Code Promptpay', icon: QrCode },
+              { method: 'Card' as PaymentMethod, label: 'Credit Card', icon: CreditCard },
+            ] as { method: PaymentMethod; label: string; icon: React.ElementType }[]).map(({ method, label, icon: Icon }) => (
+              <Button
+                key={method}
+                variant="outline"
+                className="h-14 w-full gap-2 text-sm font-medium"
+                onClick={() => {
+                  setPaymentMethod(method)
+                  setPaymentMethodDialogOpen(false)
+                  if (method === 'QR PromptPay') {
+                    setQrSheetOpen(true)
+                  } else {
+                    setViewState('checkout')
+                  }
+                }}
+              >
+                <Icon size={16} />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
