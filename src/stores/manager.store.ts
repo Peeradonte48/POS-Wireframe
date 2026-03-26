@@ -26,6 +26,6 @@ export const useManagerStore = create<ManagerStore>()(
       closeShift: () => set({ shiftClosed: true }),
       resetShift: () => set({ shiftClosed: false, eightySixedIds: [] }),
     }),
-    { name: 'manager-store' },
+    { name: 'manager-store', version: 1, migrate: () => ({}) },
   ),
 )

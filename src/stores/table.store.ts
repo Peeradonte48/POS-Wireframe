@@ -156,6 +156,6 @@ export const useTableStore = create<TableStore>()(
       }
     }),
     }),
-    { name: 'table-store' },
+    { name: 'table-store', version: 1, migrate: () => ({}) },
   ),
 )

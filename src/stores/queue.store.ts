@@ -168,6 +168,8 @@ export const useQueueStore = create<QueueStore>()(
     }),
     {
       name: 'queue-store',
+      version: 1,
+      migrate: () => ({}),
       partialize: (state) => ({
         orders: state.orders,
         takeawayCounter: state.takeawayCounter,

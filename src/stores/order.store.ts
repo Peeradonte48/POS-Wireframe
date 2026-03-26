@@ -217,6 +217,6 @@ export const useOrderStore = create<OrderStore>()(
       }
     }),
     }),
-    { name: 'order-store' },
+    { name: 'order-store', version: 1, migrate: () => ({}) },
   ),
 )
