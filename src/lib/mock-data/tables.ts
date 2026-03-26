@@ -23,10 +23,5 @@ function makeTable(num: number): TableRecord {
 const BASE_TABLES = Array.from({ length: 12 }, (_, i) => makeTable(i + 1))
 
 export const INITIAL_TABLES: Record<string, TableRecord> = Object.fromEntries(
-  BASE_TABLES.map((t) => [
-    t.id,
-    t.id === 't10' || t.id === 't11'
-      ? { ...t, status: 'Reserved' as const }
-      : t,
-  ])
+  BASE_TABLES.map((t) => [t.id, t])
 )
