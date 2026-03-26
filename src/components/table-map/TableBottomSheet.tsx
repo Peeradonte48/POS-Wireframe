@@ -30,6 +30,14 @@ export function TableBottomSheet({
   const router = useRouter()
   const role = useSessionStore((s) => s.role)!
   const { markReserved, undoReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
+  const tables = useTableStore((s) => s.tables)
+  const merges = useBillStore((s) => s.merges)
+  const hasEligibleMergeTarget = Object.values(tables).some(
+    (t) =>
+      (t.status === 'Occupied' || t.status === 'CheckRequested') &&
+      t.id !== table?.id &&
+      !(t.id in merges)
+  )
 
   // Local editable state for waiter name and note (Occupied sheet)
   const [localWaiter, setLocalWaiter] = useState('')
@@ -220,7 +228,7 @@ export function TableBottomSheet({
                       variant="outline"
                       className="w-full"
                       onClick={() => setMergeSheetOpen(true)}
-                      disabled={!canDoAction(role, 'open-table')}
+                      disabled={!canDoAction(role, 'open-table') || !hasEligibleMergeTarget}
                     >
                       Merge Bill
                     </Button>
@@ -266,7 +274,7 @@ export function TableBottomSheet({
                       variant="outline"
                       className="w-full"
                       onClick={() => setMergeSheetOpen(true)}
-                      disabled={!canDoAction(role, 'open-table')}
+                      disabled={!canDoAction(role, 'open-table') || !hasEligibleMergeTarget}
                     >
                       Merge Bill
                     </Button>

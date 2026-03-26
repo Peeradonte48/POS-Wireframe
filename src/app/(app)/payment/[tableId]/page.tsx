@@ -106,6 +106,12 @@ export default function PaymentPage() {
   const { dissolveAll } = useBillStore()
   const tables = useTableStore((s) => s.tables)
   const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
+  const hasEligibleMergeTarget = Object.values(tables).some(
+    (t) =>
+      (t.status === 'Occupied' || t.status === 'CheckRequested') &&
+      t.id !== tableId &&
+      !(t.id in merges)
+  )
 
   // ---- Receipt data ----
   const [receiptData, setReceiptData] = useState<{
@@ -494,7 +500,7 @@ export default function PaymentPage() {
                       variant="outline"
                       className="w-full h-10 gap-2"
                       onClick={() => setMergeSheetOpen(true)}
-                      disabled={isMerged}
+                      disabled={isMerged || !hasEligibleMergeTarget}
                     >
                       <Link size={16} />
                       รวมบิล
