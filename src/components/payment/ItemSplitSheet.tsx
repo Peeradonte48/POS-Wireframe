@@ -56,6 +56,204 @@ const MODIFIER_ICONS: Record<string, LucideIcon> = {
 }
 
 // ---------------------------------------------------------------------------
+// DroppableBillBucket
+// ---------------------------------------------------------------------------
+
+function DroppableBillBucket({
+  bill,
+  billIndex,
+  billTotal,
+  canAdd,
+  orderItems,
+  selectedLineId,
+  onAddToBill,
+  onAdjustQty,
+  onRemoveFromBill,
+  onDeleteBill,
+  allBills,
+}: {
+  bill: BillBucket
+  billIndex: number
+  billTotal: number
+  canAdd: boolean
+  orderItems: OrderLineItem[]
+  selectedLineId: string | null
+  onAddToBill: (billId: number, lineId: string) => void
+  onAdjustQty: (billId: number, lineId: string, delta: number) => void
+  onRemoveFromBill: (billId: number, lineId: string) => void
+  onDeleteBill: (billId: number) => void
+  allBills: BillBucket[]
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: bill.id })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`border rounded-xl overflow-hidden shrink-0 transition-colors ${
+        isOver ? 'border-primary bg-primary/5' : 'bg-card border-border'
+      }`}
+      style={{ boxShadow: 'var(--shadow-card)' }}
+    >
+      {/* Bill header */}
+      <div className="flex items-center justify-between px-6 py-4 shrink-0">
+        <p className="font-semibold text-base leading-none tracking-tight">
+          บิล #{billIndex + 1}
+        </p>
+        <ChevronUp size={16} className="text-foreground shrink-0" />
+      </div>
+
+      {/* Assigned items */}
+      <div className="bg-muted border-t border-border flex flex-col isolate items-center min-h-[80px] px-3 py-2 gap-2">
+        {bill.assignments.length === 0 ? (
+          <Button
+            variant="outline"
+            className="w-full h-10 gap-2 text-sm"
+            disabled={!canAdd}
+            onClick={() => selectedLineId && onAddToBill(bill.id, selectedLineId)}
+          >
+            <CirclePlus size={16} />
+            เพิ่มรายการอาหารที่เลือก
+          </Button>
+        ) : (
+          <>
+            {bill.assignments.map((assignment) => {
+              const item = orderItems.find((o) => o.lineId === assignment.lineId)
+              if (!item) return null
+              const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
+              return (
+                <div
+                  key={assignment.lineId}
+                  className="bg-card border border-border rounded-xl w-full overflow-hidden"
+                  style={{ boxShadow: 'var(--shadow-card)' }}
+                >
+                  <div className="flex flex-col gap-4 items-start px-4 py-3.5">
+                    {/* Item thumbnail + name */}
+                    <div className="flex gap-2 items-start w-full">
+                      <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
+                        {menuItem?.imagePath ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={menuItem.imagePath}
+                            alt={item.menuItemName}
+                            className="absolute inset-0 size-full object-cover rounded-md"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-xl">
+                            {menuItem?.thumbnailPlaceholder ?? '🍜'}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col gap-1">
+                        <p className="font-medium text-sm leading-5 text-foreground whitespace-nowrap">
+                          {item.menuItemName}
+                        </p>
+                        {item.modifiers.length > 0 && (
+                          <div className="flex flex-wrap gap-x-2 gap-y-0">
+                            {item.modifiers.map((mod) => {
+                              const Icon = MODIFIER_ICONS[mod.groupId] ?? Tag
+                              return (
+                                <span
+                                  key={`${mod.groupId}-${mod.optionId}`}
+                                  className="flex items-center gap-1 py-0.5"
+                                >
+                                  <Icon size={12} className="text-muted-foreground shrink-0" />
+                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                    {mod.optionLabel}
+                                  </span>
+                                </span>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {/* Qty stepper + price + trash */}
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="size-9"
+                          onClick={() => onAdjustQty(bill.id, assignment.lineId, -1)}
+                        >
+                          <Minus size={16} />
+                        </Button>
+                        <span className="text-sm text-foreground text-center w-7">
+                          {assignment.qty}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="size-9"
+                          onClick={() => onAdjustQty(bill.id, assignment.lineId, 1)}
+                          disabled={
+                            assignment.qty >=
+                            item.quantity -
+                              allBills
+                                .filter((b) => b.id !== bill.id)
+                                .reduce(
+                                  (s, b) =>
+                                    s + (b.assignments.find((a) => a.lineId === assignment.lineId)?.qty ?? 0),
+                                  0,
+                                )
+                          }
+                        >
+                          <Plus size={16} />
+                        </Button>
+                      </div>
+                      <p className="text-base text-foreground">
+                        ฿{(item.basePrice * assignment.qty).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-9"
+                        onClick={() => onRemoveFromBill(bill.id, assignment.lineId)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+            {/* Add more button when bill already has items */}
+            {canAdd && (
+              <Button
+                variant="outline"
+                className="w-full h-10 gap-2 text-sm"
+                onClick={() => selectedLineId && onAddToBill(bill.id, selectedLineId)}
+              >
+                <CirclePlus size={16} />
+                เพิ่มรายการอาหารที่เลือก
+              </Button>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Bill total footer */}
+      <div className="flex items-center gap-4 px-6 py-2.5">
+        <div className="flex flex-1 items-start gap-4 leading-none text-foreground whitespace-nowrap">
+          <p className="font-semibold text-base tracking-tight">Total</p>
+          <p className="text-sm">
+            ฿{billTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-9"
+          onClick={() => onDeleteBill(bill.id)}
+        >
+          <Trash2 size={16} />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // DraggableItemCard
 // ---------------------------------------------------------------------------
 
@@ -495,159 +693,22 @@ export function ItemSplitSheet({
               <div className="flex flex-col gap-4 pb-2">
                 {bills.map((bill, billIndex) => {
                   const billTotal = getBillTotal(bill)
-                  const canAdd = !!selectedLineId && !isFullyAssigned(selectedLineId ?? '')
+                  const canAdd = !!selectedLineId && !isFullyAssigned(selectedLineId)
                   return (
-                    <div
+                    <DroppableBillBucket
                       key={bill.id}
-                      className="bg-card border border-border rounded-xl overflow-hidden shrink-0"
-                      style={{ boxShadow: 'var(--shadow-card)' }}
-                    >
-                      {/* Bill header */}
-                      <div className="flex items-center justify-between px-6 py-4 shrink-0">
-                        <p className="font-semibold text-base leading-none tracking-tight">
-                          บิล #{billIndex + 1}
-                        </p>
-                        <ChevronUp size={16} className="text-foreground shrink-0" />
-                      </div>
-
-                      {/* Assigned items */}
-                      <div className="bg-muted border-t border-border flex flex-col isolate items-center min-h-[80px] px-3 py-2 gap-2">
-                        {bill.assignments.length === 0 ? (
-                          <Button
-                            variant="outline"
-                            className="w-full h-10 gap-2 text-sm"
-                            disabled={!canAdd}
-                            onClick={() => handleAddToBill(bill.id, selectedLineId!)}
-                          >
-                            <CirclePlus size={16} />
-                            เพิ่มรายการอาหารที่เลือก
-                          </Button>
-                        ) : (
-                          <>
-                            {bill.assignments.map((assignment) => {
-                              const item = orderItems.find((o) => o.lineId === assignment.lineId)
-                              if (!item) return null
-                              const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
-                              return (
-                                <div
-                                  key={assignment.lineId}
-                                  className="bg-card border border-border rounded-xl w-full overflow-hidden"
-                                  style={{ boxShadow: 'var(--shadow-card)' }}
-                                >
-                                  <div className="flex flex-col gap-4 items-start px-4 py-3.5">
-                                    {/* Item thumbnail + name */}
-                                    <div className="flex gap-2 items-start w-full">
-                                      <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
-                                        {menuItem?.imagePath ? (
-                                          // eslint-disable-next-line @next/next/no-img-element
-                                          <img
-                                            src={menuItem.imagePath}
-                                            alt={item.menuItemName}
-                                            className="absolute inset-0 size-full object-cover rounded-md"
-                                          />
-                                        ) : (
-                                          <div className="absolute inset-0 flex items-center justify-center text-xl">
-                                            {menuItem?.thumbnailPlaceholder ?? '🍜'}
-                                          </div>
-                                        )}
-                                      </div>
-                                      <div className="flex-1 min-w-0 flex flex-col gap-1">
-                                        <p className="font-medium text-sm leading-5 text-foreground whitespace-nowrap">
-                                          {item.menuItemName}
-                                        </p>
-                                        {item.modifiers.length > 0 && (
-                                          <div className="flex flex-wrap gap-x-2 gap-y-0">
-                                            {item.modifiers.map((mod) => {
-                                              const Icon = MODIFIER_ICONS[mod.groupId] ?? Tag
-                                              return (
-                                                <span
-                                                  key={`${mod.groupId}-${mod.optionId}`}
-                                                  className="flex items-center gap-1 py-0.5"
-                                                >
-                                                  <Icon size={12} className="text-muted-foreground shrink-0" />
-                                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                                    {mod.optionLabel}
-                                                  </span>
-                                                </span>
-                                              )
-                                            })}
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                    {/* Qty stepper + price + trash */}
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex items-center gap-2">
-                                        <Button
-                                          variant="outline"
-                                          size="icon"
-                                          className="size-9"
-                                          onClick={() => handleAdjustQty(bill.id, assignment.lineId, -1)}
-                                        >
-                                          <Minus size={16} />
-                                        </Button>
-                                        <span className="text-sm text-foreground text-center w-7">
-                                          {assignment.qty}
-                                        </span>
-                                        <Button
-                                          variant="outline"
-                                          size="icon"
-                                          className="size-9"
-                                          onClick={() => handleAdjustQty(bill.id, assignment.lineId, 1)}
-                                          disabled={assignment.qty >= item.quantity - bills.filter((b) => b.id !== bill.id).reduce((s, b) => s + (b.assignments.find((a) => a.lineId === assignment.lineId)?.qty ?? 0), 0)}
-                                        >
-                                          <Plus size={16} />
-                                        </Button>
-                                      </div>
-                                      <p className="text-base text-foreground">
-                                        ฿{(item.basePrice * assignment.qty).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                      </p>
-                                      <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="size-9"
-                                        onClick={() => handleRemoveFromBill(bill.id, assignment.lineId)}
-                                      >
-                                        <Trash2 size={16} />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                            {/* Add more button when bill already has items */}
-                            {canAdd && (
-                              <Button
-                                variant="outline"
-                                className="w-full h-10 gap-2 text-sm"
-                                onClick={() => handleAddToBill(bill.id, selectedLineId!)}
-                              >
-                                <CirclePlus size={16} />
-                                เพิ่มรายการอาหารที่เลือก
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-
-                      {/* Bill total footer */}
-                      <div className="flex items-center gap-4 px-6 py-2.5">
-                        <div className="flex flex-1 items-start gap-4 leading-none text-foreground whitespace-nowrap">
-                          <p className="font-semibold text-base tracking-tight">Total</p>
-                          <p className="text-sm">
-                            ฿{billTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="size-9"
-                          onClick={() => handleDeleteBill(bill.id)}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </div>
+                      bill={bill}
+                      billIndex={billIndex}
+                      billTotal={billTotal}
+                      canAdd={canAdd}
+                      orderItems={orderItems}
+                      selectedLineId={selectedLineId}
+                      onAddToBill={handleAddToBill}
+                      onAdjustQty={handleAdjustQty}
+                      onRemoveFromBill={handleRemoveFromBill}
+                      onDeleteBill={handleDeleteBill}
+                      allBills={bills}
+                    />
                   )
                 })}
 
