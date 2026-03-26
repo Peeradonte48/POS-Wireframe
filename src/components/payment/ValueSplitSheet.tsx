@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Coins, CirclePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -39,15 +39,17 @@ export function ValueSplitSheet({
   const [splitItems, setSplitItems] = useState<SplitItem[]>([]);
   const [inputStr, setInputStr] = useState("");
   const [nextId, setNextId] = useState(1);
+  const [prevOpen, setPrevOpen] = useState(open);
 
   // Reset state when sheet opens
-  useEffect(() => {
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (open) {
       setSplitItems([]);
       setInputStr("");
       setNextId(1);
     }
-  }, [open]);
+  }
 
   const totalSplit = splitItems.reduce((sum, item) => sum + item.amount, 0);
   const remaining = Math.max(0, grandTotal - totalSplit);
