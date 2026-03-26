@@ -50,3 +50,10 @@ superpowers/
 .planning/
 
 .playwright-cli/
+
+# AI and IDE specific
+.vibecode/
+.cursor/
+.cursorrules
+.gemini/
+.mcp.json
