@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -30,6 +30,7 @@ interface MergeSheetProps {
 
 export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: MergeSheetProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [prevOpen, setPrevOpen] = useState(open)
 
   const tables = useTableStore((s) => s.tables)
   const { initMerge, isMergedSecondary } = useBillStore()
@@ -37,9 +38,10 @@ export function MergeSheet({ open, onClose, primaryTableId, onMergeConfirmed }: 
   const primaryLabel = tables[primaryTableId]?.label ?? primaryTableId
 
   // Reset selection on every open
-  useEffect(() => {
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (open) setSelectedIds(new Set())
-  }, [open])
+  }
 
   // Eligible tables: Occupied or CheckRequested, not the primary, not already a secondary
   const eligibleTables = Object.values(tables).filter(
