@@ -35,7 +35,12 @@ interface TableTileProps {
 }
 
 export function TableTile({ table, onTap }: TableTileProps) {
-  const cardClass = STATUS_CARD_CLASS[table.status]
+  const isWaitingKitchen =
+    table.status === 'Occupied' &&
+    (table.orderStage === 'Ordered' || table.orderStage === 'Cooking' || table.orderStage === 'Ready')
+  const cardClass = isWaitingKitchen
+    ? 'bg-status-check-requested-bg border-4 border-status-check-requested'
+    : STATUS_CARD_CLASS[table.status]
 
   // Always call hooks unconditionally (React hooks rule)
   const dwellTime = useDwellTimer(table.openedAt)
