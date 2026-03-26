@@ -110,16 +110,15 @@ export function ItemSplitSheet({
     setSelectedLineId((prev) => (prev === lineId ? null : lineId))
   }
 
-  function handleAddToBill(billId: number) {
-    if (!selectedLineId) return
-    const item = orderItems.find((i) => i.lineId === selectedLineId)
+  function handleAddToBill(billId: number, lineId: string) {
+    const item = orderItems.find((i) => i.lineId === lineId)
     if (!item) return
 
     setBills((prev) => {
       const assignedInOtherBills = prev
         .filter((b) => b.id !== billId)
         .reduce((sum, b) => {
-          const a = b.assignments.find((a) => a.lineId === selectedLineId)
+          const a = b.assignments.find((a) => a.lineId === lineId)
           return sum + (a?.qty ?? 0)
         }, 0)
       const remaining = item.quantity - assignedInOtherBills
@@ -127,19 +126,19 @@ export function ItemSplitSheet({
 
       return prev.map((bill) => {
         if (bill.id !== billId) return bill
-        const existing = bill.assignments.find((a) => a.lineId === selectedLineId)
+        const existing = bill.assignments.find((a) => a.lineId === lineId)
         if (existing) {
           const newQty = Math.min(existing.qty + 1, remaining)
           return {
             ...bill,
             assignments: bill.assignments.map((a) =>
-              a.lineId === selectedLineId ? { ...a, qty: newQty } : a,
+              a.lineId === lineId ? { ...a, qty: newQty } : a,
             ),
           }
         }
         return {
           ...bill,
-          assignments: [...bill.assignments, { lineId: selectedLineId, qty: 1 }],
+          assignments: [...bill.assignments, { lineId, qty: 1 }],
         }
       })
     })
@@ -404,7 +403,7 @@ export function ItemSplitSheet({
                             variant="outline"
                             className="w-full h-10 gap-2 text-sm"
                             disabled={!canAdd}
-                            onClick={() => handleAddToBill(bill.id)}
+                            onClick={() => handleAddToBill(bill.id, selectedLineId!)}
                           >
                             <CirclePlus size={16} />
                             เพิ่มรายการอาหารที่เลือก
@@ -507,7 +506,7 @@ export function ItemSplitSheet({
                               <Button
                                 variant="outline"
                                 className="w-full h-10 gap-2 text-sm"
-                                onClick={() => handleAddToBill(bill.id)}
+                                onClick={() => handleAddToBill(bill.id, selectedLineId!)}
                               >
                                 <CirclePlus size={16} />
                                 เพิ่มรายการอาหารที่เลือก
