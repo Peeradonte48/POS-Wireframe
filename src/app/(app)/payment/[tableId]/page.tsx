@@ -57,9 +57,6 @@ export default function PaymentPage() {
 
   // ---- Payment state ----
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
-  const [couponCode, setCouponCode] = useState('')
-  const [couponAmount, setCouponAmount] = useState<number>(0)
-  const [couponApplied, setCouponApplied] = useState(false)
   // ---- Cash dialog ----
   const [cashDialogOpen, setCashDialogOpen] = useState(false)
 
@@ -69,6 +66,7 @@ export default function PaymentPage() {
   // ---- CRM member lookup ----
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
+  const promotionDiscount = useBillStore((s) => s.promotionDiscounts[tableId] ?? null)
   const { setCrmMember, clearCrmMember } = useBillStore()
 
   // ---- QR sheet ----
@@ -162,7 +160,7 @@ export default function PaymentPage() {
     [billItems],
   )
 
-  const discountAmount = couponApplied ? couponAmount : 0
+  const discountAmount = promotionDiscount?.amount ?? 0
   const discountedSubtotal = subtotal - discountAmount
   const vatAmount = Math.round(discountedSubtotal * 0.07)
   const grandTotal = discountedSubtotal + vatAmount
@@ -350,11 +348,17 @@ export default function PaymentPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
-                    <ChevronDown size={16} className="text-muted-foreground" />
+                    {promotionDiscount ? (
+                      <span className="text-xs font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded-md leading-5">
+                        {promotionDiscount.couponCode}
+                      </span>
+                    ) : (
+                      <ChevronDown size={16} className="text-muted-foreground" />
+                    )}
                   </div>
                   <div className="w-20 flex justify-end">
-                    <p className="font-medium text-base text-foreground leading-6">
-                      ฿{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-destructive' : 'text-foreground'}`}>
+                      {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                     </p>
                   </div>
                 </div>
@@ -470,15 +474,15 @@ export default function PaymentPage() {
                 </button>
               )}
 
-              {/* Coupon button */}
+              {/* Promotion button */}
               {!isTakeaway && (
                 <Button
                   variant="outline"
                   className="w-full h-10 gap-2"
-                  onClick={() => toast('Coupon scan coming soon')}
+                  onClick={() => router.push(`/payment/${tableId}/promotions`)}
                 >
                   <TicketPercent size={16} />
-                  ใช้คูปองส่วนลด
+                  {promotionDiscount ? `โปรโมชัน (${promotionDiscount.couponCode})` : 'โปรโมชัน'}
                 </Button>
               )}
 

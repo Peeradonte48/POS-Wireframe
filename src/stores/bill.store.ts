@@ -35,10 +35,19 @@ export interface BillSplit {
   payments: Record<number, SeatPaymentRecord>     // keyed by seatIndex; undefined = unpaid
 }
 
+export interface PromotionDiscount {
+  promotionId: string
+  couponCode: string
+  amount: number
+}
+
 interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
   crmMembers: Record<string, CrmMember>  // key = tableId
+  promotionDiscounts: Record<string, PromotionDiscount>  // key = tableId
+  setPromotionDiscount: (tableId: string, data: PromotionDiscount) => void
+  clearPromotionDiscount: (tableId: string) => void
   initCustomSplit: (tableId: string, payerCount: number) => void
   addCustomPayer: (tableId: string) => void
   setCustomAmount: (tableId: string, payerIndex: number, amount: number) => void
@@ -65,6 +74,16 @@ export const useBillStore = create<BillStore>()(
       splits: {},
       merges: {},
       crmMembers: {},
+      promotionDiscounts: {},
+
+      setPromotionDiscount: (tableId, data) =>
+        set((state) => ({ promotionDiscounts: { ...state.promotionDiscounts, [tableId]: data } })),
+
+      clearPromotionDiscount: (tableId) =>
+        set((state) => {
+          const { [tableId]: _, ...rest } = state.promotionDiscounts
+          return { promotionDiscounts: rest }
+        }),
 
       initCustomSplit: (tableId, payerCount) =>
         set((state) => {
