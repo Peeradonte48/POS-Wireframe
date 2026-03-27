@@ -601,16 +601,15 @@ export function ItemSplitSheet({
 
   function handleConfirm() {
     if (!canConfirm) return
-    const { initCustomSplit, setCustomAmount } = useBillStore.getState()
+    const { initItemSplit } = useBillStore.getState()
     const activeBills = bills.filter((b) => b.assignments.length > 0)
-    initCustomSplit(tableId, activeBills.length)
-    activeBills.forEach((bill, i) => {
-      const total = bill.assignments.reduce((sum, a) => {
+    initItemSplit(tableId, activeBills.map((bill) => ({
+      amount: bill.assignments.reduce((sum, a) => {
         const item = orderItems.find((o) => o.lineId === a.lineId)
         return sum + (item?.basePrice ?? 0) * a.qty
-      }, 0)
-      setCustomAmount(tableId, i, total)
-    })
+      }, 0),
+      items: bill.assignments.map((a) => ({ lineId: a.lineId, qty: a.qty })),
+    })))
     onProceed()
   }
 

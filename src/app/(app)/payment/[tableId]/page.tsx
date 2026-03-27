@@ -22,7 +22,7 @@ import { SplitSheet } from '@/components/payment/SplitSheet'
 import { ValueSplitSheet } from '@/components/payment/ValueSplitSheet'
 import { ItemSplitSheet } from '@/components/payment/ItemSplitSheet'
 import { MergeSheet } from '@/components/table-map/MergeSheet'
-import { CrmLookupDialog, CrmMember } from '@/components/payment/CrmLookupDialog'
+import { CrmLookupDialog, type CrmMember } from '@/components/payment/CrmLookupDialog'
 import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { useBillStore } from '@/stores/bill.store'
 import { useQueueStore } from '@/stores/queue.store'
@@ -68,7 +68,8 @@ export default function PaymentPage() {
 
   // ---- CRM member lookup ----
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
-  const [crmMember, setCrmMember] = useState<CrmMember | null>(null)
+  const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
+  const { setCrmMember, clearCrmMember } = useBillStore()
 
   // ---- QR sheet ----
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
@@ -116,6 +117,7 @@ export default function PaymentPage() {
     grandTotal: number
     paymentMethod: PaymentMethod
     paidAt: Date
+    crmMember: CrmMember | null
   } | null>(null)
 
   // ---- Bill assembly ----
@@ -131,7 +133,8 @@ export default function PaymentPage() {
     })
     return [...primaryItems, ...secondaryItems]
   }, [order, isMerged, mergedSecondaryIds])
-  const itemSplitDisabled = isMerged || billItems.length <= 1
+  const totalBillUnits = billItems.reduce((sum, item) => sum + item.quantity, 0)
+  const itemSplitDisabled = isMerged || totalBillUnits <= 1
 
   // tableOrders for grouped display
   const tableOrders = useMemo(() => {
@@ -187,7 +190,7 @@ export default function PaymentPage() {
       discountApplied: discountAmount,
     })
     toast.success('Payment confirmed')
-    setReceiptData({ grandTotal, paymentMethod, paidAt: new Date() })
+    setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
     setViewState('receipt')
   }
 
@@ -225,8 +228,8 @@ export default function PaymentPage() {
         paymentMethod={receiptData.paymentMethod}
         paidAt={receiptData.paidAt}
         onReprint={handleReprint}
-        onBackToFloor={() => router.push('/table-map')}
-        crmMember={crmMember}
+        onBackToFloor={() => { clearCrmMember(tableId); router.push('/table-map') }}
+        crmMember={receiptData.crmMember}
       />
     )
   }
@@ -298,7 +301,7 @@ export default function PaymentPage() {
               useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
               mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
               dissolveAll(tableId)
-              setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
+              setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember })
               setViewState('receipt')
             }}
           />
@@ -541,7 +544,7 @@ export default function PaymentPage() {
             useTableStore.getState().updateTable(tableId, { orderStage: 'Billed' })
             mergedSecondaryIds.forEach((id) => useTableStore.getState().markCleaning(id))
             dissolveAll(tableId)
-            setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date() })
+            setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember })
             setViewState('receipt')
           }}
         />
@@ -619,7 +622,7 @@ export default function PaymentPage() {
         open={crmDialogOpen}
         onClose={() => setCrmDialogOpen(false)}
         onMemberFound={(member) => {
-          setCrmMember(member)
+          setCrmMember(tableId, member)
           setCrmDialogOpen(false)
         }}
       />

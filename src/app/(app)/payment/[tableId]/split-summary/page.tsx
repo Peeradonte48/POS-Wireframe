@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, Coins, Crown, HandPlatter } from 'lucide-react'
+import { ChevronLeft, Coins, Crown, HandPlatter, ScissorsLineDashed, TicketPercent } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { BillLineItem } from '@/components/payment/BillLineItem'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { QrSheet } from '@/components/payment/QrSheet'
-import { CrmLookupDialog, CrmMember } from '@/components/payment/CrmLookupDialog'
+import { CrmLookupDialog } from '@/components/payment/CrmLookupDialog'
 import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { CashPanel } from '@/components/payment/CashPanel'
 import { CardPanel } from '@/components/payment/CardPanel'
@@ -21,7 +21,7 @@ import { Banknote, QrCode, CreditCard } from 'lucide-react'
 import React from 'react'
 
 // ---------------------------------------------------------------------------
-// SplitSummaryPage
+// SplitSummaryPage — handles both แบ่งจ่าย (value) and แยกบิล (item) flows
 // ---------------------------------------------------------------------------
 
 type PaymentMethod = 'Cash' | 'QR PromptPay' | 'Card'
@@ -38,15 +38,15 @@ export default function SplitSummaryPage() {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
-  const [crmMember, setCrmMember] = useState<CrmMember | null>(null)
+  const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
+  const { setCrmMember, clearCrmMember } = useBillStore()
   const [paidIndexes, setPaidIndexes] = useState<Set<number>>(new Set())
 
-  // Per-payer checkout state
+  // Per-bill checkout state
   const [checkoutMethod, setCheckoutMethod] = useState<PaymentMethod | null>(null)
   const [cashReceived, setCashReceived] = useState<number>(0)
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
 
-  // Per-payer receipt state
   const [receiptData, setReceiptData] = useState<{
     payerIndex: number
     amount: number
@@ -59,19 +59,37 @@ export default function SplitSummaryPage() {
     return order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
   }, [order])
 
+  // Full order totals (for display on both layouts)
   const subtotal = useMemo(
     () => billItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0),
     [billItems],
   )
   const vatAmount = Math.round(subtotal * 0.07)
+  const grandTotal = subtotal + vatAmount
 
-  // Split items from bill store customAmounts
   const splitAmounts: number[] = split?.customAmounts ?? []
-  const selectedAmount = splitAmounts[selectedTabIndex] ?? 0
-
+  const isItemSplit = split?.splitOrigin === 'item'
   const tableLabel = table?.label ?? tableId
 
-  // ---- Mark payer as paid — show receipt only for the last payer ----
+  // Payment amount for the currently selected bill/payer
+  // — value-split: stored amount is what user pays
+  // — item-split: stored amount is pre-VAT; add VAT here
+  const selectedBillSubtotal = splitAmounts[selectedTabIndex] ?? 0
+  const selectedAmount = isItemSplit
+    ? selectedBillSubtotal + Math.round(selectedBillSubtotal * 0.07)
+    : selectedBillSubtotal
+
+  // Items assigned to the selected bill (item-split only)
+  const selectedBillItems = useMemo(() => {
+    if (!isItemSplit || !split?.itemBills) return []
+    const entries = split.itemBills[selectedTabIndex] ?? []
+    return entries.flatMap(({ lineId, qty }) => {
+      const item = billItems.find((o) => o.lineId === lineId)
+      return item ? [{ item, qty }] : []
+    })
+  }, [isItemSplit, split, selectedTabIndex, billItems])
+
+  // ---- Confirm payment for current bill/payer ----
   function handleConfirmPayment(method: PaymentMethod) {
     const newPaid = new Set(paidIndexes).add(selectedTabIndex)
     setPaidIndexes(newPaid)
@@ -88,13 +106,12 @@ export default function SplitSummaryPage() {
     }
   }
 
-  // ---- After last-payer receipt: finish and go to floor ----
   function handleAfterReceipt() {
     useTableStore.getState().markCleaning(tableId)
+    clearCrmMember(tableId)
     router.push('/table-map')
   }
 
-  // ---- CTA disabled when already paid ----
   const isCurrentPaid = paidIndexes.has(selectedTabIndex)
   const cashUnderTotal = checkoutMethod === 'Cash' && cashReceived > 0 && cashReceived < selectedAmount
 
@@ -108,11 +125,11 @@ export default function SplitSummaryPage() {
     )
   }
 
-  // ---- Final receipt view (last payer only) ----
+  // ---- Receipt view (last payer/bill) ----
   if (receiptData) {
     return (
       <ReceiptScreen
-        tableId={`${tableLabel} · แบ่งจ่าย #${receiptData.payerIndex + 1}`}
+        tableId={`${tableLabel} · ${isItemSplit ? 'บิล' : 'แบ่งจ่าย'} #${receiptData.payerIndex + 1}`}
         grandTotal={receiptData.amount}
         paymentMethod={receiptData.method}
         paidAt={receiptData.paidAt}
@@ -124,7 +141,7 @@ export default function SplitSummaryPage() {
     )
   }
 
-  // ---- Checkout sub-view (Cash or Card) ----
+  // ---- Cash / Card checkout sub-view ----
   if (checkoutMethod === 'Cash' || checkoutMethod === 'Card') {
     return (
       <div className="flex flex-col h-full">
@@ -139,22 +156,16 @@ export default function SplitSummaryPage() {
             <ChevronLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none">
-            แบ่งจ่าย #{selectedTabIndex + 1} — {checkoutMethod === 'Cash' ? 'เงินสด' : 'บัตรเครดิต'}
+            {isItemSplit ? 'บิล' : 'แบ่งจ่าย'} #{selectedTabIndex + 1} — {checkoutMethod === 'Cash' ? 'เงินสด' : 'บัตรเครดิต'}
           </span>
         </header>
 
         <div className="flex-1 overflow-y-auto pb-24">
           <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
             {checkoutMethod === 'Cash' && (
-              <CashPanel
-                grandTotal={selectedAmount}
-                cashReceived={cashReceived}
-                setCashReceived={setCashReceived}
-              />
+              <CashPanel grandTotal={selectedAmount} cashReceived={cashReceived} setCashReceived={setCashReceived} />
             )}
-            {checkoutMethod === 'Card' && (
-              <CardPanel grandTotal={selectedAmount} />
-            )}
+            {checkoutMethod === 'Card' && <CardPanel grandTotal={selectedAmount} />}
           </div>
         </div>
 
@@ -177,7 +188,241 @@ export default function SplitSummaryPage() {
     )
   }
 
-  // ---- Main split summary view ----
+  // ---- Shared dialogs (both layouts) ----
+  const sharedDialogs = (
+    <>
+      <Dialog open={paymentMethodDialogOpen} onOpenChange={setPaymentMethodDialogOpen}>
+        <DialogContent className="sm:max-w-sm" showCloseButton>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">วิธีการชำระเงิน</DialogTitle>
+            <DialogDescription>
+              {isItemSplit ? 'บิล' : 'แบ่งจ่าย'} #{selectedTabIndex + 1} — ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            {([
+              { method: 'Cash' as PaymentMethod, label: 'เงินสด', icon: Banknote },
+              { method: 'QR PromptPay' as PaymentMethod, label: 'QR Code Promptpay', icon: QrCode },
+              { method: 'Card' as PaymentMethod, label: 'Credit Card', icon: CreditCard },
+            ] as { method: PaymentMethod; label: string; icon: React.ElementType }[]).map(({ method, label, icon: Icon }) => (
+              <Button
+                key={method}
+                variant="outline"
+                className="h-14 w-full gap-2 text-sm font-medium"
+                onClick={() => {
+                  setPaymentMethodDialogOpen(false)
+                  if (method === 'QR PromptPay') {
+                    setQrSheetOpen(true)
+                  } else {
+                    setCashReceived(0)
+                    setCheckoutMethod(method)
+                  }
+                }}
+              >
+                <Icon size={16} />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <CrmLookupDialog
+        open={crmDialogOpen}
+        onClose={() => setCrmDialogOpen(false)}
+        onMemberFound={(member) => {
+          setCrmMember(tableId, member)
+          setCrmDialogOpen(false)
+        }}
+      />
+
+      <QrSheet
+        open={qrSheetOpen}
+        onClose={() => setQrSheetOpen(false)}
+        grandTotal={selectedAmount}
+        onConfirm={() => {
+          setQrSheetOpen(false)
+          handleConfirmPayment('QR PromptPay')
+        }}
+      />
+    </>
+  )
+
+  // ==========================================================================
+  // ITEM-SPLIT LAYOUT — Figma 2194:9551
+  // ==========================================================================
+  if (isItemSplit) {
+    return (
+      <div className="flex flex-col h-full">
+
+        {/* Header — centered title */}
+        <header className="border-b flex items-center justify-between px-6 py-2 shrink-0">
+          <Button variant="ghost" size="icon" className="size-9" onClick={() => router.back()} aria-label="Back">
+            <ChevronLeft size={16} />
+          </Button>
+          <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
+          {/* Invisible spacer to centre the title */}
+          <div className="size-9 pointer-events-none" />
+        </header>
+
+        {/* Bill tabs */}
+        <div className="border-b flex items-center gap-4 px-6 py-4 shrink-0 overflow-x-auto">
+          {splitAmounts.map((_, index) => {
+            const isActive = index === selectedTabIndex
+            const isPaid = paidIndexes.has(index)
+            return (
+              <button
+                key={index}
+                onClick={() => setSelectedTabIndex(index)}
+                className={`flex flex-col gap-1.5 items-start p-3 rounded-lg border shrink-0 w-[176px] text-left transition-colors ${
+                  isPaid
+                    ? 'border-border bg-muted opacity-60'
+                    : isActive
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-background hover:border-primary/40'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-medium text-sm text-foreground leading-none">
+                    บิล #{index + 1}
+                  </span>
+                  {isPaid && (
+                    <span className="text-[10px] font-semibold text-green-600 bg-green-600/10 rounded px-1.5 py-0.5 leading-none">
+                      ชำระแล้ว
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm leading-5 text-muted-foreground">
+                  {isPaid ? 'ชำระแล้ว' : 'รอชำระเงิน'}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Two-column content */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+
+          {/* Left: overall totals + selected bill items */}
+          <div className="flex-1 min-w-0 overflow-y-auto px-4 py-6">
+            <div className="flex flex-col gap-4">
+
+              {/* Summary totals */}
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
+                  <p className="font-semibold text-base text-foreground leading-6">
+                    ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
+                  <p className="font-semibold text-base text-foreground leading-6">
+                    ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="py-2"><Separator /></div>
+
+              {/* Bill header row */}
+              <div className="flex items-center gap-[10px] py-2">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="size-8 rounded-md shrink-0 pointer-events-none"
+                  aria-label="Table"
+                >
+                  <HandPlatter size={16} />
+                </Button>
+                <div className="flex flex-1 items-center gap-2 min-w-0">
+                  <p className="font-semibold text-lg leading-7 shrink-0">{tableLabel}</p>
+                  <p className="text-sm text-muted-foreground leading-5 shrink-0">
+                    บิล #{selectedTabIndex + 1}
+                  </p>
+                </div>
+              </div>
+
+              {/* Items assigned to selected bill */}
+              <div className="flex flex-col gap-4">
+                {selectedBillItems.map(({ item, qty }) => (
+                  <BillLineItem key={item.lineId} item={item} qty={qty} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: grand total + actions */}
+          <div className="border-l border-border flex flex-col gap-6 h-full px-4 py-6 shrink-0 w-[282px] overflow-y-auto">
+            <div className="flex flex-col gap-6 flex-1">
+
+              {/* Grand total (whole order) */}
+              <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
+                <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
+                <p className="font-semibold text-3xl text-destructive">
+                  ฿{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+
+              {/* CRM member */}
+              <div className="bg-background border border-border rounded-[14px] overflow-hidden">
+                {crmMember ? (
+                  <CrmMemberCard member={crmMember} onChangeMember={() => setCrmDialogOpen(true)} />
+                ) : (
+                  <button
+                    className="flex items-center justify-center gap-2 h-10 w-full px-8"
+                    onClick={() => setCrmDialogOpen(true)}
+                  >
+                    <Crown size={16} className="text-primary shrink-0" />
+                    <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Coupon button */}
+              <Button
+                variant="outline"
+                className="w-full h-10 gap-2"
+                onClick={() => toast('Coupon scan coming soon')}
+              >
+                <TicketPercent size={16} />
+                ใช้คูปองส่วนลด
+              </Button>
+
+              <Separator />
+
+              {/* Bill management row */}
+              <div className="flex items-center justify-between">
+                <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
+                <button className="flex items-center gap-2" onClick={() => router.back()}>
+                  <ScissorsLineDashed size={16} className="text-foreground" />
+                  <span className="font-medium text-sm text-foreground leading-5">แยกบิล</span>
+                </button>
+              </div>
+
+              {/* Spacer */}
+              <div className="flex-1" />
+
+              {/* CTA */}
+              <Button
+                className="w-full h-14 text-base font-semibold"
+                disabled={isCurrentPaid}
+                onClick={() => setPaymentMethodDialogOpen(true)}
+              >
+                {isCurrentPaid ? 'ชำระแล้ว' : 'ดำเนินการชำระเงิน'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {sharedDialogs}
+      </div>
+    )
+  }
+
+  // ==========================================================================
+  // VALUE-SPLIT LAYOUT — แบ่งจ่าย
+  // ==========================================================================
   return (
     <div className="flex flex-col h-full">
 
@@ -204,13 +449,13 @@ export default function SplitSummaryPage() {
             <button
               key={index}
               onClick={() => setSelectedTabIndex(index)}
-              className={`flex flex-col gap-1.5 items-start justify-center p-3 rounded-lg border shrink-0 w-[176px] text-left transition-colors
-                ${isPaid
+              className={`flex flex-col gap-1.5 items-start justify-center p-3 rounded-lg border shrink-0 w-[176px] text-left transition-colors ${
+                isPaid
                   ? 'border-border bg-muted opacity-60'
                   : isActive
                     ? 'border-primary bg-primary/10'
                     : 'border-border bg-background hover:border-primary/40'
-                }`}
+              }`}
             >
               <div className="flex items-center justify-between w-full">
                 <span className="font-medium text-sm text-foreground leading-none">
@@ -255,7 +500,7 @@ export default function SplitSummaryPage() {
 
             <div className="py-2"><Separator /></div>
 
-            {/* Group header: table + split label + payer amount */}
+            {/* Group header */}
             <div className="flex items-center gap-[10px] py-2">
               <Button variant="secondary" size="icon" className="size-8 shrink-0" aria-label="Table">
                 <HandPlatter size={16} />
@@ -271,7 +516,7 @@ export default function SplitSummaryPage() {
               </p>
             </div>
 
-            {/* Line items */}
+            {/* All order line items */}
             <div className="flex flex-col gap-4">
               {billItems.map((item) => (
                 <BillLineItem key={item.lineId} item={item} />
@@ -297,10 +542,7 @@ export default function SplitSummaryPage() {
           {/* Member button */}
           <div className="bg-background border border-border rounded-[14px] overflow-hidden">
             {crmMember ? (
-              <CrmMemberCard
-                member={crmMember}
-                onChangeMember={() => setCrmDialogOpen(true)}
-              />
+              <CrmMemberCard member={crmMember} onChangeMember={() => setCrmDialogOpen(true)} />
             ) : (
               <button
                 className="flex items-center justify-center gap-2 h-10 w-full px-4"
@@ -322,10 +564,7 @@ export default function SplitSummaryPage() {
           {/* Bill management row */}
           <div className="flex items-start justify-between">
             <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
-            <button
-              className="flex items-center gap-2"
-              onClick={() => router.back()}
-            >
+            <button className="flex items-center gap-2" onClick={() => router.back()}>
               <Coins size={16} className="text-foreground" />
               <span className="font-medium text-sm text-foreground leading-5">แบ่งจ่าย</span>
             </button>
@@ -345,63 +584,7 @@ export default function SplitSummaryPage() {
         </div>
       </div>
 
-      {/* Payment method dialog */}
-      <Dialog open={paymentMethodDialogOpen} onOpenChange={setPaymentMethodDialogOpen}>
-        <DialogContent className="sm:max-w-sm" showCloseButton>
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">วิธีการชำระเงิน</DialogTitle>
-            <DialogDescription>
-              แบ่งจ่าย #{selectedTabIndex + 1} — ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-2">
-            {([
-              { method: 'Cash' as PaymentMethod, label: 'เงินสด', icon: Banknote },
-              { method: 'QR PromptPay' as PaymentMethod, label: 'QR Code Promptpay', icon: QrCode },
-              { method: 'Card' as PaymentMethod, label: 'Credit Card', icon: CreditCard },
-            ] as { method: PaymentMethod; label: string; icon: React.ElementType }[]).map(({ method, label, icon: Icon }) => (
-              <Button
-                key={method}
-                variant="outline"
-                className="h-14 w-full gap-2 text-sm font-medium"
-                onClick={() => {
-                  setPaymentMethodDialogOpen(false)
-                  if (method === 'QR PromptPay') {
-                    setQrSheetOpen(true)
-                  } else {
-                    setCashReceived(0)
-                    setCheckoutMethod(method)
-                  }
-                }}
-              >
-                <Icon size={16} />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* CRM member lookup dialog */}
-      <CrmLookupDialog
-        open={crmDialogOpen}
-        onClose={() => setCrmDialogOpen(false)}
-        onMemberFound={(member) => {
-          setCrmMember(member)
-          setCrmDialogOpen(false)
-        }}
-      />
-
-      {/* QR PromptPay sheet */}
-      <QrSheet
-        open={qrSheetOpen}
-        onClose={() => setQrSheetOpen(false)}
-        grandTotal={selectedAmount}
-        onConfirm={() => {
-          setQrSheetOpen(false)
-          handleConfirmPayment('QR PromptPay')
-        }}
-      />
+      {sharedDialogs}
     </div>
   )
 }

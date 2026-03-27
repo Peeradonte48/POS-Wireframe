@@ -25,15 +25,17 @@ const MODIFIER_ICONS: Record<string, LucideIcon> = {
 
 interface BillLineItemProps {
   item: OrderLineItem
+  qty?: number  // override item.quantity (for item-split per-bill display)
 }
 
 // ---------------------------------------------------------------------------
 // BillLineItem
 // ---------------------------------------------------------------------------
 
-export function BillLineItem({ item }: BillLineItemProps) {
+export function BillLineItem({ item, qty: qtyOverride }: BillLineItemProps) {
   const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
   const imagePath = menuItem?.imagePath
+  const qty = qtyOverride ?? item.quantity
 
   return (
     <div className="flex gap-2 items-start py-0">
@@ -76,14 +78,14 @@ export function BillLineItem({ item }: BillLineItemProps) {
       {/* Qty badge */}
       <div className="border border-border rounded-md shrink-0">
         <span className="flex items-center justify-center px-2 py-0.5 text-xs font-semibold leading-4">
-          {item.quantity}×
+          {qty}×
         </span>
       </div>
 
       {/* Price */}
       <div className="shrink-0 w-20 flex justify-end">
         <p className="font-medium text-base text-foreground text-right leading-6">
-          ฿{(item.basePrice * item.quantity).toLocaleString()}
+          ฿{(item.basePrice * qty).toLocaleString()}
         </p>
       </div>
     </div>

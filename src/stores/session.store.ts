@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { useManagerStore } from '@/stores/manager.store'
 
 export type Role = 'Waiter' | 'Cashier' | 'Manager' | 'Kitchen'
@@ -19,23 +20,9 @@ interface SessionState {
   logout: () => void
 }
 
-export const useSessionStore = create<SessionState>((set) => ({
-  role: null,
-  staffName: null,
-  staffId: null,
-  branch: null,
-  branchName: null,
-  openingCash: null,
-  shiftOpen: false,
-
-  login: (role, staffName, staffId) => set({ role, staffName, staffId }),
-
-  openShift: (branch, branchName, openingCash) =>
-    set({ branch, branchName, openingCash, shiftOpen: true }),
-
-  logout: () => {
-    useManagerStore.getState().resetShift()
-    set({
+export const useSessionStore = create<SessionState>()(
+  persist(
+    (set) => ({
       role: null,
       staffName: null,
       staffId: null,
@@ -43,6 +30,25 @@ export const useSessionStore = create<SessionState>((set) => ({
       branchName: null,
       openingCash: null,
       shiftOpen: false,
-    })
-  },
-}))
+
+      login: (role, staffName, staffId) => set({ role, staffName, staffId }),
+
+      openShift: (branch, branchName, openingCash) =>
+        set({ branch, branchName, openingCash, shiftOpen: true }),
+
+      logout: () => {
+        useManagerStore.getState().resetShift()
+        set({
+          role: null,
+          staffName: null,
+          staffId: null,
+          branch: null,
+          branchName: null,
+          openingCash: null,
+          shiftOpen: false,
+        })
+      },
+    }),
+    { name: 'session-store', version: 1, migrate: () => ({}) },
+  ),
+)

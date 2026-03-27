@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useSessionStore } from '@/stores/session.store'
 import { AppShell } from '@/components/app-shell/AppShell'
@@ -9,8 +9,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const { role, shiftOpen } = useSessionStore()
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
+    // Wait for Zustand persist rehydration before evaluating auth state
+    const unsub = useSessionStore.persist.onFinishHydration(() => setHydrated(true))
+    // If already hydrated (e.g. store was created synchronously), mark immediately
+    if (useSessionStore.persist.hasHydrated()) setHydrated(true)
+    return unsub
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
     if (!role) {
       // Not authenticated — go to login
       router.replace('/login')
@@ -21,10 +31,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       // Authenticated but shift not open — must open shift first
       router.replace('/shift-open')
     }
-  }, [role, shiftOpen, pathname, router])
+  }, [hydrated, role, shiftOpen, pathname, router])
 
-  // Don't render until auth state is known; also prevent AppShell flash for Kitchen role
-  if (!role || role === 'Kitchen') return null
+  // Hold render until hydration completes to avoid redirect flash
+  if (!hydrated || !role || role === 'Kitchen') return null
 
   return <AppShell>{children}</AppShell>
 }

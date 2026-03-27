@@ -2,8 +2,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useTableStore } from './table.store'
+import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
 export type SplitMode = 'custom' | 'per-seat'
+export type SplitOrigin = 'value' | 'item'
+
+export interface ItemBillEntry {
+  lineId: string
+  qty: number
+}
 
 export interface SeatAssignment {
   lineId: string        // references OrderLineItem.lineId
@@ -20,15 +27,18 @@ export interface SeatPaymentRecord {
 export interface BillSplit {
   tableId: string
   mode: SplitMode
+  splitOrigin?: SplitOrigin                       // 'value' (แบ่งจ่าย) | 'item' (แยกบิล); undefined = value for compat
   seatCount: number
-  customAmounts: number[]                         // for custom mode: payer amounts, length === seatCount, initialized to 0s
+  customAmounts: number[]                         // pre-VAT bill amounts per payer/bill
   assignments: SeatAssignment[]                   // for per-seat mode
+  itemBills?: ItemBillEntry[][]                   // for item-split: [billIndex][items]
   payments: Record<number, SeatPaymentRecord>     // keyed by seatIndex; undefined = unpaid
 }
 
 interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
+  crmMembers: Record<string, CrmMember>  // key = tableId
   initCustomSplit: (tableId: string, payerCount: number) => void
   addCustomPayer: (tableId: string) => void
   setCustomAmount: (tableId: string, payerIndex: number, amount: number) => void
@@ -37,8 +47,11 @@ interface BillStore {
   removeAssignment: (tableId: string, lineId: string, seatIndex: number) => void
   unassignItem: (tableId: string, lineId: string) => void
   recordPayment: (tableId: string, seatIndex: number, record: SeatPaymentRecord) => void
+  initItemSplit: (tableId: string, bills: Array<{ amount: number; items: ItemBillEntry[] }>) => void
   cancelSplit: (tableId: string) => void
   getSplit: (tableId: string) => BillSplit | undefined
+  setCrmMember: (tableId: string, member: CrmMember) => void
+  clearCrmMember: (tableId: string) => void
   initMerge: (primaryTableId: string, secondaryTableIds: string[]) => void
   dissolveAll: (primaryTableId: string) => void
   isMergedSecondary: (tableId: string) => boolean
@@ -51,15 +64,32 @@ export const useBillStore = create<BillStore>()(
     (set, get) => ({
       splits: {},
       merges: {},
+      crmMembers: {},
 
       initCustomSplit: (tableId, payerCount) =>
         set((state) => {
           const split: BillSplit = {
             tableId,
             mode: 'custom',
+            splitOrigin: 'value',
             seatCount: payerCount,
             customAmounts: Array.from({ length: payerCount }, () => 0),
             assignments: [],
+            payments: {},
+          }
+          return { splits: { ...state.splits, [tableId]: split } }
+        }),
+
+      initItemSplit: (tableId, bills) =>
+        set((state) => {
+          const split: BillSplit = {
+            tableId,
+            mode: 'custom',
+            splitOrigin: 'item',
+            seatCount: bills.length,
+            customAmounts: bills.map((b) => b.amount),   // pre-VAT per-bill subtotals
+            assignments: [],
+            itemBills: bills.map((b) => b.items),
             payments: {},
           }
           return { splits: { ...state.splits, [tableId]: split } }
@@ -187,6 +217,15 @@ export const useBillStore = create<BillStore>()(
         }),
 
       getSplit: (tableId) => get().splits[tableId],
+
+      setCrmMember: (tableId, member) =>
+        set((state) => ({ crmMembers: { ...state.crmMembers, [tableId]: member } })),
+
+      clearCrmMember: (tableId) =>
+        set((state) => {
+          const { [tableId]: _, ...rest } = state.crmMembers
+          return { crmMembers: rest }
+        }),
 
       initMerge: (primaryTableId, secondaryTableIds) =>
         set((state) => {
