@@ -52,6 +52,8 @@ export default function SplitSummaryPage() {
     amount: number
     method: PaymentMethod
     paidAt: Date
+    allDone: boolean
+    crmMember: import('@/components/payment/CrmLookupDialog').CrmMember | null
   } | null>(null)
 
   const billItems = useMemo(() => {
@@ -93,23 +95,30 @@ export default function SplitSummaryPage() {
   function handleConfirmPayment(method: PaymentMethod) {
     const newPaid = new Set(paidIndexes).add(selectedTabIndex)
     setPaidIndexes(newPaid)
+    useBillStore.getState().recordPayment(tableId, selectedTabIndex, {
+      method,
+      paidAt: Date.now(),
+      amount: selectedAmount,
+    })
     setCheckoutMethod(null)
     setQrSheetOpen(false)
     setCashReceived(0)
 
-    const isLast = newPaid.size >= splitAmounts.length
-    if (isLast) {
-      setReceiptData({ payerIndex: selectedTabIndex, amount: selectedAmount, method, paidAt: new Date() })
-    } else {
-      const nextUnpaid = splitAmounts.findIndex((_, i) => !newPaid.has(i))
-      if (nextUnpaid !== -1) setSelectedTabIndex(nextUnpaid)
-    }
+    const allDone = newPaid.size >= splitAmounts.length
+    setReceiptData({ payerIndex: selectedTabIndex, amount: selectedAmount, method, paidAt: new Date(), allDone, crmMember })
   }
 
-  function handleAfterReceipt() {
-    useTableStore.getState().markCleaning(tableId)
-    clearCrmMember(tableId)
-    router.push('/table-map')
+  // ---- After per-bill receipt: continue to next bill or finish ----
+  function handleReceiptContinue() {
+    if (receiptData?.allDone) {
+      useTableStore.getState().markCleaning(tableId)
+      clearCrmMember(tableId)
+      router.push('/table-map')
+    } else {
+      const nextUnpaid = splitAmounts.findIndex((_, i) => !paidIndexes.has(i))
+      setReceiptData(null)
+      if (nextUnpaid !== -1) setSelectedTabIndex(nextUnpaid)
+    }
   }
 
   const isCurrentPaid = paidIndexes.has(selectedTabIndex)
@@ -125,8 +134,9 @@ export default function SplitSummaryPage() {
     )
   }
 
-  // ---- Receipt view (last payer/bill) ----
+  // ---- Per-bill receipt view ----
   if (receiptData) {
+    const remainingCount = splitAmounts.length - paidIndexes.size
     return (
       <ReceiptScreen
         tableId={`${tableLabel} · ${isItemSplit ? 'บิล' : 'แบ่งจ่าย'} #${receiptData.payerIndex + 1}`}
@@ -134,9 +144,9 @@ export default function SplitSummaryPage() {
         paymentMethod={receiptData.method}
         paidAt={receiptData.paidAt}
         onReprint={() => toast('Receipt sent to printer')}
-        onBackToFloor={handleAfterReceipt}
-        ctaLabel="กลับไปที่ Floor Plan"
-        crmMember={crmMember}
+        onBackToFloor={handleReceiptContinue}
+        ctaLabel={receiptData.allDone ? 'กลับไปที่ Floor Plan' : `ชำระบิลถัดไป (เหลือ ${remainingCount} บิล)`}
+        crmMember={receiptData.crmMember}
       />
     )
   }
@@ -267,9 +277,10 @@ export default function SplitSummaryPage() {
 
         {/* Bill tabs */}
         <div className="border-b flex items-center gap-4 px-6 py-4 shrink-0 overflow-x-auto">
-          {splitAmounts.map((_, index) => {
+          {splitAmounts.map((billSubtotal, index) => {
             const isActive = index === selectedTabIndex
             const isPaid = paidIndexes.has(index)
+            const billTotal = billSubtotal + Math.round(billSubtotal * 0.07)
             return (
               <button
                 key={index}
@@ -292,8 +303,8 @@ export default function SplitSummaryPage() {
                     </span>
                   )}
                 </div>
-                <span className="text-sm leading-5 text-muted-foreground">
-                  {isPaid ? 'ชำระแล้ว' : 'รอชำระเงิน'}
+                <span className={`text-sm leading-5 ${isPaid ? 'text-green-600 font-medium' : 'text-muted-foreground'}`}>
+                  ฿{billTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </button>
             )
@@ -303,22 +314,22 @@ export default function SplitSummaryPage() {
         {/* Two-column content */}
         <div className="flex flex-1 min-h-0 overflow-hidden">
 
-          {/* Left: overall totals + selected bill items */}
+          {/* Left: selected bill totals + items */}
           <div className="flex-1 min-w-0 overflow-y-auto px-4 py-6">
             <div className="flex flex-col gap-4">
 
-              {/* Summary totals */}
+              {/* Per-bill totals */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
                   <p className="font-semibold text-base text-foreground leading-6">
-                    ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ฿{selectedBillSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
                   <p className="font-semibold text-base text-foreground leading-6">
-                    ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ฿{Math.round(selectedBillSubtotal * 0.07).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>
@@ -356,12 +367,15 @@ export default function SplitSummaryPage() {
           <div className="border-l border-border flex flex-col gap-6 h-full px-4 py-6 shrink-0 w-[282px] overflow-y-auto">
             <div className="flex flex-col gap-6 flex-1">
 
-              {/* Grand total (whole order) */}
+              {/* Selected bill total */}
               <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
-                <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
-                <p className="font-semibold text-3xl text-destructive">
-                  ฿{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                <p className="font-medium text-xl text-muted-foreground">บิล #{selectedTabIndex + 1}</p>
+                <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-green-600' : 'text-destructive'}`}>
+                  ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
+                {isCurrentPaid && (
+                  <span className="text-sm font-semibold text-green-600">ชำระแล้ว</span>
+                )}
               </div>
 
               {/* CRM member */}
