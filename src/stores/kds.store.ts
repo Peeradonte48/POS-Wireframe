@@ -6,6 +6,8 @@ import { create } from 'zustand'
 
 export type KdsStage = 'New' | 'InProgress' | 'Ready'
 
+export type KdsStation = 'hot' | 'bar'
+
 export interface KdsTicket {
   ticketId: string
   tableId: string
@@ -13,6 +15,8 @@ export interface KdsTicket {
   addedAt: number
   stage: KdsStage
   checkedItems: Set<string>
+  station: KdsStation
+  senderName?: string
   orderType?: 'dine-in' | 'takeaway' | 'delivery'
   platform?: 'grab' | 'lineman'
 }
@@ -28,11 +32,14 @@ interface KdsStore {
   tickets: Record<string, KdsTicket>
   recallTray: RecalledTicket[]
   demoActive: boolean
+  /** tableIds that have been completed — auto-registration skips these */
+  completedTableIds: Set<string>
 
   // Actions
-  addTicket: (tableId: string, tableLabel: string, orderType?: 'dine-in' | 'takeaway' | 'delivery', platform?: 'grab' | 'lineman') => void
+  addTicket: (tableId: string, tableLabel: string, orderType?: 'dine-in' | 'takeaway' | 'delivery', platform?: 'grab' | 'lineman', station?: KdsStation, senderName?: string) => void
   injectDemoTicket: (ticket: KdsTicket) => void
   bumpTicket: (ticketId: string) => void
+  completeTicket: (ticketId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
   uncheckItem: (ticketId: string, lineId: string) => void
   recallTicket: (ticketId: string) => void
@@ -48,8 +55,9 @@ export const useKdsStore = create<KdsStore>((set) => ({
   tickets: {},
   recallTray: [],
   demoActive: false,
+  completedTableIds: new Set<string>(),
 
-  addTicket: (tableId, tableLabel, orderType, platform) =>
+  addTicket: (tableId, tableLabel, orderType, platform, station = 'hot', senderName) =>
     set((state) => {
       const ticketId = `ticket-${Date.now()}-${tableId}`
       const ticket: KdsTicket = {
@@ -59,11 +67,17 @@ export const useKdsStore = create<KdsStore>((set) => ({
         addedAt: Date.now(),
         stage: 'New',
         checkedItems: new Set<string>(),
+        station,
+        senderName,
         orderType,
         platform,
       }
+      // Clear from completed set so new orders for this table register again
+      const completedTableIds = new Set(state.completedTableIds)
+      completedTableIds.delete(tableId)
       return {
         tickets: { ...state.tickets, [ticketId]: ticket },
+        completedTableIds,
       }
     }),
 
@@ -100,6 +114,15 @@ export const useKdsStore = create<KdsStore>((set) => ({
       return {
         tickets: remainingTickets,
       }
+    }),
+
+  completeTicket: (ticketId) =>
+    set((state) => {
+      const ticket = state.tickets[ticketId]
+      const { [ticketId]: _removed, ...remainingTickets } = state.tickets
+      const completedTableIds = new Set(state.completedTableIds)
+      if (ticket) completedTableIds.add(ticket.tableId)
+      return { tickets: remainingTickets, completedTableIds }
     }),
 
   checkItem: (ticketId, lineId) =>

@@ -1,6 +1,14 @@
 import { MENU_ITEMS } from '@/lib/mock-data/menu'
-import type { KdsTicket } from '@/stores/kds.store'
+import { MOCK_STAFF } from '@/lib/mock-data/staff'
+import type { KdsTicket, KdsStation } from '@/stores/kds.store'
 import type { OrderLineItem, LineItemStatus } from '@/stores/order.store'
+
+const ROLE_LABEL_TH: Record<string, string> = {
+  Waiter:  'พนักงานเสิร์ฟ',
+  Cashier: 'แคชเชียร์',
+  Manager: 'ผู้จัดการ',
+  Kitchen: 'พ่อครัว',
+}
 
 // ─── Demo Table Slots ─────────────────────────────────────────────────────────
 
@@ -11,6 +19,11 @@ const DEMO_TABLE_SLOTS = [
   { tableId: 'demo-t04', tableLabel: 'T04' },
   { tableId: 'demo-t05', tableLabel: 'T05' },
 ]
+
+const FOOD_ITEMS  = MENU_ITEMS.filter((m) => m.categoryId !== 'drinks')
+const DRINK_ITEMS = MENU_ITEMS.filter((m) => m.categoryId === 'drinks')
+
+const DEMO_SENDERS = MOCK_STAFF.filter((s) => s.name === 'Somchai' || s.name === 'Nida')
 
 // ─── Module-level state ───────────────────────────────────────────────────────
 
@@ -25,10 +38,13 @@ export function buildMockDemoTicket(): KdsTicket {
   const slot = DEMO_TABLE_SLOTS[demoCounter % DEMO_TABLE_SLOTS.length]
   demoCounter++
 
-  // Pick 1–3 random menu items
-  const shuffled = [...MENU_ITEMS].sort(() => Math.random() - 0.5)
-  const count = 1 + Math.floor(Math.random() * 3) // 1, 2, or 3
-  const picked = shuffled.slice(0, count)
+  // Station distribution: 30% bar (drinks), 70% hot kitchen (food)
+  const isBarOrder = Math.random() < 0.30
+  const station: KdsStation = isBarOrder ? 'bar' : 'hot'
+  const pool = isBarOrder ? DRINK_ITEMS : FOOD_ITEMS
+
+  const count = 1 + Math.floor(Math.random() * 3) // 1–3 items
+  const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, count)
 
   const ticketId = `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`
 
@@ -52,15 +68,17 @@ export function buildMockDemoTicket(): KdsTicket {
     menuItemName: menuItem.name,
     basePrice: menuItem.basePrice,
     modifiers: [],
-    spiceLevel: Math.ceil(Math.random() * 5), // 1–5
+    spiceLevel: isBarOrder ? null : Math.ceil(Math.random() * 5),
     specialRequest: '',
     quantity: 1,
     status: 'sent' as LineItemStatus,
-    // packToGo on ~30% of dine-in items so PACK badges appear in demo
-    packToGo: orderType === 'dine-in' && Math.random() < 0.30,
+    packToGo: !isBarOrder && orderType === 'dine-in' && Math.random() < 0.30,
   }))
 
   demoItemsMap.set(ticketId, orderItems)
+
+  const sender = DEMO_SENDERS[Math.floor(Math.random() * DEMO_SENDERS.length)]
+  const senderName = `${sender.name} (${ROLE_LABEL_TH[sender.role] ?? sender.role})`
 
   return {
     ticketId,
@@ -69,6 +87,8 @@ export function buildMockDemoTicket(): KdsTicket {
     addedAt: Date.now(),
     stage: 'New',
     checkedItems: new Set(),
+    station,
+    senderName,
     orderType,
     platform,
   }

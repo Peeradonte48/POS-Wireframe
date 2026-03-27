@@ -4,37 +4,18 @@ import { useState } from 'react'
 import { AppHeader } from './AppHeader'
 import { AppSidebar } from './AppSidebar'
 import { ThemedToaster } from './ThemedToaster'
-import { PanelLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  // Start collapsed — maximises content area on tablet screens
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <ThemedToaster />
-      {/* Top header — full width */}
-      <AppHeader />
+      <AppHeader onSidebarToggle={() => setSidebarCollapsed((prev) => !prev)} />
 
-      {/* Body: sidebar + main content */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Sidebar */}
-        <div className="relative flex">
-          <AppSidebar collapsed={sidebarCollapsed} />
-          {/* Collapse toggle button — sits at the bottom of sidebar */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarCollapsed((prev) => !prev)}
-            className="absolute bottom-3 right-2 h-10 w-10"
-            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <PanelLeft size={18} />
-          </Button>
-        </div>
+        <AppSidebar collapsed={sidebarCollapsed} />
 
-        {/* Main content area */}
         <main className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
           {children}
         </main>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
@@ -87,14 +87,6 @@ export default function PaymentPage() {
       return next
     })
   }
-
-  useEffect(() => {
-    if (isTakeaway) return
-    const existingSplit = useBillStore.getState().getSplit(tableId)
-    if (existingSplit && !useBillStore.getState().getMergedSecondaries(tableId).length) {
-      setSplitSheetOpen(true)
-    }
-  }, [tableId, isTakeaway])
 
   // ---- Merge state ----
   const merges = useBillStore((s) => s.merges)
