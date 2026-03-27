@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, Coins, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard, Coins } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -22,6 +22,8 @@ import { SplitSheet } from '@/components/payment/SplitSheet'
 import { ValueSplitSheet } from '@/components/payment/ValueSplitSheet'
 import { ItemSplitSheet } from '@/components/payment/ItemSplitSheet'
 import { MergeSheet } from '@/components/table-map/MergeSheet'
+import { CrmLookupDialog, CrmMember } from '@/components/payment/CrmLookupDialog'
+import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { useBillStore } from '@/stores/bill.store'
 import { useQueueStore } from '@/stores/queue.store'
 import { useKdsStore } from '@/stores/kds.store'
@@ -63,6 +65,10 @@ export default function PaymentPage() {
 
   // ---- Payment method dialog ----
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
+
+  // ---- CRM member lookup ----
+  const [crmDialogOpen, setCrmDialogOpen] = useState(false)
+  const [crmMember, setCrmMember] = useState<CrmMember | null>(null)
 
   // ---- QR sheet ----
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
@@ -220,6 +226,7 @@ export default function PaymentPage() {
         paidAt={receiptData.paidAt}
         onReprint={handleReprint}
         onBackToFloor={() => router.push('/table-map')}
+        crmMember={crmMember}
       />
     )
   }
@@ -444,14 +451,21 @@ export default function PaymentPage() {
                 </p>
               </div>
 
-              {/* Add member button */}
-              <button
-                className="border border-border rounded-[14px] flex items-center justify-center gap-2 min-h-[104px] p-4 w-full cursor-pointer hover:bg-accent transition-colors"
-                onClick={() => toast('Member lookup coming soon')}
-              >
-                <Crown size={16} className="text-primary shrink-0" />
-                <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
-              </button>
+              {/* Member section */}
+              {crmMember ? (
+                <CrmMemberCard
+                  member={crmMember}
+                  onChangeMember={() => setCrmDialogOpen(true)}
+                />
+              ) : (
+                <button
+                  className="border border-border rounded-[14px] flex items-center justify-center gap-2 min-h-[104px] p-4 w-full cursor-pointer hover:bg-accent transition-colors"
+                  onClick={() => setCrmDialogOpen(true)}
+                >
+                  <Crown size={16} className="text-primary shrink-0" />
+                  <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
+                </button>
+              )}
 
               {/* Coupon button */}
               {!isTakeaway && (
@@ -599,6 +613,16 @@ export default function PaymentPage() {
           }}
         />
       )}
+
+      {/* CRM member lookup dialog */}
+      <CrmLookupDialog
+        open={crmDialogOpen}
+        onClose={() => setCrmDialogOpen(false)}
+        onMemberFound={(member) => {
+          setCrmMember(member)
+          setCrmDialogOpen(false)
+        }}
+      />
 
       {/* QR PromptPay bottom sheet */}
       <QrSheet

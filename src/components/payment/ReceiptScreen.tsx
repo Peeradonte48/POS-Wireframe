@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Printer, Crown } from 'lucide-react'
+import { Printer, Coins, Search, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { toast } from 'sonner'
+import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
 const IMG_CHECKMARK = 'https://www.figma.com/api/mcp/asset/f9fa5459-bab2-4284-b6f8-71a6e33e04e0'
 
@@ -21,6 +21,7 @@ interface ReceiptScreenProps {
   onReprint: () => void
   onBackToFloor: () => void
   ctaLabel?: string
+  crmMember?: CrmMember | null
 }
 
 // ---------------------------------------------------------------------------
@@ -35,6 +36,7 @@ export function ReceiptScreen({
   onReprint,
   onBackToFloor,
   ctaLabel = 'เสร็จสิ้น',
+  crmMember,
 }: ReceiptScreenProps) {
   const [tip, setTip] = useState('')
   const [fullTaxInvoice, setFullTaxInvoice] = useState(false)
@@ -51,6 +53,9 @@ export function ReceiptScreen({
     second: '2-digit',
     hour12: false,
   })
+
+  // Mock earned points: 1 pt per ฿50 spent
+  const earnedPoints = Math.floor(grandTotal / 50)
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-muted overflow-y-auto py-12 px-4">
@@ -141,16 +146,33 @@ export function ReceiptScreen({
             </button>
           </div>
 
-          {/* Member card */}
-          <div className="bg-background border border-border rounded-[14px] flex flex-col items-start p-4 w-full">
-            <button
-              className="flex items-center justify-center gap-2 h-10 w-full"
-              onClick={() => toast('Member lookup coming soon')}
-            >
-              <Crown size={16} className="text-primary shrink-0" />
-              <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
-            </button>
-          </div>
+          {/* CRM member card — only shown when a member was applied */}
+          {crmMember && (
+            <div className="bg-background border border-border rounded-[14px] p-4 flex flex-col gap-2 w-full">
+              {/* Member info row */}
+              <div className="flex items-center gap-2 py-2">
+                <div className="size-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                  <User size={16} className="text-muted-foreground" />
+                </div>
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  <p className="font-medium text-sm leading-5 text-foreground truncate">{crmMember.name}</p>
+                  <span className="inline-flex items-center text-xs font-semibold text-primary-foreground bg-destructive px-2 py-0.5 rounded-md w-fit">
+                    ระดับ: {crmMember.level}
+                  </span>
+                </div>
+                <Search size={16} className="opacity-50 shrink-0" />
+              </div>
+
+              {/* Earned points row */}
+              <div className="flex items-center justify-between bg-muted rounded-sm px-2 py-1">
+                <div className="flex items-center gap-1">
+                  <Coins size={16} className="text-accent-foreground shrink-0" />
+                  <span className="font-medium text-base leading-6 text-accent-foreground">คะแนนสะสม</span>
+                </div>
+                <span className="font-semibold text-base leading-6 text-green-600">+{earnedPoints}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action buttons */}

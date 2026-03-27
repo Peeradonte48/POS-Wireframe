@@ -12,6 +12,8 @@ import { Separator } from '@/components/ui/separator'
 import { BillLineItem } from '@/components/payment/BillLineItem'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { QrSheet } from '@/components/payment/QrSheet'
+import { CrmLookupDialog, CrmMember } from '@/components/payment/CrmLookupDialog'
+import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { CashPanel } from '@/components/payment/CashPanel'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
@@ -35,6 +37,8 @@ export default function SplitSummaryPage() {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
+  const [crmDialogOpen, setCrmDialogOpen] = useState(false)
+  const [crmMember, setCrmMember] = useState<CrmMember | null>(null)
   const [paidIndexes, setPaidIndexes] = useState<Set<number>>(new Set())
 
   // Per-payer checkout state
@@ -115,6 +119,7 @@ export default function SplitSummaryPage() {
         onReprint={() => toast('Receipt sent to printer')}
         onBackToFloor={handleAfterReceipt}
         ctaLabel="กลับไปที่ Floor Plan"
+        crmMember={crmMember}
       />
     )
   }
@@ -290,14 +295,21 @@ export default function SplitSummaryPage() {
           </div>
 
           {/* Member button */}
-          <div className="bg-background border border-border rounded-[14px] p-4">
-            <button
-              className="flex items-center justify-center gap-2 h-10 w-full"
-              onClick={() => toast('Member lookup coming soon')}
-            >
-              <Crown size={16} className="text-primary shrink-0" />
-              <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
-            </button>
+          <div className="bg-background border border-border rounded-[14px] overflow-hidden">
+            {crmMember ? (
+              <CrmMemberCard
+                member={crmMember}
+                onChangeMember={() => setCrmDialogOpen(true)}
+              />
+            ) : (
+              <button
+                className="flex items-center justify-center gap-2 h-10 w-full px-4"
+                onClick={() => setCrmDialogOpen(true)}
+              >
+                <Crown size={16} className="text-primary shrink-0" />
+                <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
+              </button>
+            )}
           </div>
 
           {/* Discount note */}
@@ -369,6 +381,16 @@ export default function SplitSummaryPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* CRM member lookup dialog */}
+      <CrmLookupDialog
+        open={crmDialogOpen}
+        onClose={() => setCrmDialogOpen(false)}
+        onMemberFound={(member) => {
+          setCrmMember(member)
+          setCrmDialogOpen(false)
+        }}
+      />
 
       {/* QR PromptPay sheet */}
       <QrSheet
