@@ -1,12 +1,12 @@
 'use client'
 
-import { useMemo, useState, useRef } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, Crown, ScanLine, CheckCircle2, XCircle } from 'lucide-react'
+import { ChevronLeft, Crown, QrCode, ScanBarcode, CheckCircle2, XCircle, X, BadgePercent, Calendar, HandPlatter, ShoppingBag, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Separator } from '@/components/ui/separator'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
@@ -77,15 +77,18 @@ export default function PromotionsPage() {
     if (checkTimerRef.current) clearTimeout(checkTimerRef.current)
   }
 
-  function handleApply() {
+  function handleApply(selectedLineIds: string[]) {
     if (!selectedPromo || codeState !== 'valid') return
 
-    const subtotal = orderItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
+    const selectedSubtotal = orderItems
+      .filter((i) => selectedLineIds.includes(i.lineId))
+      .reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
+
     let amount: number
     if (selectedPromo.discountFixed > 0) {
-      amount = Math.min(selectedPromo.discountFixed, subtotal)
+      amount = Math.min(selectedPromo.discountFixed, selectedSubtotal)
     } else {
-      amount = Math.round(subtotal * (selectedPromo.discountPercent / 100))
+      amount = Math.round(selectedSubtotal * (selectedPromo.discountPercent / 100))
     }
 
     setPromotionDiscount(tableId, {
@@ -95,10 +98,8 @@ export default function PromotionsPage() {
     })
 
     handleCloseSheet()
-    router.back()
+    router.push(`/payment/${tableId}?promoApplied=1`)
   }
-
-  const subtotal = orderItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
 
   return (
     <>
@@ -126,7 +127,6 @@ export default function PromotionsPage() {
             {/* CRM member card or placeholder */}
             {crmMember ? (
               <div className="bg-background border border-border rounded-2xl p-4 flex flex-col gap-3">
-                {/* Member info row */}
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
                     <Crown size={18} className="text-primary" />
@@ -178,12 +178,14 @@ export default function PromotionsPage() {
                   onClick={() => { setSelectedPromo(promo); setCodeInput(''); setCodeState('idle') }}
                   className="bg-background border border-border rounded-2xl p-4 flex items-start gap-4 text-left hover:bg-accent transition-colors w-full"
                 >
-                  {/* Image placeholder */}
-                  <div className="size-20 rounded-xl bg-muted flex items-center justify-center shrink-0 text-4xl">
-                    {promo.imagePlaceholder}
+                  <div className="size-20 rounded-xl bg-muted flex items-center justify-center shrink-0 text-4xl overflow-hidden">
+                    {promo.imagePath ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={promo.imagePath} alt={promo.title} className="size-full object-cover" />
+                    ) : (
+                      promo.imagePlaceholder
+                    )}
                   </div>
-
-                  {/* Content */}
                   <div className="flex flex-col gap-1 flex-1 min-w-0">
                     <p className="font-semibold text-base text-foreground leading-snug">{promo.title}</p>
                     <p className="text-sm text-muted-foreground leading-snug line-clamp-2">{promo.description}</p>
@@ -222,13 +224,12 @@ export default function PromotionsPage() {
 
       {/* Coupon bottom sheet */}
       <Sheet open={!!selectedPromo} onOpenChange={(open) => { if (!open) handleCloseSheet() }}>
-        <SheetContent side="bottom" className="rounded-t-2xl p-0 max-h-[90vh] flex flex-col">
+        <SheetContent side="bottom" showCloseButton={false} className="rounded-t-2xl p-0 max-h-[92vh] flex flex-col">
           {selectedPromo && (
             <CouponSheet
               promo={selectedPromo}
               codeInput={codeInput}
               codeState={codeState}
-              subtotal={subtotal}
               orderItems={orderItems}
               onCodeChange={handleCodeChange}
               onApply={handleApply}
@@ -257,10 +258,9 @@ interface CouponSheetProps {
   promo: Promotion
   codeInput: string
   codeState: CodeState
-  subtotal: number
   orderItems: OrderItem[]
   onCodeChange: (v: string) => void
-  onApply: () => void
+  onApply: (selectedLineIds: string[]) => void
   onCancel: () => void
 }
 
@@ -268,57 +268,153 @@ function CouponSheet({
   promo,
   codeInput,
   codeState,
-  subtotal,
   orderItems,
   onCodeChange,
   onApply,
   onCancel,
 }: CouponSheetProps) {
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
+  const [scannerOpen, setScannerOpen] = useState(false)
+
+  function handleQrScanned() {
+    setScannerOpen(false)
+    onCodeChange(promo.referenceCode)
+  }
+
+  // Auto-select all items when code becomes valid; clear when invalidated
+  useEffect(() => {
+    if (codeState === 'valid') {
+      setSelectedItems(new Set(orderItems.map((i) => i.lineId)))
+    } else {
+      setSelectedItems(new Set())
+    }
+  }, [codeState, orderItems])
+
+  function toggleItem(lineId: string) {
+    setSelectedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(lineId)) next.delete(lineId)
+      else next.add(lineId)
+      return next
+    })
+  }
+
+  const selectedSubtotal = orderItems
+    .filter((i) => selectedItems.has(i.lineId))
+    .reduce((sum, i) => sum + i.basePrice * i.quantity, 0)
+
   const discountAmount = promo.discountFixed > 0
-    ? Math.min(promo.discountFixed, subtotal)
-    : Math.round(subtotal * (promo.discountPercent / 100))
+    ? Math.min(promo.discountFixed, selectedSubtotal)
+    : Math.round(selectedSubtotal * (promo.discountPercent / 100))
+
+  const isValid = codeState === 'valid'
 
   return (
     <>
-      {/* Drag handle */}
-      <div className="flex justify-center pt-3 pb-1 shrink-0">
-        <div className="w-10 h-1 rounded-full bg-border" />
+      {/* Sheet header */}
+      <div className="relative flex items-start gap-[10px] px-6 pt-6 pb-0 shrink-0">
+        <Button variant="secondary" size="icon" className="size-9 rounded-md shrink-0">
+          <QrCode size={16} />
+        </Button>
+        <div className="flex flex-col gap-2 flex-1 min-w-0">
+          <p className="font-semibold text-lg leading-7 text-foreground">ใช้คูปองส่วนลด</p>
+          <p className="text-sm text-muted-foreground leading-5">
+            กรอกรหัสอ้างอิงหรือสแกน QRCode เพื่อใช้งานส่วนลด
+          </p>
+        </div>
+        <button
+          onClick={onCancel}
+          className="absolute right-4 top-[15px] size-4 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity"
+          aria-label="Close"
+        >
+          <X size={16} />
+        </button>
       </div>
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6">
 
-        {/* Promotion summary card */}
-        <div className="flex items-start gap-3 bg-muted rounded-xl p-3">
-          <div className="size-14 rounded-lg bg-background flex items-center justify-center text-3xl shrink-0">
-            {promo.imagePlaceholder}
-          </div>
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <p className="font-semibold text-sm text-foreground leading-snug">{promo.title}</p>
-            <p className="text-xs text-muted-foreground leading-snug">{promo.description}</p>
-            <span className="text-xs font-semibold text-destructive">
-              {promo.discountPercent > 0 ? `ลด ${promo.discountPercent}%` : `ลด ฿${promo.discountFixed}`}
-            </span>
-          </div>
-        </div>
+        {/* Promotion card — landscape */}
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-6 items-start">
+            {/* Promo image 200×200 */}
+            <div className="size-[200px] rounded-xl bg-muted shrink-0 overflow-hidden">
+              {promo.imagePath ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={promo.imagePath} alt={promo.title} className="size-full object-cover rounded-xl" />
+              ) : (
+                <div className="size-full flex items-center justify-center text-7xl">
+                  {promo.imagePlaceholder}
+                </div>
+              )}
+            </div>
 
-        {/* Reference code input */}
-        <div className="flex flex-col gap-2">
-          <p className="font-medium text-sm text-foreground">รหัสอ้างอิง</p>
-          <div className="flex gap-2">
+            {/* Promo info — justify-between to push date to bottom */}
+            <div className="flex flex-col flex-1 min-w-0 self-stretch justify-between">
+              {/* Top group */}
+              <div className="flex flex-col gap-2">
+                {/* Channel badges */}
+                <div className="flex gap-2 items-center flex-wrap">
+                  <Badge variant="default" className="text-xs font-semibold gap-1 px-2 py-0.5 rounded-md">
+                    <HandPlatter size={12} />
+                    Dine-in
+                  </Badge>
+                  <Badge variant="default" className="text-xs font-semibold gap-1 px-2 py-0.5 rounded-md">
+                    <ShoppingBag size={12} />
+                    Dine-in
+                  </Badge>
+                  <Badge variant="default" className="text-xs font-semibold gap-1 px-2 py-0.5 rounded-md">
+                    <Truck size={12} />
+                    Delivery
+                  </Badge>
+                </div>
+
+                {/* Title + description */}
+                <div className="flex flex-col gap-3">
+                  <p className="font-semibold text-base text-foreground leading-6">{promo.title}</p>
+                  <p className="text-sm text-muted-foreground leading-5 line-clamp-4">{promo.description}</p>
+                </div>
+
+                {/* Discount row */}
+                <div className="flex items-end gap-4">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <BadgePercent size={18} className="text-foreground shrink-0" />
+                    <span className="text-sm font-medium text-foreground whitespace-nowrap">โปรโมชัน</span>
+                  </div>
+                  <span className="text-2xl font-semibold text-foreground leading-none">
+                    {promo.discountPercent > 0 ? `ลด ${promo.discountPercent}%` : `ลด ฿${promo.discountFixed}`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Date row — pushed to bottom */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 shrink-0">
+                  <Calendar size={18} className="text-foreground shrink-0" />
+                  <span className="text-sm font-medium text-foreground whitespace-nowrap">ระยะเวลาโปรโมชัน</span>
+                </div>
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  {promo.validFrom} – {promo.validUntil}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Code input + scan button */}
+          <div className="flex gap-[10px]">
             <Input
-              placeholder="กรอกรหัสอ้างอิง"
+              placeholder="กรอกรหัสส่วนลด"
               value={codeInput}
               onChange={(e) => onCodeChange(e.target.value)}
               className={`flex-1 ${codeState === 'invalid' ? 'border-destructive focus-visible:ring-destructive' : ''}`}
             />
-            <Button variant="outline" className="gap-1.5 shrink-0" size="default">
-              <ScanLine size={16} />
-              สแกน
+            <Button variant="outline" className="gap-2 shrink-0" size="default" onClick={() => setScannerOpen(true)}>
+              <ScanBarcode size={16} />
+              สแกนคูปอง
             </Button>
           </div>
 
-          {/* Status text */}
+          {/* Validation status */}
           {codeState === 'checking' && (
             <div className="flex items-center gap-1.5">
               <div className="size-3 rounded-full bg-amber-500 animate-pulse shrink-0" />
@@ -339,58 +435,102 @@ function CouponSheet({
           )}
         </div>
 
-        <Separator />
-
         {/* Eligible items */}
-        <div className="flex flex-col gap-3">
-          <p className="font-medium text-sm text-foreground">สินค้าที่ร่วมรายการ</p>
-          <div className="grid grid-cols-3 gap-2">
-            {orderItems.map((item) => {
-              const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
-              const imagePath = menuItem?.imagePath
-              return (
-                <div
-                  key={item.lineId}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border border-border bg-background transition-opacity ${
-                    codeState === 'valid' ? 'opacity-100' : 'opacity-40'
-                  }`}
-                >
-                  <div className="size-14 rounded-lg bg-muted overflow-hidden flex items-center justify-center">
-                    {imagePath ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={imagePath} alt={item.menuItemName} className="size-full object-cover" />
-                    ) : (
-                      <span className="text-2xl">{menuItem?.thumbnailPlaceholder ?? '🍜'}</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-center text-foreground font-medium leading-tight line-clamp-2">
-                    {item.menuItemName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">×{item.quantity}</p>
-                </div>
-              )
-            })}
+        <div className="flex flex-col gap-4">
+          {/* Section header */}
+          <div className="flex items-center justify-between leading-none">
+            <p className="font-medium text-base text-foreground">สินค้าที่ร่วมรายการ</p>
+            <p className="text-base text-muted-foreground">{orderItems.length} รายการ</p>
           </div>
-        </div>
 
-        {/* Discount preview */}
-        {codeState === 'valid' && (
-          <div className="flex items-center justify-between bg-green-50 dark:bg-green-950/20 rounded-xl px-4 py-3 border border-green-200 dark:border-green-900">
-            <p className="font-medium text-sm text-green-700 dark:text-green-400">ส่วนลดที่จะได้รับ</p>
-            <p className="font-semibold text-base text-green-700 dark:text-green-400">
-              -฿{discountAmount.toLocaleString()}
-            </p>
+          {/* Items grid — bento card style */}
+          <div className="bg-muted border border-border rounded-lg p-2 min-h-[80px]">
+            <div className="grid grid-cols-5 gap-2">
+              {orderItems.map((item, idx) => {
+                const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
+                const imageSrc = menuItem?.imagePath ?? '/images/promotions/item-bg.png'
+                const overlayImg = idx % 3 === 0
+                  ? '/images/promotions/item-overlay-a.png'
+                  : '/images/promotions/item-overlay-b.png'
+                const isSelected = selectedItems.has(item.lineId)
+                const discountedPrice = promo.discountPercent > 0
+                  ? Math.round(item.basePrice * (1 - promo.discountPercent / 100))
+                  : Math.max(0, item.basePrice - promo.discountFixed)
+
+                return (
+                  <button
+                    key={item.lineId}
+                    onClick={() => isValid && toggleItem(item.lineId)}
+                    disabled={!isValid}
+                    className={`relative flex flex-col items-start overflow-hidden rounded-[14px] border text-left transition-all ${
+                      !isValid
+                        ? 'opacity-50 cursor-not-allowed border-border bg-card'
+                        : isSelected
+                          ? 'border-primary cursor-pointer'
+                          : 'border-border bg-card cursor-pointer hover:border-muted-foreground'
+                    }`}
+                    style={isSelected ? {
+                      backgroundImage: 'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
+                      backgroundColor: 'var(--primary)',
+                      boxShadow: 'var(--shadow-card)',
+                    } : { boxShadow: 'var(--shadow-card)' }}
+                  >
+                    {/* Image section: 96px tall, two-layer */}
+                    <div className="h-24 w-full relative overflow-hidden shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imageSrc}
+                        alt={item.menuItemName}
+                        className="absolute inset-0 size-full object-cover"
+                      />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={overlayImg}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 size-full object-cover pointer-events-none"
+                      />
+                    </div>
+
+                    {/* Content section */}
+                    <div className="flex flex-col gap-2 p-2 w-full min-h-[96px]">
+                      <p className="font-semibold text-base leading-6 overflow-hidden text-ellipsis whitespace-nowrap text-card-foreground">
+                        {item.menuItemName}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs leading-none line-through text-muted-foreground">
+                          ฿{item.basePrice.toLocaleString()}
+                        </p>
+                        <p className="text-sm font-bold leading-5 text-foreground">
+                          ฿{discountedPrice.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        )}
+
+          {/* Discount preview */}
+          {isValid && (
+            <div className="flex items-center justify-between bg-green-50 dark:bg-green-950/20 rounded-xl px-4 py-3 border border-green-200 dark:border-green-900">
+              <p className="font-medium text-sm text-green-700 dark:text-green-400">ส่วนลดที่จะได้รับ</p>
+              <p className="font-semibold text-base text-green-700 dark:text-green-400">
+                -฿{discountAmount.toLocaleString()}
+              </p>
+            </div>
+          )}
+        </div>
 
       </div>
 
       {/* Footer */}
-      <div className="border-t px-4 py-4 flex flex-col gap-2 shrink-0">
+      <div className="border-t px-6 py-4 flex flex-col gap-2 shrink-0">
         <Button
           className="w-full h-12 text-base font-semibold"
-          disabled={codeState !== 'valid'}
-          onClick={onApply}
+          disabled={codeState !== 'valid' || selectedItems.size === 0}
+          onClick={() => onApply([...selectedItems])}
         >
           ใช้งาน
         </Button>
@@ -402,6 +542,126 @@ function CouponSheet({
           ยกเลิก
         </Button>
       </div>
+
+      {/* QR Scanner overlay */}
+      {scannerOpen && (
+        <QrScannerOverlay
+          onScanned={handleQrScanned}
+          onCancel={() => setScannerOpen(false)}
+        />
+      )}
     </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// QrScannerOverlay
+// ---------------------------------------------------------------------------
+
+function QrScannerOverlay({
+  onScanned,
+  onCancel,
+}: {
+  onScanned: () => void
+  onCancel: () => void
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const scannedRef = useRef(false)
+
+  useEffect(() => {
+    let active = true
+
+    async function init() {
+      // Dynamically import jsqr to avoid SSR issues
+      const { default: jsQR } = await import('jsqr')
+      if (!active) return
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+        })
+        if (!active) {
+          stream.getTracks().forEach((t) => t.stop())
+          return
+        }
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          await videoRef.current.play()
+        }
+      } catch {
+        // Camera unavailable — fall back gracefully (overlay stays open)
+        return
+      }
+
+      function tick() {
+        if (!active) return
+        const video = videoRef.current
+        const canvas = canvasRef.current
+        if (!video || !canvas || video.readyState < video.HAVE_ENOUGH_DATA) {
+          rafRef.current = requestAnimationFrame(tick)
+          return
+        }
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
+        if (!ctx) return
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const code = jsQR(imageData.data, imageData.width, imageData.height)
+        if (code && !scannedRef.current) {
+          scannedRef.current = true
+          onScanned()
+          return
+        }
+        rafRef.current = requestAnimationFrame(tick)
+      }
+
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    init()
+
+    return () => {
+      active = false
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop())
+        streamRef.current = null
+      }
+    }
+  }, [onScanned])
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/85 flex flex-col items-center justify-center gap-6">
+      <p className="text-white text-2xl font-semibold text-center">
+        สแกน QR Code คูปอง
+      </p>
+      <div className="relative size-[248px] rounded-[10px] border-[3px] border-destructive overflow-hidden bg-black">
+        <video
+          ref={videoRef}
+          className="absolute inset-0 size-full object-cover"
+          autoPlay
+          playsInline
+          muted
+        />
+        <canvas ref={canvasRef} className="hidden" />
+        {/* Scanning line */}
+        <div className="absolute inset-x-0 h-0.5 bg-destructive/70 animate-[scanline_2s_ease-in-out_infinite]" />
+      </div>
+      <p className="text-white/90 text-base font-medium text-center max-w-xs leading-6">
+        หันกล้องไปทาง QR Code คูปองให้อยู่ในกรอบสีแดง
+      </p>
+      <Button
+        variant="destructive"
+        className="w-60 h-14 text-base font-semibold"
+        onClick={onCancel}
+      >
+        ยกเลิก
+      </Button>
+    </div>
   )
 }

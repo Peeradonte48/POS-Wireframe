@@ -19,6 +19,12 @@
     30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
     40%, 60% { transform: translate3d(4px, 0, 0); }
   }
+
+  @keyframes scanline {
+    0% { top: 0%; }
+    50% { top: calc(100% - 2px); }
+    100% { top: 0%; }
+  }
 }
 
 @custom-variant dark (&:where(.dark, .dark *));

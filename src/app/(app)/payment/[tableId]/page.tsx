@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard, Coins } from 'lucide-react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard, Coins, ScanBarcode, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -67,7 +67,8 @@ export default function PaymentPage() {
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
   const promotionDiscount = useBillStore((s) => s.promotionDiscounts[tableId] ?? null)
-  const { setCrmMember, clearCrmMember } = useBillStore()
+  const { setCrmMember, clearCrmMember, setPromotionDiscount, clearPromotionDiscount } = useBillStore()
+
 
   // ---- QR sheet ----
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
@@ -81,6 +82,20 @@ export default function PaymentPage() {
 
   // ---- Item split sheet ----
   const [itemSplitSheetOpen, setItemSplitSheetOpen] = useState(false)
+
+  // ---- Promo applied toast ----
+  const searchParams = useSearchParams()
+  const promoToastFired = useRef(false)
+  useEffect(() => {
+    if (searchParams.get('promoApplied') === '1' && !promoToastFired.current) {
+      promoToastFired.current = true
+      toast.success('ใช้โปรโมชันสำเร็จ')
+      router.replace(`/payment/${tableId}`)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- Discount accordion ----
+  const [discountExpanded, setDiscountExpanded] = useState(true)
 
   // ---- Accordion: which table groups are collapsed (empty = all expanded) ----
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
@@ -345,21 +360,47 @@ export default function PaymentPage() {
                 </div>
 
                 {/* ส่วนลดท้ายใบเสร็จ */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
-                    {promotionDiscount ? (
-                      <span className="text-xs font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded-md leading-5">
-                        {promotionDiscount.couponCode}
-                      </span>
-                    ) : (
-                      <ChevronDown size={16} className="text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="w-20 flex justify-end">
-                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-destructive' : 'text-foreground'}`}>
-                      {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                <div className="flex flex-col">
+                  <button
+                    className="flex items-center justify-between w-full text-left"
+                    onClick={() => discountAmount > 0 && setDiscountExpanded((v) => !v)}
+                  >
+                    <div className="flex items-center gap-1">
+                      <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
+                      {discountAmount > 0
+                        ? (discountExpanded
+                            ? <ChevronUp size={16} className="text-muted-foreground" />
+                            : <ChevronDown size={16} className="text-muted-foreground" />)
+                        : <ChevronDown size={16} className="text-muted-foreground" />
+                      }
+                    </div>
+                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-amber-500' : 'text-foreground'}`}>
+                      {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `฿0.00`}
                     </p>
+                  </button>
+
+                  {/* Collapsible promo rows */}
+                  <div
+                    className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                      discountExpanded && discountAmount > 0 ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div
+                        className={`flex flex-col gap-1 pt-1 transition-[transform,opacity] duration-300 ease-in-out ${
+                          discountExpanded && discountAmount > 0 ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
+                        }`}
+                      >
+                        {promotionDiscount && (
+                          <div className="flex items-center justify-between pl-3">
+                            <p className="text-sm text-amber-500 leading-5">{promotionDiscount.couponCode}</p>
+                            <p className="text-sm text-amber-500 leading-5">
+                              -฿{promotionDiscount.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -474,16 +515,37 @@ export default function PaymentPage() {
                 </button>
               )}
 
-              {/* Promotion button */}
+              {/* Coupon section */}
               {!isTakeaway && (
-                <Button
-                  variant="outline"
-                  className="w-full h-10 gap-2"
-                  onClick={() => router.push(`/payment/${tableId}/promotions`)}
-                >
-                  <TicketPercent size={16} />
-                  {promotionDiscount ? `โปรโมชัน (${promotionDiscount.couponCode})` : 'โปรโมชัน'}
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <p className="font-medium text-sm text-muted-foreground leading-5">คูปองส่วนลด</p>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full gap-2"
+                    onClick={() => router.push(`/payment/${tableId}/promotions`)}
+                  >
+                    <TicketPercent size={16} />
+                    โปรโมชัน
+                  </Button>
+                  {promotionDiscount && (
+                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
+                      <ScanBarcode size={16} className="text-muted-foreground shrink-0" />
+                      <span className="text-sm font-medium flex-1 text-foreground">{promotionDiscount.couponCode}</span>
+                      <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                        -฿{promotionDiscount.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="size-7 text-muted-foreground hover:text-destructive shrink-0"
+                        onClick={() => clearPromotionDiscount(tableId)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Bill management */}

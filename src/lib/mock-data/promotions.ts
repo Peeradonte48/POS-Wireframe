@@ -7,6 +7,7 @@ export interface Promotion {
   validFrom: string       // display string
   validUntil: string      // display string
   imagePlaceholder: string
+  imagePath?: string      // real photo path under /public
   referenceCode: string   // mock valid code
 }
 
@@ -20,6 +21,7 @@ export const PROMOTIONS: Promotion[] = [
     validFrom: '1 มี.ค. 2026',
     validUntil: '31 มี.ค. 2026',
     imagePlaceholder: '🍜',
+    imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM001',
   },
   {
@@ -31,6 +33,7 @@ export const PROMOTIONS: Promotion[] = [
     validFrom: '15 มี.ค. 2026',
     validUntil: '30 เม.ย. 2026',
     imagePlaceholder: '⏰',
+    imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM002',
   },
   {
@@ -42,6 +45,7 @@ export const PROMOTIONS: Promotion[] = [
     validFrom: '1 มี.ค. 2026',
     validUntil: '30 เม.ย. 2026',
     imagePlaceholder: '🎂',
+    imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM003',
   },
   {
@@ -53,6 +57,7 @@ export const PROMOTIONS: Promotion[] = [
     validFrom: '20 มี.ค. 2026',
     validUntil: '20 เม.ย. 2026',
     imagePlaceholder: '🐷',
+    imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM004',
   },
 ]
