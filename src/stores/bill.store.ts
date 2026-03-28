@@ -45,9 +45,10 @@ interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
   crmMembers: Record<string, CrmMember>  // key = tableId
-  promotionDiscounts: Record<string, PromotionDiscount>  // key = tableId
-  setPromotionDiscount: (tableId: string, data: PromotionDiscount) => void
-  clearPromotionDiscount: (tableId: string) => void
+  promotionDiscounts: Record<string, PromotionDiscount[]>  // key = tableId
+  addPromotionDiscount: (tableId: string, data: PromotionDiscount) => void
+  removePromotionDiscount: (tableId: string, couponCode: string) => void
+  clearPromotionDiscounts: (tableId: string) => void
   initCustomSplit: (tableId: string, payerCount: number) => void
   addCustomPayer: (tableId: string) => void
   setCustomAmount: (tableId: string, payerIndex: number, amount: number) => void
@@ -76,10 +77,22 @@ export const useBillStore = create<BillStore>()(
       crmMembers: {},
       promotionDiscounts: {},
 
-      setPromotionDiscount: (tableId, data) =>
-        set((state) => ({ promotionDiscounts: { ...state.promotionDiscounts, [tableId]: data } })),
+      addPromotionDiscount: (tableId, data) =>
+        set((state) => {
+          const existing = state.promotionDiscounts[tableId] ?? []
+          // Prevent duplicate coupon codes
+          if (existing.some((d) => d.couponCode === data.couponCode)) return state
+          return { promotionDiscounts: { ...state.promotionDiscounts, [tableId]: [...existing, data] } }
+        }),
 
-      clearPromotionDiscount: (tableId) =>
+      removePromotionDiscount: (tableId, couponCode) =>
+        set((state) => {
+          const existing = state.promotionDiscounts[tableId] ?? []
+          const updated = existing.filter((d) => d.couponCode !== couponCode)
+          return { promotionDiscounts: { ...state.promotionDiscounts, [tableId]: updated } }
+        }),
+
+      clearPromotionDiscounts: (tableId) =>
         set((state) => {
           const { [tableId]: _, ...rest } = state.promotionDiscounts
           return { promotionDiscounts: rest }
@@ -272,6 +285,6 @@ export const useBillStore = create<BillStore>()(
       getMergedSecondaries: (primaryTableId) =>
         Object.keys(get().merges).filter((k) => get().merges[k] === primaryTableId),
     }),
-    { name: 'bill-store', version: 1, migrate: () => ({}) },
+    { name: 'bill-store', version: 2, migrate: () => ({}) },
   ),
 )

@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard, Coins, ScanBarcode, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp, Crown, TicketPercent, ScissorsLineDashed, Link, HandPlatter, Banknote, QrCode, CreditCard, Coins, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -66,8 +66,10 @@ export default function PaymentPage() {
   // ---- CRM member lookup ----
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const promotionDiscount = useBillStore((s) => s.promotionDiscounts[tableId] ?? null)
-  const { setCrmMember, clearCrmMember, setPromotionDiscount, clearPromotionDiscount } = useBillStore()
+  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[tableId])
+  const promotionDiscounts = useMemo(() => promotionDiscountsRaw ?? [], [promotionDiscountsRaw])
+  const { setCrmMember, clearCrmMember, removePromotionDiscount } = useBillStore()
+
 
 
   // ---- QR sheet ----
@@ -96,6 +98,10 @@ export default function PaymentPage() {
 
   // ---- Discount accordion ----
   const [discountExpanded, setDiscountExpanded] = useState(true)
+
+  // ---- Coupon list overflow (show first 3; expand when > 3) ----
+  const [showAllCoupons, setShowAllCoupons] = useState(false)
+  const visibleCoupons = showAllCoupons ? promotionDiscounts : promotionDiscounts.slice(0, 3)
 
   // ---- Accordion: which table groups are collapsed (empty = all expanded) ----
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
@@ -175,7 +181,7 @@ export default function PaymentPage() {
     [billItems],
   )
 
-  const discountAmount = promotionDiscount?.amount ?? 0
+  const discountAmount = promotionDiscounts.reduce((sum, d) => sum + d.amount, 0)
   const discountedSubtotal = subtotal - discountAmount
   const vatAmount = Math.round(discountedSubtotal * 0.07)
   const grandTotal = discountedSubtotal + vatAmount
@@ -391,13 +397,24 @@ export default function PaymentPage() {
                           discountExpanded && discountAmount > 0 ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
                         }`}
                       >
-                        {promotionDiscount && (
-                          <div className="flex items-center justify-between pl-3">
-                            <p className="text-sm text-amber-500 leading-5">{promotionDiscount.couponCode}</p>
+                        {visibleCoupons.map((d) => (
+                          <div key={d.couponCode} className="flex items-center justify-between pl-3">
+                            <p className="text-sm text-amber-500 leading-5">{d.couponCode}</p>
                             <p className="text-sm text-amber-500 leading-5">
-                              -฿{promotionDiscount.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                              -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </p>
                           </div>
+                        ))}
+                        {promotionDiscounts.length > 3 && !showAllCoupons && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="gap-1.5 px-3 h-auto py-0.5 text-primary font-medium"
+                            onClick={() => setShowAllCoupons(true)}
+                          >
+                            <TicketPercent size={14} />
+                            ดูส่วนลดทั้งหมด ({promotionDiscounts.length})
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -490,7 +507,9 @@ export default function PaymentPage() {
 
           {/* Right panel – totals & actions */}
           <div className="bg-muted flex flex-col h-full px-2 py-4 shrink-0 w-[282px]">
-            <div className="bg-background border border-border rounded-2xl p-3 overflow-hidden flex flex-col gap-6 flex-1">
+            <div className="bg-background border border-border rounded-2xl overflow-hidden flex flex-col flex-1">
+              {/* Scrollable content */}
+              <div className="flex-1 overflow-y-auto flex flex-col gap-6 p-3">
               {/* Grand total display */}
               <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
                 <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
@@ -528,22 +547,32 @@ export default function PaymentPage() {
                     <TicketPercent size={16} />
                     โปรโมชัน
                   </Button>
-                  {promotionDiscount && (
-                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-                      <ScanBarcode size={16} className="text-muted-foreground shrink-0" />
-                      <span className="text-sm font-medium flex-1 text-foreground">{promotionDiscount.couponCode}</span>
+                  {/* Applied coupons list — always show first 3, expand when more */}
+                  {visibleCoupons.map((d) => (
+                    <div key={d.couponCode} className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
+                      <TicketPercent size={16} className="text-amber-500 shrink-0" />
+                      <span className="text-sm font-medium flex-1 text-foreground">{d.couponCode}</span>
                       <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-                        -฿{promotionDiscount.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </span>
                       <Button
                         variant="ghost"
                         size="icon-sm"
                         className="size-7 text-muted-foreground hover:text-destructive shrink-0"
-                        onClick={() => clearPromotionDiscount(tableId)}
+                        onClick={() => removePromotionDiscount(tableId, d.couponCode)}
                       >
                         <Trash2 size={14} />
                       </Button>
                     </div>
+                  ))}
+                  {promotionDiscounts.length > 3 && !showAllCoupons && (
+                    <button
+                      onClick={() => setShowAllCoupons(true)}
+                      className="flex items-center gap-1.5 text-sm font-medium text-primary hover:opacity-80 transition-opacity self-start"
+                    >
+                      <TicketPercent size={14} />
+                      ดูส่วนลดทั้งหมด ({promotionDiscounts.length})
+                    </button>
                   )}
                 </div>
               )}
@@ -584,16 +613,17 @@ export default function PaymentPage() {
                 </div>
               )}
 
-              {/* Spacer to push proceed button to bottom */}
-              <div className="flex-1" />
+              </div>{/* end scrollable content */}
 
-              {/* Proceed to payment button */}
-              <Button
-                className="w-full h-14 text-base font-semibold gap-2"
-                onClick={() => setPaymentMethodDialogOpen(true)}
-              >
-                ดำเนินการชำระเงิน
-              </Button>
+              {/* Pinned proceed button */}
+              <div className="shrink-0 p-3 border-t">
+                <Button
+                  className="w-full h-14 text-base font-semibold gap-2"
+                  onClick={() => setPaymentMethodDialogOpen(true)}
+                >
+                  ดำเนินการชำระเงิน
+                </Button>
+              </div>
             </div>
           </div>
         </div>

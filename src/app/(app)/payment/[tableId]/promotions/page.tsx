@@ -33,7 +33,7 @@ export default function PromotionsPage() {
   const tableLabel = tables[tableId]?.label ?? tableId
 
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const { setPromotionDiscount, setCrmMember } = useBillStore()
+  const { addPromotionDiscount, setCrmMember } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const order = useOrderStore((s) => s.getOrder(tableId))
@@ -91,7 +91,7 @@ export default function PromotionsPage() {
       amount = Math.round(selectedSubtotal * (selectedPromo.discountPercent / 100))
     }
 
-    setPromotionDiscount(tableId, {
+    addPromotionDiscount(tableId, {
       promotionId: selectedPromo.id,
       couponCode: codeInput.trim().toUpperCase(),
       amount,
