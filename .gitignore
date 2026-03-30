@@ -45,7 +45,7 @@ next-env.d.ts
 # Ignore files inside any superpowers directory
 superpowers/
 
-.claude/
+.claude/skills/
 
 .planning/
 
