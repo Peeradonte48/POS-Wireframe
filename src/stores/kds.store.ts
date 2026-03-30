@@ -49,8 +49,6 @@ interface KdsStore {
 
 // ─── Store Implementation ─────────────────────────────────────────────────────
 
-const RECALL_TRAY_CAP = 5
-
 export const useKdsStore = create<KdsStore>((set) => ({
   tickets: {},
   recallTray: [],

@@ -179,7 +179,6 @@ export function TicketPanel({
                 onEditTap={onEditLineItem}
                 onVoidTap={(lineId) => setVoidingLineId(lineId)}
                 canRemove={canDoAction(role, 'void-pre-send')}
-                canVoidSent={canDoAction(role, 'void-post-send')}
                 showPackToGo={!isTakeaway}
                 onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
               />

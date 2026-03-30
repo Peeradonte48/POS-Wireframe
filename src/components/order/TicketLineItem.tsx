@@ -101,7 +101,6 @@ interface TicketLineItemProps {
   onEditTap: (lineId: string) => void
   onVoidTap: (lineId: string) => void
   canRemove?: boolean
-  canVoidSent?: boolean
   showPackToGo?: boolean
   onTogglePackToGo?: (lineId: string) => void
 }
@@ -117,7 +116,6 @@ export function TicketLineItem({
   onEditTap,
   onVoidTap,
   canRemove = true,
-  canVoidSent = false,
   showPackToGo = false,
   onTogglePackToGo,
 }: TicketLineItemProps) {

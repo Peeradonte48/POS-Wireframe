@@ -67,7 +67,6 @@ export default function SplitSummaryPage() {
     [billItems],
   )
   const vatAmount = Math.round(subtotal * 0.07)
-  const grandTotal = subtotal + vatAmount
 
   const splitAmounts: number[] = split?.customAmounts ?? []
   const isItemSplit = split?.splitOrigin === 'item'

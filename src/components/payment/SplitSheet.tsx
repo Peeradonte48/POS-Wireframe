@@ -35,7 +35,6 @@ interface SplitSheetProps {
 
 export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAllPaid }: SplitSheetProps) {
   const [view, setView] = useState<ViewState>('mode-select')
-  const [seatCountInput, setSeatCountInput] = useState<number>(2)
   const [activeSeatIndex, setActiveSeatIndex] = useState<number | null>(null)
 
   // Per-seat assign state
@@ -67,7 +66,6 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
       setAssigningFromSeatIndex(null)
       setShowCancelWarning(false)
       setShowRevertConfirm(false)
-      setSeatCountInput(defaultGuestCount)
     }
   }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 

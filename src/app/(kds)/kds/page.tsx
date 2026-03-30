@@ -13,8 +13,6 @@ import {
   Home,
   ShoppingCart,
   Package,
-  Users,
-  LineChart,
   Settings,
   PanelLeft,
   EllipsisVertical,
@@ -27,8 +25,6 @@ const TOP_NAV_ITEMS = [
   { icon: Home,         href: '/table-map' },
   { icon: ShoppingCart, href: '/orders'    },
   { icon: Package,      href: '/kds'       },
-  { icon: Users,        href: '/loyalty'   },
-  { icon: LineChart,    href: '/dashboard' },
 ] as const
 
 export default function KdsPage() {
