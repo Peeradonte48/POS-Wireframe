@@ -1,13 +1,10 @@
 'use client'
 
-import { useMemo } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useSessionStore } from '@/stores/session.store'
-import { useQueueStore } from '@/stores/queue.store'
 import { canAccess } from '@/lib/role-permissions'
 import type { NavSlug } from '@/lib/role-permissions'
-import { cn } from '@/lib/utils'
 import {
   Package2,
   Home,
@@ -30,8 +27,7 @@ const TOP_NAV_ITEMS: NavItem[] = [
   { slug: 'table-map', label: 'Table Map', href: '/table-map',  icon: Home },
   { slug: 'orders',    label: 'Orders',    href: '/orders',     icon: ShoppingCart },
   { slug: 'kds',       label: 'KDS',       href: '/kds',        icon: Package },
-  // queue points to /table-map — both show as active on that route (wireframe acceptable)
-  { slug: 'queue',     label: 'Queue',     href: '/table-map',  icon: Users },
+  { slug: 'loyalty',   label: 'Loyalty',   href: '/loyalty',    icon: Users },
   { slug: 'dashboard', label: 'Dashboard', href: '/dashboard',  icon: LineChart },
 ]
 
@@ -39,128 +35,59 @@ const BOTTOM_NAV_ITEMS: NavItem[] = [
   { slug: 'manager', label: 'Manager', href: '/manager', icon: Settings },
 ]
 
-interface AppSidebarProps {
-  collapsed: boolean
-}
-
-export function AppSidebar({ collapsed }: AppSidebarProps) {
+export function AppSidebar() {
+  const router = useRouter()
   const pathname = usePathname()
   const { role, shiftOpen } = useSessionStore()
 
-  // Zustand selector safety — raw Record, derive in useMemo
-  const orders = useQueueStore((s) => s.orders)
-  const activeQueueCount = useMemo(
-    () =>
-      Object.values(orders).filter((o) => {
-        if (o.channel === 'delivery') {
-          return ['Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
-        }
-        if (o.channel === 'takeaway') {
-          return ['Taking', 'Sent', 'Ready'].includes(o.status)
-        }
-        return false
-      }).length,
-    [orders]
-  )
-
   function renderNavItem({ slug, label, href, icon: Icon }: NavItem) {
-    // Hide items the current role can't access at all
     const hasRoleAccess = role ? canAccess(role, slug) : false
-    if (!hasRoleAccess) return null
+    const isClickable = hasRoleAccess && shiftOpen
+    const isActive = isClickable && (pathname === href || pathname.startsWith(href + '/'))
+    const disabledTitle = !shiftOpen ? 'Open a shift first' : 'Access restricted for your role'
 
-    const isActive = pathname === href || pathname.startsWith(href + '/')
-
-    const iconEl = (
-      <span
-        className={cn(
-          'flex items-center justify-center h-8 w-8 rounded-lg transition-colors shrink-0',
-          isActive
-            ? 'bg-accent text-foreground'
-            : shiftOpen
-            ? 'text-muted-foreground hover:bg-accent hover:text-foreground'
-            : 'text-muted-foreground/30'
-        )}
-      >
-        <Icon size={16} />
-      </span>
-    )
+    if (isClickable && !isActive) {
+      return (
+        <button
+          key={slug}
+          onClick={() => router.push(href)}
+          title={label}
+          className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+        >
+          <Icon size={20} />
+        </button>
+      )
+    }
 
     return (
-      <li key={slug} className="relative">
-        {shiftOpen ? (
-          <Link
-            href={href}
-            className={cn(
-              'flex items-center rounded-lg text-sm font-medium transition-colors',
-              collapsed ? 'justify-center' : 'gap-3 px-2 py-1'
-            )}
-            title={collapsed ? label : undefined}
-          >
-            {iconEl}
-            {!collapsed && <span className="truncate">{label}</span>}
-            {slug === 'queue' && !collapsed && activeQueueCount > 0 && (
-              <span className="ml-auto h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                {activeQueueCount}
-              </span>
-            )}
-          </Link>
-        ) : (
-          <div
-            className={cn(
-              'flex items-center rounded-lg text-sm font-medium cursor-not-allowed select-none',
-              collapsed ? 'justify-center' : 'gap-3 px-2 py-1'
-            )}
-            title="Open a shift first"
-          >
-            {iconEl}
-            {!collapsed && <span className="truncate text-muted-foreground/30">{label}</span>}
-          </div>
-        )}
-        {/* Collapsed dot indicator for queue pending count */}
-        {slug === 'queue' && collapsed && activeQueueCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
-        )}
-      </li>
+      <button
+        key={slug}
+        title={isActive ? label : disabledTitle}
+        disabled={!isClickable}
+        className={
+          isActive
+            ? 'flex items-center justify-center rounded-lg size-8 bg-accent text-foreground transition-colors'
+            : 'flex items-center justify-center rounded-lg size-8 text-muted-foreground/30 cursor-not-allowed'
+        }
+      >
+        <Icon size={20} />
+      </button>
     )
   }
 
   return (
-    <nav
-      className={cn(
-        'border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200',
-        collapsed ? 'w-12' : 'w-56'
-      )}
-    >
-      {/* Top section: brand logo + main nav */}
-      <div
-        className={cn(
-          'flex flex-col items-center px-2 py-5 gap-4',
-          !collapsed && 'items-stretch px-3'
-        )}
-      >
-        {/* Brand logo */}
-        <div className={cn('flex items-center', !collapsed && 'gap-3 px-2 py-1')}>
-          <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground shrink-0">
-            <Package2 size={16} />
-          </span>
-          {!collapsed && <span className="font-semibold text-sm truncate">A Ramen</span>}
-        </div>
-
-        <ul className={cn('flex flex-col', collapsed ? 'gap-4 items-center' : 'gap-1 w-full')}>
-          {TOP_NAV_ITEMS.map((item) => renderNavItem(item))}
-        </ul>
+    <nav className="w-12 h-full shrink-0 flex flex-col items-center justify-between py-5 px-2">
+      {/* Top: brand + main nav */}
+      <div className="flex flex-col items-center gap-4 w-full">
+        <button className="bg-primary flex items-center justify-center rounded-full size-8 shrink-0">
+          <Package2 size={16} className="text-primary-foreground" />
+        </button>
+        {TOP_NAV_ITEMS.map((item) => renderNavItem(item))}
       </div>
 
-      {/* Bottom section: settings / manager */}
-      <div
-        className={cn(
-          'mt-auto flex flex-col items-center px-2 py-5',
-          !collapsed && 'items-stretch px-3'
-        )}
-      >
-        <ul className={cn('flex flex-col', collapsed ? 'items-center' : 'w-full gap-1')}>
-          {BOTTOM_NAV_ITEMS.map((item) => renderNavItem(item))}
-        </ul>
+      {/* Bottom: settings / manager */}
+      <div className="flex flex-col items-center gap-4 w-full">
+        {BOTTOM_NAV_ITEMS.map((item) => renderNavItem(item))}
       </div>
     </nav>
   )

@@ -23,7 +23,13 @@ import {
   User,
 } from 'lucide-react'
 
-const TOP_NAV_ICONS = [Home, ShoppingCart, Package, Users, LineChart] as const
+const TOP_NAV_ITEMS = [
+  { icon: Home,         href: '/table-map' },
+  { icon: ShoppingCart, href: '/orders'    },
+  { icon: Package,      href: '/kds'       },
+  { icon: Users,        href: '/loyalty'   },
+  { icon: LineChart,    href: '/dashboard' },
+] as const
 
 export default function KdsPage() {
   const router = useRouter()
@@ -80,7 +86,7 @@ export default function KdsPage() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-muted">
       {/* ── Sidebar (55px icon-only nav) ── */}
-      <nav className="w-[55px] h-full shrink-0 flex flex-col items-center justify-between py-5 px-2">
+      <nav className="w-12 h-full shrink-0 flex flex-col items-center justify-between py-5 px-2">
         {/* Top: brand + nav */}
         <div className="flex flex-col items-center gap-4 w-full">
           {/* Brand icon — KDS active state */}
@@ -88,20 +94,47 @@ export default function KdsPage() {
             <Package2 size={16} className="text-primary-foreground" />
           </button>
 
-          {TOP_NAV_ICONS.map((Icon, i) => (
-            <button
-              key={i}
-              className="flex items-center justify-center rounded-lg size-8 hover:bg-accent transition-colors"
-            >
-              <Icon size={20} className="text-muted-foreground" />
-            </button>
-          ))}
+          {TOP_NAV_ITEMS.map(({ icon: Icon, href }) => {
+            const isActive = href === '/kds'
+            const canNavigate = role === 'Manager' && !isActive
+            return canNavigate ? (
+              <button
+                key={href}
+                onClick={() => router.push(href)}
+                title={href.replace('/', '')}
+                className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+              >
+                <Icon size={20} />
+              </button>
+            ) : (
+              <button
+                key={href}
+                className={`flex items-center justify-center rounded-lg size-8 transition-colors ${
+                  isActive
+                    ? 'bg-accent text-foreground'
+                    : 'text-muted-foreground/30 cursor-not-allowed'
+                }`}
+              >
+                <Icon size={20} />
+              </button>
+            )
+          })}
         </div>
 
-        {/* Bottom: settings */}
-        <button className="flex items-center justify-center rounded-lg size-8 hover:bg-accent transition-colors">
-          <Settings size={20} className="text-muted-foreground" />
-        </button>
+        {/* Bottom: settings — Manager only */}
+        {role === 'Manager' ? (
+          <button
+            onClick={() => router.push('/manager')}
+            title="manager"
+            className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+          >
+            <Settings size={20} />
+          </button>
+        ) : (
+          <button className="flex items-center justify-center rounded-lg size-8 text-muted-foreground/30 cursor-not-allowed">
+            <Settings size={20} />
+          </button>
+        )}
       </nav>
 
       {/* ── Main wrapper ── */}
