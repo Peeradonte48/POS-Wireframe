@@ -72,7 +72,7 @@ Full archive: `.planning/milestones/v1.3-ROADMAP.md`
 
 ### v1.4 Codebase Cleanup (Phases 22-25)
 
-- [ ] **Phase 22: Codebase Audit** — Written audit map of structural issues, dead code, type errors, and tech debt root causes
+- [x] **Phase 22: Codebase Audit** — Written audit map of structural issues, dead code, type errors, and tech debt root causes (completed 2026-03-30)
 - [ ] **Phase 23: TypeScript + Dead Code** — Resolve all any-casts, achieve zero build errors, remove unused imports and unreachable code, enforce naming conventions
 - [ ] **Phase 24: Refactor** — Simplify complex components identified in audit, consolidate duplicated patterns
 - [ ] **Phase 25: Tech Debt** — Fix DLVR-04/05 KDS desync, TKWY-04 reload edge case, document 5 E2E flows
@@ -89,10 +89,10 @@ Full archive: `.planning/milestones/v1.3-ROADMAP.md`
   1. A written audit document exists covering all source files with structural issues, dead code, and type errors identified by file
   2. Each known tech debt item (DLVR-04, DLVR-05, TKWY-04, 5 E2E flows) has a documented root cause and a proposed fix approach
   3. The audit document is organized so Phase 23, 24, and 25 work can be scoped directly from it without additional discovery
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 22-01-PLAN.md — Run automated tooling + manual review, produce audit report organized by Phase 23/24/25 scope
+- [x] 22-01-PLAN.md — Run automated tooling + manual review, produce audit report organized by Phase 23/24/25 scope
 - [x] 22-02-PLAN.md — Create 5 Playwright E2E test stubs for human_needed flows
 
 ### Phase 23: TypeScript + Dead Code
@@ -153,7 +153,7 @@ Plans:
 | 19. KDS Differentiation + Combo Flag | v1.3 | 3/3 | Complete | 2026-03-15 |
 | 20. Integration Fix + Phase 17 Verification | v1.3 | 2/2 | Complete | 2026-03-15 |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
-| 22. Codebase Audit | v1.4 | 1/2 | In Progress|  |
+| 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 0/? | Not started | - |
 | 24. Refactor | v1.4 | 0/? | Not started | - |
 | 25. Tech Debt | v1.4 | 0/? | Not started | - |

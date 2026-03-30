@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Codebase Cleanup
-status: executing
-last_updated: "2026-03-30T22:03:54.013Z"
+status: verifying
+last_updated: "2026-03-30T22:31:57.762Z"
 last_activity: 2026-03-30
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-31
-**Session:** Milestone v1.4 Codebase Cleanup — Phase 22 planned (2 plans), ready for execute-phase
+**Session:** Milestone v1.4 Codebase Cleanup — Phase 22 Plan 01 complete (22-AUDIT-REPORT.md produced)
 
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 **Core value:** A restaurant staff member can manage dine-in tables, walk-in takeaway orders, and third-party delivery orders from a single interface — with the kitchen always knowing whether to plate or bag.
 
-**Current focus:** Phase 22 — codebase-audit
+**Current focus:** Phase 22 complete — audit report produced; Phase 23 next
 
 **Stack:** Next.js 16 (App Router) + TypeScript 5 (strict) + Tailwind CSS 4 + shadcn/ui (Base UI) + Zustand 5 (persist) + Solar icon set
 
@@ -38,10 +38,10 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 ## Current Position
 
-Phase: 22 (codebase-audit) — EXECUTING
-Plan: 2 of 2
-Status: Executing Phase 22
-Last activity: 2026-03-31 — Phase 22 Plan 02 complete
+Phase: 23
+Plan: Not started
+Status: Phase complete — ready for verification
+Last activity: 2026-03-30
 
 ```
 Progress: [█████░░░░░] 50% (1/2 plans complete in Phase 22)
@@ -55,7 +55,7 @@ Progress: [█████░░░░░] 50% (1/2 plans complete in Phase 22)
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 22. Codebase Audit | Written map of all structural issues, dead code, type errors, and tech debt root causes | AUD-01, AUD-02 | Not started |
+| 22. Codebase Audit | Written map of all structural issues, dead code, type errors, and tech debt root causes | AUD-01, AUD-02 | Complete |
 | 23. TypeScript + Dead Code | Zero build errors, no unjustified any-casts, no unused code, consistent naming | TS-01, TS-02, DC-01, DC-02 | Not started |
 | 24. Refactor | Complex components simplified, duplicated patterns consolidated | REF-01, REF-02 | Not started |
 | 25. Tech Debt | DLVR-04/05 KDS desync fixed, TKWY-04 reload edge case resolved, 5 E2E flows documented | TD-01, TD-02, TD-03 | Not started |
@@ -65,6 +65,13 @@ Progress: [█████░░░░░] 50% (1/2 plans complete in Phase 22)
 ## Accumulated Context
 
 See `.planning/PROJECT.md` for full key decisions log.
+
+### Architecture Decisions for v1.4 (22-01 execution)
+
+- **[22-01] DLVR-04/05 root cause confirmed**: `bumpTicket()` in `kds.store.ts:89` is never called from any UI component; `KdsBoard` only uses `completeTicket()` (final done). The intermediate `New→InProgress` stage transition never fires, so `queue.store.advanceStatus()` (`Confirmed→Preparing`) is never called. Fix: add BUMP button to `KdsTicketCard` with write-back on `New→InProgress` transition.
+- **[22-01] TKWY-04 root cause confirmed**: `order.store` (localStorage key `order-store`) and `queue.store` (localStorage key `queue-store`) are independent persist stores. On reload or version migration, `order.store` can be cleared while `queue.store` persists takeaway orders referencing stale `orderId` keys. `TakeawayCard.tsx:56` reads `order.store.orders[orderId]` with no guard, showing "0 items" when data is gone.
+- **[22-01] TypeScript build is clean**: 0 errors across 103 files. Phase 23 addresses ESLint advisory patterns only (no blocking TS fixes needed).
+- **[22-01] 14 ESLint errors are all advisory react-hooks patterns**: dialog-reset `useEffect` pattern and `Date.now()` in `useState` initializer. Phase 23 can suppress with comments or refactor to `key`-based resets.
 
 ### Key Architecture Decisions (v1.2)
 

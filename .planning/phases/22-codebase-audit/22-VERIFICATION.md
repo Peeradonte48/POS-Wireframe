@@ -1,19 +1,10 @@
 ---
 phase: 22-codebase-audit
 verified: 2026-03-30T22:29:56Z
-status: gaps_found
-score: 4/5 must-haves verified
-re_verification: false
-gaps:
-  - truth: "The audit report accurately reflects the final state of all 5 E2E stub files"
-    status: partial
-    reason: "22-AUDIT-REPORT.md was produced by Plan 01 and states split-bill-flow.spec.ts and merge-bill-flow.spec.ts are MISSING. Plan 02 subsequently created both files, but the audit report was never updated. The report now contains stale content that contradicts reality."
-    artifacts:
-      - path: ".planning/phases/22-codebase-audit/22-AUDIT-REPORT.md"
-        issue: "Phase 25 Scope > E2E Flow Test Stubs table shows split-bill and merge-bill as MISSING, with a 'Phase 25 action: Create...' directive — both files now exist and the directive is obsolete"
-    missing:
-      - "Update the E2E Flow Test Stubs table in 22-AUDIT-REPORT.md to reflect all 5 stubs now exist (created by Plan 02)"
-      - "Remove or correct the 'Phase 25 action: Create split-bill-flow.spec.ts and merge-bill-flow.spec.ts' directive since they already exist"
+status: passed
+score: 5/5 must-haves verified
+re_verification: true
+gaps: []
 ---
 
 # Phase 22: Codebase Audit Verification Report
