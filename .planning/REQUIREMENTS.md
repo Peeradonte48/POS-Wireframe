@@ -10,7 +10,7 @@
 
 ### Audit
 
-- [ ] **AUD-01**: Codebase audit produces a written map of structural issues, dead code, and type errors across all source files
+- [x] **AUD-01**: Codebase audit produces a written map of structural issues, dead code, and type errors across all source files
 - [x] **AUD-02**: Known tech debt items (DLVR-04/05, TKWY-04, 5 E2E flows) are documented with root cause and fix approach
 
 ### TypeScript
@@ -54,7 +54,7 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| AUD-01 | Phase 22 | Pending |
+| AUD-01 | Phase 22 | Complete |
 | AUD-02 | Phase 22 | Complete |
 | TS-01  | Phase 23 | Pending |
 | TS-02  | Phase 23 | Pending |
