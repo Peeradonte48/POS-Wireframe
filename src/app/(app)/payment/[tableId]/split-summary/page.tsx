@@ -96,7 +96,7 @@ export default function SplitSummaryPage() {
     setPaidIndexes(newPaid)
     useBillStore.getState().recordPayment(tableId, selectedTabIndex, {
       method,
-      paidAt: Date.now(),
+      paidAt: Date.now(), // eslint-disable-line react-hooks/purity
       amount: selectedAmount,
     })
     setCheckoutMethod(null)

@@ -194,7 +194,7 @@ export const useOrderStore = create<OrderStore>()(
 
   clearOrder: (tableId) =>
     set((state) => {
-      const { [tableId]: _, ...rest } = state.orders
+      const { [tableId]: _void, ...rest } = state.orders
       return { orders: rest }
     }),
 

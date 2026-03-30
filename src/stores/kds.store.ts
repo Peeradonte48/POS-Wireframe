@@ -108,7 +108,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
       }
 
       // Ready → done: remove from board permanently
-      const { [ticketId]: _removed, ...remainingTickets } = state.tickets
+      const { [ticketId]: _void, ...remainingTickets } = state.tickets
       return {
         tickets: remainingTickets,
       }
@@ -117,7 +117,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
   completeTicket: (ticketId) =>
     set((state) => {
       const ticket = state.tickets[ticketId]
-      const { [ticketId]: _removed, ...remainingTickets } = state.tickets
+      const { [ticketId]: _void, ...remainingTickets } = state.tickets
       const completedTableIds = new Set(state.completedTableIds)
       if (ticket) completedTableIds.add(ticket.tableId)
       return { tickets: remainingTickets, completedTableIds }

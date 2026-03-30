@@ -67,7 +67,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
       setShowCancelWarning(false)
       setShowRevertConfirm(false)
     }
-  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open])
 
   // Body scroll lock
   useEffect(() => {

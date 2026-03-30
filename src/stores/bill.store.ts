@@ -95,7 +95,7 @@ export const useBillStore = create<BillStore>()(
 
       clearPromotionDiscounts: (tableId) =>
         set((state) => {
-          const { [tableId]: _, ...rest } = state.promotionDiscounts
+          const { [tableId]: _void, ...rest } = state.promotionDiscounts
           return { promotionDiscounts: rest }
         }),
 
@@ -245,7 +245,7 @@ export const useBillStore = create<BillStore>()(
 
       cancelSplit: (tableId) =>
         set((state) => {
-          const { [tableId]: _, ...rest } = state.splits
+          const { [tableId]: _void, ...rest } = state.splits
           return { splits: rest }
         }),
 
@@ -256,7 +256,7 @@ export const useBillStore = create<BillStore>()(
 
       clearCrmMember: (tableId) =>
         set((state) => {
-          const { [tableId]: _, ...rest } = state.crmMembers
+          const { [tableId]: _void, ...rest } = state.crmMembers
           return { crmMembers: rest }
         }),
 
