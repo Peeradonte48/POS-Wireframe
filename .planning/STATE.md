@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Codebase Cleanup
-status: verifying
-last_updated: "2026-03-30T22:31:57.762Z"
-last_activity: 2026-03-30
+status: executing
+last_updated: "2026-03-30T22:50:27.403Z"
+last_activity: 2026-03-30 -- Phase 23 execution started
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
+  total_plans: 4
   completed_plans: 2
   percent: 50
 ---
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 **Core value:** A restaurant staff member can manage dine-in tables, walk-in takeaway orders, and third-party delivery orders from a single interface — with the kitchen always knowing whether to plate or bag.
 
-**Current focus:** Phase 22 complete — audit report produced; Phase 23 next
+**Current focus:** Phase 23 — typescript-dead-code
 
 **Stack:** Next.js 16 (App Router) + TypeScript 5 (strict) + Tailwind CSS 4 + shadcn/ui (Base UI) + Zustand 5 (persist) + Solar icon set
 
@@ -38,10 +38,10 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 ## Current Position
 
-Phase: 23
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-03-30
+Phase: 23 (typescript-dead-code) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 23
+Last activity: 2026-03-30 -- Phase 23 execution started
 
 ```
 Progress: [█████░░░░░] 50% (1/2 plans complete in Phase 22)
