@@ -39,6 +39,7 @@ export interface PromotionDiscount {
   promotionId: string
   couponCode: string
   amount: number
+  selectedLineIds: string[]
 }
 
 interface BillStore {

@@ -95,6 +95,7 @@ export default function PromotionsPage() {
       promotionId: selectedPromo.id,
       couponCode: codeInput.trim().toUpperCase(),
       amount,
+      selectedLineIds,
     })
 
     handleCloseSheet()
