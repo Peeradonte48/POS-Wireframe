@@ -104,7 +104,11 @@ Plans:
   2. No `any`-cast remains without an inline justification comment
   3. ESLint reports no unused-imports or unused-variables warnings across all source files
   4. File names, component names, store names, and type names follow a single consistent convention documented or self-evident from existing patterns
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — Add eslint-disable suppression comments for intentional patterns (D-01/D-03/D-04/D-06) and fix exhaustive-deps issues (D-07)
+- [ ] 23-02-PLAN.md — Remove dead code (D-02/D-05 removals) and rename destructure discard variables (D-05 renames)
 
 ### Phase 24: Refactor
 **Goal**: Complex components are simplified and duplicated patterns are consolidated — the codebase is easier to extend without risk of regression
@@ -154,7 +158,7 @@ Plans:
 | 20. Integration Fix + Phase 17 Verification | v1.3 | 2/2 | Complete | 2026-03-15 |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
-| 23. TypeScript + Dead Code | v1.4 | 0/? | Not started | - |
+| 23. TypeScript + Dead Code | v1.4 | 0/2 | Not started | - |
 | 24. Refactor | v1.4 | 0/? | Not started | - |
 | 25. Tech Debt | v1.4 | 0/? | Not started | - |
 
