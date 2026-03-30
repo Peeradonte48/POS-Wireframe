@@ -9,13 +9,13 @@ import { canAccess } from '@/lib/role-permissions'
 import type { NavSlug } from '@/lib/role-permissions'
 import { cn } from '@/lib/utils'
 import {
-  LayoutGrid,
-  FileText,
-  Monitor,
-  CreditCard,
-  BarChart2,
-  Lock,
-  Inbox,
+  Package2,
+  Home,
+  ShoppingCart,
+  Package,
+  Users,
+  LineChart,
+  Settings,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -26,14 +26,17 @@ interface NavItem {
   icon: LucideIcon
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { slug: 'table-map', label: 'Table Map',  href: '/table-map', icon: LayoutGrid },
-  { slug: 'orders',    label: 'Orders',     href: '/orders',    icon: FileText },
-  // Both table-map and queue point to /table-map — both show as active on this route (wireframe acceptable)
-  { slug: 'queue',     label: 'Queue',      href: '/table-map', icon: Inbox },
-  { slug: 'kds',       label: 'KDS',        href: '/kds',       icon: Monitor },
-  { slug: 'payment',   label: 'Payment',    href: '/payment',   icon: CreditCard },
-  { slug: 'manager',   label: 'Manager',    href: '/manager',   icon: BarChart2 },
+const TOP_NAV_ITEMS: NavItem[] = [
+  { slug: 'table-map', label: 'Table Map', href: '/table-map',  icon: Home },
+  { slug: 'orders',    label: 'Orders',    href: '/orders',     icon: ShoppingCart },
+  { slug: 'kds',       label: 'KDS',       href: '/kds',        icon: Package },
+  // queue points to /table-map — both show as active on that route (wireframe acceptable)
+  { slug: 'queue',     label: 'Queue',     href: '/table-map',  icon: Users },
+  { slug: 'dashboard', label: 'Dashboard', href: '/dashboard',  icon: LineChart },
+]
+
+const BOTTOM_NAV_ITEMS: NavItem[] = [
+  { slug: 'manager', label: 'Manager', href: '/manager', icon: Settings },
 ]
 
 interface AppSidebarProps {
@@ -60,74 +63,105 @@ export function AppSidebar({ collapsed }: AppSidebarProps) {
     [orders]
   )
 
+  function renderNavItem({ slug, label, href, icon: Icon }: NavItem) {
+    // Hide items the current role can't access at all
+    const hasRoleAccess = role ? canAccess(role, slug) : false
+    if (!hasRoleAccess) return null
+
+    const isActive = pathname === href || pathname.startsWith(href + '/')
+
+    const iconEl = (
+      <span
+        className={cn(
+          'flex items-center justify-center h-8 w-8 rounded-lg transition-colors shrink-0',
+          isActive
+            ? 'bg-accent text-foreground'
+            : shiftOpen
+            ? 'text-muted-foreground hover:bg-accent hover:text-foreground'
+            : 'text-muted-foreground/30'
+        )}
+      >
+        <Icon size={16} />
+      </span>
+    )
+
+    return (
+      <li key={slug} className="relative">
+        {shiftOpen ? (
+          <Link
+            href={href}
+            className={cn(
+              'flex items-center rounded-lg text-sm font-medium transition-colors',
+              collapsed ? 'justify-center' : 'gap-3 px-2 py-1'
+            )}
+            title={collapsed ? label : undefined}
+          >
+            {iconEl}
+            {!collapsed && <span className="truncate">{label}</span>}
+            {slug === 'queue' && !collapsed && activeQueueCount > 0 && (
+              <span className="ml-auto h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                {activeQueueCount}
+              </span>
+            )}
+          </Link>
+        ) : (
+          <div
+            className={cn(
+              'flex items-center rounded-lg text-sm font-medium cursor-not-allowed select-none',
+              collapsed ? 'justify-center' : 'gap-3 px-2 py-1'
+            )}
+            title="Open a shift first"
+          >
+            {iconEl}
+            {!collapsed && <span className="truncate text-muted-foreground/30">{label}</span>}
+          </div>
+        )}
+        {/* Collapsed dot indicator for queue pending count */}
+        {slug === 'queue' && collapsed && activeQueueCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
+        )}
+      </li>
+    )
+  }
+
   return (
     <nav
       className={cn(
         'border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200',
-        collapsed ? 'w-16' : 'w-56'
+        collapsed ? 'w-12' : 'w-56'
       )}
     >
-      {/* Shift-open lock banner (shown when shift is not open) */}
-      {!shiftOpen && (
-        <div className={cn(
-          'flex items-center gap-2 px-3 py-2 bg-status-check-requested-bg border-b border-status-check-requested/30 text-status-check-requested text-xs',
-          collapsed && 'justify-center px-0'
-        )}>
-          <Lock size={12} className="shrink-0" />
-          {!collapsed && <span>Open a shift first</span>}
+      {/* Top section: brand logo + main nav */}
+      <div
+        className={cn(
+          'flex flex-col items-center px-2 py-5 gap-4',
+          !collapsed && 'items-stretch px-3'
+        )}
+      >
+        {/* Brand logo */}
+        <div className={cn('flex items-center', !collapsed && 'gap-3 px-2 py-1')}>
+          <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground shrink-0">
+            <Package2 size={16} />
+          </span>
+          {!collapsed && <span className="font-semibold text-sm truncate">A Ramen</span>}
         </div>
-      )}
 
-      <ul className="flex flex-col gap-1 p-2 flex-1">
-        {NAV_ITEMS.map(({ slug, label, href, icon: Icon }) => {
-          if (slug === 'manager' && role !== 'Manager') return null
-          const hasRoleAccess = role ? canAccess(role, slug) : false
-          const isAccessible = hasRoleAccess && shiftOpen
-          const isActive = pathname === href || pathname.startsWith(href + '/')
+        <ul className={cn('flex flex-col', collapsed ? 'gap-4 items-center' : 'gap-1 w-full')}>
+          {TOP_NAV_ITEMS.map((item) => renderNavItem(item))}
+        </ul>
+      </div>
 
-          return (
-            <li key={slug} className="relative">
-              {isAccessible ? (
-                <Link
-                  href={href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors',
-                    collapsed && 'justify-center px-2',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted text-foreground'
-                  )}
-                >
-                  <Icon size={18} className="shrink-0" />
-                  {!collapsed && <span className="truncate">{label}</span>}
-                  {/* Queue badge — expanded: count label; collapsed: dot indicator */}
-                  {slug === 'queue' && !collapsed && activeQueueCount > 0 && (
-                    <span className="ml-auto h-4 min-w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                      {activeQueueCount}
-                    </span>
-                  )}
-                </Link>
-              ) : (
-                <div
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium',
-                    collapsed && 'justify-center px-2',
-                    'text-muted-foreground/40 cursor-not-allowed select-none'
-                  )}
-                  title={!hasRoleAccess ? `${label} — not available for ${role}` : 'Open a shift first'}
-                >
-                  <Icon size={18} className="shrink-0" />
-                  {!collapsed && <span className="truncate">{label}</span>}
-                </div>
-              )}
-              {/* Collapsed dot indicator for queue pending count */}
-              {slug === 'queue' && collapsed && activeQueueCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
-              )}
-            </li>
-          )
-        })}
-      </ul>
+      {/* Bottom section: settings / manager */}
+      <div
+        className={cn(
+          'mt-auto flex flex-col items-center px-2 py-5',
+          !collapsed && 'items-stretch px-3'
+        )}
+      >
+        <ul className={cn('flex flex-col', collapsed ? 'items-center' : 'w-full gap-1')}>
+          {BOTTOM_NAV_ITEMS.map((item) => renderNavItem(item))}
+        </ul>
+      </div>
     </nav>
   )
 }

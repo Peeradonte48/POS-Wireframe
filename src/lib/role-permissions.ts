@@ -1,11 +1,11 @@
 import type { Role } from '@/stores/session.store'
 
-export type NavSlug = 'table-map' | 'orders' | 'kds' | 'payment' | 'manager' | 'queue'
+export type NavSlug = 'table-map' | 'orders' | 'kds' | 'payment' | 'manager' | 'queue' | 'dashboard'
 
 export const ROLE_NAV_ACCESS: Record<Role, NavSlug[]> = {
   Waiter:  ['table-map', 'orders', 'queue'],
   Cashier: ['table-map', 'orders', 'payment', 'queue'],
-  Manager: ['table-map', 'orders', 'kds', 'payment', 'manager', 'queue'],
+  Manager: ['table-map', 'orders', 'kds', 'payment', 'manager', 'queue', 'dashboard'],
   Kitchen: ['kds'],
 }
 
