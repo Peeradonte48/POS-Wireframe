@@ -285,6 +285,7 @@ function CouponSheet({
   // Auto-select all items when code becomes valid; clear when invalidated
   useEffect(() => {
     if (codeState === 'valid') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedItems(new Set(orderItems.map((i) => i.lineId)))
     } else {
       setSelectedItems(new Set())

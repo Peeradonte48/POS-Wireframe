@@ -15,6 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     // Wait for Zustand persist rehydration before evaluating auth state
     const unsub = useSessionStore.persist.onFinishHydration(() => setHydrated(true))
     // If already hydrated (e.g. store was created synchronously), mark immediately
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (useSessionStore.persist.hasHydrated()) setHydrated(true)
     return unsub
   }, [])

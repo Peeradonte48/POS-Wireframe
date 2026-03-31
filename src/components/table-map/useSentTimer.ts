@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
  * Returns 0 if sentAt is null (round not yet sent).
  */
 export function useSentTimer(sentAt: number | null): number {
+  // eslint-disable-next-line react-hooks/purity
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => {

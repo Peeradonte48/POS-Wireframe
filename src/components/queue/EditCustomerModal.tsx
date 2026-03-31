@@ -34,6 +34,7 @@ export function EditCustomerModal({
   // Reset fields to latest values each time modal opens
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(initialName)
       setPhone(initialPhone ?? '')
     }

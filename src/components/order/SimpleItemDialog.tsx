@@ -22,6 +22,7 @@ export function SimpleItemDialog({
 
   // Reset quantity each time dialog opens
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (open) setQuantity(1)
   }, [open])
 

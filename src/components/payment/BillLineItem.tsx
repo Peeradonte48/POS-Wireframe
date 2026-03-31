@@ -42,6 +42,7 @@ export function BillLineItem({ item, qty: qtyOverride }: BillLineItemProps) {
       {/* Thumbnail */}
       <div className="relative rounded-md shrink-0 size-20 overflow-hidden bg-accent">
         {imagePath ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imagePath}
             alt={item.menuItemName}

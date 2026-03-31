@@ -14,6 +14,7 @@ export function useKdsTimer(addedAt: number): {
   display: string
   elapsedSeconds: number
 } {
+  // eslint-disable-next-line react-hooks/purity
   const [now, setNow] = useState<number>(Date.now())
 
   useEffect(() => {

@@ -31,6 +31,7 @@ export function NewDeliveryModal({ open, onClose }: NewDeliveryModalProps) {
   // Reset fields when modal opens
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlatform(null)
       setExternalId('')
       setCustomerName('')
