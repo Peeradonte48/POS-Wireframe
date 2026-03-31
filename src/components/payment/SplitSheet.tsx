@@ -331,7 +331,6 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                         />
                       </>
                     )}
-                    )}
                     {!isSettled && isLast && (
                       <span className="font-semibold text-sm">
                         ฿{displayAmount.toLocaleString()}
