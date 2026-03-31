@@ -84,7 +84,12 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
       {/* Body row: customer · item count */}
       <p className="text-sm font-semibold text-foreground">
         {customerLabel}
-        <span className="font-normal text-muted-foreground"> · {itemCount} items</span>
+        {/* Guard: show warning badge when order.store data is missing for non-Taking orders */}
+        {!orderData && order.status !== 'Taking' ? (
+          <span className="font-normal text-muted-foreground"> · <Badge variant="destructive">data unavailable</Badge></span>
+        ) : (
+          <span className="font-normal text-muted-foreground"> · {order.itemsSummary || `${itemCount} items`}</span>
+        )}
       </p>
 
       {/* Action bar */}
