@@ -73,6 +73,7 @@ export function ModifierSheet({
   // Sync state when sheet opens / item changes
   useEffect(() => {
     if (!menuItem) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveTab('customize')
     setValidationErrors(new Set())
 

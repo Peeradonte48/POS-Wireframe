@@ -28,6 +28,7 @@ export function OpenTableModal({ tableId, onClose }: OpenTableModalProps) {
 
   // Reset to 1 when a new table is opened
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setGuestCount(MIN_GUESTS)
   }, [tableId])
 

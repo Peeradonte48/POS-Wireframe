@@ -51,12 +51,13 @@ export function TableBottomSheet({
       setLocalWaiter(table.waiterName ?? '')
       setLocalNote(table.note ?? '')
     }
-  }, [table?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table?.id])
 
   // Reset tab to actions whenever the selected table changes
   useEffect(() => {
     setActiveTab('actions')
-  }, [table?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [table?.id])
 
   // Lock body scroll when sheet is open
   useEffect(() => {

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 
 export function useDwellTimer(openedAt: number | null): string {
+  // eslint-disable-next-line react-hooks/purity
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => {

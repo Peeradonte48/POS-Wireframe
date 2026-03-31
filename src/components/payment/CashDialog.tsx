@@ -42,6 +42,7 @@ export function CashDialog({ open, onClose, grandTotal, onConfirm }: CashDialogP
 
   // Reset every time the dialog opens
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (open) setInputStr('')
   }, [open])
 
