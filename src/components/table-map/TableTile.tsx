@@ -7,7 +7,6 @@ import type { TableRecord, TableStatus, OrderStage } from '@/stores/table.store'
 import { useTableStore } from '@/stores/table.store'
 import { useBillStore } from '@/stores/bill.store'
 import { useOrderStore } from '@/stores/order.store'
-import { useKdsStore } from '@/stores/kds.store'
 import { isRoundEscalated } from '@/lib/order-tracking'
 import { useDwellTimer } from './useDwellTimer'
 
@@ -55,7 +54,6 @@ export function TableTile({ table, onTap }: TableTileProps) {
   )
   const isMergedPrimary = mergedSecondaryIds.length > 0
 
-  const tickets = useKdsStore((s) => s.tickets)
   const orders = useOrderStore((s) => s.orders)
 
   const isEscalated = useMemo(() => {
@@ -66,7 +64,7 @@ export function TableTile({ table, onTap }: TableTileProps) {
     return order.rounds
       .filter((r) => r.sentAt !== null)
       .some((r) => isRoundEscalated(r.sentAt))
-  }, [tickets, orders, table.id, table.status, table.orderStage])
+  }, [orders, table.id, table.status, table.orderStage])
 
   const router = useRouter()
 
