@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, Pen, XCircle, ShoppingBasket, ReceiptText } from 'lucide-react'
+import { toast } from 'sonner'
+import { ChevronLeft, Pen, XCircle, ShoppingBasket, ReceiptText, CircleCheck } from 'lucide-react'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
 import { useQueueStore } from '@/stores/queue.store'
@@ -85,6 +86,17 @@ export default function OrderPage() {
       ? `${table.label} \u2022 ${table.guestCount ?? 0} คน`
       : tableId
 
+  const showAddedToast = useCallback((name: string, qty: number) => {
+    toast('เพิ่มรายการอาหารสำเร็จ', {
+      icon: React.createElement(CircleCheck, { size: 16 }),
+      description: `${qty}x ${name}`,
+      action: {
+        label: 'ไปดู',
+        onClick: () => setTicketOpen(true),
+      },
+    })
+  }, [])
+
   function handleCloseModifier() {
     setSelectedMenuItemId(null)
     setEditingLineId(null)
@@ -153,7 +165,6 @@ export default function OrderPage() {
             </Button>
             {!isTakeaway && (
               <Button
-                variant="outline"
                 size="sm"
                 className="gap-2"
                 onClick={() => router.push(`/payment/${tableId}`)}
@@ -193,6 +204,7 @@ export default function OrderPage() {
                   }
                 }}
                 activeCategory={activeCategory}
+                tableId={tableId}
               />
             </div>
           </div>
@@ -217,6 +229,7 @@ export default function OrderPage() {
                 quantity: qty,
                 status: 'unsent',
               })
+              showAddedToast(item.name, qty)
             }
             setSimpleItemId(null)
           }}
@@ -230,6 +243,7 @@ export default function OrderPage() {
           tableId={tableId}
           editingLineId={editingLineId}
           editingLineItem={editingLineItem}
+          onItemAdded={showAddedToast}
         />
 
         {isTakeaway && (
@@ -258,7 +272,7 @@ export default function OrderPage() {
 
       {/* Ticket panel as right-side sheet */}
       <Sheet open={ticketOpen} onOpenChange={setTicketOpen}>
-        <SheetContent side="right" className="p-0 w-80 sm:w-80 flex flex-col" showCloseButton={false}>
+        <SheetContent side="right" className="p-0 w-96 sm:w-96 flex flex-col" showCloseButton={false}>
           <TicketPanel
             tableId={tableId}
             onClose={() => setTicketOpen(false)}

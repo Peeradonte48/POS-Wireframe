@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft, Crown } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Coins, Crown, UserSearch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
@@ -27,18 +28,16 @@ export default function PromotionsPage() {
   const tableLabel = tables[tableId]?.label ?? tableId
 
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const promotionDiscounts = useBillStore((s) => s.promotionDiscounts[tableId] ?? [])
+  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[tableId])
+  const promotionDiscounts = promotionDiscountsRaw ?? []
   const { setCrmMember } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
-  const order = useOrderStore((s) => s.getOrder(tableId))
+  const order = useOrderStore((s) => s.orders[tableId])
   const orderItems = useMemo(
     () => (order ? order.rounds.flatMap((r) => r.items).filter((i) => i.status !== 'voided') : []),
     [order],
   )
-
-  // ---- Filter tabs ----
-  const [activeFilter, setActiveFilter] = useState<'all' | 'recent'>('all')
 
   // ---- Selected promotion (opens coupon entry sheet) ----
   const [selectedPromoId, setSelectedPromoId] = useState<string | null>(null)
@@ -66,7 +65,7 @@ export default function PromotionsPage() {
     <>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <header className="h-[52px] border-b flex items-center gap-2 px-6 shrink-0">
+        <header className="border-b flex items-center gap-2 px-6 py-3 shrink-0">
           <Button
             variant="outline"
             size="icon"
@@ -74,69 +73,88 @@ export default function PromotionsPage() {
             onClick={() => router.back()}
             aria-label="Back"
           >
-            <ChevronLeft size={16} />
+            <ArrowLeft size={16} />
           </Button>
-          <span className="font-medium text-base leading-none">
+          <span className="font-medium text-base leading-none truncate">
             โปรโมชัน · {tableLabel}
           </span>
         </header>
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto px-4 py-4 flex flex-col gap-4">
+          <div className="p-6 flex flex-col gap-6">
 
-            {/* CRM member card or placeholder */}
+            {/* CRM member card */}
             {crmMember ? (
-              <div className="bg-background border border-border rounded-2xl p-4 flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                    <Crown size={18} className="text-primary" />
+              <div className="bg-muted border border-border rounded-[14px] px-3.5 py-3 flex flex-col gap-2">
+                {/* Top row: avatar + name + search button */}
+                <div className="flex gap-2 items-center h-12 px-0 py-2">
+                  {/* Avatar */}
+                  <div className="size-8 rounded-full bg-muted shrink-0 overflow-hidden">
+                    <div className="size-full bg-primary/20 flex items-center justify-center text-xs font-semibold text-primary">
+                      {crmMember.name.charAt(0)}
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                    <p className="font-semibold text-base text-foreground truncate">{crmMember.name}</p>
-                    <span className="inline-flex items-center text-xs font-semibold text-primary-foreground bg-destructive px-2 py-0.5 rounded-md w-fit">
+                  {/* Name + level */}
+                  <div className="flex flex-col flex-1 min-w-0 justify-center">
+                    <p className="font-medium text-sm text-foreground truncate leading-5">
+                      {crmMember.name}
+                    </p>
+                    <Badge variant="default" className="w-fit text-xs">
                       ระดับ: {crmMember.level}
-                    </span>
+                    </Badge>
                   </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-xs text-muted-foreground">คะแนนสะสม</p>
-                    <p className="font-semibold text-base text-destructive">{crmMember.points}</p>
+                  {/* Search button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="size-8 shrink-0"
+                    onClick={() => setCrmDialogOpen(true)}
+                    aria-label="ค้นหาสมาชิก"
+                  >
+                    <UserSearch size={16} />
+                  </Button>
+                </div>
+                {/* Points row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-1 items-center">
+                    <Coins size={16} className="text-accent-foreground" />
+                    <span className="font-medium text-base text-accent-foreground">คะแนนสะสม</span>
                   </div>
+                  <span className="font-semibold text-base text-primary">{crmMember.points}</span>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setCrmDialogOpen(true)}
-                className="border border-dashed border-border rounded-2xl flex items-center justify-center gap-2 py-6 w-full hover:bg-accent transition-colors cursor-pointer"
+                className="bg-background border border-border rounded-[14px] flex items-center justify-center gap-2 p-4 w-full h-[104px] hover:bg-accent transition-colors cursor-pointer"
               >
-                <Crown size={18} className="text-destructive shrink-0" />
-                <span className="font-medium text-sm text-destructive">เพิ่มเบอร์สมาชิกลูกค้า</span>
+                <Crown size={16} className="text-primary shrink-0" />
+                <span className="font-medium text-sm text-foreground">เพิ่มเบอร์สมาชิกลูกค้า</span>
               </button>
             )}
 
-            {/* Filter tabs */}
-            <div className="flex gap-2">
-              {(['all', 'recent'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                    activeFilter === f
-                      ? 'bg-foreground text-background border-foreground'
-                      : 'bg-background text-muted-foreground border-border'
-                  }`}
-                >
-                  {f === 'all' ? 'ทั้งหมด' : 'ล่าสุด'}
-                </button>
-              ))}
-            </div>
+            {/* Filter + promotion list */}
+            <div className="flex flex-col flex-1 gap-4 min-h-0">
+              {/* Filter dropdown buttons */}
+              <div className="flex gap-2">
+                <Button variant="outline" className="h-9 gap-2 px-4">
+                  <span className="text-sm font-medium">ทั้งหมด</span>
+                  <ChevronDown size={16} />
+                </Button>
+                <Button variant="outline" className="h-9 gap-2 px-4">
+                  <span className="text-sm font-medium">ล่าสุด</span>
+                  <ChevronDown size={16} />
+                </Button>
+              </div>
 
-            {/* Promotion list */}
-            <PromotionList
-              promotions={PROMOTIONS}
-              appliedIds={appliedIds}
-              onSelect={(promoId) => { setSelectedPromoId(promoId) }}
-            />
+              {/* Promotion list */}
+              <PromotionList
+                promotions={PROMOTIONS}
+                appliedIds={appliedIds}
+                onSelect={(promoId) => { setSelectedPromoId(promoId) }}
+              />
+            </div>
 
           </div>
         </div>

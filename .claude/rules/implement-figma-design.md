@@ -5,12 +5,14 @@ description: Rule for implement design from Figma when user require Figma's impl
 
 # Objective
 
-This rule guides for implementation work with Figma design. The objective is make result 1:1 match design between design in project and Figma design.
+This rule guides for implementation work with Figma design. The objective is make result 1:1 pixel perfect match design between design in project and Figma design.
 
 ## Instruction
 
 - Whenever user provide Figma file link to implement design, Make sure the design will look exactly 100% like design from Figma design that user provide link to you.
 - Review design to make sure the design is follow Figma design exactly 100% match.
+- Pixel perfect is required including color hex, width, height, spacing, border-radius, icon, image, etc.
+- Review design to make sure the design is follow Figma design exactly 100% match. If not, you need to fix it until it match 100%.
 
 ## When you use apply rule
 

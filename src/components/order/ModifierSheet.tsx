@@ -17,6 +17,7 @@ export interface ModifierSheetProps {
   tableId: string
   editingLineId: string | null
   editingLineItem: OrderLineItem | null
+  onItemAdded?: (name: string, qty: number) => void
 }
 
 const newLineId = (): string =>
@@ -32,6 +33,7 @@ function ModifierSheetContent({
   editingLineId,
   editingLineItem,
   onClose,
+  onItemAdded,
 }: Omit<ModifierSheetProps, 'open'> & { menuItem: MenuItem }) {
   const [activeTab, setActiveTab] = useState<'customize' | 'allergy'>('customize')
   const [quantity, setQuantity] = useState(() => editingLineItem?.quantity ?? 1)
@@ -94,8 +96,12 @@ function ModifierSheetContent({
       quantity,
       status: editingLineId ? (editingLineItem?.status ?? 'unsent') : 'unsent',
     }
-    if (editingLineId) useOrderStore.getState().editItem(tableId, editingLineId, newItem)
-    else useOrderStore.getState().addItem(tableId, newItem)
+    if (editingLineId) {
+      useOrderStore.getState().editItem(tableId, editingLineId, newItem)
+    } else {
+      useOrderStore.getState().addItem(tableId, newItem)
+      onItemAdded?.(menuItem.name, quantity)
+    }
     onClose()
   }
 
@@ -183,7 +189,7 @@ function ModifierSheetContent({
 
 // ModifierSheet — orchestrator
 
-export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId, editingLineItem }: ModifierSheetProps) {
+export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId, editingLineItem, onItemAdded }: ModifierSheetProps) {
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -216,6 +222,7 @@ export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId,
             editingLineId={editingLineId}
             editingLineItem={editingLineItem}
             onClose={onClose}
+            onItemAdded={onItemAdded}
           />
         )}
       </div>

@@ -193,85 +193,87 @@ export default function PaymentPage() {
 
         <div className="flex flex-1 min-h-0 overflow-hidden">
           {/* Left panel – scrollable order items */}
-          <div className="flex-1 min-w-0 bg-muted overflow-y-auto px-2 py-4">
-            <div className="flex flex-col gap-4 px-2">
-              <div className="flex flex-col gap-4">
-                {/* Subtotal row */}
-                <div className="flex items-center justify-between">
-                  <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
-                  <p className="font-medium text-base text-foreground leading-6">฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                </div>
+          <div className="flex-1 min-w-0 h-full px-2 py-4">
+            <div className="bg-muted border border-border rounded-md h-full overflow-y-auto p-2">
+              <div className="flex flex-col gap-4 px-4 py-4">
+                <div className="flex flex-col gap-4">
+                  {/* Subtotal row */}
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
+                    <p className="font-medium text-base text-accent-foreground leading-6">฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  </div>
 
-                {/* Discount accordion */}
-                <div className="flex flex-col">
-                  <button className="flex items-center justify-between w-full text-left" onClick={() => discountAmount > 0 && setDiscountExpanded((v) => !v)}>
-                    <div className="flex items-center gap-1">
-                      <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
-                      {discountExpanded && discountAmount > 0 ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
-                    </div>
-                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-status-warning' : 'text-foreground'}`}>
-                      {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '฿0.00'}
-                    </p>
-                  </button>
-                  <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${discountExpanded && discountAmount > 0 ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                    <div className="overflow-hidden">
-                      <div className={`flex flex-col gap-1 pt-1 transition-[transform,opacity] duration-300 ease-in-out ${discountExpanded && discountAmount > 0 ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}>
-                        {promotionDiscounts.map((d) => (
-                          <div key={d.couponCode} className="flex items-center justify-between pl-3">
-                            <p className="text-sm text-status-warning leading-5">{d.couponCode}</p>
-                            <p className="text-sm text-status-warning leading-5">-฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                          </div>
-                        ))}
+                  {/* Discount accordion */}
+                  <div className="flex flex-col">
+                    <button className="flex items-center justify-between w-full text-left" onClick={() => discountAmount > 0 && setDiscountExpanded((v) => !v)}>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
+                        {discountExpanded && discountAmount > 0 ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+                      </div>
+                      <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-status-warning' : 'text-accent-foreground'}`}>
+                        {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '฿0.00'}
+                      </p>
+                    </button>
+                    <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${discountExpanded && discountAmount > 0 ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                      <div className="overflow-hidden">
+                        <div className={`flex flex-col gap-1 pt-1 transition-[transform,opacity] duration-300 ease-in-out ${discountExpanded && discountAmount > 0 ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}>
+                          {promotionDiscounts.map((d) => (
+                            <div key={d.couponCode} className="flex items-center justify-between pl-3">
+                              <p className="text-sm text-status-warning leading-5">{d.couponCode}</p>
+                              <p className="text-sm text-status-warning leading-5">-฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* VAT row */}
+                  <div className="flex items-start justify-between">
+                    <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
+                    <p className="font-medium text-base text-accent-foreground leading-6">฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                  </div>
                 </div>
 
-                {/* VAT row */}
-                <div className="flex items-start justify-between">
-                  <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
-                  <p className="font-medium text-base text-foreground leading-6">฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                </div>
-              </div>
+                <div className="py-2"><Separator /></div>
 
-              <div className="py-2"><Separator /></div>
-
-              {/* Table groups */}
-              <div className="flex flex-col gap-4">
-                {tableOrders.map((group) => {
-                  const groupSubtotal = group.items.reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
-                  const isOpen = !collapsedGroups.has(group.tableId)
-                  return (
-                    <div key={group.tableId} className="flex flex-col gap-4">
-                      <div className={`flex items-center gap-[10px] py-2 ${isMerged ? 'cursor-pointer' : ''}`} onClick={isMerged ? () => setCollapsedGroups((prev) => { const n = new Set(prev); if (n.has(group.tableId)) { n.delete(group.tableId) } else { n.add(group.tableId) } return n }) : undefined}>
-                        <Button variant="outline" size="icon" className="size-8 rounded-md shrink-0 pointer-events-none" aria-label="Table"><HandPlatter size={16} /></Button>
-                        <div className="flex flex-1 items-center gap-2 min-w-0">
-                          <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>
-                          {group.guestCount !== null && <p className="text-sm text-muted-foreground leading-5 shrink-0">ลูกค้า {group.guestCount} คน</p>}
+                {/* Table groups */}
+                <div className="flex flex-col gap-4">
+                  {tableOrders.map((group) => {
+                    const groupSubtotal = group.items.reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
+                    const isOpen = !collapsedGroups.has(group.tableId)
+                    return (
+                      <div key={group.tableId} className="flex flex-col gap-4">
+                        <div className={`flex items-center gap-[10px] py-2 ${isMerged ? 'cursor-pointer' : ''}`} onClick={isMerged ? () => setCollapsedGroups((prev) => { const n = new Set(prev); if (n.has(group.tableId)) { n.delete(group.tableId) } else { n.add(group.tableId) } return n }) : undefined}>
+                          <Button variant="outline" size="icon" className="size-8 rounded-md shrink-0 pointer-events-none" aria-label="Table"><HandPlatter size={16} /></Button>
+                          <div className="flex flex-1 items-center gap-2 min-w-0">
+                            <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>
+                            {group.guestCount !== null && <p className="text-sm text-muted-foreground leading-5 shrink-0">ลูกค้า {group.guestCount} คน</p>}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 w-20 justify-end">
+                            <p className="font-semibold text-lg leading-7 text-right">฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                            {isMerged && (isOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />)}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <p className="font-semibold text-lg leading-7 text-right">฿{groupSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                          {isMerged && (isOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />)}
-                        </div>
-                      </div>
-                      <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                        <div className="overflow-hidden">
-                          <div className={`flex flex-col gap-4 transition-[transform,opacity] duration-300 ease-in-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}>
-                            {group.items.map((item) => <BillLineItem key={item.lineId} item={item} />)}
+                        <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                          <div className="overflow-hidden">
+                            <div className={`flex flex-col gap-4 transition-[transform,opacity] duration-300 ease-in-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}>
+                              {group.items.map((item) => <BillLineItem key={item.lineId} item={item} />)}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Right panel – totals & actions */}
-          <div className="bg-muted flex flex-col h-full px-2 py-4 shrink-0 w-[282px]">
-            <div className="bg-background border border-border rounded-2xl overflow-hidden flex flex-col flex-1">
-              <div className="flex-1 overflow-y-auto flex flex-col gap-6 p-3">
+          <div className="shrink-0 w-[280px] h-full flex flex-col px-2 py-4">
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex flex-col gap-6">
                 {/* Grand total */}
                 <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
                   <p className="font-medium text-xl text-muted-foreground">รวมสุทธิ</p>
@@ -282,33 +284,41 @@ export default function PaymentPage() {
                 {crmMember ? (
                   <CrmMemberCard member={crmMember} onChangeMember={() => setCrmDialogOpen(true)} />
                 ) : (
-                  <button className="border border-border rounded-[14px] flex items-center justify-center gap-2 min-h-[104px] p-4 w-full cursor-pointer hover:bg-accent transition-colors" onClick={() => setCrmDialogOpen(true)}>
+                  <button className="bg-background border border-border rounded-[14px] flex items-center justify-center gap-2 min-h-[104px] p-4 w-full cursor-pointer hover:bg-accent transition-colors" onClick={() => setCrmDialogOpen(true)}>
                     <Crown size={16} className="text-primary shrink-0" />
                     <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
                   </button>
                 )}
 
-                {!isTakeaway && <PromotionSummary promotions={promotionDiscounts} discountTotal={discountAmount} tableId={tableId} lineItems={billItems} />}
+                {/* Promotions */}
+                {!isTakeaway && (
+                  <PromotionSummary
+                    promotions={promotionDiscounts}
+                    discountTotal={discountAmount}
+                    tableId={tableId}
+                    lineItems={billItems}
+                  />
+                )}
 
                 {/* Bill management */}
                 {!isTakeaway && (
                   <div className="flex flex-col gap-2">
                     <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
                     <div className="flex flex-col gap-2">
-                      <Button variant="outline" className="w-full h-10 gap-2" onClick={() => setSplitConfirmDialogOpen(true)} disabled={isMerged}><Coins size={16} />แบ่งจ่าย</Button>
-                      <Button variant="outline" className="w-full h-10 gap-2" onClick={() => setItemSplitSheetOpen(true)} disabled={itemSplitDisabled}><ScissorsLineDashed size={16} />แยกบิล</Button>
-                      <Button variant="outline" className="w-full h-10 gap-2" onClick={() => setMergeSheetOpen(true)} disabled={isMerged || !hasEligibleMergeTarget}><Link size={16} />รวมบิล</Button>
+                      <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setSplitConfirmDialogOpen(true)} disabled={isMerged}><Coins size={16} />แบ่งจ่าย</Button>
+                      <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setItemSplitSheetOpen(true)} disabled={itemSplitDisabled}><ScissorsLineDashed size={16} />แยกบิล</Button>
+                      <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setMergeSheetOpen(true)} disabled={isMerged || !hasEligibleMergeTarget}><Link size={16} />รวมบิล</Button>
                     </div>
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Pinned proceed button */}
-              <div className="shrink-0 p-3 border-t">
-                <Button className="w-full h-14 text-base font-semibold gap-2" onClick={() => setPaymentMethodDialogOpen(true)}>
-                  ดำเนินการชำระเงิน
-                </Button>
-              </div>
+            {/* Pinned CTA – always visible */}
+            <div className="shrink-0 pt-4">
+              <Button className="w-full h-14 text-base font-semibold gap-2" onClick={() => setPaymentMethodDialogOpen(true)}>
+                ดำเนินการชำระเงิน
+              </Button>
             </div>
           </div>
         </div>

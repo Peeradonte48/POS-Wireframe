@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import { useManagerStore } from '@/stores/manager.store'
+import { useOrderStore } from '@/stores/order.store'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -11,13 +12,14 @@ import { cn } from '@/lib/utils'
 interface MenuPanelProps {
   onItemTap: (itemId: string) => void
   activeCategory: string
+  tableId?: string
 }
 
 function MenuCardSkeleton() {
   return (
     <div className="bg-card rounded-xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
       <Skeleton className="aspect-[4/3] w-full rounded-none" />
-      <div className="p-3 space-y-1.5">
+      <div className="p-6 space-y-2">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-4 w-1/3" />
       </div>
@@ -25,8 +27,22 @@ function MenuCardSkeleton() {
   )
 }
 
-export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
+export function MenuPanel({ onItemTap, activeCategory, tableId }: MenuPanelProps) {
   const eightySixedIds = useManagerStore((s) => s.eightySixedIds)
+
+  const orderRounds = useOrderStore((s) => tableId ? s.orders[tableId]?.rounds : undefined)
+  const itemCountMap = useMemo(() => {
+    if (!orderRounds) return {} as Record<string, number>
+    const map: Record<string, number> = {}
+    for (const round of orderRounds) {
+      for (const item of round.items) {
+        if (item.status === 'unsent') {
+          map[item.menuItemId] = (map[item.menuItemId] ?? 0) + item.quantity
+        }
+      }
+    }
+    return map
+  }, [orderRounds])
 
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
@@ -107,10 +123,25 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
             </div>
 
             {/* Info */}
-            <div className="p-4 flex flex-col gap-2">
-              <p className="text-[18px] font-semibold leading-snug line-clamp-2">{item.name}</p>
-              <p className="text-sm font-bold text-primary">฿{item.basePrice}</p>
-            </div>
+            {(() => {
+              const count = itemCountMap[item.id] ?? 0
+              return (
+                <div className="p-6 flex items-end justify-between gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
+                    <p className="text-[18px] font-semibold leading-7 truncate">{item.name}</p>
+                    <p className="text-sm font-bold leading-5 text-primary">฿{item.basePrice}</p>
+                  </div>
+                  {count > 0 && (
+                    <div
+                      className="shrink-0 size-9 rounded-full border border-primary bg-card text-foreground flex items-center justify-center"
+                      style={{ boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.05)' }}
+                    >
+                      <span className="text-sm font-medium leading-none">{count}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
           </button>
         )
       })}

@@ -1,3 +1,5 @@
+export type PromotionChannel = 'dine-in' | 'takeaway' | 'delivery'
+
 export interface Promotion {
   id: string
   title: string
@@ -9,6 +11,7 @@ export interface Promotion {
   imagePlaceholder: string
   imagePath?: string      // real photo path under /public
   referenceCode: string   // mock valid code
+  channels: PromotionChannel[]
 }
 
 export const PROMOTIONS: Promotion[] = [
@@ -23,6 +26,7 @@ export const PROMOTIONS: Promotion[] = [
     imagePlaceholder: '🍜',
     imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM001',
+    channels: ['dine-in', 'takeaway', 'delivery'],
   },
   {
     id: 'promo-002',
@@ -35,6 +39,7 @@ export const PROMOTIONS: Promotion[] = [
     imagePlaceholder: '⏰',
     imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM002',
+    channels: ['dine-in'],
   },
   {
     id: 'promo-003',
@@ -47,6 +52,7 @@ export const PROMOTIONS: Promotion[] = [
     imagePlaceholder: '🎂',
     imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM003',
+    channels: ['dine-in', 'takeaway'],
   },
   {
     id: 'promo-004',
@@ -59,5 +65,6 @@ export const PROMOTIONS: Promotion[] = [
     imagePlaceholder: '🐷',
     imagePath: '/images/promotions/promo-hero.png',
     referenceCode: 'ARAM004',
+    channels: ['dine-in', 'delivery'],
   },
 ]

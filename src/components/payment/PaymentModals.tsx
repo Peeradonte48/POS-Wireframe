@@ -136,7 +136,7 @@ export function PaymentModals({
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">ยืนยันการแบ่งจ่าย</DialogTitle>
             <DialogDescription>
-              หลังจากดำเนินการแบ่งจ่ายแล้วจะไม่สามารถใช้ส่วนลดได้ คุณต้องการดำเนินการต่อหรือไม่?
+              เมื่อเริ่มแบ่งจ่ายแล้วจจะไม่สามารถเพิ่มคูปองได้อีก{'\n'}ต้องการดำเนินการต่อหรือไม่?
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">

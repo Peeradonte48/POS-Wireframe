@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Trash2, ShoppingBag, CircleX, CookingPot } from 'lucide-react'
+import { Trash2, ShoppingBag, CircleX, CookingPot, Minus, Plus, Shell, Soup, Ham, Salad, Flame, Droplets, type LucideIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -23,13 +23,14 @@ import { MENU_ITEMS } from '@/lib/mock-data/menu'
 
 const MENU_ITEM_MAP = new Map(MENU_ITEMS.map((m) => [m.id, m]))
 
-const MODIFIER_ICON_MAP = new Map<string, string>()
-for (const menuItem of MENU_ITEMS) {
-  for (const group of menuItem.modifierGroups) {
-    if (group.icon && !MODIFIER_ICON_MAP.has(group.id)) {
-      MODIFIER_ICON_MAP.set(group.id, group.icon)
-    }
-  }
+const MODIFIER_LUCIDE_MAP: Record<string, LucideIcon> = {
+  'noodle-firmness': Shell,
+  'broth-richness': Soup,
+  'chashu': Ham,
+  'onion': Salad,
+  'spice-level': Flame,
+  'garlic': Salad,
+  'broth-oil': Droplets,
 }
 
 // ---------------------------------------------------------------------------
@@ -79,18 +80,18 @@ function ItemThumbnail({ item, size = 60, rounded = 'rounded-xl' }: { item: Orde
 function ModifierChips({ item }: { item: OrderLineItem }) {
   if (item.modifiers.length === 0 && !item.specialRequest?.trim()) return null
   return (
-    <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1">
+    <div className="flex flex-wrap gap-x-2 gap-y-0">
       {item.modifiers.map((mod) => {
-        const icon = MODIFIER_ICON_MAP.get(mod.groupId) ?? '·'
+        const IconComp = MODIFIER_LUCIDE_MAP[mod.groupId]
         return (
-          <span key={`${mod.groupId}-${mod.optionId}`} className="text-sm text-muted-foreground flex items-center gap-0.5">
-            <span className="text-sm leading-none">{icon}</span>
+          <span key={`${mod.groupId}-${mod.optionId}`} className="text-xs text-muted-foreground leading-4 flex items-center gap-1 py-0.5">
+            {IconComp && <IconComp size={12} className="shrink-0" />}
             <span>{mod.optionLabel}</span>
           </span>
         )
       })}
       {item.specialRequest?.trim() && (
-        <span className="text-sm text-muted-foreground italic">
+        <span className="text-xs text-muted-foreground leading-4 italic py-0.5">
           &ldquo;{item.specialRequest.trim().slice(0, 20)}{item.specialRequest.trim().length > 20 ? '…' : ''}&rdquo;
         </span>
       )}
@@ -203,72 +204,86 @@ export function TicketLineItem({
 
   // ── Unsent ──────────────────────────────────────────────────────────────
   return (
-    <div className="flex items-start gap-3 px-4 py-3 border-b">
-      <ItemThumbnail item={item} />
-
-      <div className="flex-1 min-w-0">
-        {/* Name + price */}
-        <button className="w-full text-left" onClick={() => onEditTap(item.lineId)}>
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold leading-snug">{item.menuItemName}</p>
-            <span className="text-sm font-bold shrink-0">฿{lineTotal}</span>
-          </div>
-        </button>
-
-        {/* Modifier chips */}
-        <ModifierChips item={item} />
-
-        {/* Stepper + actions */}
-        <div className="flex items-center gap-2 mt-2">
-          {/* Stepper pill */}
-          <div className="flex items-center gap-0 bg-muted rounded-lg p-0.5">
-            <button
-              onClick={() => onQtyChange(item.lineId, -1)}
-              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="w-6 text-center text-sm font-bold tabular-nums">{item.quantity}</span>
-            <button
-              onClick={() => onQtyChange(item.lineId, 1)}
-              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-card transition-colors text-base font-medium leading-none"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="flex-1" />
-
-          {/* Pack-to-go labeled button (dine-in only) */}
-          {showPackToGo && (
-            <button
-              onClick={() => onTogglePackToGo?.(item.lineId)}
-              className={cn(
-                'h-8 px-2.5 flex items-center gap-1.5 rounded-lg border text-sm font-medium transition-colors',
-                item.packToGo
-                  ? 'border-primary text-primary bg-primary/5'
-                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
+    <div className="flex flex-col gap-3 w-full">
+      {/* Details row */}
+      <button className="flex gap-2 items-start w-full text-left" onClick={() => onEditTap(item.lineId)}>
+        <ItemThumbnail item={item} size={84} rounded="rounded-md" />
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          {/* Name + qty badge + price */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="text-sm font-medium text-foreground truncate">{item.menuItemName}</span>
+              <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 h-auto shrink-0">
+                {item.quantity}×
+              </Badge>
+              {showPackToGo && item.packToGo && (
+                <Badge variant="outline" className="h-5 w-5 p-0 flex items-center justify-center shrink-0">
+                  <ShoppingBag size={12} />
+                </Badge>
               )}
+            </div>
+            <span className="text-sm text-card-foreground shrink-0">฿{lineTotal}</span>
+          </div>
+          {/* Modifier chips */}
+          <ModifierChips item={item} />
+        </div>
+      </button>
+
+      {/* Actions row */}
+      <div className="flex items-center justify-between">
+        {/* Number stepper */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-12 shrink-0"
+            onClick={() => onQtyChange(item.lineId, -1)}
+            aria-label="Decrease quantity"
+          >
+            <Minus size={16} />
+          </Button>
+          <span className="w-7 text-center text-sm tabular-nums">{item.quantity}</span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-12 shrink-0"
+            onClick={() => onQtyChange(item.lineId, 1)}
+            aria-label="Increase quantity"
+          >
+            <Plus size={16} />
+          </Button>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+          {showPackToGo && (
+            <Button
+              variant="outline"
+              className={cn(
+                'h-12 gap-2 text-sm',
+                item.packToGo && 'border-primary text-primary'
+              )}
+              onClick={() => onTogglePackToGo?.(item.lineId)}
               aria-label={item.packToGo ? 'Remove pack-to-go flag' : 'Flag as pack-to-go'}
             >
-              <ShoppingBag size={12} />
-              ส่งกลับบ้าน
-            </button>
+              <ShoppingBag size={16} />
+              สั่งกลับบ้าน
+            </Button>
           )}
-
-          {/* Trash */}
-          <button
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-12 shrink-0"
             onClick={() => canRemove && setConfirmRemove(true)}
             disabled={!canRemove}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Remove item"
           >
-            <Trash2 size={15} />
-          </button>
+            <Trash2 size={16} />
+          </Button>
         </div>
       </div>
+
+      <Separator className="my-2" />
 
       <Dialog open={confirmRemove} onOpenChange={setConfirmRemove}>
         <DialogContent className="w-[320px] max-w-[calc(100vw-2rem)]">

@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Rules (.claude/rules/)
+
+- **`design-principle.md`** — Follow when building or modifying any UI component or page. Covers POS-specific usability, touch ergonomics, and UI component selection (modal vs bottomsheet vs drawer vs toast).
+- **`implement-figma-design.md`** — Follow when user provides a Figma link for implementation. Requires 1:1 pixel-perfect output using Figma MCP tools and related skills.
+
 ## Commands
 
 ```bash

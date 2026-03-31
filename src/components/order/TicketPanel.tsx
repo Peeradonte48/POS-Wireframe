@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { toast } from 'sonner'
-import { HandPlatter, X, Printer, ReceiptText, ArrowRight } from 'lucide-react'
+import { HandPlatter, X, Printer, ReceiptText, SendHorizontal, CircleCheckBig, CircleAlert, Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -103,6 +102,11 @@ export function TicketPanel({
 
   // ---- Send to Kitchen ----
   function handleSend() {
+    // Build item summary before sending (items become 'sent' after sendRound)
+    const lines = unsentItems
+      .filter((i) => i.status !== 'voided')
+      .map((i) => `${i.quantity}x ${i.menuItemName}`)
+
     useOrderStore.getState().sendRound(tableId)
     if (onSend) {
       onSend()
@@ -110,131 +114,188 @@ export function TicketPanel({
       updateTable(tableId, { orderStage: 'Ordered' })
       setActiveTab('sent')
     }
-    toast('Order sent to kitchen')
+    const SEND_TOAST_DURATION = 2000
+
+    toast.success('ส่งออร์เดอร์เข้าครัวสำเร็จ', {
+      duration: SEND_TOAST_DURATION,
+      icon: React.createElement(CircleCheckBig, {
+        size: 20,
+        fill: '#22c55e',
+        color: '#ffffff',
+        strokeWidth: 1.5,
+      }),
+      description: lines.length > 0
+        ? React.createElement('span', null, lines.map((line, i) =>
+            React.createElement(React.Fragment, { key: i }, i > 0 && React.createElement('br'), line)
+          ))
+        : undefined,
+    })
+
+    // Wait for the first toast to disappear, then start print invoice toast
+    setTimeout(() => printOrderInvoice(), SEND_TOAST_DURATION)
+  }
+
+  // ---- Print Order Invoice (mock) ----
+  function printOrderInvoice() {
+    const printToastId = toast('กำลังพิมพ์ใบแจ้งหนี้', {
+      duration: Infinity,
+      icon: React.createElement(Loader, {
+        size: 20,
+        className: 'animate-spin text-muted-foreground',
+      }),
+    })
+
+    setTimeout(() => {
+      // Mock: 80% success, 20% failure
+      if (Math.random() > 0.2) {
+        toast.dismiss(printToastId)
+        toast('พิมพ์ใบแจ้งหนี้สำเร็จ', {
+          icon: React.createElement(CircleCheckBig, {
+            size: 20,
+            fill: '#22c55e',
+            color: '#ffffff',
+            strokeWidth: 1.5,
+          }),
+        })
+      } else {
+        toast.dismiss(printToastId)
+        toast('พิมพ์ใบแจ้งหนี้ไม่สำเร็จ', {
+          icon: React.createElement(CircleAlert, {
+            size: 20,
+            fill: '#ef4444',
+            color: '#ffffff',
+            strokeWidth: 1.5,
+          }),
+        })
+      }
+    }, 2000)
   }
 
   const label = headerLabel ?? table?.label ?? tableId
 
   return (
-    <div className="flex flex-col flex-1 h-full min-h-0">
+    <div className="flex flex-col flex-1 h-full min-h-0 relative">
 
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3.5 border-b shrink-0">
-        <div className="bg-secondary p-2 rounded-md flex items-center justify-center shrink-0">
-          <HandPlatter size={16} className="text-foreground" />
-        </div>
-        <p className="flex-1 font-semibold text-lg leading-tight truncate">{label}</p>
-        {onClose && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X />
-          </Button>
-        )}
-      </div>
+      {/* Close button — absolute top-right */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-4 right-4 z-10 size-4 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity"
+        >
+          <X size={16} />
+        </button>
+      )}
 
-      {/* Tab bar */}
-      <div className="px-4 py-3 shrink-0">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ActiveTab)}>
-          <TabsList className="w-full">
-            <TabsTrigger value="unsent" className="flex-1 gap-1.5">
-              ยังไม่ได้สั่ง
-              {unsentCount > 0 && (
-                <Badge variant="destructive" className="h-4 min-w-4 px-1 text-sm">
-                  {unsentCount}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="sent" className="flex-1 gap-1.5">
-              สั่งแล้ว
-              {sentItems.length > 0 && (
-                <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
-                  {sentItems.length}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+      {/* Content wrapper with padding */}
+      <div className="flex flex-col flex-1 min-h-0 p-6 gap-4">
 
-      {/* Scrollable body */}
-      <ScrollArea className="flex-1 min-h-0">
-        {displayItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
-            <HandPlatter size={28} className="opacity-30" />
-            <p className="text-sm">
-              {activeTab === 'unsent' ? 'No unsent items' : 'No sent items'}
-            </p>
+        {/* Header */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="bg-secondary p-2 rounded-md flex items-center justify-center shrink-0">
+            <HandPlatter size={16} className="text-foreground" />
           </div>
-        ) : (
-          displayItems.map((item) => (
-            <div key={item.lineId} className={item.status === 'sent' ? 'px-4 pt-3' : ''}>
-              <TicketLineItem
-                item={item}
-                onRemove={(lineId) => removeItem(tableId, lineId)}
-                onQtyChange={handleQtyChange}
-                onEditTap={onEditLineItem}
-                onVoidTap={(lineId) => setVoidingLineId(lineId)}
-                canRemove={canDoAction(role, 'void-pre-send')}
-                showPackToGo={!isTakeaway}
-                onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
-              />
+          <p className="flex-1 font-semibold text-lg leading-7 truncate">{label}</p>
+        </div>
+
+        {/* Scrollable content area */}
+        <div className="flex flex-col flex-1 min-h-0 gap-3">
+          {/* Tab bar */}
+          <div className="shrink-0">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ActiveTab)}>
+              <TabsList className="w-full !h-auto p-[3px]">
+                <TabsTrigger value="unsent" className="flex-1 gap-2 !h-11">
+                  ยังไม่ได้สั่ง
+                  {unsentCount > 0 && (
+                    <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+                      {unsentCount}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="sent" className="flex-1 gap-2 !h-11">
+                  สั่งแล้ว
+                  {sentItems.length > 0 && (
+                    <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+                      {sentItems.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Scrollable body */}
+          <ScrollArea className="flex-1 min-h-0">
+            {displayItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-40 gap-2 text-muted-foreground">
+                <HandPlatter size={28} className="opacity-30" />
+                <p className="text-sm">
+                  {activeTab === 'unsent' ? 'No unsent items' : 'No sent items'}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {displayItems.map((item) => (
+                  <TicketLineItem
+                    key={item.lineId}
+                    item={item}
+                    onRemove={(lineId) => removeItem(tableId, lineId)}
+                    onQtyChange={handleQtyChange}
+                    onEditTap={onEditLineItem}
+                    onVoidTap={(lineId) => setVoidingLineId(lineId)}
+                    canRemove={canDoAction(role, 'void-pre-send')}
+                    showPackToGo={!isTakeaway}
+                    onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}
+                  />
+                ))}
+              </div>
+            )}
+          </ScrollArea>
+
+          {/* Summary rows */}
+          <div className="shrink-0">
+            <Separator className="mb-2" />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <p className="text-base font-medium text-muted-foreground">ยังไม่ได้สั่ง</p>
+                <p className="text-sm font-medium tabular-nums text-muted-foreground">฿{unsentTotal.toFixed(2)}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-base font-medium text-muted-foreground">สั่งแล้ว</p>
+                <p className="text-sm font-medium tabular-nums text-muted-foreground">฿{sentTotal.toFixed(2)}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-base font-semibold leading-none">รวม</p>
+                <p className="text-base font-semibold text-primary">฿{runningTotal.toFixed(2)}</p>
+              </div>
             </div>
-          ))
-        )}
-      </ScrollArea>
-
-      {/* Footer */}
-      <div className="shrink-0">
-        <Separator />
-
-        {/* Summary rows */}
-        <div className="px-4 pt-3 pb-2 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">ยังไม่ได้สั่ง</p>
-            <p className="text-sm tabular-nums text-muted-foreground">฿{unsentTotal.toFixed(2)}</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">สั่งแล้ว</p>
-            <p className="text-sm tabular-nums text-muted-foreground">฿{sentTotal.toFixed(2)}</p>
-          </div>
-          <div className="flex items-center justify-between pt-1">
-            <p className="text-sm font-bold">รวม</p>
-            <p className="text-base font-black text-primary">฿{runningTotal.toFixed(2)}</p>
           </div>
         </div>
 
-        <Separator />
+        {/* Footer buttons */}
+        <div className="shrink-0 flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1 h-14 text-sm" onClick={onPrintBill} disabled={sentItems.length === 0}>
+              <Printer data-icon="inline-start" size={16} />
+              พิมพ์ใบแจ้งหนี้
+            </Button>
+            <Button variant="outline" className="flex-1 h-14 text-sm" onClick={onCheckBill} disabled={sentItems.length === 0}>
+              <ReceiptText data-icon="inline-start" size={16} />
+              เช็คบิล
+            </Button>
+          </div>
 
-        {/* Print + Check bill buttons */}
-        <div className="px-4 py-2 flex gap-2">
-          <Button variant="outline" className="flex-1 text-sm" onClick={onPrintBill}>
-            <Printer data-icon="inline-start" />
-            พิมพ์ใบแจ้งหนี้
-          </Button>
-          <Button variant="outline" className="flex-1 text-sm" onClick={onCheckBill}>
-            <ReceiptText data-icon="inline-start" />
-            เช็คบิล
-          </Button>
-        </div>
-
-        {/* Send to Kitchen CTA */}
-        {!hideSend && (
-          <div className="px-4 pb-4">
+          {!hideSend && (
             <Button
-              size="cta"
-              className="w-full"
+              className="w-full h-14"
               onClick={handleSend}
               disabled={unsentCount === 0}
             >
-              <ArrowRight data-icon="inline-start" />
-              {sendLabel ?? 'ส่งออร์เดอร์เข้าครัว'}
+              <SendHorizontal data-icon="inline-start" size={16} />
+              {sendLabel ?? `ส่งออร์เดอร์เข้าครัว${unsentCount > 0 ? ` ${unsentCount} รายการ` : ''}`}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Manager PIN modal for void authorization */}

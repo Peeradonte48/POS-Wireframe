@@ -1,21 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ShoppingBasket } from 'lucide-react'
 import { useOrderStore } from '@/stores/order.store'
 import { useQueueStore } from '@/stores/queue.store'
 import { useKdsStore } from '@/stores/kds.store'
 import { MenuPanel } from '@/components/order/MenuPanel'
 import { ModifierSheet } from '@/components/order/ModifierSheet'
+import { SimpleItemDialog } from '@/components/order/SimpleItemDialog'
 import { TicketPanel } from '@/components/order/TicketPanel'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mock-data/menu'
-import { cn } from '@/lib/utils'
 
 const ALL_CATEGORY_ID = 'all'
 const CATEGORY_NAV = [
-  { id: ALL_CATEGORY_ID, label: 'All Items' },
+  { id: ALL_CATEGORY_ID, label: 'รายการทั้งหมด' },
   ...MENU_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
 ]
 
@@ -26,9 +29,21 @@ export default function DeliveryOrderPage() {
 
   const order = useQueueStore((s) => s.orders[orderId])
 
+  const orderRounds = useOrderStore((s) => s.orders[orderId]?.rounds)
+  const itemCount = useMemo(
+    () =>
+      orderRounds
+        ?.flatMap((r) => r.items)
+        .filter((i) => i.status !== 'voided')
+        .reduce((sum, i) => sum + i.quantity, 0) ?? 0,
+    [orderRounds],
+  )
+
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_ID)
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<string | null>(null)
   const [editingLineId, setEditingLineId] = useState<string | null>(null)
+  const [simpleItemId, setSimpleItemId] = useState<string | null>(null)
+  const [ticketOpen, setTicketOpen] = useState(false)
 
   useEffect(() => {
     if (!order) {
@@ -80,89 +95,106 @@ export default function DeliveryOrderPage() {
   if (!order) return <div className="flex-1 flex items-center justify-center text-muted-foreground">Order not found</div>
 
   const platformLabel = order.platform === 'grab' ? 'Grab' : 'LINE MAN'
+  const headerLabel = `${order.externalId ?? orderId} · ${platformLabel}${order.customerName ? ` · ${order.customerName}` : ''}`
 
   return (
     <>
       <div className="flex flex-col flex-1 min-h-0 bg-background">
         {/* Header */}
         <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-          <button
-            onClick={() => router.replace('/table-map?tab=delivery')}
-            className="flex items-center justify-center min-h-[44px] min-w-[44px] -ml-2 rounded-lg hover:bg-muted transition-colors"
-            aria-label="Back to delivery queue"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2">
-              <Badge variant={order.platform === 'grab' ? 'grab' : 'lineman'}>
-                {platformLabel}
-              </Badge>
-              <span className="text-sm font-semibold">{order.externalId ?? orderId}</span>
-            </div>
+          {/* Left: back + breadcrumb */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => router.replace('/table-map?tab=delivery')}
+              aria-label="Back to delivery queue"
+              className="size-9 shrink-0"
+            >
+              <ChevronLeft size={16} />
+            </Button>
+            <Badge variant={order.platform === 'grab' ? 'grab' : 'lineman'}>
+              {platformLabel}
+            </Badge>
+            <span className="text-sm font-medium text-foreground">{order.externalId ?? orderId}</span>
             {order.customerName && (
-              <span className="text-xs text-muted-foreground mt-0.5">{order.customerName}</span>
+              <span className="text-xs text-muted-foreground">{order.customerName}</span>
             )}
           </div>
 
-          <div className="w-11" />
+          {/* Right: action buttons */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setTicketOpen(true)}
+            >
+              <ShoppingBasket size={16} data-icon="inline-start" />
+              อาหารที่สั่ง
+              {itemCount > 0 && (
+                <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
+          </div>
         </header>
 
-        {/* 3-column body */}
-        <div className="flex flex-row flex-1 min-h-0 overflow-hidden">
-
-          {/* Column 1: Category sidebar */}
-          <aside className="w-32 md:w-36 lg:w-44 border-r border-border bg-card flex flex-col shrink-0 overflow-y-auto py-2">
-            {CATEGORY_NAV.map((cat) => {
-              const isActive = activeCategory === cat.id
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={cn(
-                    'w-full text-left px-3 lg:px-4 py-3 text-xs md:text-sm font-medium transition-colors duration-150',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-muted'
-                  )}
-                >
-                  {cat.label}
-                </button>
-              )
-            })}
-          </aside>
-
-          {/* Column 2: Menu photo grid */}
-          <div className="flex-1 overflow-y-auto bg-background">
-            <div>
-              <MenuPanel
-                onItemTap={(itemId) => setSelectedMenuItemId(itemId)}
-                activeCategory={activeCategory}
-              />
-            </div>
+        {/* Full-width body */}
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          {/* Category tabs */}
+          <div className="px-4 pt-4 pb-0 shrink-0">
+            <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+              <TabsList className="w-full">
+                {CATEGORY_NAV.map((cat) => (
+                  <TabsTrigger key={cat.id} value={cat.id} className="flex-1">
+                    {cat.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
 
-          {/* Column 3: Ticket */}
-          <div className="w-56 md:w-64 lg:w-72 xl:w-80 border-l border-border flex flex-col bg-card shrink-0 overflow-hidden" style={{ boxShadow: 'var(--shadow-panel)' }}>
-            <TicketPanel
-              tableId={orderId}
-              onEditLineItem={(lineId) => {
-                const orderData = useOrderStore.getState().orders[orderId]
-                const item = orderData?.rounds
-                  .flatMap((r) => r.items)
-                  .find((i) => i.lineId === lineId)
-                if (item) {
-                  setEditingLineId(lineId)
-                  setSelectedMenuItemId(item.menuItemId)
+          {/* Menu grid */}
+          <div className="flex-1 overflow-y-auto">
+            <MenuPanel
+              onItemTap={(itemId) => {
+                const item = MENU_ITEMS.find((i) => i.id === itemId)
+                if (item && item.modifierGroups.length === 0) {
+                  setSimpleItemId(itemId)
+                } else {
+                  setSelectedMenuItemId(itemId)
                 }
               }}
-              sendLabel="Confirm Order"
-              headerLabel={order.externalId ?? orderId}
-              onSend={handleConfirmOrder}
+              activeCategory={activeCategory}
             />
           </div>
         </div>
+
+        {/* SimpleItemDialog — for items with no modifiers */}
+        <SimpleItemDialog
+          open={simpleItemId !== null}
+          onClose={() => setSimpleItemId(null)}
+          itemName={MENU_ITEMS.find((i) => i.id === simpleItemId)?.name}
+          onConfirm={(qty) => {
+            const item = MENU_ITEMS.find((i) => i.id === simpleItemId)
+            if (item) {
+              useOrderStore.getState().addItem(orderId, {
+                lineId: typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+                menuItemId: item.id,
+                menuItemName: item.name,
+                basePrice: item.basePrice,
+                modifiers: [],
+                spiceLevel: null,
+                specialRequest: '',
+                quantity: qty,
+                status: 'unsent',
+              })
+            }
+            setSimpleItemId(null)
+          }}
+        />
 
         {/* ModifierSheet — global overlay */}
         <ModifierSheet
@@ -174,6 +206,30 @@ export default function DeliveryOrderPage() {
           editingLineItem={editingLineItem}
         />
       </div>
+
+      {/* Ticket panel as right-side sheet */}
+      <Sheet open={ticketOpen} onOpenChange={setTicketOpen}>
+        <SheetContent side="right" className="p-0 w-80 sm:w-80 flex flex-col" showCloseButton={false}>
+          <TicketPanel
+            tableId={orderId}
+            onClose={() => setTicketOpen(false)}
+            onEditLineItem={(lineId) => {
+              const orderData = useOrderStore.getState().orders[orderId]
+              const item = orderData?.rounds
+                .flatMap((r) => r.items)
+                .find((i) => i.lineId === lineId)
+              if (item) {
+                setEditingLineId(lineId)
+                setSelectedMenuItemId(item.menuItemId)
+                setTicketOpen(false)
+              }
+            }}
+            sendLabel="Confirm Order"
+            headerLabel={order.externalId ?? orderId}
+            onSend={handleConfirmOrder}
+          />
+        </SheetContent>
+      </Sheet>
     </>
   )
 }
