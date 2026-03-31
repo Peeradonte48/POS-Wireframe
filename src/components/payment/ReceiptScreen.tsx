@@ -169,7 +169,7 @@ export function ReceiptScreen({
                   <Coins size={16} className="text-accent-foreground shrink-0" />
                   <span className="font-medium text-base leading-6 text-accent-foreground">คะแนนสะสม</span>
                 </div>
-                <span className="font-semibold text-base leading-6 text-green-600">+{earnedPoints}</span>
+                <span className="font-semibold text-base leading-6 text-status-success">+{earnedPoints}</span>
               </div>
             </div>
           )}

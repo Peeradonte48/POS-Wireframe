@@ -298,12 +298,12 @@ export default function SplitSummaryPage() {
                     บิล #{index + 1}
                   </span>
                   {isPaid && (
-                    <span className="text-[10px] font-semibold text-green-600 bg-green-600/10 rounded px-1.5 py-0.5 leading-none">
+                    <span className="text-[10px] font-semibold text-status-success bg-status-success/10 rounded px-1.5 py-0.5 leading-none">
                       ชำระแล้ว
                     </span>
                   )}
                 </div>
-                <span className={`text-sm leading-5 ${isPaid ? 'text-green-600 font-medium' : 'text-muted-foreground'}`}>
+                <span className={`text-sm leading-5 ${isPaid ? 'text-status-success font-medium' : 'text-muted-foreground'}`}>
                   ฿{billTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </button>
@@ -370,11 +370,11 @@ export default function SplitSummaryPage() {
               {/* Selected bill total */}
               <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
                 <p className="font-medium text-xl text-muted-foreground">บิล #{selectedTabIndex + 1}</p>
-                <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-green-600' : 'text-destructive'}`}>
+                <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-status-success' : 'text-destructive'}`}>
                   ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
                 {isCurrentPaid && (
-                  <span className="text-sm font-semibold text-green-600">ชำระแล้ว</span>
+                  <span className="text-sm font-semibold text-status-success">ชำระแล้ว</span>
                 )}
               </div>
 
@@ -481,7 +481,7 @@ export default function SplitSummaryPage() {
                   </span>
                 )}
               </div>
-              <span className={`text-sm leading-5 ${isPaid ? 'text-green-600 font-medium' : 'text-muted-foreground'}`}>
+              <span className={`text-sm leading-5 ${isPaid ? 'text-status-success font-medium' : 'text-muted-foreground'}`}>
                 ฿{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </button>
@@ -545,7 +545,7 @@ export default function SplitSummaryPage() {
           {/* Per-payer total */}
           <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
             <p className="font-medium text-xl text-muted-foreground">แบ่งจ่าย #{selectedTabIndex + 1}</p>
-            <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-green-600' : 'text-destructive'}`}>
+            <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-status-success' : 'text-destructive'}`}>
               ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>
             {isCurrentPaid && (

@@ -339,8 +339,8 @@ function DraggableItemCard({
             </span>
           </div>
           {isPartial && (
-            <div className="flex items-center gap-1 bg-amber-50 border border-amber-300 rounded-md shrink-0 px-2 py-0.5">
-              <span className="text-xs font-semibold text-amber-600">
+            <div className="flex items-center gap-1 bg-status-warning-bg border border-status-warning/30 rounded-md shrink-0 px-2 py-0.5">
+              <span className="text-xs font-semibold text-status-warning">
                 เหลือ {remaining}
               </span>
             </div>

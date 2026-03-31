@@ -419,14 +419,14 @@ function CouponSheet({
           {/* Validation status */}
           {codeState === 'checking' && (
             <div className="flex items-center gap-1.5">
-              <div className="size-3 rounded-full bg-amber-500 animate-pulse shrink-0" />
-              <p className="text-xs font-medium text-amber-600">กำลังตรวจสอบ...</p>
+              <div className="size-3 rounded-full bg-status-warning animate-pulse shrink-0" />
+              <p className="text-xs font-medium text-status-warning">กำลังตรวจสอบ...</p>
             </div>
           )}
           {codeState === 'valid' && (
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-green-600 shrink-0" />
-              <p className="text-xs font-medium text-green-600">รหัสอ้างอิงถูกต้อง</p>
+              <CheckCircle2 size={14} className="text-status-success shrink-0" />
+              <p className="text-xs font-medium text-status-success">รหัสอ้างอิงถูกต้อง</p>
             </div>
           )}
           {codeState === 'invalid' && (
@@ -516,9 +516,9 @@ function CouponSheet({
 
           {/* Discount preview */}
           {isValid && (
-            <div className="flex items-center justify-between bg-green-50 dark:bg-green-950/20 rounded-xl px-4 py-3 border border-green-200 dark:border-green-900">
-              <p className="font-medium text-sm text-green-700 dark:text-green-400">ส่วนลดที่จะได้รับ</p>
-              <p className="font-semibold text-base text-green-700 dark:text-green-400">
+            <div className="flex items-center justify-between bg-status-success-bg rounded-xl px-4 py-3 border border-status-success/30">
+              <p className="font-medium text-sm text-status-success">ส่วนลดที่จะได้รับ</p>
+              <p className="font-semibold text-base text-status-success">
                 -฿{discountAmount.toLocaleString()}
               </p>
             </div>

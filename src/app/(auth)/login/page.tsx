@@ -72,7 +72,7 @@ export default function LoginPage() {
             onErrorClear={handleErrorClear}
           />
           {pinError && (
-            <p className="text-sm text-red-500">Incorrect PIN. Try again.</p>
+            <p className="text-sm text-destructive">Incorrect PIN. Try again.</p>
           )}
         </div>
       )}

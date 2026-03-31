@@ -68,7 +68,7 @@ export function NewDeliveryModal({ open, onClose }: NewDeliveryModalProps) {
           {/* Platform selector */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold uppercase text-muted-foreground">
-              Platform <span className="text-red-500">*</span>
+              Platform <span className="text-destructive">*</span>
             </label>
             <div className="flex gap-2">
               <Button
@@ -95,7 +95,7 @@ export function NewDeliveryModal({ open, onClose }: NewDeliveryModalProps) {
           {/* External Order ID */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold uppercase text-muted-foreground">
-              Order ID <span className="text-red-500">*</span>
+              Order ID <span className="text-destructive">*</span>
             </label>
             <Input
               type="text"

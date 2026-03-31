@@ -57,8 +57,8 @@ export function ManagerPinModal({
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <div className="flex flex-col items-center gap-2 pb-2">
-            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-              <ShieldCheck size={20} className="text-amber-600" />
+            <div className="w-10 h-10 rounded-full bg-status-warning-bg flex items-center justify-center">
+              <ShieldCheck size={20} className="text-status-warning" />
             </div>
             <DialogTitle className="text-center text-base">Manager Authorization</DialogTitle>
             <p className="text-sm text-muted-foreground text-center">{actionLabel}</p>
@@ -75,7 +75,7 @@ export function ManagerPinModal({
         </div>
 
         {pinError && (
-          <p className="text-sm text-red-500 text-center -mt-2 pb-2">
+          <p className="text-sm text-destructive text-center -mt-2 pb-2">
             Incorrect Manager PIN
           </p>
         )}

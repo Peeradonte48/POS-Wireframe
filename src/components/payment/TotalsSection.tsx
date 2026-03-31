@@ -59,7 +59,7 @@ export function TotalsSection({
         /* Applied coupon line */
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Coupon {couponCode}</span>
-          <span className="text-green-600 font-medium">−฿{couponAmount.toLocaleString()}</span>
+          <span className="text-status-success font-medium">−฿{couponAmount.toLocaleString()}</span>
         </div>
       ) : null}
 
