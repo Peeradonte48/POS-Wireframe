@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type LineItemStatus = 'unsent' | 'sent' | 'voided'
+export type LineItemStatus = 'unsent' | 'sent' | 'ready' | 'served' | 'voided'
 
 export interface ModifierSelection {
   groupId: string
@@ -42,6 +42,9 @@ interface OrderStore {
   removeItem: (tableId: string, lineId: string) => void
   sendRound: (tableId: string) => void
   voidItem: (tableId: string, lineId: string) => void
+  markItemReady: (tableId: string, lineId: string) => void
+  markAllSentReady: (tableId: string) => void
+  markItemServed: (tableId: string, lineId: string) => void
   clearOrder: (tableId: string) => void
   getOrder: (tableId: string) => ActiveOrder | undefined
   togglePackToGo: (tableId: string, lineId: string) => void
@@ -181,6 +184,72 @@ export const useOrderStore = create<OrderStore>()(
         ...round,
         items: round.items.map((item) =>
           item.lineId === lineId ? { ...item, status: 'voided' as LineItemStatus } : item,
+        ),
+      }))
+
+      return {
+        orders: {
+          ...state.orders,
+          [tableId]: { ...existing, rounds: newRounds },
+        },
+      }
+    }),
+
+  markItemReady: (tableId, lineId) =>
+    set((state) => {
+      const existing = state.orders[tableId]
+      if (!existing) return state
+
+      const newRounds = existing.rounds.map((round) => ({
+        ...round,
+        items: round.items.map((item) =>
+          item.lineId === lineId && item.status === 'sent'
+            ? { ...item, status: 'ready' as LineItemStatus }
+            : item,
+        ),
+      }))
+
+      return {
+        orders: {
+          ...state.orders,
+          [tableId]: { ...existing, rounds: newRounds },
+        },
+      }
+    }),
+
+  markAllSentReady: (tableId) =>
+    set((state) => {
+      const existing = state.orders[tableId]
+      if (!existing) return state
+
+      const newRounds = existing.rounds.map((round) => ({
+        ...round,
+        items: round.items.map((item) =>
+          item.status === 'sent'
+            ? { ...item, status: 'ready' as LineItemStatus }
+            : item,
+        ),
+      }))
+
+      return {
+        orders: {
+          ...state.orders,
+          [tableId]: { ...existing, rounds: newRounds },
+        },
+      }
+    }),
+
+  markItemServed: (tableId, lineId) =>
+    set((state) => {
+      const existing = state.orders[tableId]
+      if (!existing) return state
+
+      const newRounds = existing.rounds.map((round) => ({
+        ...round,
+        items: round.items.map((item) =>
+          item.lineId === lineId && item.status === 'ready'
+            ? { ...item, status: 'served' as LineItemStatus }
+            : item,
         ),
       }))
 

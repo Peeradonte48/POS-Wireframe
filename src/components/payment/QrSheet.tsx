@@ -6,16 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 
 // ---------------------------------------------------------------------------
-// Figma design assets — PromptPay QR card
-// ---------------------------------------------------------------------------
-
-const THAI_QR_CROSS   = 'https://www.figma.com/api/mcp/asset/79c8acdc-f5cf-4b9b-8940-8b4e3d160b82'  // medical cross left-side of header
-const THAI_QR_TEXT_1  = 'https://www.figma.com/api/mcp/asset/6ea39039-02fd-4ed8-bb80-e826a9f4179e'  // "THAI QR" line
-const THAI_QR_TEXT_2  = 'https://www.figma.com/api/mcp/asset/2586dc52-178d-4d83-a54b-6d274f5fd16e'  // "PAYMENT" line
-const PROMPTPAY_LOGO  = 'https://www.figma.com/api/mcp/asset/97477087-a081-4be6-81a5-052821f29d17'  // PromptPay logo
-const QR_CODE_IMG     = 'https://www.figma.com/api/mcp/asset/9c98c584-7b10-49b1-ad2b-bd4e4d7e7b80'  // QR code
-
-// ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
@@ -52,60 +42,73 @@ export function QrSheet({ open, onClose, grandTotal, onConfirm }: QrSheetProps) 
         {/* QR card + payment info */}
         <div className="flex flex-col gap-4 items-center w-full">
 
-          {/* Card */}
-          <div className="bg-white border border-border rounded-md overflow-hidden w-full max-w-[350px]">
+          {/* Thai QR Payment card — matches Figma node 2539:30730 */}
+          <div className="bg-white border border-border rounded-md overflow-hidden w-full max-w-[347px] flex flex-col items-center gap-4">
 
-            {/* Dark navy THAI QR PAYMENT header */}
-            <div className="bg-[var(--color-thai-qr-header)] h-[71px] flex items-center justify-center px-[10px]">
-              <div className="flex items-center gap-3">
-                {/* Medical cross / logo mark */}
-                <Image
-                  alt=""
-                  src={THAI_QR_CROSS}
-                  width={49}
-                  height={36}
-                  className="object-contain shrink-0"
-                />
-                {/* "THAI QR" + "PAYMENT" text stacked */}
-                <div className="flex flex-col justify-center gap-0.5">
+            {/* Dark navy header */}
+            <div className="flex flex-col items-center gap-1.5 w-full">
+              <div className="bg-[#113e67] h-[71px] w-full flex items-center justify-center p-[10px]">
+                <div className="flex items-center">
+                  {/* Cross logo mark */}
                   <Image
-                    alt="THAI QR"
-                    src={THAI_QR_TEXT_1}
-                    width={73}
-                    height={11}
-                    className="object-contain"
+                    src="/images/payment/thai-qr-cross.svg"
+                    alt=""
+                    width={49}
+                    height={36}
+                    className="object-contain shrink-0"
                   />
-                  <Image
-                    alt="PAYMENT"
-                    src={THAI_QR_TEXT_2}
-                    width={73}
-                    height={14}
-                    className="object-contain"
-                  />
+                  {/* "THAI QR" + "PAYMENT" stacked text */}
+                  <div className="flex flex-col justify-center gap-0.5 ml-[3px]">
+                    <Image
+                      src="/images/payment/thai-qr-text-2.svg"
+                      alt="THAI QR"
+                      width={73}
+                      height={14}
+                      className="object-contain"
+                    />
+                    <Image
+                      src="/images/payment/thai-qr-text-1.svg"
+                      alt="PAYMENT"
+                      width={73}
+                      height={11}
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* PromptPay logo */}
-            <div className="flex justify-center pt-2 pb-1">
+              {/* PromptPay logo */}
               <Image
+                src="/images/payment/promptpay-logo.png"
                 alt="PromptPay"
-                src={PROMPTPAY_LOGO}
                 width={96}
                 height={32}
                 className="object-contain"
               />
             </div>
 
-            {/* QR code image */}
-            <div className="flex justify-center px-4 pb-2">
+            {/* QR code with center logo overlay */}
+            <div className="relative w-[221px] h-[221px] rounded-[6px] overflow-hidden">
               <Image
+                src="/images/payment/qr-code.png"
                 alt="QR Code"
-                src={QR_CODE_IMG}
                 width={221}
                 height={221}
-                className="object-cover rounded-[6px]"
+                className="size-full object-cover rounded-[6px]"
               />
+              {/* Center logo overlay */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  <div className="bg-[#1a3763] size-[32px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  <Image
+                    src="/images/payment/qr-center-logo.svg"
+                    alt=""
+                    width={53}
+                    height={40}
+                    className="relative object-contain"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Account info */}

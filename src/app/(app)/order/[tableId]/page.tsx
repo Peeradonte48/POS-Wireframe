@@ -65,7 +65,7 @@ export default function OrderPage() {
     [allItems],
   )
   const hasSentItems = useMemo(
-    () => allItems.some((i) => i.status === 'sent'),
+    () => allItems.some((i) => i.status === 'sent' || i.status === 'ready' || i.status === 'served'),
     [allItems],
   )
   const hasUnsentItems = useMemo(

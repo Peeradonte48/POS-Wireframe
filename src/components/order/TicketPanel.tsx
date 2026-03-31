@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo } from 'react'
 import { toast } from 'sonner'
-import { HandPlatter, X, Printer, ReceiptText, SendHorizontal, CircleCheckBig, CircleAlert, Loader } from 'lucide-react'
+import { HandPlatter, X, Printer, ReceiptText, SendHorizontal, CircleCheckBig, CircleAlert, Loader, ConciergeBell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -78,11 +78,15 @@ export function TicketPanel({
     return {
       allItems: all,
       unsentItems: all.filter((i) => i.status === 'unsent'),
-      sentItems: all.filter((i) => i.status === 'sent'),
-      sentAndVoidedItems: all.filter((i) => i.status === 'sent' || i.status === 'voided'),
+      sentItems: all.filter((i) => i.status === 'sent' || i.status === 'ready' || i.status === 'served'),
+      sentAndVoidedItems: all.filter((i) => i.status === 'sent' || i.status === 'ready' || i.status === 'served' || i.status === 'voided'),
     }
   }, [order])
   const displayItems = activeTab === 'unsent' ? unsentItems : sentAndVoidedItems
+  const inKitchenCount = useMemo(
+    () => (order ? order.rounds.flatMap((r) => r.items).filter((i) => i.status === 'sent').length : 0),
+    [order],
+  )
 
   const unsentCount = unsentItems.length
   const unsentTotal = computeItemsTotal(unsentItems)
@@ -136,6 +140,20 @@ export function TicketPanel({
 
     // Wait for the first toast to disappear, then start print invoice toast
     setTimeout(() => printOrderInvoice(), SEND_TOAST_DURATION)
+  }
+
+  // ---- Demo: Simulate KDS completing all sent items → ready ----
+  function handleDemoKdsComplete() {
+    useOrderStore.getState().markAllSentReady(tableId)
+    toast('Demo: ครัวทำอาหารเสร็จทั้งหมด', {
+      icon: React.createElement(ConciergeBell, { size: 20, className: 'text-primary' }),
+    })
+  }
+
+  // ---- Serve item (mark ready → served) ----
+  function handleServe(lineId: string) {
+    useOrderStore.getState().markItemServed(tableId, lineId)
+    toast.success('เสิร์ฟอาหารสำเร็จ')
   }
 
   // ---- Print Order Invoice (mock) ----
@@ -227,6 +245,19 @@ export function TicketPanel({
             </Tabs>
           </div>
 
+          {/* Demo: simulate KDS completing all sent items */}
+          {activeTab === 'sent' && inKitchenCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0 w-full gap-2 border-dashed border-primary/40 text-primary h-9"
+              onClick={handleDemoKdsComplete}
+            >
+              <ConciergeBell size={14} />
+              Demo: ครัวทำเสร็จ {inKitchenCount} รายการ
+            </Button>
+          )}
+
           {/* Scrollable body */}
           <ScrollArea className="flex-1 min-h-0">
             {displayItems.length === 0 ? (
@@ -246,6 +277,7 @@ export function TicketPanel({
                     onQtyChange={handleQtyChange}
                     onEditTap={onEditLineItem}
                     onVoidTap={(lineId) => setVoidingLineId(lineId)}
+                    onServeTap={handleServe}
                     canRemove={canDoAction(role, 'void-pre-send')}
                     showPackToGo={!isTakeaway}
                     onTogglePackToGo={(lineId) => togglePackToGo(tableId, lineId)}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Trash2, ShoppingBag, CircleX, CookingPot, Minus, Plus, Shell, Soup, Ham, Salad, Flame, Droplets, type LucideIcon } from 'lucide-react'
+import { Trash2, ShoppingBag, CircleX, CookingPot, ConciergeBell, Check, Minus, Plus, Shell, Soup, Ham, Salad, Flame, Droplets, type LucideIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -109,6 +109,7 @@ interface TicketLineItemProps {
   onQtyChange: (lineId: string, delta: number) => void
   onEditTap: (lineId: string) => void
   onVoidTap: (lineId: string) => void
+  onServeTap?: (lineId: string) => void
   canRemove?: boolean
   showPackToGo?: boolean
   onTogglePackToGo?: (lineId: string) => void
@@ -124,6 +125,7 @@ export function TicketLineItem({
   onQtyChange,
   onEditTap,
   onVoidTap,
+  onServeTap,
   canRemove = true,
   showPackToGo = false,
   onTogglePackToGo,
@@ -161,6 +163,100 @@ export function TicketLineItem({
           <CircleX size={16} className="text-destructive" />
           ยกเลิกแบบตัดสต๊อก
         </Button>
+
+        <Separator />
+      </div>
+    )
+  }
+
+  // ── Ready (kitchen done — waiting to serve) ─────────────────────────────
+  if (item.status === 'ready') {
+    return (
+      <div className="flex flex-col gap-3 w-full">
+        {/* Details row */}
+        <div className="flex gap-2 items-start">
+          <ItemThumbnail item={item} size={84} rounded="rounded-md" />
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="text-sm font-medium text-foreground truncate">{item.menuItemName}</span>
+                <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 h-auto shrink-0">
+                  {item.quantity}×
+                </Badge>
+              </div>
+              <span className="text-sm text-card-foreground shrink-0">฿{lineTotal}</span>
+            </div>
+            <ModifierChips item={item} />
+          </div>
+        </div>
+
+        {/* Action row — red "เสิร์ฟอาหาร" button */}
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 shrink-0"
+            onClick={() => onVoidTap(item.lineId)}
+            aria-label="Void item"
+          >
+            <CircleX size={16} />
+          </Button>
+          <Button
+            variant="destructive"
+            className="flex-1 h-9 gap-2"
+            onClick={() => onServeTap?.(item.lineId)}
+          >
+            <ConciergeBell size={16} />
+            เสิร์ฟอาหาร
+          </Button>
+        </div>
+
+        <Separator />
+      </div>
+    )
+  }
+
+  // ── Served (food delivered to customer) ──────────────────────────────────
+  if (item.status === 'served') {
+    return (
+      <div className="flex flex-col gap-3 w-full">
+        {/* Details row */}
+        <div className="flex gap-2 items-start">
+          <ItemThumbnail item={item} size={84} rounded="rounded-md" />
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="text-sm font-medium text-foreground truncate">{item.menuItemName}</span>
+                <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 h-auto shrink-0">
+                  {item.quantity}×
+                </Badge>
+              </div>
+              <span className="text-sm text-card-foreground shrink-0">฿{lineTotal}</span>
+            </div>
+            <ModifierChips item={item} />
+          </div>
+        </div>
+
+        {/* Served status row — green check + label */}
+        <div className="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 shrink-0"
+            onClick={() => onVoidTap(item.lineId)}
+            aria-label="Void item"
+          >
+            <CircleX size={16} />
+          </Button>
+          <Button
+            variant="secondary"
+            className="flex-1 h-9 gap-2 opacity-60 cursor-default"
+            disabled
+          >
+            <Check size={16} className="text-status-success" />
+            เสิร์ฟอาหารแล้ว
+          </Button>
+        </div>
 
         <Separator />
       </div>

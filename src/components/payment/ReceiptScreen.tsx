@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
-import { Printer, Coins, Search, User } from 'lucide-react'
+import { CheckCircle2, Printer, Coins, Search, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
-const IMG_CHECKMARK = 'https://www.figma.com/api/mcp/asset/f9fa5459-bab2-4284-b6f8-71a6e33e04e0'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,7 +62,7 @@ export function ReceiptScreen({
 
         {/* Header */}
         <div className="flex flex-col gap-3 items-center">
-          <Image src={IMG_CHECKMARK} alt="Payment complete" width={48} height={48} className="size-12 block" />
+          <CheckCircle2 size={48} className="text-status-success" />
           <p className="font-semibold text-2xl text-foreground leading-none">ใบเสร็จชำระเงิน</p>
         </div>
 
