@@ -40,7 +40,7 @@ export default function PaymentPage() {
   const order = useOrderStore((s) => s.getOrder(tableId))
   const role = useSessionStore((s) => s.role)!
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const { clearCrmMember, dissolveAll } = useBillStore()
+  const { clearCrmMember, dissolveAll, clearPromotionDiscounts } = useBillStore()
   const merges = useBillStore((s) => s.merges)
   const tables = useTableStore((s) => s.tables)
 
@@ -89,6 +89,7 @@ export default function PaymentPage() {
     markCleaning(tableId)
     mergedSecondaryIds.forEach((id) => markCleaning(id))
     dissolveAll(tableId)
+    clearPromotionDiscounts(tableId)
     updateTable(tableId, { orderStage: 'Billed' })
     updateTable(tableId, { paidAmount: grandTotal, paymentMethod, discountApplied: discountAmount })
     toast.success('Payment confirmed')

@@ -5,6 +5,7 @@ import { Delete } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -123,14 +124,26 @@ function CashDialogContent({
         </div>
       </div>
 
-      {/* Confirm button */}
-      <Button
-        className="w-full h-14 text-sm font-medium"
-        disabled={!isValid}
-        onClick={onConfirm}
-      >
-        ยืนยันการชำระเงิน
-      </Button>
+      {/* Action buttons */}
+      <div className="flex flex-col gap-2">
+        <Button
+          className="w-full h-14 text-sm font-medium"
+          disabled={!isValid}
+          onClick={onConfirm}
+        >
+          ยืนยันการชำระเงิน
+        </Button>
+        <DialogClose
+          render={
+            <Button
+              variant="outline"
+              className="w-full h-14 text-sm font-medium"
+            />
+          }
+        >
+          ยกเลิก
+        </DialogClose>
+      </div>
     </DialogContent>
   )
 }
@@ -142,12 +155,13 @@ function CashDialogContent({
 export function CashDialog({ open, onClose, grandTotal, onConfirm }: CashDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <CashDialogContent
-        key={String(open)}
-        onClose={onClose}
-        grandTotal={grandTotal}
-        onConfirm={onConfirm}
-      />
+      {open && (
+        <CashDialogContent
+          onClose={onClose}
+          grandTotal={grandTotal}
+          onConfirm={onConfirm}
+        />
+      )}
     </Dialog>
   )
 }

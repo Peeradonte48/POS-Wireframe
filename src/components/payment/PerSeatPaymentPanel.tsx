@@ -101,6 +101,10 @@ export function PerSeatPaymentPanel({
     const allDone = newPaid.size >= splitAmounts.length
     if (allDone) {
       onAllPaid()
+    } else {
+      // Auto-advance to next unpaid tab
+      const nextUnpaid = splitAmounts.findIndex((_, i) => !newPaid.has(i))
+      if (nextUnpaid !== -1) setSelectedTabIndex(nextUnpaid)
     }
   }
 

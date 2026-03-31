@@ -41,11 +41,16 @@ export default function SplitSummaryPage() {
 
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
 
-  // ---- All paid: table lifecycle transition ----
+  // ---- All paid: show receipt, then table lifecycle transition on exit ----
   function handleAllPaid() {
     useTableStore.getState().markCleaning(tableId)
-    clearCrmMember(tableId)
-    router.push('/table-map')
+    const totalPaid = splitAmounts.reduce((sum, a) => sum + a, 0)
+    setReceiptData({
+      amount: totalPaid + Math.round(totalPaid * 0.07),
+      method: 'Cash',
+      paidAt: new Date(),
+      payerLabel: tableLabel,
+    })
   }
 
   // ---- Fallback if no split data ----
@@ -67,7 +72,7 @@ export default function SplitSummaryPage() {
         paymentMethod={receiptData.method}
         paidAt={receiptData.paidAt}
         onReprint={() => toast('Receipt sent to printer')}
-        onBackToFloor={handleAllPaid}
+        onBackToFloor={() => { clearCrmMember(tableId); router.push('/table-map') }}
         ctaLabel="กลับไปที่ Floor Plan"
         crmMember={crmMember}
       />
