@@ -143,7 +143,7 @@ export function TicketPanel({
             <TabsTrigger value="unsent" className="flex-1 gap-1.5">
               ยังไม่ได้สั่ง
               {unsentCount > 0 && (
-                <Badge variant="destructive" className="h-4 min-w-4 px-1 text-[10px]">
+                <Badge variant="destructive" className="h-4 min-w-4 px-1 text-sm">
                   {unsentCount}
                 </Badge>
               )}
@@ -211,11 +211,11 @@ export function TicketPanel({
 
         {/* Print + Check bill buttons */}
         <div className="px-4 py-2 flex gap-2">
-          <Button variant="outline" className="flex-1 text-xs" onClick={onPrintBill}>
+          <Button variant="outline" className="flex-1 text-sm" onClick={onPrintBill}>
             <Printer data-icon="inline-start" />
             พิมพ์ใบแจ้งหนี้
           </Button>
-          <Button variant="outline" className="flex-1 text-xs" onClick={onCheckBill}>
+          <Button variant="outline" className="flex-1 text-sm" onClick={onCheckBill}>
             <ReceiptText data-icon="inline-start" />
             เช็คบิล
           </Button>

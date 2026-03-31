@@ -69,7 +69,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
             <span className="font-semibold text-base text-card-foreground">{ticket.tableLabel}</span>
           </div>
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-md ${timerBgClass}`}
+            className={`text-sm font-semibold px-2 py-0.5 rounded-md ${timerBgClass}`}
           >
             {display}
           </span>

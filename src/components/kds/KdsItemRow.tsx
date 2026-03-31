@@ -26,7 +26,7 @@ function ModifierBadge({ icon: Icon, label }: { icon: LucideIcon; label: string 
   return (
     <div className="flex items-center gap-1 py-0.5">
       <Icon size={12} className="text-muted-foreground shrink-0" />
-      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
+      <span className="text-sm text-muted-foreground whitespace-nowrap">{label}</span>
     </div>
   )
 }
@@ -62,7 +62,7 @@ export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }:
         <div className="w-4 h-4 shrink-0 rounded border border-input" />
         <div className="flex gap-1 items-center">
           <span className="line-through text-sm font-medium">{item.menuItemName}</span>
-          <span className="text-[10px] border border-border text-muted-foreground px-1.5 py-0.5 rounded uppercase font-semibold">
+          <span className="text-sm border border-border text-muted-foreground px-1.5 py-0.5 rounded uppercase font-semibold">
             VOID
           </span>
         </div>

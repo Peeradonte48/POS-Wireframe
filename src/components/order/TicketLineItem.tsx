@@ -75,14 +75,14 @@ function ModifierChips({ item }: { item: OrderLineItem }) {
       {item.modifiers.map((mod) => {
         const icon = MODIFIER_ICON_MAP.get(mod.groupId) ?? '·'
         return (
-          <span key={`${mod.groupId}-${mod.optionId}`} className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-            <span className="text-[11px] leading-none">{icon}</span>
+          <span key={`${mod.groupId}-${mod.optionId}`} className="text-sm text-muted-foreground flex items-center gap-0.5">
+            <span className="text-sm leading-none">{icon}</span>
             <span>{mod.optionLabel}</span>
           </span>
         )
       })}
       {item.specialRequest?.trim() && (
-        <span className="text-[11px] text-muted-foreground italic">
+        <span className="text-sm text-muted-foreground italic">
           &ldquo;{item.specialRequest.trim().slice(0, 20)}{item.specialRequest.trim().length > 20 ? '…' : ''}&rdquo;
         </span>
       )}
@@ -131,7 +131,7 @@ export function TicketLineItem({
             <span className="text-sm line-through text-muted-foreground">{item.menuItemName}</span>
             <span className="text-sm text-muted-foreground shrink-0">฿{lineTotal}</span>
           </div>
-          <Badge variant="destructive" className="text-[10px] px-1.5 mt-1">Voided</Badge>
+          <Badge variant="destructive" className="text-sm px-1.5 mt-1">Voided</Badge>
         </div>
       </div>
     )
@@ -237,7 +237,7 @@ export function TicketLineItem({
             <button
               onClick={() => onTogglePackToGo?.(item.lineId)}
               className={cn(
-                'h-8 px-2.5 flex items-center gap-1.5 rounded-lg border text-[11px] font-medium transition-colors',
+                'h-8 px-2.5 flex items-center gap-1.5 rounded-lg border text-sm font-medium transition-colors',
                 item.packToGo
                   ? 'border-primary text-primary bg-primary/5'
                   : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'

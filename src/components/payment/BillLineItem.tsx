@@ -68,7 +68,7 @@ export function BillLineItem({ item, qty: qtyOverride }: BillLineItemProps) {
                   className="flex items-center gap-1 py-0.5"
                 >
                   <Icon size={12} className="text-muted-foreground shrink-0" />
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{mod.optionLabel}</span>
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">{mod.optionLabel}</span>
                 </span>
               )
             })}
@@ -78,7 +78,7 @@ export function BillLineItem({ item, qty: qtyOverride }: BillLineItemProps) {
 
       {/* Qty badge */}
       <div className="border border-border rounded-md shrink-0">
-        <span className="flex items-center justify-center px-2 py-0.5 text-xs font-semibold leading-4">
+        <span className="flex items-center justify-center px-2 py-0.5 text-sm font-semibold leading-4">
           {qty}×
         </span>
       </div>
