@@ -11,6 +11,8 @@ export interface MenuModifierGroup {
   required: boolean
   icon?: string   // emoji shown before label
   options: MenuModifierOption[]
+  /** Option ids pre-selected as the base/standard choice for new orders */
+  defaultOptionIds?: string[]
 }
 
 export interface MenuItem {
@@ -54,6 +56,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🍜',
     type: 'single',
     required: true,
+    defaultOptionIds: ['normal'],
     options: [
       { id: 'very-soft',   label: 'นุ่มมาก',  priceAdj: 0 },
       { id: 'soft',        label: 'นุ่ม',      priceAdj: 0 },
@@ -68,6 +71,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🥣',
     type: 'single',
     required: true,
+    defaultOptionIds: ['medium'],
     options: [
       { id: 'light',    label: 'เข้มข้นน้อย',  priceAdj: 0 },
       { id: 'medium',   label: 'ปานกลาง',       priceAdj: 0 },
@@ -80,6 +84,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🥩',
     type: 'single',
     required: true,
+    defaultOptionIds: ['fatty'],
     options: [
       { id: 'no-pork',    label: 'ไม่ใส่หู (ได้เส้นเพิ่ม)', priceAdj: 0 },
       { id: 'fatty',      label: 'หมูติดมัน',               priceAdj: 0 },
@@ -92,6 +97,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🌿',
     type: 'multi',
     required: true,
+    defaultOptionIds: ['both'],
     options: [
       { id: 'none',      label: 'ไม่ใส่เลย',           priceAdj: 0 },
       { id: 'white',     label: 'ต้นหอมขาวญี่ปุ่น',    priceAdj: 0 },
@@ -105,6 +111,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🌶️',
     type: 'single',
     required: true,
+    defaultOptionIds: ['no-spice'],
     options: [
       { id: 'no-spice', label: 'ไม่เผ็ดเลย', priceAdj: 0 },
       { id: 'x1',       label: 'x1',          priceAdj: 0 },
@@ -119,6 +126,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🧄',
     type: 'single',
     required: true,
+    defaultOptionIds: ['1tsp'],
     options: [
       { id: 'none',  label: 'ไม่ใส่เลย',  priceAdj: 0 },
       { id: '1tsp',  label: '1 ช้อนชา',   priceAdj: 0 },
@@ -132,6 +140,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🫙',
     type: 'single',
     required: true,
+    defaultOptionIds: ['normal'],
     options: [
       { id: 'none',    label: 'ไม่ใส่',  priceAdj: 0 },
       { id: 'light',   label: 'น้อย',    priceAdj: 0 },

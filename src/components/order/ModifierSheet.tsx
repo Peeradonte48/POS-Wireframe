@@ -37,15 +37,22 @@ function ModifierSheetContent({
   const [quantity, setQuantity] = useState(() => editingLineItem?.quantity ?? 1)
   const [specialRequest, setSpecialRequest] = useState(() => editingLineItem?.specialRequest ?? '')
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
-    if (!editingLineItem) return {}
-    const map: Record<string, string[]> = {}
-    editingLineItem.modifiers.forEach((m) => {
-      if (!map[m.groupId]) map[m.groupId] = []
-      map[m.groupId].push(m.optionId)
+    if (editingLineItem) {
+      const map: Record<string, string[]> = {}
+      editingLineItem.modifiers.forEach((m) => {
+        if (!map[m.groupId]) map[m.groupId] = []
+        map[m.groupId].push(m.optionId)
+      })
+      return map
+    }
+    // Pre-populate with base defaults for new orders
+    const defaults: Record<string, string[]> = {}
+    menuItem.modifierGroups.forEach((g) => {
+      if (g.defaultOptionIds?.length) defaults[g.id] = [...g.defaultOptionIds]
     })
-    return map
+    return defaults
   })
-  const [spiceLevel, setSpiceLevel] = useState<number | null>(() => editingLineItem?.spiceLevel ?? null)
+  const [spiceLevel, setSpiceLevel] = useState<number | null>(() => editingLineItem?.spiceLevel ?? 2)
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set())
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({})
 

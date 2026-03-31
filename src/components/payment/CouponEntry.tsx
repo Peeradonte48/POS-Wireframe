@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BadgePercent,
   Calendar,
@@ -41,6 +41,17 @@ interface CouponEntryProps {
   onCancel: () => void
 }
 
+/** Unified item for the eligible-items grid — either from order or from full menu */
+interface EligibleItem {
+  key: string          // lineId for ordered items, menuItemId for non-ordered
+  lineId: string | null
+  menuItemId: string
+  name: string
+  basePrice: number
+  quantity: number
+  isOrdered: boolean
+}
+
 // ---------------------------------------------------------------------------
 // CouponEntry
 // ---------------------------------------------------------------------------
@@ -57,9 +68,33 @@ export function CouponEntry({
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [scannerOpen, setScannerOpen] = useState(false)
 
-  // Auto-select all items when code becomes valid; clear when invalidated
-  // Using key-based remount is not applicable here because we need to auto-select
-  // all items reactively when codeState transitions to valid
+  // Build unified list: ordered items first, then remaining menu items
+  const orderedMenuIds = new Set(orderItems.map((i) => i.menuItemId))
+  const eligibleItems: EligibleItem[] = useMemo(() => {
+    const ordered: EligibleItem[] = orderItems.map((i) => ({
+      key: i.lineId,
+      lineId: i.lineId,
+      menuItemId: i.menuItemId,
+      name: i.menuItemName,
+      basePrice: i.basePrice,
+      quantity: i.quantity,
+      isOrdered: true,
+    }))
+    const notOrdered: EligibleItem[] = MENU_ITEMS
+      .filter((m) => !orderedMenuIds.has(m.id))
+      .map((m) => ({
+        key: m.id,
+        lineId: null,
+        menuItemId: m.id,
+        name: m.name,
+        basePrice: m.basePrice,
+        quantity: 0,
+        isOrdered: false,
+      }))
+    return [...ordered, ...notOrdered]
+  }, [orderItems, orderedMenuIds])
+
+  // Auto-select all ordered items when code becomes valid; clear when invalidated
   useEffect(() => {
     if (codeState === 'valid') {
       setSelectedItems(new Set(orderItems.map((i) => i.lineId)))
@@ -223,34 +258,37 @@ export function CouponEntry({
           {/* Section header */}
           <div className="flex items-center justify-between leading-none">
             <p className="font-medium text-base text-foreground">สินค้าที่ร่วมรายการ</p>
-            <p className="text-base text-muted-foreground">{orderItems.length} รายการ</p>
+            <p className="text-base text-muted-foreground">{eligibleItems.length} รายการ</p>
           </div>
 
           {/* Items grid — bento card style */}
           <div className="bg-muted border border-border rounded-lg p-2 min-h-[80px]">
             <div className="grid grid-cols-5 gap-2">
-              {orderItems.map((item, idx) => {
+              {eligibleItems.map((item, idx) => {
                 const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
                 const imageSrc = menuItem?.imagePath ?? '/images/promotions/item-bg.png'
                 const overlayImg = idx % 3 === 0
                   ? '/images/promotions/item-overlay-a.png'
                   : '/images/promotions/item-overlay-b.png'
-                const isSelected = selectedItems.has(item.lineId)
+                const isSelected = item.lineId ? selectedItems.has(item.lineId) : false
                 const discountedPrice = promo.discountPercent > 0
                   ? Math.round(item.basePrice * (1 - promo.discountPercent / 100))
                   : Math.max(0, item.basePrice - promo.discountFixed)
+                const canSelect = item.isOrdered && isValid && item.lineId !== null
 
                 return (
                   <button
-                    key={item.lineId}
-                    onClick={() => isValid && toggleItem(item.lineId)}
-                    disabled={!isValid}
+                    key={item.key}
+                    onClick={() => canSelect && item.lineId && toggleItem(item.lineId)}
+                    disabled={!canSelect}
                     className={`relative flex flex-col items-start overflow-hidden rounded-[14px] border text-left transition-all ${
-                      !isValid
-                        ? 'opacity-50 cursor-not-allowed border-border bg-card'
-                        : isSelected
-                          ? 'border-primary cursor-pointer'
-                          : 'border-border bg-card cursor-pointer hover:border-muted-foreground'
+                      !item.isOrdered
+                        ? 'opacity-40 cursor-default border-border bg-card grayscale'
+                        : !isValid
+                          ? 'opacity-50 cursor-not-allowed border-border bg-card'
+                          : isSelected
+                            ? 'border-primary cursor-pointer'
+                            : 'border-border bg-card cursor-pointer hover:border-muted-foreground'
                     }`}
                     style={isSelected ? {
                       backgroundImage: 'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
@@ -263,7 +301,7 @@ export function CouponEntry({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={imageSrc}
-                        alt={item.menuItemName}
+                        alt={item.name}
                         className="absolute inset-0 size-full object-cover"
                       />
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -278,7 +316,7 @@ export function CouponEntry({
                     {/* Content section */}
                     <div className="flex flex-col gap-2 p-2 w-full min-h-[96px]">
                       <p className="font-semibold text-base leading-6 overflow-hidden text-ellipsis whitespace-nowrap text-card-foreground">
-                        {item.menuItemName}
+                        {item.name}
                       </p>
                       <div className="flex items-center gap-2">
                         <p className="text-xs leading-none line-through text-muted-foreground">
