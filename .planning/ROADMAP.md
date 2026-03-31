@@ -118,14 +118,14 @@ Plans:
   1. Every component flagged as complex in the Phase 22 audit has been decomposed or simplified, with a comment or plan note explaining the change
   2. Duplicated logic identified in the audit (repeated utility functions, copy-paste JSX blocks, parallel state derivations) is consolidated into shared modules or hooks
   3. `npm run build` still passes with zero errors after all structural changes
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 - [ ] 24-01-PLAN.md — Consolidate duplicated patterns (useNowTimer, queue-display, dialog-reset key-remount for 8 components)
 - [ ] 24-02-PLAN.md — Decompose ModifierSheet + SplitSheet into focused sub-components
 - [ ] 24-03-PLAN.md — Decompose payment page into orchestrator + 4 extracted modules
 - [ ] 24-04-PLAN.md — Decompose promotions page + split-summary page
-- [ ] 24-05-PLAN.md — PaymentMethodPanel consolidation + Zustand selector audit
+- [x] 24-05-PLAN.md — PaymentMethodPanel consolidation + Zustand selector audit
 
 ### Phase 25: Tech Debt
 **Goal**: The three known runtime defects are fixed and the five untested E2E flows are documented with clear test instructions
@@ -166,7 +166,7 @@ Plans:
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
-| 24. Refactor | v1.4 | 0/5 | Not started | - |
+| 24. Refactor | v1.4 | 1/5 | In Progress|  |
 | 25. Tech Debt | v1.4 | 0/? | Not started | - |
 
 ---
