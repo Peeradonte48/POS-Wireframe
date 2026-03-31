@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { Armchair } from 'lucide-react'
 import { useTableStore } from '@/stores/table.store'
 import { TableTile } from './TableTile'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -31,6 +32,11 @@ export function TableGrid({ onTableTap }: TableGridProps) {
   const tableList = Object.values(tables)
     .filter((t): t is TableRecord => Boolean(t?.id))
     .sort((a, b) => a.id.localeCompare(b.id))
+
+  const hasActiveSessions = useMemo(
+    () => tableList.some((t) => t.status !== 'Open' && t.status !== 'Reserved'),
+    [tableList]
+  )
 
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
@@ -65,6 +71,15 @@ export function TableGrid({ onTableTap }: TableGridProps) {
             ))
           )}
         </div>
+
+        {/* Empty state: no active sessions */}
+        {!isLoading && tableList.length > 0 && !hasActiveSessions && (
+          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border p-6 text-center">
+            <Armchair size={28} className="text-muted-foreground/50" />
+            <p className="text-base font-bold text-foreground">ยังไม่มีโต๊ะที่เปิด</p>
+            <p className="text-sm text-muted-foreground">แตะโต๊ะบนแผนผังเพื่อเปิดเซสชัน</p>
+          </div>
+        )}
       </div>
     </div>
   )

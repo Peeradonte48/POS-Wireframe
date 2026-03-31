@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import { CheckCheck } from 'lucide-react'
 import { useOrderStore } from '@/stores/order.store'
 import { useKdsStore, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
@@ -116,8 +117,10 @@ export function KdsBoard() {
       <div className="flex-1 min-h-0 bg-muted border border-border rounded-none overflow-hidden">
         <div className="h-full overflow-y-auto p-3">
           {visibleTickets.length === 0 ? (
-            <div className="flex items-center justify-center h-20 rounded-lg border border-dashed border-border text-muted-foreground text-sm">
-              ไม่มีออร์เดอร์
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border p-8 text-center">
+              <CheckCheck size={32} className="text-muted-foreground/50" />
+              <p className="text-base font-bold text-foreground">ครัวพร้อม</p>
+              <p className="text-sm text-muted-foreground">ออร์เดอร์ใหม่จะปรากฏที่นี่โดยอัตโนมัติ</p>
             </div>
           ) : (
             <div className="flex flex-wrap gap-2 content-start">
