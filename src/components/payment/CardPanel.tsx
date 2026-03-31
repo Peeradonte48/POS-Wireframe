@@ -1,5 +1,8 @@
 'use client'
 
+import { CreditCard } from 'lucide-react'
+import { PaymentMethodPanel } from '@/components/payment/PaymentMethodPanel'
+
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -14,11 +17,12 @@ interface CardPanelProps {
 
 export function CardPanel({ grandTotal }: CardPanelProps) {
   return (
-    <div className="pt-2">
+    <PaymentMethodPanel
+      icon={<CreditCard size={24} />}
+      title="Card"
+      description="Customer taps or swipes at card reader"
+    >
       <p className="text-2xl font-bold text-center">฿{grandTotal.toLocaleString()}</p>
-      <p className="text-sm text-muted-foreground text-center mt-2">
-        Customer taps or swipes at card reader
-      </p>
-    </div>
+    </PaymentMethodPanel>
   )
 }
