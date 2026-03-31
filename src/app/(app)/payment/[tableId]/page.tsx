@@ -30,6 +30,8 @@ import { useKdsStore } from '@/stores/kds.store'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { PROMOTIONS, type Promotion } from '@/lib/mock-data/promotions'
 import { MENU_ITEMS } from '@/lib/mock-data/menu'
+import { useBillCalculation } from '@/components/payment/useBillCalculation'
+import { useCameraScanner } from '@/components/payment/useCameraScanner'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,8 +49,24 @@ export default function PaymentPage() {
   const tableId = params.tableId
   const router = useRouter()
 
-  // ---- Takeaway detection ----
-  const isTakeaway = Boolean(useQueueStore.getState().orders[tableId])
+  // ---- Bill calculation & merge awareness ----
+  const {
+    lineItems: billItems,
+    tableOrders,
+    subtotal,
+    vatAmount,
+    grandTotal,
+    discountTotal: discountAmount,
+    promotions: promotionDiscounts,
+    isMerged,
+    isTakeaway,
+    mergedTableIds: mergedSecondaryIds,
+  } = useBillCalculation(tableId)
+
+  // ---- Camera scanner ----
+  const { cameraOpen: _cameraOpen, setCameraOpen: _setCameraOpen } = useCameraScanner()
+
+  // ---- Takeaway queue order (for display only) ----
   const queueOrder = isTakeaway ? useQueueStore.getState().orders[tableId] : undefined
 
   // ---- Stores ----
@@ -69,8 +87,6 @@ export default function PaymentPage() {
   // ---- CRM member lookup ----
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[tableId])
-  const promotionDiscounts = useMemo(() => promotionDiscountsRaw ?? [], [promotionDiscountsRaw])
   const { setCrmMember, clearCrmMember, removePromotionDiscount } = useBillStore()
 
 
@@ -121,14 +137,9 @@ export default function PaymentPage() {
     })
   }
 
-  // ---- Merge state ----
-  const merges = useBillStore((s) => s.merges)
-  const mergedSecondaryIds = useMemo(
-    () => Object.entries(merges).filter(([, primary]) => primary === tableId).map(([tid]) => tid),
-    [merges, tableId],
-  )
-  const isMerged = mergedSecondaryIds.length > 0
+  // ---- Merge state (derived; raw merges for eligibility check) ----
   const { dissolveAll } = useBillStore()
+  const merges = useBillStore((s) => s.merges)
   const tables = useTableStore((s) => s.tables)
   const [mergeSheetOpen, setMergeSheetOpen] = useState(false)
   const hasEligibleMergeTarget = Object.values(tables).some(
@@ -146,52 +157,9 @@ export default function PaymentPage() {
     crmMember: CrmMember | null
   } | null>(null)
 
-  // ---- Bill assembly ----
-  const billItems = useMemo(() => {
-    const primaryItems = order
-      ? order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
-      : []
-    if (!isMerged) return primaryItems
-    const secondaryItems = mergedSecondaryIds.flatMap((tid) => {
-      const secOrder = useOrderStore.getState().getOrder(tid)
-      if (!secOrder) return []
-      return secOrder.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
-    })
-    return [...primaryItems, ...secondaryItems]
-  }, [order, isMerged, mergedSecondaryIds])
+  // ---- Item split eligibility ----
   const totalBillUnits = billItems.reduce((sum, item) => sum + item.quantity, 0)
   const itemSplitDisabled = isMerged || totalBillUnits <= 1
-
-  // tableOrders for grouped display
-  const tableOrders = useMemo(() => {
-    if (isMerged) {
-      return [tableId, ...mergedSecondaryIds].map((tid) => ({
-        tableId: tid,
-        label: tables[tid]?.label ?? tid,
-        guestCount: tables[tid]?.guestCount ?? null,
-        items: (tid === tableId
-          ? (order?.rounds.flatMap((r) => r.items) ?? [])
-          : (useOrderStore.getState().getOrder(tid)?.rounds.flatMap((r) => r.items) ?? [])
-        ).filter((item) => item.status !== 'voided'),
-      }))
-    }
-    return [{
-      tableId,
-      label: tables[tableId]?.label ?? tableId,
-      guestCount: tables[tableId]?.guestCount ?? null,
-      items: billItems,
-    }]
-  }, [isMerged, mergedSecondaryIds, tableId, tables, order, billItems])
-
-  const subtotal = useMemo(
-    () => billItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0),
-    [billItems],
-  )
-
-  const discountAmount = promotionDiscounts.reduce((sum, d) => sum + d.amount, 0)
-  const discountedSubtotal = subtotal - discountAmount
-  const vatAmount = Math.round(discountedSubtotal * 0.07)
-  const grandTotal = discountedSubtotal + vatAmount
 
   // ---- Confirm payment ----
   function handleConfirmPayment() {
