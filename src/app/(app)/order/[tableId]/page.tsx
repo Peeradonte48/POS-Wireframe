@@ -153,6 +153,7 @@ export default function OrderPage() {
             </Button>
             {!isTakeaway && (
               <Button
+                variant="outline"
                 size="sm"
                 className="gap-2"
                 onClick={() => router.push(`/payment/${tableId}`)}

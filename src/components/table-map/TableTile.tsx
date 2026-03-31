@@ -90,19 +90,19 @@ export function TableTile({ table, onTap }: TableTileProps) {
     >
       {/* Corner badge: split / merge / order stage */}
       {showSplitBadge ? (
-        <Badge className="absolute top-2 right-2 text-[10px] py-0 bg-status-split-bg text-status-split border-0">
+        <Badge className="absolute top-2 right-2 text-sm py-0 bg-status-split-bg text-status-split border-0">
           <Scissors size={10} className="mr-0.5" />
           {paidCount}/{split!.seatCount} paid
         </Badge>
       ) : showMergeBadge ? (
-        <Badge className="absolute top-2 right-2 text-[10px] py-0 bg-status-merged-bg text-status-merged border-0">
+        <Badge className="absolute top-2 right-2 text-sm py-0 bg-status-merged-bg text-status-merged border-0">
           <Link size={10} className="mr-0.5" />
           {isMergedSecondary ? `→${primaryLabel}` : `+${mergedSecondaryIds.length}`}
         </Badge>
       ) : table.orderStage !== null && (table.status === 'Occupied' || table.status === 'CheckRequested') ? (
         <Badge
           variant={isEscalated ? 'escalated' : STAGE_VARIANT[table.orderStage]}
-          className="absolute top-2 right-2 text-[10px] py-0"
+          className="absolute top-2 right-2 text-sm py-0"
         >
           {table.orderStage}
         </Badge>

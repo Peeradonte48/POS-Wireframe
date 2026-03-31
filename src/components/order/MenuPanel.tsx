@@ -99,7 +99,7 @@ export function MenuPanel({ onItemTap, activeCategory }: MenuPanelProps) {
               )}
               {is86d && (
                 <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
-                  <Badge variant="outline" className="bg-background text-xs font-semibold">
+                  <Badge variant="outline" className="bg-background text-sm font-semibold">
                     86&apos;d
                   </Badge>
                 </div>
