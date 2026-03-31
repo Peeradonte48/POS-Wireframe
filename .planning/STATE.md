@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Codebase Cleanup
 status: verifying
-last_updated: "2026-03-31T09:54:13.324Z"
+last_updated: "2026-03-31T10:20:00.000Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 9
-  completed_plans: 6
-  percent: 56
+  completed_plans: 7
+  percent: 78
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-31
-**Session:** Milestone v1.4 Codebase Cleanup — 24-01 complete (shared useNowTimer + queue-display + key-based remount in 8 dialogs)
+**Session:** Milestone v1.4 Codebase Cleanup — 24-04 complete (promotions 669→173 LOC, split-summary 604→119 LOC, 6 new payment sub-components)
 
 ---
 
@@ -44,7 +44,7 @@ Status: Phase complete — ready for verification
 Last activity: 2026-03-31
 
 ```
-Progress: [██████░░░░] 56% (5/9 plans complete in v1.4)
+Progress: [████████░░] 78% (7/9 plans complete in v1.4)
 ```
 
 ---
