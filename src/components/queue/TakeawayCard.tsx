@@ -10,27 +10,7 @@ import type { QueueOrder } from '@/stores/queue.store'
 import { useOrderStore } from '@/stores/order.store'
 import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
 import { ConfirmStepBackDialog } from '@/components/queue/ConfirmStepBackDialog'
-
-function getStatusBadgeVariant(status: QueueOrder['status']): 'outline' | 'ordered' | 'ready' | 'settled' {
-  switch (status) {
-    case 'Taking':    return 'outline'
-    case 'Sent':      return 'ordered'
-    case 'Ready':     return 'ready'
-    case 'Collected': return 'settled'
-    default:          return 'outline'
-  }
-}
-
-function getStatusLabel(status: QueueOrder['status']): string {
-  switch (status) {
-    case 'Taking':    return 'Taking'
-    case 'Sent':      return 'Sent to Kitchen'
-    case 'Ready':     return 'Ready'
-    case 'Collected': return 'Collected'
-    case 'Cancelled': return 'Cancelled'
-    default:          return status
-  }
-}
+import { getQueueStatusBadgeVariant, getQueueStatusLabel } from '@/lib/queue-display'
 
 function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString('th-TH', {
@@ -73,8 +53,8 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
       {/* Header row */}
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-mono font-bold text-foreground">{order.orderId}</span>
-        <Badge variant={getStatusBadgeVariant(order.status)}>
-          {getStatusLabel(order.status)}
+        <Badge variant={getQueueStatusBadgeVariant(order.status)}>
+          {getQueueStatusLabel(order.status)}
         </Badge>
         <span className="text-xs text-muted-foreground ml-auto shrink-0">
           {formatTime(order.createdAt)}

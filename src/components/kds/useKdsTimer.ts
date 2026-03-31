@@ -1,6 +1,5 @@
 'use client'
-
-import { useState, useEffect } from 'react'
+import { useNowTimer } from '@/lib/hooks/useNowTimer'
 
 /**
  * Ticking MM:SS elapsed timer for KDS tickets.
@@ -14,16 +13,7 @@ export function useKdsTimer(addedAt: number): {
   display: string
   elapsedSeconds: number
 } {
-  // eslint-disable-next-line react-hooks/purity
-  const [now, setNow] = useState<number>(Date.now())
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now())
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
+  const now = useNowTimer(1000)
 
   const elapsedSeconds = Math.floor((now - addedAt) / 1000)
   const minutes = Math.floor(elapsedSeconds / 60)

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useQueueStore } from '@/stores/queue.store'
 import type { QueueOrder } from '@/stores/queue.store'
+import { getQueueStatusLabel } from '@/lib/queue-display'
 
 function getCtaLabel(status: QueueOrder['status']): string | null {
   switch (status) {
@@ -35,20 +36,6 @@ function getStatusVariant(
   }
 }
 
-function getStatusLabel(status: QueueOrder['status']): string {
-  switch (status) {
-    case 'Confirmed':
-      return 'Confirmed'
-    case 'Preparing':
-      return 'Preparing'
-    case 'ReadyForRider':
-      return 'Ready for Rider'
-    case 'PickedUp':
-      return 'Picked Up'
-    default:
-      return status
-  }
-}
 
 interface DeliveryCardProps {
   order: QueueOrder
@@ -74,7 +61,7 @@ export function DeliveryCard({ order }: DeliveryCardProps) {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={getStatusVariant(order.status)}>
-            {getStatusLabel(order.status)}
+            {getQueueStatusLabel(order.status)}
           </Badge>
         </div>
       </div>

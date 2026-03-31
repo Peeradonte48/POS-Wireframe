@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useNowTimer } from '@/lib/hooks/useNowTimer'
 
 /**
  * Returns elapsed whole minutes since sentAt.
@@ -7,14 +7,7 @@ import { useState, useEffect } from 'react'
  * Returns 0 if sentAt is null (round not yet sent).
  */
 export function useSentTimer(sentAt: number | null): number {
-  // eslint-disable-next-line react-hooks/purity
-  const [now, setNow] = useState(Date.now())
-
-  useEffect(() => {
-    if (!sentAt) return
-    const id = setInterval(() => setNow(Date.now()), 60_000)
-    return () => clearInterval(id)
-  }, [sentAt])
+  const now = useNowTimer(60_000, sentAt !== null)
 
   if (!sentAt) return 0
   return Math.floor((now - sentAt) / 60_000)

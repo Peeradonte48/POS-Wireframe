@@ -1,15 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useNowTimer } from '@/lib/hooks/useNowTimer'
 
 export function useDwellTimer(openedAt: number | null): string {
-  // eslint-disable-next-line react-hooks/purity
-  const [now, setNow] = useState(Date.now())
-
-  useEffect(() => {
-    if (!openedAt) return
-    const id = setInterval(() => setNow(Date.now()), 1000)
-    return () => clearInterval(id)
-  }, [openedAt])
+  const now = useNowTimer(1000, openedAt !== null)
 
   if (!openedAt) return ''
 
