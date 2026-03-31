@@ -175,8 +175,8 @@ export const useQueueStore = create<QueueStore>()(
         orders: state.orders,
         takeawayCounter: state.takeawayCounter,
       }),
-      onRehydrate: () => {
-        return (state: QueueStore | undefined) => {
+      onRehydrateStorage: () => {
+        return (state?: QueueStore) => {
           if (!state) return
           const orderStore = useOrderStore.getState()
           const updates: Record<string, QueueOrder> = {}
