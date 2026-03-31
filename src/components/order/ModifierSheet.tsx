@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Minus, Plus, NotebookPen, Pill } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
 import type { MenuItem } from '@/lib/mock-data/menu'
 import { useOrderStore } from '@/stores/order.store'
@@ -190,6 +191,7 @@ function ModifierSheetContent({
 // ModifierSheet — orchestrator
 
 export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId, editingLineItem, onItemAdded }: ModifierSheetProps) {
+  const focusTrapRef = useFocusTrap<HTMLDivElement>(open)
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -208,6 +210,10 @@ export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId,
         )}
       />
       <div
+        ref={focusTrapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Customize order"
         className={cn(
           'fixed bottom-0 left-0 right-0 z-50 flex flex-col rounded-t-[10px] bg-background border border-border',
           'transition-transform duration-300 ease-out max-h-[92vh]',

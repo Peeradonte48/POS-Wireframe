@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Minus, Plus } from 'lucide-react'
 import { useTableStore } from '@/stores/table.store'
 import { useOrderStore } from '@/stores/order.store'
+import { useBillStore } from '@/stores/bill.store'
 
 const MIN_GUESTS = 1
 const MAX_GUESTS = 10
@@ -32,6 +33,10 @@ function OpenTableModalContent({
 
   const handleConfirm = () => {
     useOrderStore.getState().clearOrder(tableId)
+    const billStore = useBillStore.getState()
+    billStore.clearPromotionDiscounts(tableId)
+    billStore.cancelSplit(tableId)
+    billStore.clearCrmMember(tableId)
     openTable(tableId, guestCount)
     const tableLabel = tables[tableId]?.label ?? tableId
     toast(`${tableLabel} opened — ${guestCount} guests`)
