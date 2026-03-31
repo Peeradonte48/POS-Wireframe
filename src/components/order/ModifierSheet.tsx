@@ -8,6 +8,7 @@ import type { MenuItem } from '@/lib/mock-data/menu'
 import { useOrderStore } from '@/stores/order.store'
 import type { OrderLineItem } from '@/stores/order.store'
 import { ForcedModifiersPanel } from '@/components/order/ForcedModifiersPanel'
+import { SpiceLevelPicker } from '@/components/order/SpiceLevelPicker'
 
 export interface ModifierSheetProps {
   open: boolean
@@ -44,6 +45,7 @@ function ModifierSheetContent({
     })
     return map
   })
+  const [spiceLevel, setSpiceLevel] = useState<number | null>(() => editingLineItem?.spiceLevel ?? null)
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set())
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -80,7 +82,7 @@ function ModifierSheetContent({
       menuItemName: menuItem.name,
       basePrice: menuItem.basePrice,
       modifiers,
-      spiceLevel: null,
+      spiceLevel,
       specialRequest,
       quantity,
       status: editingLineId ? (editingLineItem?.status ?? 'unsent') : 'unsent',
@@ -143,6 +145,7 @@ function ModifierSheetContent({
               errors={validationErrors}
               groupRefs={groupRefs}
             />
+            <SpiceLevelPicker value={spiceLevel} onChange={setSpiceLevel} />
             <div className="flex flex-col gap-2 pb-2">
               <span className="text-base font-semibold leading-none text-card-foreground">หมายเหตุ</span>
               <textarea value={specialRequest} onChange={(e) => setSpecialRequest(e.target.value)}
