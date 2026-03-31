@@ -8,7 +8,7 @@ import { KdsItemRow } from '@/components/kds/KdsItemRow'
 import { OrderLineItem } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useQueueStore } from '@/stores/queue.store'
-import { HandPlatter, Check, User } from 'lucide-react'
+import { HandPlatter, Check, User, ArrowRight } from 'lucide-react'
 
 interface KdsTicketCardProps {
   ticket: KdsTicket
@@ -37,6 +37,26 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
       : elapsedSeconds >= 600
         ? 'bg-status-check-requested-bg text-status-check-requested'
         : 'bg-primary text-primary-foreground'
+
+  function handleBump() {
+    if (bumpBlocked) return
+    const prevStage = ticket.stage
+    useKdsStore.getState().bumpTicket(ticket.ticketId)
+
+    // Cross-store write-back for delivery/takeaway tickets
+    if (ticket.orderType === 'delivery' || ticket.orderType === 'takeaway') {
+      if (prevStage === 'New' || prevStage === 'InProgress') {
+        useQueueStore.getState().advanceStatus(ticket.tableId)
+      }
+    }
+
+    // Table orderStage write-back for dine-in tickets
+    if (prevStage === 'New') {
+      useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Cooking' })
+    } else if (prevStage === 'InProgress') {
+      useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Ready' })
+    }
+  }
 
   function handleComplete() {
     if (bumpBlocked) return
@@ -103,21 +123,43 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
 
       {/* ── CardFooter ── */}
       <div className="border-t border-border px-6 py-4 flex items-center gap-2">
-        <button
-          onClick={handleComplete}
-          disabled={bumpBlocked}
-          className={`flex flex-1 h-10 items-center justify-center gap-2 rounded-md bg-primary px-8 py-2 text-sm font-medium text-primary-foreground transition-opacity ${
-            bumpBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90 active:scale-[0.98]'
-          }`}
-          style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
-        >
-          <Check size={16} />
-          <span>ออร์เดอร์เสร็จ</span>
-          {/* Progress badge */}
-          <span className="bg-secondary text-secondary-foreground text-xs font-semibold h-4 min-w-5 px-1 flex items-center justify-center rounded-full">
-            {checkedCount}/{nonVoidedItems.length}
-          </span>
-        </button>
+        {/* BUMP button — visible for New and InProgress stages */}
+        {(ticket.stage === 'New' || ticket.stage === 'InProgress') && (
+          <button
+            onClick={handleBump}
+            disabled={bumpBlocked}
+            className={`flex flex-1 h-10 items-center justify-center gap-2 rounded-md border border-border bg-secondary px-8 py-2 text-sm font-medium text-secondary-foreground transition-opacity ${
+              bumpBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-secondary/80 active:scale-[0.98]'
+            }`}
+            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+          >
+            <span>BUMP</span>
+            <ArrowRight size={16} />
+            {/* Progress badge */}
+            <span className="bg-card text-card-foreground text-xs font-semibold h-4 min-w-5 px-1 flex items-center justify-center rounded-full">
+              {checkedCount}/{nonVoidedItems.length}
+            </span>
+          </button>
+        )}
+
+        {/* Done button — visible only for Ready stage */}
+        {ticket.stage === 'Ready' && (
+          <button
+            onClick={handleComplete}
+            disabled={bumpBlocked}
+            className={`flex flex-1 h-10 items-center justify-center gap-2 rounded-md bg-primary px-8 py-2 text-sm font-medium text-primary-foreground transition-opacity ${
+              bumpBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90 active:scale-[0.98]'
+            }`}
+            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+          >
+            <Check size={16} />
+            <span>ออร์เดอร์เสร็จ</span>
+            {/* Progress badge */}
+            <span className="bg-secondary text-secondary-foreground text-xs font-semibold h-4 min-w-5 px-1 flex items-center justify-center rounded-full">
+              {checkedCount}/{nonVoidedItems.length}
+            </span>
+          </button>
+        )}
       </div>
     </div>
   )

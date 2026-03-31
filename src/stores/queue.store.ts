@@ -2,6 +2,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useOrderStore } from '@/stores/order.store'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -174,6 +175,31 @@ export const useQueueStore = create<QueueStore>()(
         orders: state.orders,
         takeawayCounter: state.takeawayCounter,
       }),
+      onRehydrate: () => {
+        return (state: QueueStore | undefined) => {
+          if (!state) return
+          const orderStore = useOrderStore.getState()
+          const updates: Record<string, QueueOrder> = {}
+          let hasUpdates = false
+          for (const [id, queueOrder] of Object.entries(state.orders)) {
+            if (
+              queueOrder.status !== 'Taking' &&
+              queueOrder.status !== 'Cancelled' &&
+              queueOrder.status !== 'Collected'
+            ) {
+              if (!orderStore.orders[id]) {
+                updates[id] = { ...queueOrder, itemsSummary: 'items unavailable — reload' }
+                hasUpdates = true
+              }
+            }
+          }
+          if (hasUpdates) {
+            useQueueStore.setState((prev) => ({
+              orders: { ...prev.orders, ...updates },
+            }))
+          }
+        }
+      },
     }
   )
 )

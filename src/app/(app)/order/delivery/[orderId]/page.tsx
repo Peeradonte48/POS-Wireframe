@@ -77,7 +77,7 @@ export default function DeliveryOrderPage() {
     router.replace('/table-map?tab=delivery')
   }
 
-  if (!order) return null
+  if (!order) return <div className="flex-1 flex items-center justify-center text-muted-foreground">Order not found</div>
 
   const platformLabel = order.platform === 'grab' ? 'Grab' : 'LINE MAN'
 
