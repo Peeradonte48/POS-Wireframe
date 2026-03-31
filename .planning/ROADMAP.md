@@ -171,7 +171,7 @@ Plans:
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
 | 24. Refactor | v1.4 | 5/5 | Complete    | 2026-03-31 |
-| 25. Tech Debt | v1.4 | 2/2 | Complete   | 2026-03-31 |
+| 25. Tech Debt | v1.4 | 2/2 | Complete    | 2026-03-31 |
 
 ---
 
