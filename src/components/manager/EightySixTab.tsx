@@ -1,16 +1,25 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import { MENU_CATEGORIES, MENU_ITEMS } from '@/lib/mock-data/menu'
 import { useManagerStore } from '@/stores/manager.store'
 import { useSessionStore } from '@/stores/session.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 export function EightySixTab() {
   const { eightySixedIds, toggleEightySix } = useManagerStore()
   const role = useSessionStore((s) => s.role)!
+  const [pendingToggle, setPendingToggle] = useState<{ id: string; name: string } | null>(null)
 
   const grouped = useMemo(() => {
     return MENU_CATEGORIES.map((cat) => ({
@@ -44,11 +53,12 @@ export function EightySixTab() {
                     checked={is86d}
                     onChange={() => {
                       if (!canDoAction(role, 'eighty-six-toggle')) return
-                      const willBe86d = !is86d
-                      toggleEightySix(item.id)
-                      if (willBe86d) {
-                        toast.success(`${item.name} 86'd`)
+                      if (!is86d) {
+                        // marking as 86'd — requires confirmation
+                        setPendingToggle({ id: item.id, name: item.name })
                       } else {
+                        // un-86-ing — not destructive, no confirmation needed
+                        toggleEightySix(item.id)
                         toast(`${item.name} available`)
                       }
                     }}
@@ -74,6 +84,33 @@ export function EightySixTab() {
           })}
         </div>
       ))}
+
+      <Dialog open={pendingToggle !== null} onOpenChange={(open) => { if (!open) setPendingToggle(null) }}>
+        <DialogContent className="w-[320px] max-w-[calc(100vw-2rem)]">
+          <DialogHeader>
+            <DialogTitle>86 รายการนี้?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            &ldquo;{pendingToggle?.name}&rdquo; จะไม่สามารถสั่งได้จนกว่าจะยกเลิก 86
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPendingToggle(null)}>
+              ยกเลิก
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (!pendingToggle) return
+                toggleEightySix(pendingToggle.id)
+                toast.success(`${pendingToggle.name} 86'd`)
+                setPendingToggle(null)
+              }}
+            >
+              86 รายการนี้
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

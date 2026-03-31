@@ -74,6 +74,7 @@ export function CrmLookupDialog({ open, onClose, onMemberFound }: Props) {
 
         {/* Input */}
         <div className="px-6 pb-4 flex flex-col gap-1.5">
+          <label htmlFor="crm-search" className="sr-only">ค้นหาสมาชิก</label>
           <div
             className={`flex items-center gap-3 h-9 rounded-lg border bg-background px-3 transition-colors ${
               notFound ? 'border-destructive' : 'border-border'
@@ -81,6 +82,7 @@ export function CrmLookupDialog({ open, onClose, onMemberFound }: Props) {
           >
             <Smartphone size={16} className="text-muted-foreground shrink-0" />
             <input
+              id="crm-search"
               type="tel"
               className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
               placeholder="เบอร์โทรศัพท์"

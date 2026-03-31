@@ -314,18 +314,22 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
                   <div className="flex items-center gap-2">
                     {/* Amount input or read-only display */}
                     {!isSettled && !isLast && (
-                      <input
-                        type="number"
-                        min={1}
-                        max={remainingForThis}
-                        value={amountEntered === 0 ? '' : amountEntered}
-                        placeholder="฿0"
-                        onChange={(e) => {
-                          const v = Math.max(0, Number(e.target.value) || 0)
-                          setCustomAmount(tableId, i, v)
-                        }}
-                        className="w-24 text-right border rounded-md px-2 py-1 text-sm bg-background"
-                      />
+                      <>
+                        <label htmlFor={`split-amount-${i}`} className="sr-only">จำนวนเงิน</label>
+                        <input
+                          id={`split-amount-${i}`}
+                          type="number"
+                          min={1}
+                          max={remainingForThis}
+                          value={amountEntered === 0 ? '' : amountEntered}
+                          placeholder="฿0"
+                          onChange={(e) => {
+                            const v = Math.max(0, Number(e.target.value) || 0)
+                            setCustomAmount(tableId, i, v)
+                          }}
+                          className="w-24 text-right border rounded-md px-2 py-1 text-sm bg-background"
+                        />
+                      </>
                     )}
                     {!isSettled && isLast && (
                       <span className="font-semibold text-sm">
