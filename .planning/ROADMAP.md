@@ -74,7 +74,7 @@ Full archive: `.planning/milestones/v1.3-ROADMAP.md`
 
 - [x] **Phase 22: Codebase Audit** — Written audit map of structural issues, dead code, type errors, and tech debt root causes (completed 2026-03-30)
 - [x] **Phase 23: TypeScript + Dead Code** — Resolve all any-casts, achieve zero build errors, remove unused imports and unreachable code, enforce naming conventions (completed 2026-03-31)
-- [ ] **Phase 24: Refactor** — Simplify complex components identified in audit, consolidate duplicated patterns
+- [x] **Phase 24: Refactor** — Simplify complex components identified in audit, consolidate duplicated patterns (completed 2026-03-31)
 - [ ] **Phase 25: Tech Debt** — Fix DLVR-04/05 KDS desync, TKWY-04 reload edge case, document 5 E2E flows
 
 ---
@@ -118,12 +118,12 @@ Plans:
   1. Every component flagged as complex in the Phase 22 audit has been decomposed or simplified, with a comment or plan note explaining the change
   2. Duplicated logic identified in the audit (repeated utility functions, copy-paste JSX blocks, parallel state derivations) is consolidated into shared modules or hooks
   3. `npm run build` still passes with zero errors after all structural changes
-**Plans:** 3/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 24-01-PLAN.md — Consolidate duplicated patterns (useNowTimer, queue-display, dialog-reset key-remount for 8 components)
-- [ ] 24-02-PLAN.md — Decompose ModifierSheet + SplitSheet into focused sub-components
-- [ ] 24-03-PLAN.md — Decompose payment page into orchestrator + 4 extracted modules
+- [x] 24-02-PLAN.md — Decompose ModifierSheet + SplitSheet into focused sub-components
+- [x] 24-03-PLAN.md — Decompose payment page into orchestrator + 4 extracted modules
 - [x] 24-04-PLAN.md — Decompose promotions page + split-summary page
 - [x] 24-05-PLAN.md — PaymentMethodPanel consolidation + Zustand selector audit
 
@@ -166,7 +166,7 @@ Plans:
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
-| 24. Refactor | v1.4 | 3/5 | In Progress|  |
+| 24. Refactor | v1.4 | 5/5 | Complete   | 2026-03-31 |
 | 25. Tech Debt | v1.4 | 0/? | Not started | - |
 
 ---
