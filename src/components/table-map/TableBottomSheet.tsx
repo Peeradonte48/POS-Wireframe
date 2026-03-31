@@ -6,13 +6,14 @@ import { toast } from 'sonner'
 import { Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
 import { useBillStore } from '@/stores/bill.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { useDwellTimer } from '@/components/table-map/useDwellTimer'
 import type { TableRecord } from '@/stores/table.store'
-import { MergeSheet } from '@/components/table-map/MergeSheet'
+import { MergeDialog } from '@/components/table-map/MergeDialog'
 import { OrderTimeline } from '@/components/table-map/OrderTimeline'
 
 interface TableBottomSheetProps {
@@ -59,36 +60,12 @@ export function TableBottomSheet({
     setActiveTab('actions')
   }, [table?.id])
 
-  // Lock body scroll when sheet is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [open])
-
   const dwellTimer = useDwellTimer(table?.openedAt ?? null)
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-200
-          ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-      />
-
-      {/* Panel */}
-      <div
-        style={{ boxShadow: 'var(--shadow-floating)' }}
-        className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-background
-          transition-transform duration-300 ease-out max-h-[80vh] overflow-y-auto
-          ${open ? 'translate-y-0' : 'translate-y-full'}`}
-      >
+      <Sheet open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+        <SheetContent side="bottom" showCloseButton={false} className="rounded-t-2xl max-h-[80vh] overflow-y-auto p-0">
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="h-1 w-10 rounded-full bg-muted-foreground/30" />
@@ -326,9 +303,10 @@ export function TableBottomSheet({
             )}
           </>
         )}
-      </div>
+        </SheetContent>
+      </Sheet>
 
-      <MergeSheet
+      <MergeDialog
         open={mergeSheetOpen}
         onClose={() => setMergeSheetOpen(false)}
         primaryTableId={table?.id ?? ''}

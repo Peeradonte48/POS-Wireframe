@@ -55,7 +55,7 @@ export function QrSheet({ open, onClose, grandTotal, onConfirm }: QrSheetProps) 
           <div className="bg-white border border-border rounded-md overflow-hidden w-full max-w-[350px]">
 
             {/* Dark navy THAI QR PAYMENT header */}
-            <div className="bg-[#113e67] h-[71px] flex items-center justify-center px-[10px]">
+            <div className="bg-[var(--color-thai-qr-header)] h-[71px] flex items-center justify-center px-[10px]">
               <div className="flex items-center gap-3">
                 {/* Medical cross / logo mark */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}

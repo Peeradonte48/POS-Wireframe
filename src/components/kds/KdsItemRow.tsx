@@ -80,7 +80,7 @@ export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }:
           disabled={!interactive}
         >
           <div
-            className={`w-4 h-4 rounded border shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] shrink-0 flex items-center justify-center ${
+            className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center ${
               isChecked
                 ? 'bg-primary border-primary'
                 : 'bg-background border-input'

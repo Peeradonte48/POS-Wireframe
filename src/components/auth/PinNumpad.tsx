@@ -59,7 +59,7 @@ export function PinNumpad({ onComplete, error = false, onErrorClear, label }: Pi
         className={cn(
           'flex gap-3 p-4 rounded-lg border-2 transition-colors',
           error
-            ? 'border-red-500 bg-red-50 animate-shake'
+            ? 'border-destructive bg-destructive/10 animate-shake'
             : 'border-border bg-muted/30'
         )}
       >
@@ -69,7 +69,7 @@ export function PinNumpad({ onComplete, error = false, onErrorClear, label }: Pi
             className={cn(
               'w-4 h-4 rounded-full transition-colors',
               i < digits.length
-                ? error ? 'bg-red-500' : 'bg-foreground'
+                ? error ? 'bg-destructive' : 'bg-foreground'
                 : 'bg-muted-foreground/30'
             )}
           />

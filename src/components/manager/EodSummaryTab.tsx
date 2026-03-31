@@ -69,8 +69,8 @@ export function EodSummaryTab() {
   return (
     <div className="p-4 space-y-4">
       {shiftClosed && (
-        <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-          <span className="text-sm font-medium text-green-800">Shift Closed</span>
+        <div className="flex items-center justify-between p-3 bg-status-success-bg border border-status-success/30 rounded-lg">
+          <span className="text-sm font-medium text-status-success">Shift Closed</span>
           <Button variant="outline" size="sm" onClick={logout}>Logout</Button>
         </div>
       )}
@@ -151,7 +151,7 @@ export function EodSummaryTab() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Variance</span>
-          <span className={cn('text-sm font-medium tabular-nums', variance >= 0 ? 'text-green-600' : 'text-red-500')}>
+          <span className={cn('text-sm font-medium tabular-nums', variance >= 0 ? 'text-status-success' : 'text-destructive')}>
             {variance >= 0
               ? `Over ฿${variance.toLocaleString()}`
               : `Short ฿${Math.abs(variance).toLocaleString()}`}

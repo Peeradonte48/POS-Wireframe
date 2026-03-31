@@ -17,8 +17,8 @@ export default function ShiftOpenPage() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 min-h-full gap-8 px-4 py-12">
       <div className="flex flex-col items-center gap-2 text-center">
-        <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-          <AlarmClock size={24} className="text-amber-600" />
+        <div className="w-12 h-12 rounded-full bg-status-warning-bg flex items-center justify-center">
+          <AlarmClock size={24} className="text-status-warning" />
         </div>
         <h1 className="text-xl font-semibold">Open Your Shift</h1>
         <p className="text-sm text-muted-foreground max-w-[260px]">

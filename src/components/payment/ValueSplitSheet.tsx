@@ -221,7 +221,7 @@ export function ValueSplitSheet({
                 ยอดค้างชำระ
               </p>
               {isBalanceClear ? (
-                <p className="font-semibold text-4xl text-green-600 leading-10">
+                <p className="font-semibold text-4xl text-status-success leading-10">
                   ไม่มียอดค้าง
                 </p>
               ) : (

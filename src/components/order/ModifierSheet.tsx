@@ -202,7 +202,7 @@ export function ModifierSheet({
                   disabled={quantity <= 1}
                   aria-label="ลด"
                   className="flex items-center justify-center size-9 rounded-md border border-input bg-background disabled:opacity-40"
-                  style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                  style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                   <Minus size={16} />
                 </button>
@@ -211,7 +211,7 @@ export function ModifierSheet({
                   onClick={() => setQuantity((q) => Math.min(99, q + 1))}
                   aria-label="เพิ่ม"
                   className="flex items-center justify-center size-9 rounded-md border border-input bg-background"
-                  style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                  style={{ boxShadow: 'var(--shadow-card)' }}
                 >
                   <Plus size={16} />
                 </button>
@@ -341,7 +341,7 @@ export function ModifierSheet({
                       placeholder="Placeholder"
                       rows={3}
                       className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring min-h-[60px]"
-                      style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                      style={{ boxShadow: 'var(--shadow-card)' }}
                     />
                   </div>
                 </div>

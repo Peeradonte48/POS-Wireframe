@@ -76,7 +76,7 @@ export function SimpleItemDialog({
               'flex items-center justify-center size-8 rounded-full border border-input bg-background shrink-0',
               'disabled:opacity-40 transition-opacity',
             )}
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
             <Minus size={16} />
           </button>
@@ -96,7 +96,7 @@ export function SimpleItemDialog({
             onClick={() => setQuantity((q) => Math.min(99, q + 1))}
             aria-label="เพิ่ม"
             className="flex items-center justify-center size-8 rounded-full border border-input bg-background shrink-0"
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
             <Plus size={16} />
           </button>

@@ -96,6 +96,10 @@
   --color-status-ready-bg:           var(--status-ready-bg);
   --color-status-escalated:          var(--status-escalated);
   --color-status-escalated-bg:       var(--status-escalated-bg);
+  --color-status-success:    var(--status-success);
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-warning:    var(--status-warning);
+  --color-status-warning-bg: var(--status-warning-bg);
 
   /* Platform color aliases — delivery badge colors */
   --color-platform-grab:        var(--platform-grab);
@@ -163,6 +167,17 @@
   --status-ready-bg:           oklch(0.95 0.06 155);
   --status-escalated:          oklch(0.52 0.26 27);
   --status-escalated-bg:       oklch(0.96 0.06 27);
+
+  /* Semantic success tokens */
+  --status-success:    oklch(0.60 0.18 145);
+  --status-success-bg: oklch(0.94 0.05 145);
+
+  /* Semantic warning tokens */
+  --status-warning:    oklch(0.62 0.18 60);
+  --status-warning-bg: oklch(0.96 0.05 60);
+
+  /* Thai QR brand color */
+  --color-thai-qr-header: #113e67;
 
   /* Platform delivery colors — Grab green, LINE MAN blue */
   --platform-grab:        oklch(0.46 0.18 145);
@@ -237,6 +252,14 @@
   --status-ready-bg:           oklch(0.24 0.06 155);
   --status-escalated:          oklch(0.72 0.22 27);
   --status-escalated-bg:       oklch(0.24 0.08 27);
+
+  /* Semantic success tokens — dark */
+  --status-success:    oklch(0.76 0.14 145);
+  --status-success-bg: oklch(0.22 0.06 145);
+
+  /* Semantic warning tokens — dark */
+  --status-warning:    oklch(0.78 0.14 60);
+  --status-warning-bg: oklch(0.24 0.06 60);
 
   /* Platform delivery colors — dark mode independently tuned */
   --platform-grab:        oklch(0.72 0.18 145);

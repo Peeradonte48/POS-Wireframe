@@ -392,7 +392,7 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
           className="flex justify-between text-sm border-t pt-3"
         >
           <span className="text-muted-foreground">Remaining</span>
-          <span className={remaining === 0 ? 'text-green-600 font-semibold' : 'font-semibold'}>
+          <span className={remaining === 0 ? 'text-status-success font-semibold' : 'font-semibold'}>
             {remaining === 0 ? '฿0 — all covered' : `฿${remaining.toLocaleString()}`}
           </span>
         </div>

@@ -387,7 +387,7 @@ export default function PaymentPage() {
                         : <ChevronDown size={16} className="text-muted-foreground" />
                       }
                     </div>
-                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-amber-500' : 'text-foreground'}`}>
+                    <p className={`font-medium text-base leading-6 ${discountAmount > 0 ? 'text-status-warning' : 'text-foreground'}`}>
                       {discountAmount > 0 ? `-฿${discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `฿0.00`}
                     </p>
                   </button>
@@ -406,8 +406,8 @@ export default function PaymentPage() {
                       >
                         {promotionDiscounts.map((d) => (
                           <div key={d.couponCode} className="flex items-center justify-between pl-3">
-                            <p className="text-sm text-amber-500 leading-5">{d.couponCode}</p>
-                            <p className="text-sm text-amber-500 leading-5">
+                            <p className="text-sm text-status-warning leading-5">{d.couponCode}</p>
+                            <p className="text-sm text-status-warning leading-5">
                               -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </p>
                           </div>
@@ -553,11 +553,11 @@ export default function PaymentPage() {
                         tabIndex={0}
                         onClick={() => promo && setPromoDetail({ promo, couponCode: d.couponCode, amount: d.amount, selectedLineIds: d.selectedLineIds ?? [] })}
                         onKeyDown={(e) => e.key === 'Enter' && promo && setPromoDetail({ promo, couponCode: d.couponCode, amount: d.amount, selectedLineIds: d.selectedLineIds ?? [] })}
-                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-status-warning/30 bg-status-warning-bg cursor-pointer transition-colors hover:opacity-90"
                       >
-                        <TicketPercent size={16} className="text-amber-500 shrink-0" />
+                        <TicketPercent size={16} className="text-status-warning shrink-0" />
                         <span className="text-sm font-medium flex-1 text-foreground">{d.couponCode}</span>
-                        <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                        <span className="text-sm font-semibold text-status-warning">
                           -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </span>
                         <Button
@@ -817,10 +817,10 @@ export default function PaymentPage() {
                 {/* Applied coupon chip */}
                 <div className="flex flex-col gap-2">
                   <p className="font-medium text-sm text-muted-foreground">คูปองที่ใช้งาน</p>
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-green-300 bg-green-50 dark:bg-green-950/20 dark:border-green-800">
-                    <CheckCircle2 size={18} className="text-green-600 dark:text-green-400 shrink-0" />
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-status-success/30 bg-status-success-bg">
+                    <CheckCircle2 size={18} className="text-status-success shrink-0" />
                     <span className="text-sm font-semibold text-foreground flex-1">{promoDetail.couponCode}</span>
-                    <span className="text-base font-bold text-green-700 dark:text-green-400">
+                    <span className="text-base font-bold text-status-success">
                       -฿{promoDetail.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
                   </div>
