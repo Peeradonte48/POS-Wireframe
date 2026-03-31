@@ -73,7 +73,7 @@ Full archive: `.planning/milestones/v1.3-ROADMAP.md`
 ### v1.4 Codebase Cleanup (Phases 22-25)
 
 - [x] **Phase 22: Codebase Audit** — Written audit map of structural issues, dead code, type errors, and tech debt root causes (completed 2026-03-30)
-- [ ] **Phase 23: TypeScript + Dead Code** — Resolve all any-casts, achieve zero build errors, remove unused imports and unreachable code, enforce naming conventions
+- [x] **Phase 23: TypeScript + Dead Code** — Resolve all any-casts, achieve zero build errors, remove unused imports and unreachable code, enforce naming conventions (completed 2026-03-31)
 - [ ] **Phase 24: Refactor** — Simplify complex components identified in audit, consolidate duplicated patterns
 - [ ] **Phase 25: Tech Debt** — Fix DLVR-04/05 KDS desync, TKWY-04 reload edge case, document 5 E2E flows
 
@@ -104,11 +104,11 @@ Plans:
   2. No `any`-cast remains without an inline justification comment
   3. ESLint reports no unused-imports or unused-variables warnings across all source files
   4. File names, component names, store names, and type names follow a single consistent convention documented or self-evident from existing patterns
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 23-01-PLAN.md — Add eslint-disable suppression comments for intentional patterns (D-01/D-03/D-04/D-06) and fix exhaustive-deps issues (D-07)
-- [ ] 23-02-PLAN.md — Remove dead code (D-02/D-05 removals) and rename destructure discard variables (D-05 renames)
+- [x] 23-01-PLAN.md — Add eslint-disable suppression comments for intentional patterns (D-01/D-03/D-04/D-06) and fix exhaustive-deps issues (D-07)
+- [x] 23-02-PLAN.md — Remove dead code (D-02/D-05 removals) and rename destructure discard variables (D-05 renames)
 
 ### Phase 24: Refactor
 **Goal**: Complex components are simplified and duplicated patterns are consolidated — the codebase is easier to extend without risk of regression
@@ -158,7 +158,7 @@ Plans:
 | 20. Integration Fix + Phase 17 Verification | v1.3 | 2/2 | Complete | 2026-03-15 |
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
-| 23. TypeScript + Dead Code | v1.4 | 0/2 | Not started | - |
+| 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
 | 24. Refactor | v1.4 | 0/? | Not started | - |
 | 25. Tech Debt | v1.4 | 0/? | Not started | - |
 
