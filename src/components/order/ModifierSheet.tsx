@@ -265,6 +265,10 @@ export function ModifierSheet({
                         <div
                           key={group.id}
                           ref={(el) => { groupRefs.current[group.id] = el }}
+                          role="group"
+                          aria-required={group.required}
+                          aria-labelledby={`group-label-${group.id}`}
+                          aria-invalid={hasError || undefined}
                           className="flex flex-col gap-2"
                         >
                           {/* Group header */}
@@ -279,6 +283,7 @@ export function ModifierSheet({
                               />
                             )}
                             <span
+                              id={`group-label-${group.id}`}
                               className={cn(
                                 'text-base font-semibold leading-none',
                                 hasError ? 'text-destructive' : 'text-card-foreground',
@@ -321,6 +326,13 @@ export function ModifierSheet({
                               )
                             })}
                           </div>
+
+                          {/* Validation error message */}
+                          {hasError && (
+                            <p className="text-sm text-destructive mt-1" role="alert">
+                              กรุณาเลือก {group.label}
+                            </p>
+                          )}
                         </div>
                       )
                     })
@@ -332,10 +344,11 @@ export function ModifierSheet({
 
                   {/* Notes / Special request */}
                   <div className="flex flex-col gap-2 pb-2">
-                    <span className="text-base font-semibold leading-none text-card-foreground">
-                      หมายเหตุ
-                    </span>
+                    <label htmlFor="special-request" className="text-base font-semibold leading-none text-card-foreground">
+                      หมายเหตุ <span className="text-muted-foreground font-normal text-sm">(Special Request)</span>
+                    </label>
                     <textarea
+                      id="special-request"
                       value={specialRequest}
                       onChange={(e) => setSpecialRequest(e.target.value)}
                       placeholder="Placeholder"

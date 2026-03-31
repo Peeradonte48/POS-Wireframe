@@ -85,6 +85,7 @@ export function TableTile({ table, onTap }: TableTileProps) {
         }
         onTap(table)
       }}
+      aria-label={`โต๊ะ ${table.label}, ${table.status}, ${guestCount} ที่นั่ง`}
       className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 min-h-[110px] touch-manipulation active:scale-[0.97] transition-transform w-full text-center ${cardClass}`}
     >
       {/* Corner badge: split / merge / order stage */}

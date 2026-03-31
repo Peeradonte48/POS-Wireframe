@@ -1,10 +1,18 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import { Trash2, ShoppingBag, CircleX, CookingPot } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import type { OrderLineItem } from '@/stores/order.store'
 import { MENU_ITEMS } from '@/lib/mock-data/menu'
@@ -119,6 +127,7 @@ export function TicketLineItem({
   showPackToGo = false,
   onTogglePackToGo,
 }: TicketLineItemProps) {
+  const [confirmRemove, setConfirmRemove] = useState(false)
   const lineTotal = (item.basePrice * item.quantity).toFixed(0)
 
   // ── Voided ──────────────────────────────────────────────────────────────
@@ -251,7 +260,7 @@ export function TicketLineItem({
 
           {/* Trash */}
           <button
-            onClick={() => canRemove && onRemove(item.lineId)}
+            onClick={() => canRemove && setConfirmRemove(true)}
             disabled={!canRemove}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Remove item"
@@ -260,6 +269,29 @@ export function TicketLineItem({
           </button>
         </div>
       </div>
+
+      <Dialog open={confirmRemove} onOpenChange={setConfirmRemove}>
+        <DialogContent className="w-[320px] max-w-[calc(100vw-2rem)]">
+          <DialogHeader>
+            <DialogTitle>ลบรายการ?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">&ldquo;{item.menuItemName}&rdquo; จะถูกลบออกจากออร์เดอร์</p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setConfirmRemove(false)}>
+              ยกเลิก
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                onRemove(item.lineId)
+                setConfirmRemove(false)
+              }}
+            >
+              ลบ
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
