@@ -12,27 +12,13 @@ export interface SimpleItemDialogProps {
   itemName?: string
 }
 
-export function SimpleItemDialog({
-  open,
+// Inner component — remounted via key when dialog opens, resetting all state naturally
+function SimpleItemDialogContent({
   onClose,
   onConfirm,
   itemName,
-}: SimpleItemDialogProps) {
+}: Omit<SimpleItemDialogProps, 'open'>) {
   const [quantity, setQuantity] = useState(1)
-
-  // Reset quantity each time dialog opens
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (open) setQuantity(1)
-  }, [open])
-
-  // Body scroll lock
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
-
-  if (!open) return null
 
   return (
     <>
@@ -120,5 +106,29 @@ export function SimpleItemDialog({
         </div>
       </div>
     </>
+  )
+}
+
+export function SimpleItemDialog({
+  open,
+  onClose,
+  onConfirm,
+  itemName,
+}: SimpleItemDialogProps) {
+  // Body scroll lock
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
+
+  if (!open) return null
+
+  return (
+    <SimpleItemDialogContent
+      key="dialog-content"
+      onClose={onClose}
+      onConfirm={onConfirm}
+      itemName={itemName}
+    />
   )
 }
