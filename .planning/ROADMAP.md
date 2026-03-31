@@ -135,7 +135,11 @@ Plans:
   1. Bumping a delivery ticket from New to InProgress on KDS automatically mirrors the queue order status from Confirmed to Preparing (DLVR-04/05 resolved)
   2. Browser reload with an empty order.store but a persisted queue.store no longer produces a broken state — the takeaway panel recovers cleanly (TKWY-04 resolved)
   3. Each of the 5 multi-screen E2E flows flagged human_needed has a written test instruction (step-by-step walkthrough) that a human tester can follow in a live browser session
-**Plans:** [To be planned]
+**Plans:** 2 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — Fix DLVR-04/05 KDS bump queue write-back + TKWY-04 hydration guards and reconciliation
+- [ ] 25-02-PLAN.md — Fill in 5 E2E Playwright test stubs with real selectors and assertions
 
 ---
 
@@ -166,8 +170,8 @@ Plans:
 | 21. Audit Housekeeping + Nyquist Sign-off | v1.3 | 2/2 | Complete | 2026-03-16 |
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
-| 24. Refactor | v1.4 | 5/5 | Complete   | 2026-03-31 |
-| 25. Tech Debt | v1.4 | 0/? | Not started | - |
+| 24. Refactor | v1.4 | 5/5 | Complete    | 2026-03-31 |
+| 25. Tech Debt | v1.4 | 0/2 | Not started | - |
 
 ---
 
