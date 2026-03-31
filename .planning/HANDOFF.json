@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-31T04:40:25.213Z",
+  "phase": "23",
+  "phase_name": "typescript-dead-code",
+  "phase_dir": ".planning/phases/23-typescript-dead-code",
+  "plan": 2,
+  "task": 4,
+  "total_tasks": 4,
+  "status": "complete",
+  "completed_tasks": [
+    {"id": 1, "name": "23-01 Task 1: ESLint suppression comments (14 files)", "status": "done", "commit": "9eaedd3"},
+    {"id": 2, "name": "23-01 Task 2: Fix TableTile useMemo exhaustive-deps + remove useKdsStore import", "status": "done", "commit": "3b5d11a"},
+    {"id": 3, "name": "23-02 Task 1: Remove dead code (imports, vars, constants, nav items)", "status": "done", "commit": "0deb500"},
+    {"id": 4, "name": "23-02 Task 2: Rename _void discard vars + eslint.config.mjs update", "status": "done", "commit": "963b041"}
+  ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Remove useKdsStore import from TableTile after tickets dep removal", "rationale": "tickets was the only usage — leaving unused import would create a new lint warning", "phase": "23"},
+    {"decision": "30 remaining lint warnings are from e2e stubs only", "rationale": "Playwright stub params (page, expect) required by API signature but bodies are TODOs — production source is 100% clean", "phase": "23"},
+    {"decision": "varsIgnorePattern '^_' in eslint.config.mjs", "rationale": "Allows _void destructure discard pattern without per-site suppression comments", "phase": "23"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "/gsd:discuss-phase 24 or /gsd:plan-phase 24 — Phase 24 Refactor has no plans yet",
+  "context_notes": "Milestone v1.4 is 50% complete (phases 22+23 done). Phase 24 targets complex component refactors; Phase 25 targets DLVR-04/05 and TKWY-04 tech debt. Audit report at .planning/phases/22-codebase-audit/22-AUDIT-REPORT.md scopes all remaining work."
+}
