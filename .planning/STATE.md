@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Codebase Cleanup
 status: verifying
-last_updated: "2026-03-31T10:10:03.260Z"
+last_updated: "2026-03-31T10:45:53.801Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 3
-  percent: 100
+  completed_phases: 4
+  total_plans: 11
+  completed_plans: 11
+  percent: 91
 ---
 
 # Project State: FIP POS Staff App Wireframe
 
 **Last updated:** 2026-03-31
-**Session:** Milestone v1.4 Codebase Cleanup — Phase 23 complete (ESLint suppressions + dead code removal)
+**Session:** Milestone v1.4 Codebase Cleanup — Phase 25 plan 01 complete (KDS BUMP + hydration guards)
 
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 **Core value:** A restaurant staff member can manage dine-in tables, walk-in takeaway orders, and third-party delivery orders from a single interface — with the kitchen always knowing whether to plate or bag.
 
-**Current focus:** Phase 23 — typescript-dead-code
+**Current focus:** Phase 25 — tech-debt
 
 **Stack:** Next.js 16 (App Router) + TypeScript 5 (strict) + Tailwind CSS 4 + shadcn/ui (Base UI) + Zustand 5 (persist) + Solar icon set
 
@@ -38,13 +38,13 @@ See: .planning/PROJECT.md (updated 2026-03-30 — v1.4 milestone start)
 
 ## Current Position
 
-Phase: 23 (typescript-dead-code) — COMPLETE
+Phase: 25 (tech-debt) — EXECUTING
 Plan: 2 of 2
 Status: Phase complete — ready for verification
 Last activity: 2026-03-31
 
 ```
-Progress: [██████████] 100% (2/2 plans complete in Phase 23)
+Progress: [█████████░] 91% (10/11 plans complete overall)
 ```
 
 ---
@@ -65,6 +65,14 @@ Progress: [██████████] 100% (2/2 plans complete in Phase 23)
 ## Accumulated Context
 
 See `.planning/PROJECT.md` for full key decisions log.
+
+### Architecture Decisions for v1.4 (25-01 execution)
+
+- **[25-01] BUMP uses prevStage before bumpTicket()**: Zustand set is synchronous; prevStage must be captured before the call since post-capture yields the new stage
+- **[25-01] BUMP gated on bumpBlocked**: consistent with existing completion gate; kitchen must confirm all items before advancing stage
+- **[25-01] onRehydrate reconciles orphaned queue orders**: after reload, active-status queue orders missing from order.store get itemsSummary set to 'items unavailable — reload'
+- **[25-01] DLVR-04/05 fixed**: handleBump calls advanceStatus for delivery/takeaway on New→InProgress and InProgress→Ready
+- **[25-01] TKWY-04 fixed**: TakeawayCard shows destructive badge when order.store data missing for non-Taking orders
 
 ### Architecture Decisions for v1.4 (22-01 execution)
 

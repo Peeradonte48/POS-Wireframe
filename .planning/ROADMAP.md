@@ -75,7 +75,7 @@ Full archive: `.planning/milestones/v1.3-ROADMAP.md`
 - [x] **Phase 22: Codebase Audit** — Written audit map of structural issues, dead code, type errors, and tech debt root causes (completed 2026-03-30)
 - [x] **Phase 23: TypeScript + Dead Code** — Resolve all any-casts, achieve zero build errors, remove unused imports and unreachable code, enforce naming conventions (completed 2026-03-31)
 - [x] **Phase 24: Refactor** — Simplify complex components identified in audit, consolidate duplicated patterns (completed 2026-03-31)
-- [ ] **Phase 25: Tech Debt** — Fix DLVR-04/05 KDS desync, TKWY-04 reload edge case, document 5 E2E flows
+- [x] **Phase 25: Tech Debt** — Fix DLVR-04/05 KDS desync, TKWY-04 reload edge case, document 5 E2E flows (completed 2026-03-31)
 
 ---
 
@@ -135,11 +135,11 @@ Plans:
   1. Bumping a delivery ticket from New to InProgress on KDS automatically mirrors the queue order status from Confirmed to Preparing (DLVR-04/05 resolved)
   2. Browser reload with an empty order.store but a persisted queue.store no longer produces a broken state — the takeaway panel recovers cleanly (TKWY-04 resolved)
   3. Each of the 5 multi-screen E2E flows flagged human_needed has a written test instruction (step-by-step walkthrough) that a human tester can follow in a live browser session
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 25-01-PLAN.md — Fix DLVR-04/05 KDS bump queue write-back + TKWY-04 hydration guards and reconciliation
-- [ ] 25-02-PLAN.md — Fill in 5 E2E Playwright test stubs with real selectors and assertions
+- [x] 25-01-PLAN.md — Fix DLVR-04/05 KDS bump queue write-back + TKWY-04 hydration guards and reconciliation
+- [x] 25-02-PLAN.md — Fill in 5 E2E Playwright test stubs with real selectors and assertions
 
 ---
 
@@ -171,7 +171,7 @@ Plans:
 | 22. Codebase Audit | v1.4 | 2/2 | Complete    | 2026-03-30 |
 | 23. TypeScript + Dead Code | v1.4 | 2/2 | Complete    | 2026-03-31 |
 | 24. Refactor | v1.4 | 5/5 | Complete    | 2026-03-31 |
-| 25. Tech Debt | v1.4 | 0/2 | Not started | - |
+| 25. Tech Debt | v1.4 | 2/2 | Complete   | 2026-03-31 |
 
 ---
 

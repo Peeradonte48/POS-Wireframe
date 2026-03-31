@@ -26,13 +26,13 @@
 ### Refactor
 
 - [x] **REF-01**: Complex components identified in audit are simplified or decomposed
-- [ ] **REF-02**: Duplicated patterns across components are consolidated
+- [x] **REF-02**: Duplicated patterns across components are consolidated
 
 ### Tech Debt
 
-- [ ] **TD-01**: DLVR-04/05 — KDS `New→InProgress` bump mirrors to queue `Confirmed→Preparing`
-- [ ] **TD-02**: TKWY-04 — empty order.store + persistent queue.store edge case on browser reload resolved
-- [ ] **TD-03**: The 5 multi-screen E2E flows flagged `human_needed` are documented with test instructions (or automated where feasible)
+- [x] **TD-01**: DLVR-04/05 — KDS `New→InProgress` bump mirrors to queue `Confirmed→Preparing`
+- [x] **TD-02**: TKWY-04 — empty order.store + persistent queue.store edge case on browser reload resolved
+- [x] **TD-03**: The 5 multi-screen E2E flows flagged `human_needed` are documented with test instructions (or automated where feasible)
 
 ---
 
@@ -61,7 +61,7 @@
 | DC-01  | Phase 23 | Pending |
 | DC-02  | Phase 23 | Pending |
 | REF-01 | Phase 24 | Complete |
-| REF-02 | Phase 24 | Pending |
-| TD-01  | Phase 25 | Pending |
-| TD-02  | Phase 25 | Pending |
-| TD-03  | Phase 25 | Pending |
+| REF-02 | Phase 24 | Complete |
+| TD-01  | Phase 25 | Complete |
+| TD-02  | Phase 25 | Complete |
+| TD-03  | Phase 25 | Complete |
