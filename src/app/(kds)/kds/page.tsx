@@ -86,8 +86,8 @@ export default function KdsPage() {
         {/* Top: brand + nav */}
         <div className="flex flex-col items-center gap-4 w-full">
           {/* Brand icon — KDS active state */}
-          <button className="bg-primary flex items-center justify-center rounded-full size-8 shrink-0">
-            <Package2 size={16} className="text-primary-foreground" />
+          <button className="bg-primary flex items-center justify-center rounded-full size-10 shrink-0">
+            <Package2 size={18} className="text-primary-foreground" />
           </button>
 
           {TOP_NAV_ITEMS.map(({ icon: Icon, href }) => {
@@ -98,14 +98,14 @@ export default function KdsPage() {
                 key={href}
                 onClick={() => router.push(href)}
                 title={href.replace('/', '')}
-                className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+                className="flex items-center justify-center rounded-lg size-11 text-muted-foreground hover:bg-accent transition-colors"
               >
                 <Icon size={20} />
               </button>
             ) : (
               <button
                 key={href}
-                className={`flex items-center justify-center rounded-lg size-8 transition-colors ${
+                className={`flex items-center justify-center rounded-lg size-11 transition-colors ${
                   isActive
                     ? 'bg-accent text-foreground'
                     : 'text-muted-foreground/30 cursor-not-allowed'
@@ -122,12 +122,12 @@ export default function KdsPage() {
           <button
             onClick={() => router.push('/manager')}
             title="manager"
-            className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+            className="flex items-center justify-center rounded-lg size-11 text-muted-foreground hover:bg-accent transition-colors"
           >
             <Settings size={20} />
           </button>
         ) : (
-          <button className="flex items-center justify-center rounded-lg size-8 text-muted-foreground/30 cursor-not-allowed">
+          <button className="flex items-center justify-center rounded-lg size-11 text-muted-foreground/30 cursor-not-allowed">
             <Settings size={20} />
           </button>
         )}
@@ -143,7 +143,7 @@ export default function KdsPage() {
           <header className="border-b border-border px-6 py-3 flex items-center justify-between shrink-0">
             {/* Left: panel toggle + separator + breadcrumb */}
             <div className="flex items-center gap-2 shrink-0">
-              <button className="flex items-center justify-center rounded-md size-7 hover:bg-accent transition-colors">
+              <button className="flex items-center justify-center rounded-md size-9 hover:bg-accent transition-colors">
                 <PanelLeft size={16} className="text-foreground" />
               </button>
               <div className="w-px h-[15px] bg-border mx-1" />
@@ -160,7 +160,7 @@ export default function KdsPage() {
                     ? 'bg-primary border-primary text-primary-foreground'
                     : 'bg-background border-input text-muted-foreground hover:bg-accent'
                 }`}
-                style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                style={{ boxShadow: 'var(--shadow-card)' }}
               >
                 {demoActive && (
                   <span className="size-1.5 rounded-full bg-primary-foreground shrink-0 animate-pulse" />
@@ -171,7 +171,7 @@ export default function KdsPage() {
               {/* Ellipsis button */}
               <button
                 className="flex items-center justify-center size-9 border border-input rounded-md bg-background hover:bg-accent transition-colors"
-                style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                style={{ boxShadow: 'var(--shadow-card)' }}
               >
                 <EllipsisVertical size={16} className="text-foreground" />
               </button>
@@ -216,7 +216,7 @@ export default function KdsPage() {
               {/* Theme toggle */}
               <div
                 className="size-9 flex items-center justify-center rounded-md bg-secondary"
-                style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                style={{ boxShadow: 'var(--shadow-card)' }}
               >
                 <ThemeToggle />
               </div>

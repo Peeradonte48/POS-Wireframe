@@ -71,7 +71,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
 
   return (
     <div
-      className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shrink-0 w-[290px]"
+      className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shrink-0 w-[290px] min-w-[260px] max-w-xs"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
       {/* ── CardHeader ── */}
@@ -82,7 +82,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
           <div className="flex items-center gap-1.5">
             <button
               className="bg-secondary flex items-center justify-center p-2 rounded-md shrink-0"
-              style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+              style={{ boxShadow: 'var(--shadow-card)' }}
             >
               <HandPlatter size={16} className="text-secondary-foreground" />
             </button>
@@ -131,7 +131,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
             className={`flex flex-1 h-10 items-center justify-center gap-2 rounded-md border border-border bg-secondary px-8 py-2 text-sm font-medium text-secondary-foreground transition-opacity ${
               bumpBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-secondary/80 active:scale-[0.98]'
             }`}
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
             <span>BUMP</span>
             <ArrowRight size={16} />
@@ -150,7 +150,7 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
             className={`flex flex-1 h-10 items-center justify-center gap-2 rounded-md bg-primary px-8 py-2 text-sm font-medium text-primary-foreground transition-opacity ${
               bumpBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90 active:scale-[0.98]'
             }`}
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+            style={{ boxShadow: 'var(--shadow-card)' }}
           >
             <Check size={16} />
             <span>ออร์เดอร์เสร็จ</span>

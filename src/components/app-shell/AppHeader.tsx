@@ -85,7 +85,7 @@ export function AppHeader() {
         {/* Theme toggle */}
         <div
           className="size-9 flex items-center justify-center rounded-md bg-secondary shrink-0"
-          style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+          style={{ boxShadow: 'var(--shadow-card)' }}
         >
           <ThemeToggle />
         </div>

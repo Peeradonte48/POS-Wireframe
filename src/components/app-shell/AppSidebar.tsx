@@ -52,7 +52,7 @@ export function AppSidebar() {
           key={slug}
           onClick={() => router.push(href)}
           title={label}
-          className="flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:bg-accent transition-colors"
+          className="flex items-center justify-center rounded-lg size-11 text-muted-foreground hover:bg-accent transition-colors"
         >
           <Icon size={20} />
         </button>
@@ -66,8 +66,8 @@ export function AppSidebar() {
         disabled={!isClickable}
         className={
           isActive
-            ? 'flex items-center justify-center rounded-lg size-8 bg-accent text-foreground transition-colors'
-            : 'flex items-center justify-center rounded-lg size-8 text-muted-foreground/30 cursor-not-allowed'
+            ? 'flex items-center justify-center rounded-lg size-11 bg-accent text-foreground transition-colors'
+            : 'flex items-center justify-center rounded-lg size-11 text-muted-foreground/30 cursor-not-allowed'
         }
       >
         <Icon size={20} />
@@ -79,8 +79,8 @@ export function AppSidebar() {
     <nav className="w-12 h-full shrink-0 flex flex-col items-center justify-between py-5 px-2">
       {/* Top: brand + main nav */}
       <div className="flex flex-col items-center gap-4 w-full">
-        <button className="bg-primary flex items-center justify-center rounded-full size-8 shrink-0">
-          <Package2 size={16} className="text-primary-foreground" />
+        <button className="bg-primary flex items-center justify-center rounded-full size-10 shrink-0">
+          <Package2 size={18} className="text-primary-foreground" />
         </button>
         {TOP_NAV_ITEMS.map((item) => renderNavItem(item))}
       </div>

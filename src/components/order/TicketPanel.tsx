@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { toast } from 'sonner'
 import { HandPlatter, X, Printer, ReceiptText, SendHorizontal, CircleCheckBig, CircleAlert, Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -73,13 +73,16 @@ export function TicketPanel({
   const [voidingLineId, setVoidingLineId] = useState<string | null>(null)
   const voidAuthorizedRef = useRef(false)
 
-  const allItems: OrderLineItem[] = order
-    ? order.rounds.flatMap((r) => r.items)
-    : []
-
-  const unsentItems = allItems.filter((i) => i.status === 'unsent')
-  const sentItems = allItems.filter((i) => i.status === 'sent')
-  const displayItems = activeTab === 'unsent' ? unsentItems : sentItems
+  const { allItems, unsentItems, sentItems, sentAndVoidedItems } = useMemo(() => {
+    const all: OrderLineItem[] = order ? order.rounds.flatMap((r) => r.items) : []
+    return {
+      allItems: all,
+      unsentItems: all.filter((i) => i.status === 'unsent'),
+      sentItems: all.filter((i) => i.status === 'sent'),
+      sentAndVoidedItems: all.filter((i) => i.status === 'sent' || i.status === 'voided'),
+    }
+  }, [order])
+  const displayItems = activeTab === 'unsent' ? unsentItems : sentAndVoidedItems
 
   const unsentCount = unsentItems.length
   const unsentTotal = computeItemsTotal(unsentItems)
@@ -120,8 +123,8 @@ export function TicketPanel({
       duration: SEND_TOAST_DURATION,
       icon: React.createElement(CircleCheckBig, {
         size: 20,
-        fill: '#22c55e',
-        color: '#ffffff',
+        fill: 'var(--status-success)',
+        color: 'var(--primary-foreground)',
         strokeWidth: 1.5,
       }),
       description: lines.length > 0
@@ -152,8 +155,8 @@ export function TicketPanel({
         toast('พิมพ์ใบแจ้งหนี้สำเร็จ', {
           icon: React.createElement(CircleCheckBig, {
             size: 20,
-            fill: '#22c55e',
-            color: '#ffffff',
+            fill: 'var(--status-success)',
+            color: 'var(--primary-foreground)',
             strokeWidth: 1.5,
           }),
         })
@@ -162,8 +165,8 @@ export function TicketPanel({
         toast('พิมพ์ใบแจ้งหนี้ไม่สำเร็จ', {
           icon: React.createElement(CircleAlert, {
             size: 20,
-            fill: '#ef4444',
-            color: '#ffffff',
+            fill: 'var(--destructive)',
+            color: 'var(--primary-foreground)',
             strokeWidth: 1.5,
           }),
         })
@@ -214,9 +217,9 @@ export function TicketPanel({
                 </TabsTrigger>
                 <TabsTrigger value="sent" className="flex-1 gap-2 !h-11">
                   สั่งแล้ว
-                  {sentItems.length > 0 && (
+                  {sentAndVoidedItems.length > 0 && (
                     <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
-                      {sentItems.length}
+                      {sentAndVoidedItems.length}
                     </span>
                   )}
                 </TabsTrigger>

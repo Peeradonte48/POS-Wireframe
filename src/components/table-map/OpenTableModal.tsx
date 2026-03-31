@@ -53,7 +53,7 @@ function OpenTableModalContent({
         <button
           onClick={decrement}
           disabled={guestCount <= MIN_GUESTS}
-          className="flex items-center justify-center size-8 rounded-full border border-input bg-background shadow-xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+          className="flex items-center justify-center size-11 rounded-full border border-input bg-background shadow-xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           aria-label="Decrease guest count"
         >
           <Minus size={16} />
@@ -71,7 +71,7 @@ function OpenTableModalContent({
         <button
           onClick={increment}
           disabled={guestCount >= MAX_GUESTS}
-          className="flex items-center justify-center size-8 rounded-full border border-input bg-background shadow-xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+          className="flex items-center justify-center size-11 rounded-full border border-input bg-background shadow-xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           aria-label="Increase guest count"
         >
           <Plus size={16} />

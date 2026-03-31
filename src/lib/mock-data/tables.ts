@@ -20,7 +20,7 @@ function makeTable(num: number): TableRecord {
   }
 }
 
-const BASE_TABLES = Array.from({ length: 12 }, (_, i) => makeTable(i + 1))
+const BASE_TABLES = Array.from({ length: 20 }, (_, i) => makeTable(i + 1))
 
 export const INITIAL_TABLES: Record<string, TableRecord> = Object.fromEntries(
   BASE_TABLES.map((t) => [t.id, t])

@@ -117,7 +117,7 @@ export function KdsItemRow({ item, isChecked, interactive, onCheck, onUncheck }:
           {/* Special request */}
           {item.specialRequest && (
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-orange-500 text-white text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded shrink-0">
+              <span className="bg-orange-500 text-white text-xs font-semibold uppercase px-1.5 py-0.5 rounded shrink-0">
                 ALLERGY
               </span>
               <span className="text-xs text-orange-700 dark:text-orange-300 truncate">

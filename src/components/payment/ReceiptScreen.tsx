@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Printer, Coins, Search, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,12 +64,11 @@ export function ReceiptScreen({
 
         {/* Header */}
         <div className="flex flex-col gap-3 items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={IMG_CHECKMARK} alt="Payment complete" className="size-12 block" />
+          <Image src={IMG_CHECKMARK} alt="Payment complete" width={48} height={48} className="size-12 block" />
           <p className="font-semibold text-2xl text-foreground leading-none">ใบเสร็จชำระเงิน</p>
         </div>
 
-        <div className="flex flex-col gap-4 items-start w-[384px]">
+        <div className="flex flex-col gap-4 items-start w-full max-w-sm">
 
           {/* Receipt details card */}
           <div className="bg-background border border-border rounded-[14px] flex flex-col gap-5 items-start p-6 w-full">
@@ -176,7 +176,7 @@ export function ReceiptScreen({
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col gap-4 w-[384px]">
+        <div className="flex flex-col gap-4 w-full max-w-sm">
           <Button
             variant="outline"
             className="w-full h-14 text-base font-semibold"

@@ -57,13 +57,13 @@ export function useBillCalculation(tableId: string): BillCalculationResult {
   // Aggregate line items (primary + secondary merged tables)
   const lineItems = useMemo(() => {
     const primaryItems = order
-      ? order.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
+      ? order.rounds.flatMap((r) => r.items).filter((item) => item.status === 'sent')
       : []
     if (!isMerged) return primaryItems
     const secondaryItems = mergedTableIds.flatMap((tid) => {
       const secOrder = useOrderStore.getState().getOrder(tid)
       if (!secOrder) return []
-      return secOrder.rounds.flatMap((r) => r.items).filter((item) => item.status !== 'voided')
+      return secOrder.rounds.flatMap((r) => r.items).filter((item) => item.status === 'sent')
     })
     return [...primaryItems, ...secondaryItems]
   }, [order, isMerged, mergedTableIds])
@@ -79,7 +79,7 @@ export function useBillCalculation(tableId: string): BillCalculationResult {
           tid === tableId
             ? (order?.rounds.flatMap((r) => r.items) ?? [])
             : (useOrderStore.getState().getOrder(tid)?.rounds.flatMap((r) => r.items) ?? [])
-        ).filter((item) => item.status !== 'voided'),
+        ).filter((item) => item.status === 'sent'),
       }))
     }
     return [

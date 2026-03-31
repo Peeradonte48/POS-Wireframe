@@ -244,7 +244,14 @@ export default function PaymentPage() {
                     const isOpen = !collapsedGroups.has(group.tableId)
                     return (
                       <div key={group.tableId} className="flex flex-col gap-4">
-                        <div className={`flex items-center gap-[10px] py-2 ${isMerged ? 'cursor-pointer' : ''}`} onClick={isMerged ? () => setCollapsedGroups((prev) => { const n = new Set(prev); if (n.has(group.tableId)) { n.delete(group.tableId) } else { n.add(group.tableId) } return n }) : undefined}>
+                        <div
+                          role={isMerged ? 'button' : undefined}
+                          tabIndex={isMerged ? 0 : undefined}
+                          aria-expanded={isMerged ? isOpen : undefined}
+                          className={`flex items-center gap-[10px] py-2 ${isMerged ? 'cursor-pointer' : ''}`}
+                          onClick={isMerged ? () => setCollapsedGroups((prev) => { const n = new Set(prev); if (n.has(group.tableId)) { n.delete(group.tableId) } else { n.add(group.tableId) } return n }) : undefined}
+                          onKeyDown={isMerged ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsedGroups((prev) => { const n = new Set(prev); if (n.has(group.tableId)) { n.delete(group.tableId) } else { n.add(group.tableId) } return n }) } } : undefined}
+                        >
                           <Button variant="outline" size="icon" className="size-8 rounded-md shrink-0 pointer-events-none" aria-label="Table"><HandPlatter size={16} /></Button>
                           <div className="flex flex-1 items-center gap-2 min-w-0">
                             <p className="font-semibold text-lg leading-7 shrink-0">{group.label}</p>

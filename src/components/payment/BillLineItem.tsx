@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import type { LucideIcon } from 'lucide-react'
 import { Shell, Soup, Ham, Salad, Flame, Droplets, Sprout, Tag } from 'lucide-react'
 import type { OrderLineItem } from '@/stores/order.store'
@@ -42,10 +43,11 @@ export function BillLineItem({ item, qty: qtyOverride }: BillLineItemProps) {
       {/* Thumbnail */}
       <div className="relative rounded-md shrink-0 size-20 overflow-hidden bg-accent">
         {imagePath ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={imagePath}
             alt={item.menuItemName}
+            width={40}
+            height={40}
             className="absolute inset-0 size-full object-cover rounded-md"
           />
         ) : (

@@ -11,7 +11,9 @@ import {
   QrCode,
   ScissorsLineDashed,
   TicketPercent,
+  Trash2,
 } from 'lucide-react'
+
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -22,12 +24,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { QrSheet } from '@/components/payment/QrSheet'
 import { CrmLookupDialog } from '@/components/payment/CrmLookupDialog'
 import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
-import { CashPanel } from '@/components/payment/CashPanel'
+import { CashDialog } from '@/components/payment/CashDialog'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { useBillStore } from '@/stores/bill.store'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 import type { OrderLineItem } from '@/stores/order.store'
 import type { ItemBillEntry } from '@/stores/bill.store'
+import { PROMOTIONS } from '@/lib/mock-data/promotions'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,20 +64,26 @@ export function PerSeatPaymentPanel({
   onAllPaid,
 }: PerSeatPaymentPanelProps) {
   const router = useRouter()
-  const { setCrmMember, recordPayment } = useBillStore()
+  const { setCrmMember, recordPayment, removePromotionDiscount } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
   const [paidIndexes, setPaidIndexes] = useState<Set<number>>(new Set())
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
   const [checkoutMethod, setCheckoutMethod] = useState<PaymentMethod | null>(null)
-  const [cashReceived, setCashReceived] = useState(0)
+  const [cashDialogOpen, setCashDialogOpen] = useState(false)
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
+  const [showAllPromos, setShowAllPromos] = useState(false)
 
-  const selectedBillSubtotal = splitAmounts[selectedTabIndex] ?? 0
+  // Per-split promotions
+  const splitPromoKey = `${tableId}__split__${selectedTabIndex}`
+  const splitPromosRaw = useBillStore((s) => s.promotionDiscounts[splitPromoKey])
+  const splitPromos = splitPromosRaw ?? []
+  const splitDiscount = splitPromos.reduce((sum, d) => sum + d.amount, 0)
+
+  const selectedBillSubtotal = (splitAmounts[selectedTabIndex] ?? 0) - splitDiscount
   const selectedAmount = selectedBillSubtotal + Math.round(selectedBillSubtotal * 0.07)
   const isCurrentPaid = paidIndexes.has(selectedTabIndex)
-  const cashUnderTotal = checkoutMethod === 'Cash' && cashReceived > 0 && cashReceived < selectedAmount
 
   const selectedBillItems = useMemo(() => {
     if (!itemBills) return []
@@ -96,7 +105,8 @@ export function PerSeatPaymentPanel({
     })
     setCheckoutMethod(null)
     setQrSheetOpen(false)
-    setCashReceived(0)
+    setCashDialogOpen(false)
+    toast.success(`ชำระเงินบิล #${selectedTabIndex + 1} สำเร็จ`)
 
     const allDone = newPaid.size >= splitAmounts.length
     if (allDone) {
@@ -108,8 +118,8 @@ export function PerSeatPaymentPanel({
     }
   }
 
-  // ---- Cash / Card checkout sub-view ----
-  if (checkoutMethod === 'Cash' || checkoutMethod === 'Card') {
+  // ---- Card checkout sub-view ----
+  if (checkoutMethod === 'Card') {
     return (
       <div className="flex flex-col h-full">
         <header className="h-[52px] border-b flex items-center gap-2 px-6 shrink-0">
@@ -117,38 +127,31 @@ export function PerSeatPaymentPanel({
             variant="outline"
             size="icon"
             className="size-9"
-            onClick={() => { setCheckoutMethod(null); setCashReceived(0) }}
+            onClick={() => setCheckoutMethod(null)}
             aria-label="Back"
           >
             <ChevronLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none">
-            บิล #{selectedTabIndex + 1} — {checkoutMethod === 'Cash' ? 'เงินสด' : 'บัตรเครดิต'}
+            บิล #{selectedTabIndex + 1} — บัตรเครดิต
           </span>
         </header>
 
         <div className="flex-1 overflow-y-auto pb-24">
           <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
-            {checkoutMethod === 'Cash' && (
-              <CashPanel grandTotal={selectedAmount} cashReceived={cashReceived} setCashReceived={setCashReceived} />
-            )}
-            {checkoutMethod === 'Card' && <CardPanel grandTotal={selectedAmount} />}
+            <CardPanel grandTotal={selectedAmount} />
           </div>
         </div>
 
         <div className="sticky bottom-0 bg-background border-t p-4">
-          <div className="max-w-2xl mx-auto space-y-2">
+          <div className="max-w-2xl mx-auto">
             <Button
               size="cta"
               className="w-full text-base"
-              disabled={cashUnderTotal}
-              onClick={() => handleConfirmPayment(checkoutMethod)}
+              onClick={() => handleConfirmPayment('Card')}
             >
               ยืนยันการชำระเงิน — ฿{selectedAmount.toLocaleString()}
             </Button>
-            {cashUnderTotal && (
-              <p className="text-xs text-center text-muted-foreground">จำนวนเงินที่รับไม่ครบ</p>
-            )}
           </div>
         </div>
       </div>
@@ -176,7 +179,7 @@ export function PerSeatPaymentPanel({
             <button
               key={index}
               onClick={() => setSelectedTabIndex(index)}
-              className={`flex flex-col gap-1.5 items-start p-3 rounded-lg border shrink-0 w-[176px] text-left transition-colors ${
+              className={`flex flex-col gap-1.5 items-start p-3 rounded-lg border shrink-0 min-w-[160px] max-w-[200px] flex-1 text-left transition-colors ${
                 isPaid
                   ? 'border-border bg-muted opacity-60'
                   : isActive
@@ -189,7 +192,7 @@ export function PerSeatPaymentPanel({
                   บิล #{index + 1}
                 </span>
                 {isPaid && (
-                  <span className="text-[10px] font-semibold text-status-success bg-status-success/10 rounded px-1.5 py-0.5 leading-none">
+                  <span className="text-xs font-semibold text-status-success bg-status-success/10 rounded px-1.5 py-0.5 leading-none">
                     ชำระแล้ว
                   </span>
                 )}
@@ -271,10 +274,56 @@ export function PerSeatPaymentPanel({
               )}
             </div>
 
-            <Button variant="outline" className="w-full h-10 gap-2" onClick={() => toast('Coupon scan coming soon')}>
-              <TicketPercent size={16} />
-              ใช้คูปองส่วนลด
-            </Button>
+            {/* Per-split promotions */}
+            <div className="flex flex-col gap-2">
+              <p className="font-medium text-sm text-muted-foreground leading-5">โปรโมชัน</p>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full gap-2"
+                disabled={isCurrentPaid}
+                onClick={() => router.push(`/payment/${tableId}/promotions?split=${selectedTabIndex}`)}
+              >
+                <TicketPercent size={16} />
+                เพิ่มโปรโมชัน
+              </Button>
+              {(showAllPromos ? splitPromos : splitPromos.slice(0, 3)).map((d) => {
+                const promo = PROMOTIONS.find((p) => p.id === d.promotionId)
+                return (
+                  <div
+                    key={d.couponCode}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-status-warning/30 bg-status-warning-bg"
+                  >
+                    <TicketPercent size={16} className="text-status-warning shrink-0" />
+                    <span className="text-sm font-medium flex-1 text-foreground truncate">{promo?.title ?? d.couponCode}</span>
+                    <span className="text-sm font-semibold text-status-warning shrink-0">
+                      -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </span>
+                    {!isCurrentPaid && (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="size-9 text-muted-foreground hover:text-destructive shrink-0"
+                        onClick={() => removePromotionDiscount(splitPromoKey, d.couponCode)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    )}
+                  </div>
+                )
+              })}
+              {splitPromos.length > 3 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 px-0 text-primary font-medium w-full justify-center hover:bg-transparent hover:opacity-80"
+                  onClick={() => setShowAllPromos((v) => !v)}
+                >
+                  <TicketPercent size={14} />
+                  {showAllPromos ? 'ซ่อนโปรโมชัน' : `ดูโปรโมชันทั้งหมด (${splitPromos.length})`}
+                </Button>
+              )}
+            </div>
 
             <Separator />
 
@@ -320,10 +369,11 @@ export function PerSeatPaymentPanel({
                 className="h-14 w-full gap-2 text-sm font-medium"
                 onClick={() => {
                   setPaymentMethodDialogOpen(false)
-                  if (method === 'QR PromptPay') {
+                  if (method === 'Cash') {
+                    setCashDialogOpen(true)
+                  } else if (method === 'QR PromptPay') {
                     setQrSheetOpen(true)
                   } else {
-                    setCashReceived(0)
                     setCheckoutMethod(method)
                   }
                 }}
@@ -352,6 +402,16 @@ export function PerSeatPaymentPanel({
         onConfirm={() => {
           setQrSheetOpen(false)
           handleConfirmPayment('QR PromptPay')
+        }}
+      />
+
+      <CashDialog
+        open={cashDialogOpen}
+        onClose={() => setCashDialogOpen(false)}
+        grandTotal={selectedAmount}
+        onConfirm={() => {
+          setCashDialogOpen(false)
+          handleConfirmPayment('Cash')
         }}
       />
     </div>

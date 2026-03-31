@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { TicketPercent, Trash2, BadgePercent, Calendar, CheckCircle2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -70,6 +71,7 @@ export function PromotionSummary({ promotions, discountTotal: _discountTotal, ta
               key={d.couponCode}
               role="button"
               tabIndex={0}
+              aria-expanded={promoDetail?.couponCode === d.couponCode}
               onClick={() =>
                 promo &&
                 setPromoDetail({
@@ -99,7 +101,7 @@ export function PromotionSummary({ promotions, discountTotal: _discountTotal, ta
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="size-7 text-muted-foreground hover:text-destructive shrink-0"
+                className="size-9 text-muted-foreground hover:text-destructive shrink-0"
                 onClick={(e) => {
                   e.stopPropagation()
                   removePromotionDiscount(tableId, d.couponCode)
@@ -154,10 +156,11 @@ export function PromotionSummary({ promotions, discountTotal: _discountTotal, ta
                   {/* Promo image */}
                   <div className="size-[200px] rounded-xl bg-muted shrink-0 overflow-hidden">
                     {promoDetail.promo.imagePath ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={promoDetail.promo.imagePath}
                         alt={promoDetail.promo.title}
+                        width={200}
+                        height={200}
                         className="size-full object-cover rounded-xl"
                       />
                     ) : (
@@ -248,24 +251,26 @@ export function PromotionSummary({ promotions, discountTotal: _discountTotal, ta
                                 className="relative flex flex-col items-start overflow-hidden rounded-[14px] border border-primary"
                                 style={{
                                   backgroundImage:
-                                    'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
+                                    'linear-gradient(color-mix(in oklch, var(--background) 90%, transparent), color-mix(in oklch, var(--background) 90%, transparent))',
                                   backgroundColor: 'var(--primary)',
                                   boxShadow: 'var(--shadow-card)',
                                 }}
                               >
                                 {/* Image section */}
                                 <div className="h-24 w-full relative overflow-hidden shrink-0">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
+                                  <Image
                                     src={imageSrc}
                                     alt={item.menuItemName}
+                                    width={200}
+                                    height={200}
                                     className="absolute inset-0 size-full object-cover"
                                   />
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
+                                  <Image
                                     src={overlayImg}
                                     alt=""
                                     aria-hidden="true"
+                                    width={200}
+                                    height={200}
                                     className="absolute inset-0 size-full object-cover pointer-events-none"
                                   />
                                 </div>

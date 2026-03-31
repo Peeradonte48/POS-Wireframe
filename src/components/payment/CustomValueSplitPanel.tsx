@@ -26,8 +26,8 @@ export function CustomValueSplitPanel({ tableId, grandTotal, onAllPaid, onCancel
   const [activeSeatIndex, setActiveSeatIndex] = useState<number | null>(null)
   const [showCancelWarning, setShowCancelWarning] = useState(false)
 
-  const { addCustomPayer, recordPayment, cancelSplit, getSplit, setCustomAmount } = useBillStore()
-  const split = getSplit(tableId)
+  const { addCustomPayer, recordPayment, cancelSplit, setCustomAmount } = useBillStore()
+  const split = useBillStore((s) => s.splits[tableId])
   const paidCount = split ? Object.keys(split.payments).length : 0
 
   if (!split) return null

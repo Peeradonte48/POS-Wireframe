@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { BadgePercent, Calendar, HandPlatter, ShoppingBag, Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { type Promotion, type PromotionChannel } from '@/lib/mock-data/promotions'
@@ -53,8 +54,7 @@ export function PromotionList({ promotions, appliedIds, onSelect }: PromotionLis
               {/* Image */}
               <div className="size-[200px] rounded-lg shrink-0 overflow-hidden bg-muted">
                 {promo.imagePath ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={promo.imagePath} alt={promo.title} className="size-full object-cover" />
+                  <Image src={promo.imagePath} alt={promo.title} width={200} height={200} className="size-full object-cover" />
                 ) : (
                   <div className="size-full flex items-center justify-center text-5xl">
                     {promo.imagePlaceholder}

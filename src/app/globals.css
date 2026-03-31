@@ -177,7 +177,7 @@
   --status-warning-bg: oklch(0.96 0.05 60);
 
   /* Thai QR brand color */
-  --color-thai-qr-header: #113e67;
+  --color-thai-qr-header: oklch(0.30 0.10 245);
 
   /* Platform delivery colors — Grab green, LINE MAN blue */
   --platform-grab:        oklch(0.46 0.18 145);
@@ -261,6 +261,9 @@
   --status-warning:    oklch(0.78 0.14 60);
   --status-warning-bg: oklch(0.24 0.06 60);
 
+  /* Thai QR brand color — dark */
+  --color-thai-qr-header: oklch(0.50 0.10 245);
+
   /* Platform delivery colors — dark mode independently tuned */
   --platform-grab:        oklch(0.72 0.18 145);
   --platform-grab-bg:     oklch(0.22 0.07 145);
@@ -297,6 +300,16 @@
   }
 }
 
+/* Reduced motion — disable animations for users with motion sensitivity */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Sonner toast — match loading spinner to 20px icon size (Figma spec) */
 .sonner-loading-wrapper {
   --size: 20px !important;
@@ -304,5 +317,5 @@
 
 /* Section label utility — shared caps pattern for section headings across all screens */
 @utility caps {
-  @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+  @apply text-sm font-semibold uppercase tracking-wide text-muted-foreground;
 }

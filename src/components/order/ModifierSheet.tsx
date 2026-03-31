@@ -117,13 +117,13 @@ function ModifierSheetContent({
         <div className="flex items-center gap-2">
           <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1} aria-label="ลด"
             className="flex items-center justify-center size-9 rounded-md border border-input bg-background disabled:opacity-40"
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
+            style={{ boxShadow: 'var(--shadow-card)' }}>
             <Minus size={16} />
           </button>
           <span className="w-7 text-center text-sm tabular-nums">{quantity}</span>
           <button onClick={() => setQuantity((q) => Math.min(99, q + 1))} aria-label="เพิ่ม"
             className="flex items-center justify-center size-9 rounded-md border border-input bg-background"
-            style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}>
+            style={{ boxShadow: 'var(--shadow-card)' }}>
             <Plus size={16} />
           </button>
         </div>
@@ -164,7 +164,7 @@ function ModifierSheetContent({
               <textarea value={specialRequest} onChange={(e) => setSpecialRequest(e.target.value)}
                 placeholder="Placeholder" rows={3}
                 className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring min-h-[60px]"
-                style={{ boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' }}
+                style={{ boxShadow: 'var(--shadow-card)' }}
               />
             </div>
           </div>
@@ -198,6 +198,10 @@ export function ModifierSheet({ open, onClose, menuItem, tableId, editingLineId,
   return (
     <>
       <div onClick={onClose}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}
         className={cn(
           'fixed inset-0 z-40 bg-black/20 transition-opacity duration-200',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',

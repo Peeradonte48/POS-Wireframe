@@ -14,6 +14,7 @@ import { SimpleItemDialog } from '@/components/order/SimpleItemDialog'
 import { TicketPanel } from '@/components/order/TicketPanel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EditCustomerModal } from '@/components/queue/EditCustomerModal'
@@ -55,13 +56,21 @@ export default function OrderPage() {
   const table = useTableStore((s) => s.tables[tableId])
 
   const orderRounds = useOrderStore((s) => s.orders[tableId]?.rounds)
-  const itemCount = useMemo(
-    () =>
-      orderRounds
-        ?.flatMap((r) => r.items)
-        .filter((i) => i.status !== 'voided')
-        .reduce((sum, i) => sum + i.quantity, 0) ?? 0,
+  const allItems = useMemo(
+    () => orderRounds?.flatMap((r) => r.items).filter((i) => i.status !== 'voided') ?? [],
     [orderRounds],
+  )
+  const itemCount = useMemo(
+    () => allItems.reduce((sum, i) => sum + i.quantity, 0),
+    [allItems],
+  )
+  const hasSentItems = useMemo(
+    () => allItems.some((i) => i.status === 'sent'),
+    [allItems],
+  )
+  const hasUnsentItems = useMemo(
+    () => allItems.some((i) => i.status === 'unsent'),
+    [allItems],
   )
 
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_ID)
@@ -69,6 +78,7 @@ export default function OrderPage() {
   const [editingLineId, setEditingLineId] = useState<string | null>(null)
   const [simpleItemId, setSimpleItemId] = useState<string | null>(null)
   const [ticketOpen, setTicketOpen] = useState(false)
+  const [checkBillConfirmOpen, setCheckBillConfirmOpen] = useState(false)
 
   const selectedMenuItem = selectedMenuItemId
     ? (MENU_ITEMS.find((i) => i.id === selectedMenuItemId) ?? null)
@@ -167,7 +177,14 @@ export default function OrderPage() {
               <Button
                 size="sm"
                 className="gap-2"
-                onClick={() => router.push(`/payment/${tableId}`)}
+                disabled={!hasSentItems}
+                onClick={() => {
+                  if (hasUnsentItems) {
+                    setCheckBillConfirmOpen(true)
+                  } else {
+                    router.push(`/payment/${tableId}`)
+                  }
+                }}
               >
                 <ReceiptText size={16} data-icon="inline-start" />
                 เช็คบิล
@@ -296,6 +313,36 @@ export default function OrderPage() {
           />
         </SheetContent>
       </Sheet>
+
+      {/* Confirm check bill with unsent items */}
+      <Dialog open={checkBillConfirmOpen} onOpenChange={setCheckBillConfirmOpen}>
+        <DialogContent className="sm:max-w-sm" showCloseButton>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">มีรายการที่ยังไม่ได้ส่งครัว</DialogTitle>
+            <DialogDescription>
+              ยังมีออเดอร์ที่ยังไม่ได้ส่งเข้าครัว ต้องการดำเนินการเช็คบิลต่อหรือไม่?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              className="w-full"
+              onClick={() => {
+                setCheckBillConfirmOpen(false)
+                router.push(`/payment/${tableId}`)
+              }}
+            >
+              ดำเนินการต่อ
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setCheckBillConfirmOpen(false)}
+            >
+              ยกเลิก
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

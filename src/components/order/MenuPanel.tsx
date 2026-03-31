@@ -50,10 +50,10 @@ export function MenuPanel({ onItemTap, activeCategory, tableId }: MenuPanelProps
     return () => clearTimeout(t)
   }, [])
 
-  const filteredItems =
-    activeCategory === 'all'
-      ? MENU_ITEMS
-      : MENU_ITEMS.filter((item) => item.categoryId === activeCategory)
+  const filteredItems = useMemo(
+    () => activeCategory === 'all' ? MENU_ITEMS : MENU_ITEMS.filter((item) => item.categoryId === activeCategory),
+    [activeCategory]
+  )
 
   if (isLoading) {
     return (
@@ -134,7 +134,7 @@ export function MenuPanel({ onItemTap, activeCategory, tableId }: MenuPanelProps
                   {count > 0 && (
                     <div
                       className="shrink-0 size-9 rounded-full border border-primary bg-card text-foreground flex items-center justify-center"
-                      style={{ boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.05)' }}
+                      style={{ boxShadow: 'var(--shadow-card)' }}
                     >
                       <span className="text-sm font-medium leading-none">{count}</span>
                     </div>

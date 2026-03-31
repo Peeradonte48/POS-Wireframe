@@ -43,16 +43,18 @@ function EditCustomerModalContent({
         <DialogTitle>Edit Customer</DialogTitle>
       </DialogHeader>
       <div className="flex flex-col gap-2 py-2">
-        <label className="text-sm font-medium">Customer name *</label>
+        <label htmlFor="edit-customer-name" className="text-sm font-medium">Customer name *</label>
         <Input
+          id="edit-customer-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoFocus
           onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm() }}
         />
-        <label className="text-sm font-medium text-muted-foreground">Phone (optional)</label>
+        <label htmlFor="edit-customer-phone" className="text-sm font-medium text-muted-foreground">Phone (optional)</label>
         <Input
+          id="edit-customer-phone"
           type="tel"
           inputMode="numeric"
           value={phone}

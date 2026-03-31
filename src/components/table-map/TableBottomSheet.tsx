@@ -90,8 +90,11 @@ function TableBottomSheetContent({
       {table.status === 'Occupied' && (
         <div className="flex flex-col">
           {/* Tab bar */}
-          <div className="flex border-b border-border mx-4 mb-3">
+          <div role="tablist" className="flex border-b border-border mx-4 mb-3">
             <button
+              role="tab"
+              aria-selected={activeTab === 'actions'}
+              aria-controls="occupied-actions-panel"
               onClick={() => setActiveTab('actions')}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'actions'
@@ -102,6 +105,9 @@ function TableBottomSheetContent({
               Actions
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'timeline'}
+              aria-controls="occupied-timeline-panel"
               onClick={() => setActiveTab('timeline')}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'timeline'
@@ -129,8 +135,9 @@ function TableBottomSheetContent({
 
               {/* Waiter name */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">Waiter</label>
+                <label htmlFor="waiter-input" className="text-xs font-medium text-muted-foreground">Waiter</label>
                 <Input
+                  id="waiter-input"
                   value={localWaiter}
                   onChange={(e) => setLocalWaiter(e.target.value)}
                   onBlur={() =>
@@ -142,8 +149,9 @@ function TableBottomSheetContent({
 
               {/* Table note */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">Note</label>
+                <label htmlFor="note-input" className="text-xs font-medium text-muted-foreground">Note</label>
                 <Input
+                  id="note-input"
                   value={localNote}
                   onChange={(e) => setLocalNote(e.target.value)}
                   onBlur={() =>
@@ -209,8 +217,11 @@ function TableBottomSheetContent({
       {table.status === 'CheckRequested' && (
         <div className="flex flex-col">
           {/* Tab bar */}
-          <div className="flex border-b border-border mx-4 mb-3">
+          <div role="tablist" className="flex border-b border-border mx-4 mb-3">
             <button
+              role="tab"
+              aria-selected={activeTab === 'actions'}
+              aria-controls="check-actions-panel"
               onClick={() => setActiveTab('actions')}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'actions'
@@ -221,6 +232,9 @@ function TableBottomSheetContent({
               Actions
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'timeline'}
+              aria-controls="check-timeline-panel"
               onClick={() => setActiveTab('timeline')}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'timeline'

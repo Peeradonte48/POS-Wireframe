@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ChevronDown, Coins, Crown, UserSearch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -23,12 +23,18 @@ export default function PromotionsPage() {
   const params = useParams<{ tableId: string }>()
   const tableId = params.tableId
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Split context — when navigating from split payment page
+  const splitIndex = searchParams.get('split')
+  const isSplitMode = splitIndex !== null
+  const promoStoreKey = isSplitMode ? `${tableId}__split__${splitIndex}` : tableId
 
   const tables = useTableStore((s) => s.tables)
   const tableLabel = tables[tableId]?.label ?? tableId
 
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[tableId])
+  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[promoStoreKey])
   const promotionDiscounts = promotionDiscountsRaw ?? []
   const { setCrmMember } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
@@ -43,9 +49,9 @@ export default function PromotionsPage() {
   const [selectedPromoId, setSelectedPromoId] = useState<string | null>(null)
   const selectedPromo = PROMOTIONS.find((p) => p.id === selectedPromoId) ?? null
 
-  // ---- Promotion validation hook ----
+  // ---- Promotion validation hook (uses composite key for split mode) ----
   const { codeInput, codeState, handleCodeChange, handleApply, resetCoupon } =
-    usePromotionValidation(tableId)
+    usePromotionValidation(promoStoreKey)
 
   const appliedIds = promotionDiscounts.map((d) => d.promotionId)
 
@@ -58,7 +64,11 @@ export default function PromotionsPage() {
     if (!selectedPromoId) return
     handleApply(selectedPromoId, selectedLineIds, codeInput)
     handleCloseSheet()
-    router.push(`/payment/${tableId}?promoApplied=1`)
+    if (isSplitMode) {
+      router.push(`/payment/${tableId}/split-summary`)
+    } else {
+      router.push(`/payment/${tableId}?promoApplied=1`)
+    }
   }
 
   return (
@@ -76,7 +86,7 @@ export default function PromotionsPage() {
             <ArrowLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none truncate">
-            โปรโมชัน · {tableLabel}
+            โปรโมชัน · {tableLabel}{isSplitMode ? ` · #${Number(splitIndex) + 1}` : ''}
           </span>
         </header>
 

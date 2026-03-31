@@ -134,15 +134,35 @@ export function TicketLineItem({
   // ── Voided ──────────────────────────────────────────────────────────────
   if (item.status === 'voided') {
     return (
-      <div className="flex items-start gap-3 px-4 py-3 border-b opacity-40">
-        <ItemThumbnail item={item} />
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between gap-2">
-            <span className="text-sm line-through text-muted-foreground">{item.menuItemName}</span>
-            <span className="text-sm text-muted-foreground shrink-0">฿{lineTotal}</span>
+      <div className="flex flex-col gap-3 w-full">
+        {/* Details row */}
+        <div className="flex gap-2 items-start">
+          <ItemThumbnail item={item} size={84} rounded="rounded-md" />
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="text-sm font-medium text-foreground truncate">{item.menuItemName}</span>
+                <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5 h-auto shrink-0">
+                  {item.quantity}×
+                </Badge>
+              </div>
+              <span className="text-sm text-card-foreground shrink-0">฿{lineTotal}</span>
+            </div>
+            <ModifierChips item={item} />
           </div>
-          <Badge variant="destructive" className="text-sm px-1.5 mt-1">Voided</Badge>
         </div>
+
+        {/* Voided status button */}
+        <Button
+          variant="secondary"
+          className="w-full h-9 gap-2 opacity-50 cursor-default"
+          disabled
+        >
+          <CircleX size={16} className="text-destructive" />
+          ยกเลิกแบบตัดสต๊อก
+        </Button>
+
+        <Separator />
       </div>
     )
   }

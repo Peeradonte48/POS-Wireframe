@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import {
   BadgePercent,
   Calendar,
@@ -158,8 +159,7 @@ export function CouponEntry({
             {/* Promo image 200×200 */}
             <div className="size-[200px] rounded-xl bg-muted shrink-0 overflow-hidden">
               {promo.imagePath ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={promo.imagePath} alt={promo.title} className="size-full object-cover rounded-xl" />
+                <Image src={promo.imagePath} alt={promo.title} width={200} height={200} className="size-full object-cover rounded-xl" />
               ) : (
                 <div className="size-full flex items-center justify-center text-7xl">
                   {promo.imagePlaceholder}
@@ -291,24 +291,26 @@ export function CouponEntry({
                             : 'border-border bg-card cursor-pointer hover:border-muted-foreground'
                     }`}
                     style={isSelected ? {
-                      backgroundImage: 'linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9))',
+                      backgroundImage: 'linear-gradient(color-mix(in oklch, var(--background) 90%, transparent), color-mix(in oklch, var(--background) 90%, transparent))',
                       backgroundColor: 'var(--primary)',
                       boxShadow: 'var(--shadow-card)',
                     } : { boxShadow: 'var(--shadow-card)' }}
                   >
                     {/* Image section: 96px tall, two-layer */}
                     <div className="h-24 w-full relative overflow-hidden shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                        <Image
                         src={imageSrc}
                         alt={item.name}
+                        width={200}
+                        height={200}
                         className="absolute inset-0 size-full object-cover"
                       />
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={overlayImg}
                         alt=""
                         aria-hidden="true"
+                        width={200}
+                        height={200}
                         className="absolute inset-0 size-full object-cover pointer-events-none"
                       />
                     </div>

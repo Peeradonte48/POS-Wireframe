@@ -17,7 +17,7 @@ export function ThemedToaster() {
           border: '1px solid var(--border)',
           background: 'var(--popover)',
           color: 'var(--popover-foreground)',
-          boxShadow: '0px 4px 12px 0px rgba(0,0,0,0.1)',
+          boxShadow: 'var(--shadow-panel)',
           fontSize: '14px',
           lineHeight: '20px',
           alignItems: 'flex-start',

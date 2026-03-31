@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useBillStore } from '@/stores/bill.store'
 import { useOrderStore } from '@/stores/order.store'
-import type { BillSplit } from '@/stores/bill.store'
+import type { BillSplit, PromotionDiscount } from '@/stores/bill.store'
 import type { OrderLineItem } from '@/stores/order.store'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
@@ -26,6 +26,10 @@ export interface SplitSummaryData {
   subtotal: number
   /** Full-order VAT amount */
   vatAmount: number
+  /** Applied promotions before split */
+  promotions: PromotionDiscount[]
+  /** Total discount from promotions */
+  discountTotal: number
 }
 
 // ---------------------------------------------------------------------------
@@ -35,6 +39,9 @@ export interface SplitSummaryData {
 export function useSplitSummary(tableId: string): SplitSummaryData {
   const split = useBillStore((s) => s.getSplit(tableId))
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
+  const promotionDiscountsRaw = useBillStore((s) => s.promotionDiscounts[tableId])
+  const promotions = useMemo(() => promotionDiscountsRaw ?? [], [promotionDiscountsRaw])
+  const discountTotal = useMemo(() => promotions.reduce((sum, d) => sum + d.amount, 0), [promotions])
 
   // Select raw orders object; derive items in useMemo per CLAUDE.md Zustand patterns
   const orders = useOrderStore((s) => s.orders)
@@ -62,5 +69,7 @@ export function useSplitSummary(tableId: string): SplitSummaryData {
     split,
     subtotal,
     vatAmount,
+    promotions,
+    discountTotal,
   }
 }

@@ -59,7 +59,7 @@ function SimpleItemDialogContent({
             disabled={quantity <= 1}
             aria-label="ลด"
             className={cn(
-              'flex items-center justify-center size-8 rounded-full border border-input bg-background shrink-0',
+              'flex items-center justify-center size-11 rounded-full border border-input bg-background shrink-0',
               'disabled:opacity-40 transition-opacity',
             )}
             style={{ boxShadow: 'var(--shadow-card)' }}
@@ -81,7 +81,7 @@ function SimpleItemDialogContent({
           <button
             onClick={() => setQuantity((q) => Math.min(99, q + 1))}
             aria-label="เพิ่ม"
-            className="flex items-center justify-center size-8 rounded-full border border-input bg-background shrink-0"
+            className="flex items-center justify-center size-11 rounded-full border border-input bg-background shrink-0"
             style={{ boxShadow: 'var(--shadow-card)' }}
           >
             <Plus size={16} />

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { QrCode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
@@ -58,27 +59,27 @@ export function QrSheet({ open, onClose, grandTotal, onConfirm }: QrSheetProps) 
             <div className="bg-[var(--color-thai-qr-header)] h-[71px] flex items-center justify-center px-[10px]">
               <div className="flex items-center gap-3">
                 {/* Medical cross / logo mark */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   alt=""
                   src={THAI_QR_CROSS}
-                  style={{ width: 49, height: 36 }}
+                  width={49}
+                  height={36}
                   className="object-contain shrink-0"
                 />
                 {/* "THAI QR" + "PAYMENT" text stacked */}
                 <div className="flex flex-col justify-center gap-0.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     alt="THAI QR"
                     src={THAI_QR_TEXT_1}
-                    style={{ width: 73, height: 11 }}
+                    width={73}
+                    height={11}
                     className="object-contain"
                   />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     alt="PAYMENT"
                     src={THAI_QR_TEXT_2}
-                    style={{ width: 73, height: 14 }}
+                    width={73}
+                    height={14}
                     className="object-contain"
                   />
                 </div>
@@ -87,22 +88,22 @@ export function QrSheet({ open, onClose, grandTotal, onConfirm }: QrSheetProps) 
 
             {/* PromptPay logo */}
             <div className="flex justify-center pt-2 pb-1">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 alt="PromptPay"
                 src={PROMPTPAY_LOGO}
-                style={{ width: 96, height: 32 }}
+                width={96}
+                height={32}
                 className="object-contain"
               />
             </div>
 
             {/* QR code image */}
             <div className="flex justify-center px-4 pb-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 alt="QR Code"
                 src={QR_CODE_IMG}
-                style={{ width: 221, height: 221 }}
+                width={221}
+                height={221}
                 className="object-cover rounded-[6px]"
               />
             </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
 import { CustomValueSplitPanel } from '@/components/payment/CustomValueSplitPanel'
@@ -33,8 +34,9 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
   const [mode, setMode] = useState<SplitMode>('select')
   const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
-  const { initCustomSplit, initPerSeatSplit, cancelSplit, getSplit } = useBillStore()
-  const split = getSplit(tableId)
+  const focusTrapRef = useFocusTrap<HTMLDivElement>(open)
+  const { initCustomSplit, initPerSeatSplit, cancelSplit } = useBillStore()
+  const split = useBillStore((s) => s.splits[tableId])
   const paidCount = split ? Object.keys(split.payments).length : 0
   const defaultGuestCount = useTableStore.getState().tables[tableId]?.guestCount ?? 2
 
@@ -66,11 +68,15 @@ export function SplitSheet({ open, onClose, tableId, grandTotal, billItems, onAl
     <>
       {/* Backdrop */}
       <div onClick={onClose}
+        role="button"
+        tabIndex={-1}
+        aria-label="Close"
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose() }}
         className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       />
 
       {/* Panel */}
-      <div style={{ boxShadow: 'var(--shadow-floating)' }}
+      <div ref={focusTrapRef} role="dialog" aria-modal="true" aria-label="Split payment" style={{ boxShadow: 'var(--shadow-floating)' }}
         className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-background transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto ${open ? 'translate-y-0' : 'translate-y-full'}`}
       >
         {/* Drag handle */}

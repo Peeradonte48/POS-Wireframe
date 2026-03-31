@@ -43,7 +43,8 @@ export function TableTile({ table, onTap }: TableTileProps) {
 
   // Always call hooks unconditionally (React hooks rule)
   const dwellTime = useDwellTimer(table.openedAt)
-  const split = useBillStore((s) => s.getSplit(table.id))
+  const splits = useBillStore((s) => s.splits)
+  const split = useMemo(() => splits?.[table.id], [splits, table.id])
   const paidCount = split ? Object.keys(split.payments).length : 0
   const merges = useBillStore((s) => s.merges)
   const isMergedSecondary = table.id in merges
@@ -86,7 +87,8 @@ export function TableTile({ table, onTap }: TableTileProps) {
         onTap(table)
       }}
       aria-label={`โต๊ะ ${table.label}, ${table.status}, ${guestCount} ที่นั่ง`}
-      className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 min-h-[110px] touch-manipulation active:scale-[0.97] transition-transform w-full text-center ${cardClass}`}
+      className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 w-[104px] h-[132px] touch-manipulation active:scale-[0.97] transition-transform text-center ${cardClass}`}
+      style={{ boxShadow: 'var(--shadow-card)' }}
     >
       {/* Corner badge: split / merge / order stage */}
       {showSplitBadge ? (
@@ -112,12 +114,12 @@ export function TableTile({ table, onTap }: TableTileProps) {
       <Armchair size={24} className="text-muted-foreground shrink-0" />
 
       {/* Table info */}
-      <div className="flex flex-col items-center gap-1 leading-tight">
-        <span className="text-sm font-semibold text-foreground whitespace-nowrap">
-          {table.label}
+      <div className="flex flex-col items-center gap-2 leading-5 whitespace-nowrap">
+        <span className="text-sm font-semibold text-card-foreground">
+          โต๊ะที่ {table.label.replace(/^T/, '')}
         </span>
         <span className="text-sm text-muted-foreground">
-          {guestCount}/{TABLE_CAPACITY}
+          {guestCount}/{TABLE_CAPACITY} คน
         </span>
         {dwellTime && table.status === 'Occupied' && (
           <span className="text-xs font-mono text-muted-foreground/70">{dwellTime}</span>

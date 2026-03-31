@@ -24,8 +24,8 @@ export function PerSeatSplitPanel({ tableId, items, onAllPaid, onCancel }: PerSe
   const [assigningFromSeat, setAssigningFromSeat] = useState<number | null>(null)
   const [showCancelWarning, setShowCancelWarning] = useState(false)
 
-  const { assignItem, removeAssignment, recordPayment, cancelSplit, getSplit } = useBillStore()
-  const splitRaw = getSplit(tableId)
+  const { assignItem, removeAssignment, recordPayment, cancelSplit } = useBillStore()
+  const splitRaw = useBillStore((s) => s.splits[tableId])
   const paidCount = splitRaw ? Object.keys(splitRaw.payments).length : 0
   if (!splitRaw) return null
   const split = splitRaw

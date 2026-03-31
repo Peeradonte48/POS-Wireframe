@@ -52,7 +52,7 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
       <div className="flex flex-col gap-4 py-2">
         {/* Platform selector */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold uppercase text-muted-foreground">
+          <label htmlFor="delivery-platform" className="text-xs font-semibold uppercase text-muted-foreground">
             Platform <span className="text-destructive">*</span>
           </label>
           <div className="flex gap-2">
@@ -79,10 +79,11 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
 
         {/* External Order ID */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold uppercase text-muted-foreground">
+          <label htmlFor="delivery-order-id" className="text-xs font-semibold uppercase text-muted-foreground">
             Order ID <span className="text-destructive">*</span>
           </label>
           <Input
+            id="delivery-order-id"
             type="text"
             placeholder="e.g. GR-4401"
             value={externalId}
@@ -94,11 +95,12 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
 
         {/* Customer Name */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold uppercase text-muted-foreground">
+          <label htmlFor="delivery-customer-name" className="text-xs font-semibold uppercase text-muted-foreground">
             Customer Name{' '}
             <span className="text-muted-foreground/60 normal-case font-normal">(optional)</span>
           </label>
           <Input
+            id="delivery-customer-name"
             type="text"
             placeholder="e.g. Somchai"
             value={customerName}
@@ -109,11 +111,12 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
 
         {/* Customer Phone */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold uppercase text-muted-foreground">
+          <label htmlFor="delivery-customer-phone" className="text-xs font-semibold uppercase text-muted-foreground">
             Customer Phone{' '}
             <span className="text-muted-foreground/60 normal-case font-normal">(optional)</span>
           </label>
           <Input
+            id="delivery-customer-phone"
             type="tel"
             inputMode="numeric"
             placeholder="e.g. 08X-XXX-XXXX"

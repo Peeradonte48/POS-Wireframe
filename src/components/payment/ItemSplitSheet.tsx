@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ScissorsLineDashed, CirclePlus, Trash2, Minus, Plus, UserPlus, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -130,10 +131,11 @@ function DroppableBillBucket({
                     <div className="flex gap-2 items-start w-full">
                       <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
                         {menuItem?.imagePath ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             src={menuItem.imagePath}
                             alt={item.menuItemName}
+                            width={54}
+                            height={54}
                             className="absolute inset-0 size-full object-cover rounded-md"
                           />
                         ) : (
@@ -294,10 +296,11 @@ function DraggableItemCard({
           {/* Thumbnail */}
           <div className="relative rounded-md shrink-0 size-[54px] overflow-hidden bg-accent">
             {menuItem?.imagePath ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={menuItem.imagePath}
                 alt={item.menuItemName}
+                width={54}
+                height={54}
                 className="absolute inset-0 size-full object-cover rounded-md"
               />
             ) : (
@@ -398,10 +401,11 @@ function GhostCard({
       <div className="flex gap-3 items-center p-4">
         <div className="relative rounded-md shrink-0 size-[40px] overflow-hidden bg-accent">
           {menuItem?.imagePath ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={menuItem.imagePath}
               alt={item.menuItemName}
+              width={40}
+              height={40}
               className="absolute inset-0 size-full object-cover rounded-md"
             />
           ) : (

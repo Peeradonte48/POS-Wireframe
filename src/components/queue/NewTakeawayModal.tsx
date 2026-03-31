@@ -46,8 +46,9 @@ export function NewTakeawayModal({ open, onClose }: NewTakeawayModalProps) {
           <DialogTitle>New Takeaway Order</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2 py-2">
-          <label className="text-sm font-medium">Customer name *</label>
+          <label htmlFor="tkwy-name" className="text-sm font-medium">Customer name *</label>
           <Input
+            id="tkwy-name"
             type="text"
             placeholder="e.g. Somchai P."
             value={name}
@@ -55,8 +56,9 @@ export function NewTakeawayModal({ open, onClose }: NewTakeawayModalProps) {
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Enter') handleConfirm() }}
           />
-          <label className="text-sm font-medium text-muted-foreground">Phone (optional)</label>
+          <label htmlFor="tkwy-phone" className="text-sm font-medium text-muted-foreground">Phone (optional)</label>
           <Input
+            id="tkwy-phone"
             type="tel"
             inputMode="numeric"
             placeholder="e.g. 081-234-5678"
