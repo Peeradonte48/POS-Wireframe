@@ -80,8 +80,9 @@ export default function PaymentPage() {
     if (!paymentMethod) return
     const queueOrder = useQueueStore.getState().orders[tableId]
     if (queueOrder) {
-      // Delivery or takeaway — mark as Billed in queue store
-      useQueueStore.getState().setStatus(tableId, 'Billed')
+      // Takeaway → Collected (terminal); Delivery → Billed
+      const nextStatus = queueOrder.channel === 'takeaway' ? 'Collected' : 'Billed'
+      useQueueStore.getState().setStatus(tableId, nextStatus)
       clearPromotionDiscounts(tableId)
       toast.success('Payment confirmed')
       setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
@@ -301,14 +302,12 @@ export default function PaymentPage() {
                 )}
 
                 {/* Promotions */}
-                {!isTakeaway && (
-                  <PromotionSummary
-                    promotions={promotionDiscounts}
-                    discountTotal={discountAmount}
-                    tableId={tableId}
-                    lineItems={billItems}
-                  />
-                )}
+                <PromotionSummary
+                  promotions={promotionDiscounts}
+                  discountTotal={discountAmount}
+                  tableId={tableId}
+                  lineItems={billItems}
+                />
 
                 {/* Bill management */}
                 {!isTakeaway && (

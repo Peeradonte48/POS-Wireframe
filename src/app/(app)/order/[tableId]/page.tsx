@@ -175,7 +175,7 @@ export default function OrderPage() {
                 </span>
               )}
             </Button>
-            {!isTakeaway && !isDelivery && (
+            {!isDelivery && (isTakeaway ? !isTakingStatus : true) && (
               <Button
                 size="sm"
                 className="gap-2"
@@ -325,7 +325,7 @@ export default function OrderPage() {
               router.push('/table-map')
             } : undefined}
             hideSend={isTakeaway && !isTakingStatus}
-            onCheckBill={!isTakeaway && !isDelivery ? () => router.push(`/payment/${tableId}`) : undefined}
+            onCheckBill={!isDelivery && (!isTakeaway || !isTakingStatus) ? () => router.push(`/payment/${tableId}`) : undefined}
           />
         </SheetContent>
       </Sheet>

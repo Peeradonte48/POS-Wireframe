@@ -24,9 +24,13 @@ export function TakeawayCard({ order }: TakeawayCardProps) {
   const cardClass = STATUS_CARD_CLASS[order.status] ?? 'bg-card border border-border'
   const customerLabel = order.customerName ?? 'Guest'
 
+  const href = order.status === 'Ready'
+    ? `/payment/${order.orderId}`
+    : `/order/${order.orderId}`
+
   return (
     <button
-      onClick={() => router.push(`/order/${order.orderId}`)}
+      onClick={() => router.push(href)}
       aria-label={`${order.orderId}, ${customerLabel}, ${order.status}`}
       className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 w-[104px] h-[132px] touch-manipulation active:scale-[0.97] transition-transform text-center ${cardClass}`}
       style={{ boxShadow: 'var(--shadow-card)' }}
