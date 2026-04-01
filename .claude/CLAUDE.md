@@ -59,6 +59,7 @@ Each route group has its own `layout.tsx`. The `(app)` and `(kds)` groups destro
 | `kds.store` | No | Kitchen ticket board, bump/recall, demo mode |
 
 **Key state types:**
+
 - `TableStatus`: `Open | Occupied | Reserved | CheckRequested | Cleaning`
 - `OrderStage`: `Ordered | Cooking | Ready | Served | Billed` — lives on `TableRecord`, updated by KDS bump
 - `OrderLineItem`: `{ lineId, menuItemId, basePrice, modifiers: ModifierSelection[], spiceLevel, quantity, status: 'unsent'|'sent'|'voided' }`
@@ -68,6 +69,7 @@ Each route group has its own `layout.tsx`. The `(app)` and `(kds)` groups destro
 ### Permission System (src/lib/role-permissions.ts)
 
 Two-level access control:
+
 - `canAccess(role, navSlug)` — Navigation visibility (sidebar items)
 - `canDoAction(role, actionKey)` — Action-level gating (buttons, workflows)
 
