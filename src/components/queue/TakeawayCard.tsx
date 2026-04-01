@@ -1,23 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { ShoppingBag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
-import { useQueueStore } from '@/stores/queue.store'
+import { useRouter } from 'next/navigation'
 import type { QueueOrder } from '@/stores/queue.store'
-import { useOrderStore } from '@/stores/order.store'
-import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
-import { ConfirmStepBackDialog } from '@/components/queue/ConfirmStepBackDialog'
 import { getQueueStatusBadgeVariant, getQueueStatusLabel } from '@/lib/queue-display'
 
-function formatTime(ts: number): string {
-  return new Date(ts).toLocaleTimeString('th-TH', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+const STATUS_CARD_CLASS: Record<string, string> = {
+  Taking:    'bg-card border border-border',
+  Sent:      'bg-status-occupied-bg border-4 border-status-occupied',
+  Ready:     'bg-status-ready-bg border-4 border-status-ready',
+  Collected: 'bg-status-settled-bg border-4 border-status-settled',
+  Cancelled: 'bg-status-settled-bg border-4 border-status-settled',
 }
 
 interface TakeawayCardProps {
@@ -26,139 +20,39 @@ interface TakeawayCardProps {
 
 export function TakeawayCard({ order }: TakeawayCardProps) {
   const router = useRouter()
-  const advanceStatus = useQueueStore((s) => s.advanceStatus)
-  const stepBack = useQueueStore((s) => s.stepBack)
-  const cancelOrder = useQueueStore((s) => s.cancelOrder)
 
-  const [showCancel, setShowCancel] = useState(false)
-  const [showStepBack, setShowStepBack] = useState(false)
-
-  const orderData = useOrderStore((s) => s.orders[order.orderId])
-
-  const itemCount = useMemo(() => {
-    if (!orderData) return 0
-    return orderData.rounds
-      .flatMap((r) => r.items)
-      .filter((i) => i.status !== 'voided').length
-  }, [orderData])
-
+  const cardClass = STATUS_CARD_CLASS[order.status] ?? 'bg-card border border-border'
   const customerLabel = order.customerName ?? 'Guest'
-  const isTerminal = order.status === 'Collected' || order.status === 'Cancelled'
 
   return (
-    <div
-      className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3"
+    <button
+      onClick={() => router.push(`/order/${order.orderId}`)}
+      aria-label={`${order.orderId}, ${customerLabel}, ${order.status}`}
+      className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 w-[104px] h-[132px] touch-manipulation active:scale-[0.97] transition-transform text-center ${cardClass}`}
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
-      {/* Header row */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-mono font-bold text-foreground">{order.orderId}</span>
-        <Badge variant={getQueueStatusBadgeVariant(order.status)}>
+      {/* Corner badge: status */}
+      {order.status !== 'Taking' && (
+        <Badge
+          variant={getQueueStatusBadgeVariant(order.status)}
+          className="absolute top-2 right-2 text-sm py-0"
+        >
           {getQueueStatusLabel(order.status)}
         </Badge>
-        <span className="text-xs text-muted-foreground ml-auto shrink-0">
-          {formatTime(order.createdAt)}
+      )}
+
+      {/* Icon */}
+      <ShoppingBag size={24} className="text-muted-foreground shrink-0" />
+
+      {/* Order info */}
+      <div className="flex flex-col items-center gap-2 leading-5 whitespace-nowrap">
+        <span className="text-sm font-semibold text-card-foreground">
+          {order.orderId}
+        </span>
+        <span className="text-xs text-muted-foreground/70 truncate max-w-full">
+          {customerLabel}
         </span>
       </div>
-
-      {/* Body row: customer · item count */}
-      <p className="text-sm font-semibold text-foreground">
-        {customerLabel}
-        {/* Guard: show warning badge when order.store data is missing for non-Taking orders */}
-        {!orderData && order.status !== 'Taking' ? (
-          <span className="font-normal text-muted-foreground"> · <Badge variant="destructive">data unavailable</Badge></span>
-        ) : (
-          <span className="font-normal text-muted-foreground"> · {order.itemsSummary || `${itemCount} items`}</span>
-        )}
-      </p>
-
-      {/* Action bar */}
-      {!isTerminal && (
-        <div className="flex gap-2">
-          {/* Left: cancel (Taking) or Step Back (Sent / Ready) */}
-          {order.status === 'Taking' && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="min-w-[36px] text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setShowCancel(true)}
-              aria-label="Cancel order"
-            >
-              <X size={16} />
-            </Button>
-          )}
-          {order.status === 'Sent' && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowStepBack(true)}
-            >
-              ← Step Back
-            </Button>
-          )}
-          {order.status === 'Ready' && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => stepBack(order.orderId)}
-            >
-              ← Step Back
-            </Button>
-          )}
-
-          {/* Right: primary action */}
-          {order.status === 'Taking' && (
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={() => router.push(`/order/${order.orderId}`)}
-            >
-              Start Order
-            </Button>
-          )}
-          {order.status === 'Sent' && (
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={() => advanceStatus(order.orderId)}
-            >
-              Mark Ready
-            </Button>
-          )}
-          {order.status === 'Ready' && (
-            <Button
-              size="sm"
-              className="flex-1"
-              onClick={() => advanceStatus(order.orderId)}
-            >
-              Mark Collected
-            </Button>
-          )}
-        </div>
-      )}
-
-      <ConfirmCancelDialog
-        open={showCancel}
-        onClose={() => setShowCancel(false)}
-        onConfirm={() => {
-          cancelOrder(order.orderId)
-          setShowCancel(false)
-        }}
-        orderId={order.orderId}
-        customerName={order.customerName}
-      />
-
-      {order.status === 'Sent' && (
-        <ConfirmStepBackDialog
-          open={showStepBack}
-          onClose={() => setShowStepBack(false)}
-          onConfirm={() => {
-            stepBack(order.orderId)
-            setShowStepBack(false)
-          }}
-          currentStatus={order.status}
-        />
-      )}
-    </div>
+    </button>
   )
 }

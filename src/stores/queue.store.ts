@@ -43,6 +43,7 @@ interface QueueStore {
   advanceStatus: (orderId: string) => void
   createTakeaway: (customerName: string, customerPhone?: string) => string
   updateCustomer: (orderId: string, name: string, phone?: string) => void
+  setStatus: (orderId: string, status: QueueOrderStatus) => void
   cancelOrder: (orderId: string) => void
   stepBack: (orderId: string) => void
 }
@@ -131,6 +132,17 @@ export const useQueueStore = create<QueueStore>()(
           orders: {
             ...state.orders,
             [orderId]: { ...state.orders[orderId], customerName: name, customerPhone: phone },
+          },
+        }))
+      },
+
+      setStatus: (orderId, status) => {
+        const order = get().orders[orderId]
+        if (!order) return
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], status },
           },
         }))
       },

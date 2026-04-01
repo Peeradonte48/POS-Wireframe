@@ -30,7 +30,7 @@ export default function SplitSummaryPage() {
   const tableId = params.tableId
   const router = useRouter()
 
-  const { splitOrigin, splitAmounts, billItems, crmMember, split, subtotal, vatAmount } =
+  const { splitOrigin, splitAmounts, billItems, crmMember, split, subtotal, vatAmount, promotions, discountTotal } =
     useSplitSummary(tableId)
 
   const table = useTableStore((s) => s.tables[tableId])
@@ -104,6 +104,9 @@ export default function SplitSummaryPage() {
           billItems={billItems}
           subtotal={subtotal}
           vatAmount={vatAmount}
+          promotions={promotions}
+          discountTotal={discountTotal}
+          guestCount={table?.guestCount ?? null}
           crmMember={crmMember}
           onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}

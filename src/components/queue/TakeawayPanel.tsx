@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react'
 import { useQueueStore } from '@/stores/queue.store'
 import { TakeawayCard } from './TakeawayCard'
 import { NewTakeawayModal } from './NewTakeawayModal'
-import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { CirclePlus } from 'lucide-react'
 
 export function TakeawayPanel() {
   const [showNewModal, setShowNewModal] = useState(false)
@@ -21,33 +22,28 @@ export function TakeawayPanel() {
   )
 
   return (
-    <div className="relative flex flex-col h-full">
-      {/* Scrollable order list */}
-      <div className="flex-1 overflow-y-auto min-h-0 p-4 flex flex-col gap-3 pb-20">
+    <div className="relative flex flex-col h-full gap-1.5">
+      {/* Content container — muted background with border */}
+      <div className="relative flex-1 min-h-[80px] overflow-y-auto rounded-md border border-border bg-muted px-3 py-2">
         {activeTakeawayOrders.length > 0 ? (
-          activeTakeawayOrders.map((order) => (
-            <TakeawayCard key={order.orderId} order={order} />
-          ))
-        ) : (
-          <div className="flex flex-col items-center justify-center flex-1 gap-2 text-center py-16">
-            <span className="text-3xl">🥡</span>
-            <p className="text-sm font-medium text-foreground">No takeaway orders</p>
-            <p className="text-xs text-muted-foreground">
-              Tap + to create a new takeaway order
-            </p>
+          <div className="flex flex-wrap gap-3.5 pb-20">
+            {activeTakeawayOrders.map((order) => (
+              <TakeawayCard key={order.orderId} order={order} />
+            ))}
           </div>
-        )}
-      </div>
+        ) : null}
 
-      {/* FAB — New Takeaway Order */}
-      <button
-        onClick={() => setShowNewModal(true)}
-        className="absolute bottom-6 right-6 h-14 w-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-colors hover:bg-primary/90 active:scale-95"
-        style={{ boxShadow: 'var(--shadow-floating)' }}
-        aria-label="New Takeaway Order"
-      >
-        <Plus size={24} />
-      </button>
+        {/* Create order button — centered at bottom */}
+        <Button
+          size="lg"
+          onClick={() => setShowNewModal(true)}
+          className="absolute bottom-[23px] left-1/2 -translate-x-1/2 h-14 px-8 rounded-md"
+          style={{ boxShadow: 'var(--shadow-panel)' }}
+        >
+          <CirclePlus size={16} />
+          สร้างออร์เดอร์
+        </Button>
+      </div>
 
       <NewTakeawayModal
         open={showNewModal}

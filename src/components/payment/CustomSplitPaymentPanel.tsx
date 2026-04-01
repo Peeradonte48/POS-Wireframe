@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import {
   Banknote,
+  ChevronDown,
   ChevronLeft,
+  ChevronUp,
   Coins,
   CreditCard,
   Crown,
   HandPlatter,
   QrCode,
-  TicketPercent,
-  Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -27,7 +27,7 @@ import { CardPanel } from '@/components/payment/CardPanel'
 import { useBillStore } from '@/stores/bill.store'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 import type { OrderLineItem } from '@/stores/order.store'
-import { PROMOTIONS } from '@/lib/mock-data/promotions'
+import type { PromotionDiscount } from '@/stores/bill.store'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -42,6 +42,9 @@ interface CustomSplitPaymentPanelProps {
   billItems: OrderLineItem[]
   subtotal: number
   vatAmount: number
+  promotions: PromotionDiscount[]
+  discountTotal: number
+  guestCount: number | null
   crmMember: CrmMember | null
   onCrmChange: () => void
   onAllPaid: () => void
@@ -58,12 +61,15 @@ export function CustomSplitPaymentPanel({
   billItems,
   subtotal,
   vatAmount,
+  promotions,
+  discountTotal,
+  guestCount,
   crmMember,
   onCrmChange,
   onAllPaid,
 }: CustomSplitPaymentPanelProps) {
   const router = useRouter()
-  const { setCrmMember, recordPayment, removePromotionDiscount } = useBillStore()
+  const { setCrmMember, recordPayment } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
@@ -72,16 +78,13 @@ export function CustomSplitPaymentPanel({
   const [checkoutMethod, setCheckoutMethod] = useState<PaymentMethod | null>(null)
   const [cashDialogOpen, setCashDialogOpen] = useState(false)
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
-  const [showAllPromos, setShowAllPromos] = useState(false)
+  const [discountExpanded, setDiscountExpanded] = useState(discountTotal > 0)
 
-  // Per-split promotions
-  const splitPromoKey = `${tableId}__split__${selectedTabIndex}`
-  const splitPromosRaw = useBillStore((s) => s.promotionDiscounts[splitPromoKey])
-  const splitPromos = splitPromosRaw ?? []
-  const splitDiscount = splitPromos.reduce((sum, d) => sum + d.amount, 0)
-
-  const selectedAmount = (splitAmounts[selectedTabIndex] ?? 0) - splitDiscount
+  const selectedAmount = splitAmounts[selectedTabIndex] ?? 0
   const isCurrentPaid = paidIndexes.has(selectedTabIndex)
+
+  const discountedSubtotal = subtotal - discountTotal
+  const billTotal = billItems.reduce((sum, item) => sum + item.basePrice * item.quantity, 0)
 
   function handleConfirmPayment(method: PaymentMethod) {
     const newPaid = new Set(paidIndexes).add(selectedTabIndex)
@@ -101,7 +104,6 @@ export function CustomSplitPaymentPanel({
     if (allDone) {
       onAllPaid()
     } else {
-      // Auto-advance to next unpaid tab
       const nextUnpaid = splitAmounts.findIndex((_, i) => !newPaid.has(i))
       if (nextUnpaid !== -1) setSelectedTabIndex(nextUnpaid)
     }
@@ -112,33 +114,21 @@ export function CustomSplitPaymentPanel({
     return (
       <div className="flex flex-col h-full">
         <header className="h-[52px] border-b flex items-center gap-2 px-6 shrink-0">
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-9"
-            onClick={() => setCheckoutMethod(null)}
-            aria-label="Back"
-          >
+          <Button variant="outline" size="icon" className="size-9" onClick={() => setCheckoutMethod(null)} aria-label="Back">
             <ChevronLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none">
             แบ่งจ่าย #{selectedTabIndex + 1} — บัตรเครดิต
           </span>
         </header>
-
         <div className="flex-1 overflow-y-auto pb-24">
           <div className="max-w-2xl mx-auto px-4 py-4 space-y-6">
             <CardPanel grandTotal={selectedAmount} />
           </div>
         </div>
-
         <div className="sticky bottom-0 bg-background border-t p-4">
           <div className="max-w-2xl mx-auto">
-            <Button
-              size="cta"
-              className="w-full text-base"
-              onClick={() => handleConfirmPayment('Card')}
-            >
+            <Button size="cta" className="w-full text-base" onClick={() => handleConfirmPayment('Card')}>
               ยืนยันการชำระเงิน — ฿{selectedAmount.toLocaleString()}
             </Button>
           </div>
@@ -154,7 +144,7 @@ export function CustomSplitPaymentPanel({
         <Button variant="outline" size="icon" className="size-9" onClick={() => router.back()} aria-label="Back">
           <ChevronLeft size={16} />
         </Button>
-        <span className="font-medium text-base leading-none">สรุปรายการชำระเงิน</span>
+        <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
       </header>
 
       {/* Payer tabs */}
@@ -166,7 +156,7 @@ export function CustomSplitPaymentPanel({
             <button
               key={index}
               onClick={() => setSelectedTabIndex(index)}
-              className={`flex flex-col gap-1.5 items-start justify-center p-3 rounded-lg border shrink-0 min-w-[160px] max-w-[200px] flex-1 text-left transition-colors ${
+              className={`flex flex-col gap-1.5 items-start p-3 rounded-lg border shrink-0 w-[176px] text-left transition-colors ${
                 isPaid
                   ? 'border-border bg-muted opacity-60'
                   : isActive
@@ -174,19 +164,15 @@ export function CustomSplitPaymentPanel({
                     : 'border-border bg-background hover:border-primary/40'
               }`}
             >
-              <div className="flex items-center justify-between w-full">
-                <span className="font-medium text-sm text-foreground leading-none">
-                  แบ่งจ่าย #{index + 1}
-                </span>
-                {isPaid && (
-                  <span className="text-xs font-semibold text-green-600 bg-green-600/10 rounded px-1.5 py-0.5 leading-none">
-                    ชำระแล้ว
-                  </span>
-                )}
-              </div>
+              <span className={`font-medium text-sm leading-none ${isActive ? 'text-foreground' : 'text-foreground'}`}>
+                แบ่งจ่าย #{index + 1}
+              </span>
               <span className={`text-sm leading-5 ${isPaid ? 'text-status-success font-medium' : 'text-muted-foreground'}`}>
                 ฿{amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
+              {isPaid && (
+                <span className="text-xs font-semibold text-green-600 leading-none">ชำระแล้ว</span>
+              )}
             </button>
           )
         })}
@@ -194,51 +180,101 @@ export function CustomSplitPaymentPanel({
 
       {/* Two-column content */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Left: bill items */}
-        <div className="flex-1 min-w-0 overflow-y-auto px-4 py-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
-                <p className="font-medium text-base text-foreground leading-6">
-                  ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
-                <p className="font-medium text-base text-foreground leading-6">
-                  ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </div>
+        {/* Left: bill summary + items */}
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          <div className="p-4">
+            <div className="bg-muted border border-border rounded-md overflow-hidden px-4 py-4">
+              <div className="flex flex-col gap-4 px-2 py-4">
+                {/* Summary rows */}
+                <div className="flex flex-col gap-4">
+                  {/* ราคารวม */}
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-base text-muted-foreground leading-6">ราคารวม</p>
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
 
-            <div className="py-2"><Separator /></div>
+                  {/* ส่วนลดท้ายใบเสร็จ — expandable accordion */}
+                  <div className="flex flex-col gap-2">
+                    <button
+                      className="flex items-center justify-between w-full"
+                      onClick={() => setDiscountExpanded((v) => !v)}
+                    >
+                      <div className="flex items-center gap-1">
+                        <p className="font-medium text-base text-muted-foreground leading-6">ส่วนลดท้ายใบเสร็จ</p>
+                        {discountExpanded ? (
+                          <ChevronUp size={16} className="text-muted-foreground" />
+                        ) : (
+                          <ChevronDown size={16} className="text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className={`font-medium text-base leading-6 ${discountTotal > 0 ? 'text-destructive' : 'text-foreground'}`}>
+                        {discountTotal > 0 ? `-฿${discountTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '฿0.00'}
+                      </p>
+                    </button>
+                    {discountExpanded && promotions.length > 0 && (
+                      <div className="flex flex-col gap-1">
+                        {promotions.map((d) => (
+                          <div key={d.couponCode} className="flex items-center justify-between">
+                            <p className="text-sm text-destructive leading-5">{d.couponCode}</p>
+                            <p className="text-sm text-destructive leading-5">
+                              -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-            <div className="flex items-center gap-[10px] py-2">
-              <Button variant="secondary" size="icon" className="size-8 shrink-0" aria-label="Table">
-                <HandPlatter size={16} />
-              </Button>
-              <div className="flex flex-1 items-center gap-2 min-w-0">
-                <p className="font-semibold text-lg leading-7 shrink-0">{tableLabel}</p>
-                <p className="text-sm text-muted-foreground leading-5 shrink-0">
-                  แบ่งจ่าย #{selectedTabIndex + 1}
-                </p>
+                  {/* ก่อนรวม VAT */}
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-base text-muted-foreground leading-6">ก่อนรวม VAT</p>
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{discountedSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+
+                  {/* VAT */}
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-base text-muted-foreground leading-6">VAT</p>
+                    <p className="font-medium text-base text-foreground leading-6">
+                      ฿{vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Table header */}
+                <div className="flex items-center gap-[10px] py-2">
+                  <Button variant="secondary" size="icon" className="size-8 shrink-0" aria-label="Table">
+                    <HandPlatter size={16} />
+                  </Button>
+                  <div className="flex flex-1 items-center gap-2 min-w-0">
+                    <p className="font-semibold text-lg leading-7 shrink-0">{tableLabel}</p>
+                    <p className="text-sm text-muted-foreground leading-5 shrink-0">
+                      ลูกค้า {guestCount ?? '-'} คน
+                    </p>
+                  </div>
+                  <p className="font-semibold text-lg leading-7 text-right shrink-0">
+                    ฿{billTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+
+                {/* Bill items */}
+                <div className="flex flex-col gap-4">
+                  {billItems.map((item) => (
+                    <BillLineItem key={item.lineId} item={item} />
+                  ))}
+                </div>
               </div>
-              <p className="font-semibold text-lg leading-7 text-right shrink-0">
-                ฿{selectedAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {billItems.map((item) => (
-                <BillLineItem key={item.lineId} item={item} />
-              ))}
             </div>
           </div>
         </div>
 
         {/* Right: summary panel */}
-        <div className="border-l border-border flex flex-col gap-6 h-full px-4 py-6 shrink-0 w-[282px] overflow-y-auto">
+        <div className="flex flex-col gap-6 h-full px-2 py-4 shrink-0 w-[250px] overflow-y-auto">
           <div className="flex flex-col gap-4 items-center justify-center h-32 leading-none p-4 whitespace-nowrap">
             <p className="font-medium text-xl text-muted-foreground">แบ่งจ่าย #{selectedTabIndex + 1}</p>
             <p className={`font-semibold text-3xl ${isCurrentPaid ? 'text-status-success' : 'text-destructive'}`}>
@@ -249,12 +285,12 @@ export function CustomSplitPaymentPanel({
             )}
           </div>
 
-          <div className="bg-background border border-border rounded-[14px] overflow-hidden">
+          <div className="bg-background border border-border rounded-[14px] overflow-hidden p-4">
             {crmMember ? (
               <CrmMemberCard member={crmMember} onChangeMember={onCrmChange} />
             ) : (
               <button
-                className="flex items-center justify-center gap-2 h-10 w-full px-4"
+                className="flex items-center justify-center gap-2 h-10 w-full"
                 onClick={onCrmChange}
               >
                 <Crown size={16} className="text-primary shrink-0" />
@@ -263,60 +299,7 @@ export function CustomSplitPaymentPanel({
             )}
           </div>
 
-          {/* Per-split promotions */}
-          <div className="flex flex-col gap-2">
-            <p className="font-medium text-sm text-muted-foreground leading-5">โปรโมชัน</p>
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full gap-2"
-              disabled={isCurrentPaid}
-              onClick={() => router.push(`/payment/${tableId}/promotions?split=${selectedTabIndex}`)}
-            >
-              <TicketPercent size={16} />
-              เพิ่มโปรโมชัน
-            </Button>
-            {(showAllPromos ? splitPromos : splitPromos.slice(0, 3)).map((d) => {
-              const promo = PROMOTIONS.find((p) => p.id === d.promotionId)
-              return (
-                <div
-                  key={d.couponCode}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-status-warning/30 bg-status-warning-bg"
-                >
-                  <TicketPercent size={16} className="text-status-warning shrink-0" />
-                  <span className="text-sm font-medium flex-1 text-foreground truncate">{promo?.title ?? d.couponCode}</span>
-                  <span className="text-sm font-semibold text-status-warning shrink-0">
-                    -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                  </span>
-                  {!isCurrentPaid && (
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="size-9 text-muted-foreground hover:text-destructive shrink-0"
-                      onClick={() => removePromotionDiscount(splitPromoKey, d.couponCode)}
-                    >
-                      <Trash2 size={14} />
-                    </Button>
-                  )}
-                </div>
-              )
-            })}
-            {splitPromos.length > 3 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-1.5 px-0 text-primary font-medium w-full justify-center hover:bg-transparent hover:opacity-80"
-                onClick={() => setShowAllPromos((v) => !v)}
-              >
-                <TicketPercent size={14} />
-                {showAllPromos ? 'ซ่อนโปรโมชัน' : `ดูโปรโมชันทั้งหมด (${splitPromos.length})`}
-              </Button>
-            )}
-          </div>
-
-          <Separator />
-
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>
             <button className="flex items-center gap-2" onClick={() => router.back()}>
               <Coins size={16} className="text-foreground" />

@@ -78,11 +78,14 @@ export default function PaymentPage() {
   // Confirm payment handler
   function handleConfirmPayment() {
     if (!paymentMethod) return
-    if (isTakeaway) {
-      useQueueStore.getState().advanceStatus(tableId)
-      useKdsStore.getState().addTicket(tableId, tableId, 'takeaway')
+    const queueOrder = useQueueStore.getState().orders[tableId]
+    if (queueOrder) {
+      // Delivery or takeaway — mark as Billed in queue store
+      useQueueStore.getState().setStatus(tableId, 'Billed')
+      clearPromotionDiscounts(tableId)
       toast.success('Payment confirmed')
-      router.push('/table-map')
+      setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
+      setViewState('receipt')
       return
     }
     const { markCleaning, updateTable } = useTableStore.getState()

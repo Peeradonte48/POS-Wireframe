@@ -10,8 +10,6 @@ import {
   HandPlatter,
   QrCode,
   ScissorsLineDashed,
-  TicketPercent,
-  Trash2,
 } from 'lucide-react'
 
 import { toast } from 'sonner'
@@ -30,7 +28,6 @@ import { useBillStore } from '@/stores/bill.store'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 import type { OrderLineItem } from '@/stores/order.store'
 import type { ItemBillEntry } from '@/stores/bill.store'
-import { PROMOTIONS } from '@/lib/mock-data/promotions'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,7 +61,7 @@ export function PerSeatPaymentPanel({
   onAllPaid,
 }: PerSeatPaymentPanelProps) {
   const router = useRouter()
-  const { setCrmMember, recordPayment, removePromotionDiscount } = useBillStore()
+  const { setCrmMember, recordPayment } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
@@ -73,15 +70,7 @@ export function PerSeatPaymentPanel({
   const [checkoutMethod, setCheckoutMethod] = useState<PaymentMethod | null>(null)
   const [cashDialogOpen, setCashDialogOpen] = useState(false)
   const [qrSheetOpen, setQrSheetOpen] = useState(false)
-  const [showAllPromos, setShowAllPromos] = useState(false)
-
-  // Per-split promotions
-  const splitPromoKey = `${tableId}__split__${selectedTabIndex}`
-  const splitPromosRaw = useBillStore((s) => s.promotionDiscounts[splitPromoKey])
-  const splitPromos = splitPromosRaw ?? []
-  const splitDiscount = splitPromos.reduce((sum, d) => sum + d.amount, 0)
-
-  const selectedBillSubtotal = (splitAmounts[selectedTabIndex] ?? 0) - splitDiscount
+  const selectedBillSubtotal = splitAmounts[selectedTabIndex] ?? 0
   const selectedAmount = selectedBillSubtotal + Math.round(selectedBillSubtotal * 0.07)
   const isCurrentPaid = paidIndexes.has(selectedTabIndex)
 
@@ -273,59 +262,6 @@ export function PerSeatPaymentPanel({
                 </button>
               )}
             </div>
-
-            {/* Per-split promotions */}
-            <div className="flex flex-col gap-2">
-              <p className="font-medium text-sm text-muted-foreground leading-5">โปรโมชัน</p>
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full gap-2"
-                disabled={isCurrentPaid}
-                onClick={() => router.push(`/payment/${tableId}/promotions?split=${selectedTabIndex}`)}
-              >
-                <TicketPercent size={16} />
-                เพิ่มโปรโมชัน
-              </Button>
-              {(showAllPromos ? splitPromos : splitPromos.slice(0, 3)).map((d) => {
-                const promo = PROMOTIONS.find((p) => p.id === d.promotionId)
-                return (
-                  <div
-                    key={d.couponCode}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-status-warning/30 bg-status-warning-bg"
-                  >
-                    <TicketPercent size={16} className="text-status-warning shrink-0" />
-                    <span className="text-sm font-medium flex-1 text-foreground truncate">{promo?.title ?? d.couponCode}</span>
-                    <span className="text-sm font-semibold text-status-warning shrink-0">
-                      -฿{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
-                    {!isCurrentPaid && (
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="size-9 text-muted-foreground hover:text-destructive shrink-0"
-                        onClick={() => removePromotionDiscount(splitPromoKey, d.couponCode)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    )}
-                  </div>
-                )
-              })}
-              {splitPromos.length > 3 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 px-0 text-primary font-medium w-full justify-center hover:bg-transparent hover:opacity-80"
-                  onClick={() => setShowAllPromos((v) => !v)}
-                >
-                  <TicketPercent size={14} />
-                  {showAllPromos ? 'ซ่อนโปรโมชัน' : `ดูโปรโมชันทั้งหมด (${splitPromos.length})`}
-                </Button>
-              )}
-            </div>
-
-            <Separator />
 
             <div className="flex items-center justify-between">
               <p className="font-medium text-base text-muted-foreground leading-6">จัดการบิล</p>

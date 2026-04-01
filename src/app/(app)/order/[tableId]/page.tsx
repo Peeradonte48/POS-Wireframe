@@ -42,8 +42,10 @@ export default function OrderPage() {
   const tableId = params.tableId
   const router = useRouter()
 
-  // Takeaway context detection
-  const isTakeaway = useQueueStore.getState().orders[tableId]?.channel === 'takeaway'
+  // Queue context detection
+  const queueChannel = useQueueStore.getState().orders[tableId]?.channel
+  const isTakeaway = queueChannel === 'takeaway'
+  const isDelivery = queueChannel === 'delivery'
   const queueStatus = useQueueStore((s) => s.orders[tableId]?.status)
   const queueCustomerName = useQueueStore((s) => s.orders[tableId]?.customerName)
   const queueCustomerPhone = useQueueStore((s) => s.orders[tableId]?.customerPhone)
@@ -173,7 +175,7 @@ export default function OrderPage() {
                 </span>
               )}
             </Button>
-            {!isTakeaway && (
+            {!isTakeaway && !isDelivery && (
               <Button
                 size="sm"
                 className="gap-2"
@@ -188,6 +190,20 @@ export default function OrderPage() {
               >
                 <ReceiptText size={16} data-icon="inline-start" />
                 เช็คบิล
+              </Button>
+            )}
+            {isDelivery && hasSentItems && (
+              <Button
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  useQueueStore.getState().setStatus(tableId, 'Billed')
+                  toast.success('ออร์เดอร์เดลิเวอรี่เสร็จสิ้น')
+                  router.push('/table-map')
+                }}
+              >
+                <ReceiptText size={16} data-icon="inline-start" />
+                สำเร็จ
               </Button>
             )}
           </div>
@@ -309,7 +325,7 @@ export default function OrderPage() {
               router.push('/table-map')
             } : undefined}
             hideSend={isTakeaway && !isTakingStatus}
-            onCheckBill={!isTakeaway ? () => router.push(`/payment/${tableId}`) : undefined}
+            onCheckBill={!isTakeaway && !isDelivery ? () => router.push(`/payment/${tableId}`) : undefined}
           />
         </SheetContent>
       </Sheet>
