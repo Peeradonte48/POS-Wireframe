@@ -74,11 +74,13 @@ export function KdsBoard() {
   }
 
   const visibleTickets = useMemo(() => {
-    return Object.values(tickets).filter((t) => {
-      if (t.station !== activeStation) return false
-      const items = getOrderItems(t)
-      return items.some((item) => item.status !== 'voided')
-    })
+    return Object.values(tickets)
+      .filter((t) => {
+        if (t.station !== activeStation) return false
+        const items = getOrderItems(t)
+        return items.some((item) => item.status !== 'voided')
+      })
+      .sort((a, b) => b.addedAt - a.addedAt)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets, allOrders, activeStation])
 
@@ -115,7 +117,7 @@ export function KdsBoard() {
 
       {/* ── Ticket grid ── */}
       <div className="flex-1 min-h-0 bg-muted border border-border rounded-none overflow-hidden">
-        <div className="h-full overflow-y-auto p-3">
+        <div className="h-full overflow-x-auto p-3">
           {visibleTickets.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border p-8 text-center">
               <CheckCheck size={32} className="text-muted-foreground/50" />
@@ -123,7 +125,7 @@ export function KdsBoard() {
               <p className="text-sm text-muted-foreground">ออร์เดอร์ใหม่จะปรากฏที่นี่โดยอัตโนมัติ</p>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2 content-start">
+            <div className="flex flex-nowrap gap-2 items-start h-full">
               {visibleTickets.map((ticket) => (
                 <KdsTicketCard
                   key={ticket.ticketId}

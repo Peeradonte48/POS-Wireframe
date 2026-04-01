@@ -286,6 +286,6 @@ export const useBillStore = create<BillStore>()(
       getMergedSecondaries: (primaryTableId) =>
         Object.keys(get().merges).filter((k) => get().merges[k] === primaryTableId),
     }),
-    { name: 'bill-store', version: 2, migrate: () => ({}) },
+    { name: 'bill-store', version: 3, migrate: () => ({}) },
   ),
 )

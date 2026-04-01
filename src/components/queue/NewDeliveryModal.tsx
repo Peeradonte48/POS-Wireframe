@@ -7,10 +7,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useQueueStore } from '@/stores/queue.store'
 import type { DeliveryPlatform } from '@/stores/queue.store'
 
@@ -21,7 +27,7 @@ interface NewDeliveryModalProps {
 
 // Inner component — remounted via key when modal opens, resetting state naturally
 function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'>) {
-  const [platform, setPlatform] = useState<DeliveryPlatform | null>(null)
+  const [platform, setPlatform] = useState('')
   const [externalId, setExternalId] = useState('')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
@@ -29,63 +35,58 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
   const createDeliveryOrder = useQueueStore((s) => s.createDeliveryOrder)
   const router = useRouter()
 
-  const canSubmit = platform !== null && externalId.trim() !== ''
+  const canSubmit = platform !== '' && externalId.trim() !== ''
 
   function handleSubmit() {
     if (!canSubmit) return
     const orderId = createDeliveryOrder(
-      platform,
+      platform as DeliveryPlatform,
       externalId.trim(),
       customerName.trim() || undefined,
       customerPhone.trim() || undefined,
     )
     onClose()
-    router.push(`/order/delivery/${orderId}`)
+    router.push(`/order/${orderId}`)
   }
 
   return (
-    <DialogContent showCloseButton={false}>
+    <DialogContent className="sm:max-w-[425px] p-6 gap-4">
       <DialogHeader>
-        <DialogTitle>New Delivery Order</DialogTitle>
+        <DialogTitle className="text-lg font-semibold text-center w-full">
+          New Delivery Order
+        </DialogTitle>
       </DialogHeader>
 
-      <div className="flex flex-col gap-4 py-2">
+      <div className="flex flex-col gap-2.5">
         {/* Platform selector */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="delivery-platform" className="text-xs font-semibold uppercase text-muted-foreground">
-            Platform <span className="text-destructive">*</span>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-foreground">
+            Platform <span className="text-foreground">*</span>
           </label>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className={`flex-1 ${platform === 'grab' ? 'border-primary bg-primary/10 text-primary font-semibold' : ''}`}
-              onClick={() => setPlatform('grab')}
-              data-selected={platform === 'grab'}
-            >
-              Grab
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className={`flex-1 ${platform === 'lineman' ? 'border-primary bg-primary/10 text-primary font-semibold' : ''}`}
-              onClick={() => setPlatform('lineman')}
-              data-selected={platform === 'lineman'}
-            >
-              LINE MAN
-            </Button>
-          </div>
+          <Select
+            value={platform}
+            onValueChange={(val) => setPlatform(val ?? '')}
+          >
+            <SelectTrigger className="w-full h-9">
+              <SelectValue placeholder="Placeholder" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="grab">Grab</SelectItem>
+              <SelectItem value="lineman">LINE MAN</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* External Order ID */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="delivery-order-id" className="text-xs font-semibold uppercase text-muted-foreground">
-            Order ID <span className="text-destructive">*</span>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="delivery-order-id" className="text-sm font-medium text-foreground">
+            Order ID <span className="text-foreground">*</span>
           </label>
           <Input
             id="delivery-order-id"
             type="text"
-            placeholder="e.g. GR-4401"
+            placeholder="Placeholder"
+            className="h-9"
             value={externalId}
             onChange={(e) => setExternalId(e.target.value)}
             autoFocus
@@ -94,15 +95,15 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
         </div>
 
         {/* Customer Name */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="delivery-customer-name" className="text-xs font-semibold uppercase text-muted-foreground">
-            Customer Name{' '}
-            <span className="text-muted-foreground/60 normal-case font-normal">(optional)</span>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="delivery-customer-name" className="text-sm font-medium text-foreground">
+            Customer Name (optional)
           </label>
           <Input
             id="delivery-customer-name"
             type="text"
-            placeholder="e.g. Somchai"
+            placeholder="Placeholder"
+            className="h-9"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
@@ -110,16 +111,16 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
         </div>
 
         {/* Customer Phone */}
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="delivery-customer-phone" className="text-xs font-semibold uppercase text-muted-foreground">
-            Customer Phone{' '}
-            <span className="text-muted-foreground/60 normal-case font-normal">(optional)</span>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="delivery-customer-phone" className="text-sm font-medium text-foreground">
+            Customer Phone (optional)
           </label>
           <Input
             id="delivery-customer-phone"
             type="tel"
             inputMode="numeric"
-            placeholder="e.g. 08X-XXX-XXXX"
+            placeholder="Placeholder"
+            className="h-9"
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit() }}
@@ -127,14 +128,25 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
         </div>
       </div>
 
-      <DialogFooter>
-        <Button variant="outline" size="lg" onClick={onClose}>
-          Cancel
+      {/* Footer — stacked full-width buttons */}
+      <div className="flex flex-col gap-2">
+        <Button
+          size="lg"
+          className="w-full h-14"
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+        >
+          Create Order
         </Button>
-        <Button size="lg" onClick={handleSubmit} disabled={!canSubmit}>
-          Start Adding Items →
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-full h-14"
+          onClick={onClose}
+        >
+          ยกเลิก
         </Button>
-      </DialogFooter>
+      </div>
     </DialogContent>
   )
 }

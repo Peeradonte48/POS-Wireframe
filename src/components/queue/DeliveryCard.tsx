@@ -1,91 +1,79 @@
 'use client'
 
+import { Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { useQueueStore } from '@/stores/queue.store'
+import { useRouter } from 'next/navigation'
 import type { QueueOrder } from '@/stores/queue.store'
 import { getQueueStatusLabel } from '@/lib/queue-display'
-
-function getCtaLabel(status: QueueOrder['status']): string | null {
-  switch (status) {
-    case 'Confirmed':
-      return 'Mark Preparing'
-    case 'Preparing':
-      return 'Mark Ready for Rider'
-    case 'ReadyForRider':
-      return 'Confirm Picked Up'
-    default:
-      return null
-  }
-}
 
 function getStatusVariant(
   status: QueueOrder['status']
 ): 'outline' | 'ordered' | 'cooking' | 'ready' | 'settled' {
   switch (status) {
-    case 'Confirmed':
+    case 'Ordered':
       return 'ordered'
-    case 'Preparing':
+    case 'Cooking':
       return 'cooking'
-    case 'ReadyForRider':
+    case 'Ready':
       return 'ready'
-    case 'PickedUp':
+    case 'Served':
+    case 'Billed':
       return 'settled'
     default:
       return 'outline'
   }
 }
 
+const STATUS_CARD_CLASS: Record<string, string> = {
+  Ordered: 'bg-status-occupied-bg border-4 border-status-occupied',
+  Cooking: 'bg-status-check-requested-bg border-4 border-status-check-requested',
+  Ready:   'bg-status-ready-bg border-4 border-status-ready',
+  Served:  'bg-status-settled-bg border-4 border-status-settled',
+  Billed:  'bg-status-settled-bg border-4 border-status-settled',
+}
 
 interface DeliveryCardProps {
   order: QueueOrder
 }
 
 export function DeliveryCard({ order }: DeliveryCardProps) {
-  const advanceStatus = useQueueStore((s) => s.advanceStatus)
+  const router = useRouter()
 
   const platformLabel = order.platform === 'grab' ? 'Grab' : 'LINE MAN'
-  const platformVariant = order.platform === 'grab' ? 'grab' : 'lineman'
-  const ctaLabel = getCtaLabel(order.status)
+  const cardClass = STATUS_CARD_CLASS[order.status] ?? 'bg-card border border-border'
 
   return (
-    <div
-      className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3"
+    <button
+      onClick={() => router.push(`/order/${order.orderId}`)}
+      aria-label={`${platformLabel} ${order.externalId}, ${order.status}`}
+      className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 w-[104px] h-[132px] touch-manipulation active:scale-[0.97] transition-transform text-center ${cardClass}`}
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant={platformVariant}>{platformLabel}</Badge>
-          <span className="text-xs font-mono text-muted-foreground">{order.externalId}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={getStatusVariant(order.status)}>
-            {getQueueStatusLabel(order.status)}
-          </Badge>
-        </div>
-      </div>
+      {/* Corner badge: status */}
+      <Badge
+        variant={getStatusVariant(order.status)}
+        className="absolute top-2 right-2 text-sm py-0"
+      >
+        {getQueueStatusLabel(order.status)}
+      </Badge>
 
-      {/* Customer + items */}
-      <div className="flex flex-col gap-0.5">
+      {/* Truck icon */}
+      <Truck size={24} className="text-muted-foreground shrink-0" />
+
+      {/* Order info — mirrors TableTile text structure */}
+      <div className="flex flex-col items-center gap-2 leading-5 whitespace-nowrap">
+        <span className="text-sm font-semibold text-card-foreground">
+          {platformLabel}
+        </span>
+        <span className="text-sm text-muted-foreground">
+          {order.externalId}
+        </span>
         {order.customerName && (
-          <span className="text-sm font-semibold text-foreground">{order.customerName}</span>
-        )}
-        {order.itemsSummary && (
-          <span className="text-xs text-muted-foreground">{order.itemsSummary}</span>
+          <span className="text-xs text-muted-foreground/70 truncate max-w-full">
+            {order.customerName}
+          </span>
         )}
       </div>
-
-      {/* Action row */}
-      {ctaLabel && (
-        <Button
-          size="sm"
-          variant={order.status === 'ReadyForRider' ? 'default' : 'outline'}
-          onClick={() => advanceStatus(order.orderId)}
-        >
-          {ctaLabel}
-        </Button>
-      )}
-    </div>
+    </button>
   )
 }

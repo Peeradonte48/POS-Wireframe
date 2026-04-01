@@ -8,14 +8,14 @@ export function getQueueStatusBadgeVariant(
     case 'Taking':
       return 'outline'
     case 'Sent':
-    case 'Confirmed':
+    case 'Ordered':
       return 'ordered'
-    case 'Preparing':
+    case 'Cooking':
       return 'cooking'
-    case 'ReadyForRider':
     case 'Ready':
       return 'ready'
-    case 'PickedUp':
+    case 'Served':
+    case 'Billed':
     case 'Collected':
     case 'Cancelled':
       return 'settled'
@@ -32,10 +32,10 @@ export function getQueueStatusLabel(status: QueueOrder['status']): string {
     case 'Ready':         return 'Ready'
     case 'Collected':     return 'Collected'
     case 'Cancelled':     return 'Cancelled'
-    case 'Confirmed':     return 'Confirmed'
-    case 'Preparing':     return 'Preparing'
-    case 'ReadyForRider': return 'Ready for Rider'
-    case 'PickedUp':      return 'Picked Up'
+    case 'Ordered':       return 'Ordered'
+    case 'Cooking':       return 'Cooking'
+    case 'Served':        return 'Served'
+    case 'Billed':        return 'Billed'
     default:              return status
   }
 }

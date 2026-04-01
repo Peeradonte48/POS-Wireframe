@@ -10,15 +10,15 @@ export type OrderChannel = 'delivery' | 'takeaway'
 export type DeliveryPlatform = 'grab' | 'lineman'
 
 export type QueueOrderStatus =
-  | 'Confirmed'     // delivery accepted by staff
-  | 'Preparing'     // delivery being cooked (KDS in progress)
-  | 'ReadyForRider' // delivery ready, waiting for rider pickup
-  | 'PickedUp'      // delivery complete
-  | 'Taking'        // takeaway being created / order entry not yet sent
-  | 'Sent'          // takeaway sent to KDS
-  | 'Ready'         // takeaway ready for collection (KDS complete)
-  | 'Collected'     // takeaway collected by customer
-  | 'Cancelled'     // takeaway cancelled before sending to kitchen
+  | 'Ordered'       // delivery: order sent to kitchen
+  | 'Cooking'       // delivery: kitchen in progress
+  | 'Ready'         // delivery/takeaway: ready for pickup/rider
+  | 'Served'        // delivery: picked up / handed off
+  | 'Billed'        // delivery: payment complete
+  | 'Taking'        // takeaway: being created / order entry not yet sent
+  | 'Sent'          // takeaway: sent to KDS
+  | 'Collected'     // takeaway: collected by customer
+  | 'Cancelled'     // takeaway: cancelled before sending to kitchen
 
 export interface QueueOrder {
   orderId: string
@@ -66,7 +66,7 @@ export const useQueueStore = create<QueueStore>()(
           customerName,
           customerPhone,
           itemsSummary: '',
-          status: 'Confirmed',
+          status: 'Ordered',
           createdAt: now,
         }
         set((state) => ({ orders: { ...state.orders, [orderId]: order } }))
@@ -89,9 +89,8 @@ export const useQueueStore = create<QueueStore>()(
         if (!order) return
 
         const transitions: Partial<Record<QueueOrderStatus, QueueOrderStatus>> = {
-          Confirmed: 'Preparing',
-          Preparing: 'ReadyForRider',
-          ReadyForRider: 'PickedUp',
+          Ordered: 'Cooking',
+          Cooking: 'Ready',
           Taking: 'Sent',
           Sent: 'Ready',
           Ready: 'Collected',
@@ -169,7 +168,7 @@ export const useQueueStore = create<QueueStore>()(
     }),
     {
       name: 'queue-store',
-      version: 1,
+      version: 2,
       migrate: () => ({}),
       partialize: (state) => ({
         orders: state.orders,

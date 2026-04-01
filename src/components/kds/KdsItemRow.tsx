@@ -26,7 +26,7 @@ function ModifierBadge({ icon: Icon, label }: { icon: LucideIcon; label: string 
   return (
     <div className="flex items-center gap-1 py-0.5">
       <Icon size={12} className="text-muted-foreground shrink-0" />
-      <span className="text-sm text-muted-foreground whitespace-nowrap">{label}</span>
+      <span className="text-xs text-muted-foreground whitespace-nowrap">{label}</span>
     </div>
   )
 }

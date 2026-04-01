@@ -254,7 +254,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ข้าวหมูชาชู',
     basePrice: 180,
     thumbnailPlaceholder: '🍚',
-    unsplashId: '1611143669185-af224c5e3252',
+    unsplashId: '1710106687822-999dbeb73dee',
     modifierGroups: [],
   },
   {
@@ -264,7 +264,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'คัตสึดง',
     basePrice: 220,
     thumbnailPlaceholder: '🍱',
-    unsplashId: '1534482421-64566f976cfa',
+    unsplashId: '1679279726946-a158b8bcaa23',
     modifierGroups: [],
   },
   {
@@ -274,7 +274,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'โอยาโกะดง',
     basePrice: 200,
     thumbnailPlaceholder: '🥚',
-    unsplashId: '1569050467447-ce54b3bbc37d',
+    unsplashId: '1688431512427-36a359510de2',
     modifierGroups: [],
   },
   // ── เครื่องเคียง ────────────────────────────────────────────────────────────
@@ -285,7 +285,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'เกี๊ยวซ่า (6 ชิ้น)',
     basePrice: 120,
     thumbnailPlaceholder: '🥟',
-    unsplashId: '1432139555190-58524dae6a55',
+    unsplashId: '1588182728399-e8f2df121744',
     modifierGroups: [],
   },
   {
@@ -295,7 +295,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ไก่คาราเกะ',
     basePrice: 139,
     thumbnailPlaceholder: '🍗',
-    unsplashId: '1504674900247-0877df9cc836',
+    unsplashId: '1562967914-608f82629710',
     modifierGroups: [],
   },
   {
@@ -305,7 +305,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ถั่วแระญี่ปุ่น',
     basePrice: 79,
     thumbnailPlaceholder: '🫘',
-    unsplashId: '1482049016688-2d3e1b311543',
+    unsplashId: '1611810174991-5cdd99a2c6b2',
     modifierGroups: [],
   },
   // ── เครื่องดื่ม ─────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'ชาเขียว',
     basePrice: 60,
     thumbnailPlaceholder: '🍵',
-    unsplashId: '1556679343-c7306c1976bc',
+    unsplashId: '1715016811010-e67e6f3d440c',
     modifierGroups: [],
   },
   {
@@ -326,7 +326,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'กาแฟเย็น',
     basePrice: 75,
     thumbnailPlaceholder: '☕',
-    unsplashId: '1602253057119-44d745d9b860',
+    unsplashId: '1461023058943-07fcbe16d735',
     modifierGroups: [],
   },
   {
@@ -336,6 +336,7 @@ export const MENU_ITEMS: MenuItem[] = [
     nameTh: 'โคล่า',
     basePrice: 50,
     thumbnailPlaceholder: '🥤',
+    unsplashId: '1636144832475-0d81f893354d',
     modifierGroups: [],
   },
 ]

@@ -30,14 +30,20 @@ export default function TableMapPage() {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'dine-in')
 
   // Zustand selector safety — raw Record, derive in useMemo
+  const tables = useTableStore((s) => s.tables)
   const orders = useQueueStore((s) => s.orders)
+
+  const occupiedTableCount = useMemo(
+    () => Object.values(tables).filter((t) => t.status !== 'Open').length,
+    [tables]
+  )
 
   const activeDeliveryCount = useMemo(
     () =>
       Object.values(orders).filter(
         (o) =>
           o.channel === 'delivery' &&
-          ['Confirmed', 'Preparing', 'ReadyForRider'].includes(o.status)
+          ['Ordered', 'Cooking', 'Ready'].includes(o.status)
       ).length,
     [orders]
   )
@@ -79,6 +85,11 @@ export default function TableMapPage() {
         <TabsTrigger value="dine-in" className="flex-1 flex items-center gap-2">
           <Armchair size={16} />
           <span>Dine-in</span>
+          {occupiedTableCount > 0 && (
+            <span className="h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center px-1">
+              {occupiedTableCount}
+            </span>
+          )}
         </TabsTrigger>
         <TabsTrigger value="takeaway" className="flex-1 flex items-center gap-2">
           <ShoppingBag size={16} />

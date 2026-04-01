@@ -28,8 +28,11 @@ export interface PromotionValidationResult {
 // usePromotionValidation
 // ---------------------------------------------------------------------------
 
-export function usePromotionValidation(tableId: string): PromotionValidationResult {
+export function usePromotionValidation(storeKey: string): PromotionValidationResult {
   const { addPromotionDiscount } = useBillStore()
+
+  // Extract real table ID from composite split key (e.g. "T01__split__0" → "T01")
+  const realTableId = storeKey.includes('__split__') ? storeKey.split('__split__')[0] : storeKey
 
   const [codeInput, setCodeInput] = useState('')
   const [codeState, setCodeState] = useState<CouponCodeState>('idle')
@@ -56,8 +59,8 @@ export function usePromotionValidation(tableId: string): PromotionValidationResu
     const promo = PROMOTIONS.find((p) => p.id === promotionId)
     if (!promo || codeState !== 'valid') return
 
-    // Non-reactive read — only needed at the moment of apply (event handler)
-    const order = useOrderStore.getState().getOrder(tableId)
+    // Non-reactive read — use real table ID for order lookup, storeKey for discount storage
+    const order = useOrderStore.getState().getOrder(realTableId)
     const orderItems = order
       ? order.rounds.flatMap((r) => r.items).filter((i) => i.status !== 'voided')
       : []
@@ -73,7 +76,7 @@ export function usePromotionValidation(tableId: string): PromotionValidationResu
       amount = Math.round(selectedSubtotal * (promo.discountPercent / 100))
     }
 
-    addPromotionDiscount(tableId, {
+    addPromotionDiscount(storeKey, {
       promotionId: promo.id,
       couponCode: couponCodeInput.trim().toUpperCase(),
       amount,
