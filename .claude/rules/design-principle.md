@@ -1,6 +1,6 @@
 ---
 name: Design principle
-discription: Priciple for project to follow in term of design, accibility, and usability.
+discription: Principle for project to follow in term of design, accibility, and usability.
 ---
 
 # Objective
