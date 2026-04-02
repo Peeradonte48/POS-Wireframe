@@ -1,0 +1,280 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@source not "../../.planning/**";
+
+@theme {
+  /* Brand colors */
+  --color-brand-red:        oklch(0.52 0.26 27);
+  --color-brand-red-hover:  oklch(0.46 0.26 27);
+  --color-brand-red-muted:  oklch(0.52 0.26 27 / 15%);
+
+  /* Shake animation for wrong PIN feedback */
+  --animate-shake: shake 0.5s ease-out;
+
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+
+  @keyframes scanline {
+    0% { top: 0%; }
+    50% { top: calc(100% - 2px); }
+    100% { top: 0%; }
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-ibm-plex-sans), var(--font-noto-jp), var(--font-noto-thai), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Status color aliases — enables bg-status-open, text-status-occupied, etc. */
+  --color-status-open:               var(--status-open);
+  --color-status-open-bg:            var(--status-open-bg);
+  --color-status-occupied:           var(--status-occupied);
+  --color-status-occupied-bg:        var(--status-occupied-bg);
+  --color-status-reserved:           var(--status-reserved);
+  --color-status-reserved-bg:        var(--status-reserved-bg);
+  --color-status-check-requested:    var(--status-check-requested);
+  --color-status-check-requested-bg: var(--status-check-requested-bg);
+  --color-status-split:              var(--status-split);
+  --color-status-split-bg:           var(--status-split-bg);
+  --color-status-settled:            var(--status-settled);
+  --color-status-settled-bg:         var(--status-settled-bg);
+  --color-status-merged:             var(--status-merged);
+  --color-status-merged-bg:          var(--status-merged-bg);
+  --color-status-cleaning:           var(--status-cleaning);
+  --color-status-cleaning-bg:        var(--status-cleaning-bg);
+  --color-status-ordered:            var(--status-ordered);
+  --color-status-ordered-bg:         var(--status-ordered-bg);
+  --color-status-cooking:            var(--status-cooking);
+  --color-status-cooking-bg:         var(--status-cooking-bg);
+  --color-status-ready:              var(--status-ready);
+  --color-status-ready-bg:           var(--status-ready-bg);
+  --color-status-escalated:          var(--status-escalated);
+  --color-status-escalated-bg:       var(--status-escalated-bg);
+
+  /* Platform color aliases — delivery badge colors */
+  --color-platform-grab:        var(--platform-grab);
+  --color-platform-grab-bg:     var(--platform-grab-bg);
+  --color-platform-lineman:     var(--platform-lineman);
+  --color-platform-lineman-bg:  var(--platform-lineman-bg);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary:            oklch(0.52 0.26 27);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.58 0.22 27);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Status tokens — fg (text/border) + bg (pill background) per table state */
+  --status-open:               oklch(0.50 0.18 145);
+  --status-open-bg:            oklch(0.95 0.05 145);
+  --status-occupied:           oklch(0.67 0.17 55);   /* amber — มีลูกค้า */
+  --status-occupied-bg:        oklch(0.99 0.02 85);   /* amber-50 */
+  --status-reserved:           oklch(0.50 0.18 240);
+  --status-reserved-bg:        oklch(0.95 0.05 240);
+  --status-check-requested:    oklch(0.52 0.26 27);   /* red — รออาหาร */
+  --status-check-requested-bg: oklch(0.98 0.01 27);   /* red-50 */
+  --status-split:              oklch(0.62 0.18 60);
+  --status-split-bg:           oklch(0.96 0.06 60);
+  --status-settled:            oklch(0.48 0.21 145);
+  --status-settled-bg:         oklch(0.94 0.05 145);
+  --status-merged:             oklch(0.50 0.20 270);
+  --status-merged-bg:          oklch(0.94 0.05 270);
+  --status-cleaning:           oklch(0.51 0.24 264);  /* blue — ต้องเก็บโต๊ะ */
+  --status-cleaning-bg:        oklch(0.97 0.02 255);  /* blue-50 */
+  --status-ordered:            oklch(0.50 0.18 250);
+  --status-ordered-bg:         oklch(0.95 0.04 250);
+  --status-cooking:            oklch(0.60 0.18 75);
+  --status-cooking-bg:         oklch(0.97 0.05 75);
+  --status-ready:              oklch(0.50 0.20 155);
+  --status-ready-bg:           oklch(0.95 0.06 155);
+  --status-escalated:          oklch(0.52 0.26 27);
+  --status-escalated-bg:       oklch(0.96 0.06 27);
+
+  /* Platform delivery colors — Grab green, LINE MAN blue */
+  --platform-grab:        oklch(0.46 0.18 145);
+  --platform-grab-bg:     oklch(0.95 0.06 145);
+  --platform-lineman:     oklch(0.40 0.22 260);
+  --platform-lineman-bg:  oklch(0.95 0.05 260);
+
+  /* Glow shadow for primary CTA buttons — two-layer: ring + blur */
+  --shadow-glow-primary: 0 0 0 2px color-mix(in oklch, var(--primary) 35%, transparent), 0 0 14px 4px color-mix(in oklch, var(--primary) 30%, transparent);
+
+  /* Elevation shadows — 3 tiers: flat, raised, floating */
+  --shadow-card:     0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.06);
+  --shadow-panel:    0 4px 6px -1px oklch(0 0 0 / 0.08), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+  --shadow-floating: 0 10px 15px -3px oklch(0 0 0 / 0.10), 0 4px 6px -4px oklch(0 0 0 / 0.07);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary:            oklch(0.63 0.26 27);
+  --primary-foreground: oklch(0.10 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.371 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+
+  /* Status tokens — independently tuned for dark surfaces */
+  --status-open:               oklch(0.70 0.16 145);
+  --status-open-bg:            oklch(0.25 0.06 145);
+  --status-occupied:           oklch(0.78 0.15 60);   /* amber dark */
+  --status-occupied-bg:        oklch(0.26 0.07 60);   /* amber-900 dark */
+  --status-reserved:           oklch(0.70 0.16 240);
+  --status-reserved-bg:        oklch(0.22 0.06 240);
+  --status-check-requested:    oklch(0.70 0.22 27);   /* red dark */
+  --status-check-requested-bg: oklch(0.22 0.08 27);   /* red-900 dark */
+  --status-split:              oklch(0.78 0.16 60);
+  --status-split-bg:           oklch(0.28 0.08 60);
+  --status-settled:            oklch(0.68 0.19 145);
+  --status-settled-bg:         oklch(0.22 0.06 145);
+  --status-merged:             oklch(0.72 0.18 270);
+  --status-merged-bg:          oklch(0.24 0.07 270);
+  --status-cleaning:           oklch(0.70 0.18 264);  /* blue dark */
+  --status-cleaning-bg:        oklch(0.22 0.07 264);  /* blue-900 dark */
+  --status-ordered:            oklch(0.70 0.16 250);
+  --status-ordered-bg:         oklch(0.22 0.06 250);
+  --status-cooking:            oklch(0.75 0.16 75);
+  --status-cooking-bg:         oklch(0.28 0.07 75);
+  --status-ready:              oklch(0.70 0.18 155);
+  --status-ready-bg:           oklch(0.24 0.06 155);
+  --status-escalated:          oklch(0.72 0.22 27);
+  --status-escalated-bg:       oklch(0.24 0.08 27);
+
+  /* Platform delivery colors — dark mode independently tuned */
+  --platform-grab:        oklch(0.72 0.18 145);
+  --platform-grab-bg:     oklch(0.22 0.07 145);
+  --platform-lineman:     oklch(0.68 0.18 260);
+  --platform-lineman-bg:  oklch(0.22 0.06 260);
+
+  /* Elevation shadows — dark mode uses glow/border instead of drop shadows */
+  --shadow-card:     0 0 0 1px oklch(1 0 0 / 0.06);
+  --shadow-panel:    0 0 0 1px oklch(1 0 0 / 0.08), 0 4px 12px oklch(0 0 0 / 0.40);
+  --shadow-floating: 0 0 0 1px oklch(1 0 0 / 0.10), 0 8px 24px oklch(0 0 0 / 0.50);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Prevent callout on long-press and highlight on tap (tablet POS) */
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* Fast tap — remove 300ms delay on all interactive elements */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent iOS auto-zoom on form inputs (font must be ≥ 16px) */
+  input, select, textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Section label utility — shared caps pattern for section headings across all screens */
+@utility caps {
+  @apply text-xs font-semibold uppercase tracking-wide text-muted-foreground;
+}

@@ -1,0 +1,179 @@
+'use client'
+
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type OrderChannel = 'delivery' | 'takeaway'
+export type DeliveryPlatform = 'grab' | 'lineman'
+
+export type QueueOrderStatus =
+  | 'Confirmed'     // delivery accepted by staff
+  | 'Preparing'     // delivery being cooked (KDS in progress)
+  | 'ReadyForRider' // delivery ready, waiting for rider pickup
+  | 'PickedUp'      // delivery complete
+  | 'Taking'        // takeaway being created / order entry not yet sent
+  | 'Sent'          // takeaway sent to KDS
+  | 'Ready'         // takeaway ready for collection (KDS complete)
+  | 'Collected'     // takeaway collected by customer
+  | 'Cancelled'     // takeaway cancelled before sending to kitchen
+
+export interface QueueOrder {
+  orderId: string
+  channel: OrderChannel
+  platform?: DeliveryPlatform
+  externalId?: string           // delivery only: platform order ref e.g. "GR-4401"
+  customerName?: string
+  customerPhone?: string
+  itemsSummary: string
+  status: QueueOrderStatus
+  createdAt: number
+}
+
+// ─── Store Interface ──────────────────────────────────────────────────────────
+
+interface QueueStore {
+  orders: Record<string, QueueOrder>
+  takeawayCounter: number
+
+  createDeliveryOrder: (platform: DeliveryPlatform, externalId: string, customerName?: string, customerPhone?: string) => string
+  updateItemsSummary: (orderId: string, summary: string) => void
+  advanceStatus: (orderId: string) => void
+  createTakeaway: (customerName: string, customerPhone?: string) => string
+  updateCustomer: (orderId: string, name: string, phone?: string) => void
+  cancelOrder: (orderId: string) => void
+  stepBack: (orderId: string) => void
+}
+
+// ─── Store Implementation ─────────────────────────────────────────────────────
+
+export const useQueueStore = create<QueueStore>()(
+  persist(
+    (set, get) => ({
+      orders: {},
+      takeawayCounter: 0,
+
+      createDeliveryOrder: (platform, externalId, customerName, customerPhone) => {
+        const now = Date.now()
+        const orderId = `DL-${platform}-${now}`
+        const order: QueueOrder = {
+          orderId,
+          channel: 'delivery',
+          platform,
+          externalId,
+          customerName,
+          customerPhone,
+          itemsSummary: '',
+          status: 'Confirmed',
+          createdAt: now,
+        }
+        set((state) => ({ orders: { ...state.orders, [orderId]: order } }))
+        return orderId
+      },
+
+      updateItemsSummary: (orderId, summary) => {
+        const order = get().orders[orderId]
+        if (!order) return
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], itemsSummary: summary },
+          },
+        }))
+      },
+
+      advanceStatus: (orderId) => {
+        const order = get().orders[orderId]
+        if (!order) return
+
+        const transitions: Partial<Record<QueueOrderStatus, QueueOrderStatus>> = {
+          Confirmed: 'Preparing',
+          Preparing: 'ReadyForRider',
+          ReadyForRider: 'PickedUp',
+          Taking: 'Sent',
+          Sent: 'Ready',
+          Ready: 'Collected',
+        }
+
+        const next = transitions[order.status]
+        if (!next) return
+
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], status: next },
+          },
+        }))
+      },
+
+      createTakeaway: (customerName, customerPhone) => {
+        const counter = get().takeawayCounter + 1
+        const orderId = `TK-${String(counter).padStart(3, '0')}`
+        const order: QueueOrder = {
+          orderId,
+          channel: 'takeaway',
+          customerName,
+          customerPhone,
+          itemsSummary: 'No items yet',
+          status: 'Taking',
+          createdAt: Date.now(),
+        }
+        set((state) => ({
+          takeawayCounter: counter,
+          orders: { ...state.orders, [orderId]: order },
+        }))
+        return orderId
+      },
+
+      updateCustomer: (orderId, name, phone) => {
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], customerName: name, customerPhone: phone },
+          },
+        }))
+      },
+
+      cancelOrder: (orderId) => {
+        const order = get().orders[orderId]
+        if (!order || order.status !== 'Taking') return
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], status: 'Cancelled' },
+          },
+        }))
+      },
+
+      stepBack: (orderId) => {
+        const order = get().orders[orderId]
+        if (!order) return
+
+        const transitions: Partial<Record<QueueOrderStatus, QueueOrderStatus>> = {
+          Ready: 'Sent',
+          Sent: 'Taking',
+        }
+
+        const prev = transitions[order.status]
+        if (!prev) return
+
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            [orderId]: { ...state.orders[orderId], status: prev },
+          },
+        }))
+      },
+    }),
+    {
+      name: 'queue-store',
+      version: 1,
+      migrate: () => ({}),
+      partialize: (state) => ({
+        orders: state.orders,
+        takeawayCounter: state.takeawayCounter,
+      }),
+    }
+  )
+)
