@@ -121,11 +121,13 @@ const ids = useMemo(() => Object.keys(merges).filter((k) => merges[k] === tableI
 *Use this as a blueprint for designing the POS system.*
 
 ### 1. Pre-Dining Phase (Queue & Table Management)
+
 - Customer walks to kiosk for queue ticket, waits for number to be called
 - Staff monitors real-time table occupancy via Digital Floor Plan
 - Staff selects available table → "Open Table" with guest count input → session tracking begins
 
 ### 2. Ordering Phase (The "Exam Paper" System)
+
 - Customer fills out Main Menu and Customization sheet forms
 - Customer presses table call bell (standalone, not POS)
 - Staff collects forms, verifies selections, performs read-back
@@ -133,11 +135,13 @@ const ids = useMemo(() => Object.keys(merges).filter((k) => merges[k] === tableI
 - Staff confirms order → auto inventory depletion → transmitted to KDS/printer
 
 ### 3. Receiving Phase (Service & Fulfillment)
+
 - Customer receives meal through service hatch
 - Staff tracks order status by checking service counter (no digital tracking yet)
 - Staff taps "Served" on tablet to log actual service start time for KPIs
 
 ### 4. Payment Phase (Integrated Checkout)
+
 - Customer provides table number + discount QR code at counter
 - Staff uses tablet rear camera to scan coupon within POS app (no app switching)
 - System calculates discount, displays Dynamic QR Code for customer "Scan to Pay"
