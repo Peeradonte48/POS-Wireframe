@@ -56,4 +56,5 @@ superpowers/
 .cursor/
 .cursorrules
 .gemini/
-.mcp.json.worktrees/
+.mcp.json
+.worktrees/
