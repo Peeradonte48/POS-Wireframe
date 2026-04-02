@@ -80,7 +80,7 @@ export function KdsBoard() {
         const items = getOrderItems(t)
         return items.some((item) => item.status !== 'voided')
       })
-      .sort((a, b) => b.addedAt - a.addedAt)
+      .sort((a, b) => a.addedAt - b.addedAt)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickets, allOrders, activeStation])
 

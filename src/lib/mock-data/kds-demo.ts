@@ -1,7 +1,7 @@
-import { MENU_ITEMS } from '@/lib/mock-data/menu'
+import { MENU_ITEMS, type MenuModifierGroup } from '@/lib/mock-data/menu'
 import { MOCK_STAFF } from '@/lib/mock-data/staff'
 import type { KdsTicket, KdsStation } from '@/stores/kds.store'
-import type { OrderLineItem, LineItemStatus } from '@/stores/order.store'
+import type { OrderLineItem, LineItemStatus, ModifierSelection } from '@/stores/order.store'
 
 const ROLE_LABEL_TH: Record<string, string> = {
   Waiter:  'พนักงานเสิร์ฟ',
@@ -24,6 +24,22 @@ const FOOD_ITEMS  = MENU_ITEMS.filter((m) => m.categoryId !== 'drinks')
 const DRINK_ITEMS = MENU_ITEMS.filter((m) => m.categoryId === 'drinks')
 
 const DEMO_SENDERS = MOCK_STAFF.filter((s) => s.name === 'Somchai' || s.name === 'Nida')
+
+// ─── Random modifier picker ──────────────────────────────────────────────────
+
+function pickRandomOption(group: MenuModifierGroup): ModifierSelection {
+  const opt = group.options[Math.floor(Math.random() * group.options.length)]
+  return {
+    groupId: group.id,
+    groupLabel: group.label,
+    optionId: opt.id,
+    optionLabel: opt.label,
+  }
+}
+
+function buildRandomModifiers(groups: MenuModifierGroup[]): ModifierSelection[] {
+  return groups.map((g) => pickRandomOption(g))
+}
 
 // ─── Module-level state ───────────────────────────────────────────────────────
 
@@ -62,18 +78,42 @@ export function buildMockDemoTicket(): KdsTicket {
     platform = Math.random() < 0.6 ? 'grab' : 'lineman'
   }
 
-  const orderItems: OrderLineItem[] = picked.map((menuItem) => ({
-    lineId: `demo-line-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    menuItemId: menuItem.id,
-    menuItemName: menuItem.name,
-    basePrice: menuItem.basePrice,
-    modifiers: [],
-    spiceLevel: isBarOrder ? null : Math.ceil(Math.random() * 5),
-    specialRequest: '',
-    quantity: 1,
-    status: 'sent' as LineItemStatus,
-    packToGo: !isBarOrder && orderType === 'dine-in' && Math.random() < 0.30,
-  }))
+  const SPECIAL_REQUESTS = [
+    'แพ้ถั่ว',
+    'ไม่ใส่ผักชี',
+    'แพ้กุ้ง',
+    'ไม่ใส่พริก',
+  ]
+
+  const orderItems: OrderLineItem[] = picked.map((menuItem) => {
+    const hasModifiers = menuItem.modifierGroups.length > 0
+    const modifiers = hasModifiers ? buildRandomModifiers(menuItem.modifierGroups) : []
+
+    // Derive spiceLevel from modifier if present, otherwise random for food
+    const spiceMod = modifiers.find((m) => m.groupId === 'spice-level')
+    let spiceLevel: number | null = null
+    if (spiceMod) {
+      const map: Record<string, number> = { 'no-spice': 0, x1: 1, x2: 2, x3: 3, xmax: 5 }
+      spiceLevel = map[spiceMod.optionId] ?? 0
+    } else if (!isBarOrder) {
+      spiceLevel = Math.ceil(Math.random() * 5)
+    }
+
+    return {
+      lineId: `demo-line-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      menuItemId: menuItem.id,
+      menuItemName: menuItem.name,
+      basePrice: menuItem.basePrice,
+      modifiers,
+      spiceLevel,
+      specialRequest: Math.random() < 0.15
+        ? SPECIAL_REQUESTS[Math.floor(Math.random() * SPECIAL_REQUESTS.length)]
+        : '',
+      quantity: 1 + (Math.random() < 0.2 ? 1 : 0),
+      status: 'sent' as LineItemStatus,
+      packToGo: !isBarOrder && orderType === 'dine-in' && Math.random() < 0.30,
+    }
+  })
 
   demoItemsMap.set(ticketId, orderItems)
 

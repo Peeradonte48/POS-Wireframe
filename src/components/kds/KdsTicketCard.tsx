@@ -41,28 +41,15 @@ export function KdsTicketCard({ ticket, orderItems }: KdsTicketCardProps) {
   function handleComplete() {
     if (bumpBlocked) return
 
-    const prevStage = ticket.stage
-
-    // For New/InProgress: bump through stages then complete
-    if (prevStage === 'New' || prevStage === 'InProgress') {
-      useKdsStore.getState().bumpTicket(ticket.ticketId)
-
-      // Cross-store write-back for delivery/takeaway tickets
-      if (ticket.orderType === 'delivery' || ticket.orderType === 'takeaway') {
-        useQueueStore.getState().advanceStatus(ticket.tableId)
-      }
-
-      if (prevStage === 'New') {
-        useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Cooking' })
-      } else if (prevStage === 'InProgress') {
-        useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Ready' })
-      }
-      return
-    }
-
-    // For Ready stage: complete
+    // Complete ticket and remove from board in one action
     completeTicket(ticket.ticketId)
     useTableStore.getState().updateTable(ticket.tableId, { orderStage: 'Served' })
+
+    // Cross-store write-back for delivery/takeaway tickets
+    if (ticket.orderType === 'delivery' || ticket.orderType === 'takeaway') {
+      useQueueStore.getState().advanceStatus(ticket.tableId)
+    }
+
     const queueOrder = useQueueStore.getState().orders[ticket.tableId]
     if (queueOrder) {
       useQueueStore.getState().advanceStatus(ticket.tableId)
