@@ -48,7 +48,7 @@ export function KdsSummaryPanel({ tickets, getOrderItems }: KdsSummaryPanelProps
     for (const ticket of tickets) {
       const items = getOrderItems(ticket)
       for (const item of items) {
-        if (item.status === 'voided' || ticket.sentLineIds.has(item.lineId)) continue
+        if (item.status === 'voided' || ticket.sentLineIds.has(item.lineId) || (ticket.cancelledLineIds ?? new Set()).has(item.lineId)) continue
         entries.push({ ticket, item })
       }
     }
@@ -65,7 +65,7 @@ export function KdsSummaryPanel({ tickets, getOrderItems }: KdsSummaryPanelProps
       if (!targetGroup) {
         targetGroup = {
           startedAt: ticket.addedAt,
-          timeLabel: formatTime(ticket.addedAt),
+          timeLabel: `${formatTime(ticket.addedAt)} - ${formatTime(ticket.addedAt + TIME_GROUP_WINDOW_MS)}`,
           items: [],
         }
         groups.push(targetGroup)
@@ -101,7 +101,7 @@ export function KdsSummaryPanel({ tickets, getOrderItems }: KdsSummaryPanelProps
     for (const ticketId of target.ticketIds) {
       const ticket = tickets.find((t) => t.ticketId === ticketId)
       if (!ticket) continue
-      const items = getOrderItems(ticket).filter((i) => i.status !== 'voided' && i.menuItemId === target.menuItemId && !ticket.sentLineIds.has(i.lineId))
+      const items = getOrderItems(ticket).filter((i) => i.status !== 'voided' && i.menuItemId === target.menuItemId && !ticket.sentLineIds.has(i.lineId) && !(ticket.cancelledLineIds ?? new Set()).has(i.lineId))
       const count = items.reduce((sum, i) => sum + i.quantity, 0)
       const existing = tableMap.get(ticket.tableId)
       if (existing) {
@@ -126,7 +126,7 @@ export function KdsSummaryPanel({ tickets, getOrderItems }: KdsSummaryPanelProps
       .filter((t): t is KdsTicket => t != null)
 
     const totalItems = relevantTickets.reduce((sum, t) => {
-      const items = getOrderItems(t).filter((i) => i.status !== 'voided' && i.menuItemId === selectedItem.menuItemId && !t.sentLineIds.has(i.lineId))
+      const items = getOrderItems(t).filter((i) => i.status !== 'voided' && i.menuItemId === selectedItem.menuItemId && !t.sentLineIds.has(i.lineId) && !(t.cancelledLineIds ?? new Set()).has(i.lineId))
       return sum + items.length
     }, 0)
 

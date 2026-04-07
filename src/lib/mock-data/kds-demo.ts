@@ -129,6 +129,7 @@ export function buildMockDemoTicket(): KdsTicket {
     checkedItems: new Set(),
     sentLineIds: new Set(),
     cancelledLineIds: new Set(),
+    acknowledgedCancelLineIds: new Set(),
     station,
     senderName,
     orderType,

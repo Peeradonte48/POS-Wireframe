@@ -19,6 +19,8 @@ export interface KdsTicket {
   sentLineIds: Set<string>
   /** Line IDs that have been cancelled from POS */
   cancelledLineIds: Set<string>
+  /** Line IDs where cancel info has been acknowledged (บันทึก) — enters disabled state before removal */
+  acknowledgedCancelLineIds: Set<string>
   station: KdsStation
   senderName?: string
   orderType?: 'dine-in' | 'takeaway' | 'delivery'
@@ -50,6 +52,8 @@ interface KdsStore {
   sendAllTableTickets: (tableId: string) => void
   /** Mark a line item as cancelled from POS */
   cancelLineItem: (ticketId: string, lineId: string) => void
+  /** Mark a cancelled item as acknowledged — enters disabled state */
+  acknowledgeCancelledItem: (ticketId: string, lineId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
   uncheckItem: (ticketId: string, lineId: string) => void
   recallTicket: (ticketId: string) => void
@@ -77,6 +81,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
         checkedItems: new Set<string>(),
         sentLineIds: new Set<string>(),
         cancelledLineIds: new Set<string>(),
+        acknowledgedCancelLineIds: new Set<string>(),
         station,
         senderName,
         orderType,
@@ -177,6 +182,20 @@ export const useKdsStore = create<KdsStore>((set) => ({
         tickets: {
           ...state.tickets,
           [ticketId]: { ...ticket, cancelledLineIds: newCancelledLineIds },
+        },
+      }
+    }),
+
+  acknowledgeCancelledItem: (ticketId, lineId) =>
+    set((state) => {
+      const ticket = state.tickets[ticketId]
+      if (!ticket) return state
+      const newAcknowledged = new Set(ticket.acknowledgedCancelLineIds)
+      newAcknowledged.add(lineId)
+      return {
+        tickets: {
+          ...state.tickets,
+          [ticketId]: { ...ticket, acknowledgedCancelLineIds: newAcknowledged },
         },
       }
     }),

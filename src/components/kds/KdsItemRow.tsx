@@ -2,6 +2,7 @@
 
 import { type LucideIcon, Shell, Soup, Ham, Salad, Flame, Droplets, Leaf, UtensilsCrossed, ShoppingBag } from 'lucide-react'
 import { OrderLineItem, ModifierSelection } from '@/stores/order.store'
+import { MENU_ITEMS } from '@/lib/mock-data/menu'
 import { Badge } from '@/components/ui/badge'
 
 interface KdsItemRowProps {
@@ -92,9 +93,18 @@ export function KdsItemRow({ item }: KdsItemRowProps) {
   const nonSpiceModifiers = item.modifiers.filter((m) => m.groupId !== 'spice-level')
   const hasSpice = item.spiceLevel !== null && item.spiceLevel > 0
 
-  // Use a mock customization number (from the item's basePrice as placeholder)
-  // In real implementation this would come from POS customization settings
-  const customValue = 8 // Placeholder per Figma design
+  // Derive option number from the option's position within its modifier group
+  function getOptionNumber(mod: ModifierSelection): number {
+    const menuItem = MENU_ITEMS.find((m) => m.id === item.menuItemId)
+    if (menuItem) {
+      const group = menuItem.modifierGroups.find((g) => g.id === mod.groupId)
+      if (group) {
+        const idx = group.options.findIndex((o) => o.id === mod.optionId)
+        if (idx >= 0) return idx + 1
+      }
+    }
+    return 1
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -114,10 +124,10 @@ export function KdsItemRow({ item }: KdsItemRowProps) {
       {/* Modifier rows with color-coded icons */}
       <div className="flex flex-col gap-3">
         {nonSpiceModifiers.map((mod, i) => (
-          <ModifierRow key={i} modifier={mod} customValue={customValue} />
+          <ModifierRow key={i} modifier={mod} customValue={getOptionNumber(mod)} />
         ))}
         {hasSpice && (
-          <SpiceRow spiceLevel={item.spiceLevel!} customValue={customValue} />
+          <SpiceRow spiceLevel={item.spiceLevel!} customValue={item.spiceLevel!} />
         )}
       </div>
 
