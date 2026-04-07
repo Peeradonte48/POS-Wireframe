@@ -17,6 +17,8 @@ export interface KdsTicket {
   checkedItems: Set<string>
   /** Line IDs that have been individually sent from KDS */
   sentLineIds: Set<string>
+  /** Line IDs that have been cancelled from POS */
+  cancelledLineIds: Set<string>
   station: KdsStation
   senderName?: string
   orderType?: 'dine-in' | 'takeaway' | 'delivery'
@@ -46,6 +48,8 @@ interface KdsStore {
   sendLineItem: (ticketId: string, lineId: string, totalNonVoidedCount: number) => void
   /** Mark all tickets for a table as served and remove from board */
   sendAllTableTickets: (tableId: string) => void
+  /** Mark a line item as cancelled from POS */
+  cancelLineItem: (ticketId: string, lineId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
   uncheckItem: (ticketId: string, lineId: string) => void
   recallTicket: (ticketId: string) => void
@@ -72,6 +76,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
         stage: 'New',
         checkedItems: new Set<string>(),
         sentLineIds: new Set<string>(),
+        cancelledLineIds: new Set<string>(),
         station,
         senderName,
         orderType,
@@ -130,16 +135,18 @@ export const useKdsStore = create<KdsStore>((set) => ({
       return { tickets: remainingTickets, completedTableIds }
     }),
 
-  sendLineItem: (ticketId, lineId, totalNonVoidedCount) =>
+  sendLineItem: (ticketId, lineId, activeItemCount) =>
     set((state) => {
       const ticket = state.tickets[ticketId]
       if (!ticket) return state
       const newSentLineIds = new Set(ticket.sentLineIds)
       newSentLineIds.add(lineId)
-      // If all non-voided items are now sent, remove the ticket entirely
-      if (newSentLineIds.size >= totalNonVoidedCount) {
+      // If all active (non-cancelled) items are now sent, remove the ticket and mark table completed
+      if (newSentLineIds.size >= activeItemCount) {
         const { [ticketId]: _void, ...remainingTickets } = state.tickets
-        return { tickets: remainingTickets }
+        const completedTableIds = new Set(state.completedTableIds)
+        completedTableIds.add(ticket.tableId)
+        return { tickets: remainingTickets, completedTableIds }
       }
       return {
         tickets: {
@@ -158,6 +165,20 @@ export const useKdsStore = create<KdsStore>((set) => ({
       const completedTableIds = new Set(state.completedTableIds)
       completedTableIds.add(tableId)
       return { tickets: remainingTickets, completedTableIds }
+    }),
+
+  cancelLineItem: (ticketId, lineId) =>
+    set((state) => {
+      const ticket = state.tickets[ticketId]
+      if (!ticket) return state
+      const newCancelledLineIds = new Set(ticket.cancelledLineIds)
+      newCancelledLineIds.add(lineId)
+      return {
+        tickets: {
+          ...state.tickets,
+          [ticketId]: { ...ticket, cancelledLineIds: newCancelledLineIds },
+        },
+      }
     }),
 
   checkItem: (ticketId, lineId) =>

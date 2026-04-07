@@ -103,14 +103,15 @@ export function KdsTableBottomsheet({ group, getOrderItems, filterMenuItemId, on
             <div className="flex gap-2.5 p-3 overflow-x-auto items-stretch h-full">
               {group.tickets.flatMap((ticket) => {
                 const nonVoided = getOrderItems(ticket).filter((i) => i.status !== 'voided')
-                let unsent = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))
-                if (filterMenuItemId) unsent = unsent.filter((i) => i.menuItemId === filterMenuItemId)
-                return unsent.map((item) => (
+                let items = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))
+                if (filterMenuItemId) items = items.filter((i) => i.menuItemId === filterMenuItemId)
+                const activeCount = nonVoided.filter((i) => !ticket.cancelledLineIds.has(i.lineId)).length
+                return items.map((item) => (
                   <KdsTicketCard
                     key={`${ticket.ticketId}-${item.lineId}`}
                     ticket={ticket}
                     item={item}
-                    totalNonVoidedCount={nonVoided.length}
+                    totalNonVoidedCount={activeCount}
                     hideHeader={!isMenuFilter}
                   />
                 ))

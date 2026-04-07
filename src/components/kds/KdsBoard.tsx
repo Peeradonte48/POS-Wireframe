@@ -52,7 +52,8 @@ export function KdsBoard() {
     return Object.values(tickets)
       .filter((t) => {
         const items = getOrderItems(t)
-        return items.some((item) => item.status !== 'voided' && !t.sentLineIds.has(item.lineId))
+        // Show ticket if it has any non-voided items that aren't sent (active OR cancelled)
+        return items.some((item) => item.status !== 'voided' && !(t.sentLineIds ?? new Set<string>()).has(item.lineId))
       })
       .sort((a, b) => a.addedAt - b.addedAt)
   }, [tickets, getOrderItems])
@@ -70,15 +71,29 @@ export function KdsBoard() {
               <div className="flex flex-nowrap gap-2.5 items-stretch h-full">
                 {visibleTickets.flatMap((ticket) => {
                   const nonVoided = getOrderItems(ticket).filter((i) => i.status !== 'voided')
-                  const unsent = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))
-                  return unsent.map((item) => (
-                    <KdsTicketCard
-                      key={`${ticket.ticketId}-${item.lineId}`}
-                      ticket={ticket}
-                      item={item}
-                      totalNonVoidedCount={nonVoided.length}
-                    />
-                  ))
+                  const cancelledIds = ticket.cancelledLineIds ?? new Set<string>()
+                  const sentIds = ticket.sentLineIds ?? new Set<string>()
+                  const active = nonVoided.filter((i) => !sentIds.has(i.lineId) && !cancelledIds.has(i.lineId))
+                  const cancelled = nonVoided.filter((i) => !sentIds.has(i.lineId) && cancelledIds.has(i.lineId))
+                  const activeCount = nonVoided.filter((i) => !cancelledIds.has(i.lineId)).length
+                  return [
+                    ...active.map((item) => (
+                      <KdsTicketCard
+                        key={`${ticket.ticketId}-${item.lineId}`}
+                        ticket={ticket}
+                        item={item}
+                        totalNonVoidedCount={activeCount}
+                      />
+                    )),
+                    ...cancelled.map((item) => (
+                      <KdsTicketCard
+                        key={`${ticket.ticketId}-${item.lineId}`}
+                        ticket={ticket}
+                        item={item}
+                        totalNonVoidedCount={activeCount}
+                      />
+                    )),
+                  ]
                 })}
               </div>
             </div>

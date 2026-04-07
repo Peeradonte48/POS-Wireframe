@@ -6,7 +6,7 @@ import { useSessionStore } from '@/stores/session.store'
 import { useKdsStore } from '@/stores/kds.store'
 import { KdsBoard } from '@/components/kds/KdsBoard'
 import { KdsKpiBar } from '@/components/kds/KdsKpiBar'
-import { buildMockDemoTicket } from '@/lib/mock-data/kds-demo'
+import { buildMockDemoTicket, getDemoOrderItems } from '@/lib/mock-data/kds-demo'
 import { LogOut } from 'lucide-react'
 
 export default function KdsPage() {
@@ -14,6 +14,7 @@ export default function KdsPage() {
   const { role, staffName, logout } = useSessionStore()
   const { demoActive, toggleDemoActive, injectDemoTicket } = useKdsStore()
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [demoCancelActive, setDemoCancelActive] = useState(false)
   const settingsRef = useRef<HTMLDivElement>(null)
 
   // Close settings dropdown on outside click
@@ -50,6 +51,33 @@ export default function KdsPage() {
     scheduleNext()
     return () => clearTimeout(timeoutId)
   }, [demoActive, injectDemoTicket])
+
+  // Demo cancel simulation — randomly cancels an item every 15–25 seconds
+  useEffect(() => {
+    if (!demoActive || !demoCancelActive) return
+    let cancelTimeoutId: ReturnType<typeof setTimeout>
+    function scheduleCancelDemo() {
+      const delay = 5000 + Math.random() * 5000
+      cancelTimeoutId = setTimeout(() => {
+        const { tickets, cancelLineItem } = useKdsStore.getState()
+        const allTickets = Object.values(tickets)
+        if (allTickets.length > 0) {
+          const ticket = allTickets[Math.floor(Math.random() * allTickets.length)]
+          const items = getDemoOrderItems(ticket)
+          const eligible = items.filter(
+            (i) => i.status !== 'voided' && !ticket.cancelledLineIds.has(i.lineId) && !ticket.sentLineIds.has(i.lineId),
+          )
+          if (eligible.length > 0) {
+            const item = eligible[Math.floor(Math.random() * eligible.length)]
+            cancelLineItem(ticket.ticketId, item.lineId)
+          }
+        }
+        scheduleCancelDemo()
+      }, delay)
+    }
+    scheduleCancelDemo()
+    return () => clearTimeout(cancelTimeoutId)
+  }, [demoActive, demoCancelActive])
 
   if (role === null || (role !== 'Kitchen' && role !== 'Manager')) return null
 
@@ -101,6 +129,19 @@ export default function KdsPage() {
                     )}
                     {demoActive ? 'ปิด Demo Mode' : 'เปิด Demo Mode'}
                   </button>
+
+                  {/* Demo cancel toggle — only visible when demo is active */}
+                  {demoActive && (
+                    <button
+                      onClick={() => setDemoCancelActive((v) => !v)}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                    >
+                      {demoCancelActive && (
+                        <span className="size-1.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
+                      )}
+                      {demoCancelActive ? 'ปิดจำลองยกเลิกออร์เดอร์' : 'เปิดจำลองยกเลิกออร์เดอร์'}
+                    </button>
+                  )}
 
                   {/* Logout */}
                   <button
