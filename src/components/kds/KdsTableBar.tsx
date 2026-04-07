@@ -134,7 +134,7 @@ export function KdsTableBar({ tickets, getOrderItems }: KdsTableBarProps) {
   return (
     <>
       {/* Bottom bar */}
-      <div className="h-[68px] shrink-0 flex items-center gap-4 overflow-x-auto px-6">
+      <div className="shrink-0 flex items-center gap-4 overflow-x-auto px-6 py-2">
         {tableGroups.map((group) => (
           <TableBarCard
             key={group.tableId}

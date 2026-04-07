@@ -34,7 +34,7 @@ export function KdsTicketCard({ ticket, item, totalNonVoidedCount, hideHeader }:
 
   return (
     <div
-      className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shrink-0 w-[240px] min-w-[240px]"
+      className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shrink-0 w-[240px] min-w-[240px] self-stretch"
       style={{ boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1)' }}
     >
       {/* ── Card Header — colored by urgency (hidden inside table bottomsheet) ── */}

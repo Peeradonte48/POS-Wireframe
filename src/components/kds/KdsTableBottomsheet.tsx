@@ -77,7 +77,7 @@ export function KdsTableBottomsheet({ group, getOrderItems, filterMenuItemId, on
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Sheet content */}
-      <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl flex flex-col max-h-[calc(100vh-88px)] animate-in slide-in-from-bottom duration-200">
+      <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-xl flex flex-col h-[80vh] animate-in slide-in-from-bottom duration-200">
         {/* Header — table-style or menu-item-style */}
         {isMenuFilter ? (
           <div className="flex items-center justify-between p-6 pb-4 shrink-0">
@@ -99,8 +99,8 @@ export function KdsTableBottomsheet({ group, getOrderItems, filterMenuItemId, on
 
         {/* Ticket cards */}
         <div className="flex-1 min-h-0 overflow-y-auto px-6">
-          <div className="bg-muted border border-border rounded-md overflow-hidden">
-            <div className="flex gap-2.5 p-3 overflow-x-auto items-start">
+          <div className="bg-muted border border-border rounded-md overflow-hidden h-full">
+            <div className="flex gap-2.5 p-3 overflow-x-auto items-stretch h-full">
               {group.tickets.flatMap((ticket) => {
                 const nonVoided = getOrderItems(ticket).filter((i) => i.status !== 'voided')
                 let unsent = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))

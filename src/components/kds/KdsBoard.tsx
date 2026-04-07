@@ -67,7 +67,7 @@ export function KdsBoard() {
         <div className="flex-1 min-w-0 bg-muted border border-border rounded-md overflow-hidden">
           {hasTickets ? (
             <div className="h-full overflow-x-auto p-3">
-              <div className="flex flex-nowrap gap-2.5 items-start h-full">
+              <div className="flex flex-nowrap gap-2.5 items-stretch h-full">
                 {visibleTickets.flatMap((ticket) => {
                   const nonVoided = getOrderItems(ticket).filter((i) => i.status !== 'voided')
                   const unsent = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))
