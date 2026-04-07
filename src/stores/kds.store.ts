@@ -15,6 +15,8 @@ export interface KdsTicket {
   addedAt: number
   stage: KdsStage
   checkedItems: Set<string>
+  /** Line IDs that have been individually sent from KDS */
+  sentLineIds: Set<string>
   station: KdsStation
   senderName?: string
   orderType?: 'dine-in' | 'takeaway' | 'delivery'
@@ -40,6 +42,10 @@ interface KdsStore {
   injectDemoTicket: (ticket: KdsTicket) => void
   bumpTicket: (ticketId: string) => void
   completeTicket: (ticketId: string) => void
+  /** Mark a single line item as sent; removes ticket when all items are sent */
+  sendLineItem: (ticketId: string, lineId: string, totalNonVoidedCount: number) => void
+  /** Mark all tickets for a table as served and remove from board */
+  sendAllTableTickets: (tableId: string) => void
   checkItem: (ticketId: string, lineId: string) => void
   uncheckItem: (ticketId: string, lineId: string) => void
   recallTicket: (ticketId: string) => void
@@ -65,6 +71,7 @@ export const useKdsStore = create<KdsStore>((set) => ({
         addedAt: Date.now(),
         stage: 'New',
         checkedItems: new Set<string>(),
+        sentLineIds: new Set<string>(),
         station,
         senderName,
         orderType,
@@ -120,6 +127,36 @@ export const useKdsStore = create<KdsStore>((set) => ({
       const { [ticketId]: _void, ...remainingTickets } = state.tickets
       const completedTableIds = new Set(state.completedTableIds)
       if (ticket) completedTableIds.add(ticket.tableId)
+      return { tickets: remainingTickets, completedTableIds }
+    }),
+
+  sendLineItem: (ticketId, lineId, totalNonVoidedCount) =>
+    set((state) => {
+      const ticket = state.tickets[ticketId]
+      if (!ticket) return state
+      const newSentLineIds = new Set(ticket.sentLineIds)
+      newSentLineIds.add(lineId)
+      // If all non-voided items are now sent, remove the ticket entirely
+      if (newSentLineIds.size >= totalNonVoidedCount) {
+        const { [ticketId]: _void, ...remainingTickets } = state.tickets
+        return { tickets: remainingTickets }
+      }
+      return {
+        tickets: {
+          ...state.tickets,
+          [ticketId]: { ...ticket, sentLineIds: newSentLineIds },
+        },
+      }
+    }),
+
+  sendAllTableTickets: (tableId) =>
+    set((state) => {
+      const remainingTickets: Record<string, KdsTicket> = {}
+      for (const [id, ticket] of Object.entries(state.tickets)) {
+        if (ticket.tableId !== tableId) remainingTickets[id] = ticket
+      }
+      const completedTableIds = new Set(state.completedTableIds)
+      completedTableIds.add(tableId)
       return { tickets: remainingTickets, completedTableIds }
     }),
 

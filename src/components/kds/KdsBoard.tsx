@@ -1,26 +1,17 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
-import { CheckCheck } from 'lucide-react'
+import { useEffect, useMemo, useCallback } from 'react'
+import { Inbox } from 'lucide-react'
 import { useOrderStore } from '@/stores/order.store'
 import { useKdsStore, KdsTicket } from '@/stores/kds.store'
 import { useTableStore } from '@/stores/table.store'
 import { useQueueStore } from '@/stores/queue.store'
 import { KdsTicketCard } from '@/components/kds/KdsTicketCard'
+import { KdsSummaryPanel } from '@/components/kds/KdsSummaryPanel'
+import { KdsTableBar } from '@/components/kds/KdsTableBar'
 import { OrderLineItem } from '@/stores/order.store'
 import { getDemoOrderItems } from '@/lib/mock-data/kds-demo'
-import { CookingPot, GlassWater } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useSessionStore } from '@/stores/session.store'
-
-// Station tab definitions
-// In demo/wireframe: all tickets are Hot Kitchen; Bar tab is empty
-const STATIONS = [
-  { key: 'hot',  label: 'ครัวร้อน', icon: CookingPot },
-  { key: 'bar',  label: 'บาร์น้ำ',  icon: GlassWater },
-] as const
-
-type Station = typeof STATIONS[number]['key']
 
 export function KdsBoard() {
   const allOrders = useOrderStore((s) => s.orders)
@@ -28,28 +19,12 @@ export function KdsBoard() {
   const sessionStaffName = useSessionStore((s) => s.staffName)
   const tables = useTableStore((s) => s.tables)
 
-  const [activeStation, setActiveStation] = useState<Station>('hot')
-
-  // Ticket counts per station
-  const stationCounts = useMemo(() => {
-    const active = Object.values(tickets).filter((t) => {
-      const items = getOrderItems(t)
-      return items.some((item) => item.status !== 'voided')
-    })
-    return {
-      hot: active.filter((t) => t.station !== 'bar').length,
-      bar: active.filter((t) => t.station === 'bar').length,
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickets, allOrders])
-
   // Auto-register tickets for tables with sent rounds
   useEffect(() => {
     const tablesWithSentOrders = Object.values(allOrders).filter((order) =>
       order.rounds.some((r) => r.sentAt !== null),
     )
     tablesWithSentOrders.forEach((order) => {
-      // Skip tables already completed on KDS
       if (completedTableIds.has(order.tableId)) return
       const alreadyRegistered = Object.values(tickets).some(
         (t) => t.tableId === order.tableId,
@@ -63,7 +38,7 @@ export function KdsBoard() {
     })
   }, [allOrders, tickets, tables, addTicket, completedTableIds, sessionStaffName])
 
-  function getOrderItems(ticket: KdsTicket): OrderLineItem[] {
+  const getOrderItems = useCallback((ticket: KdsTicket): OrderLineItem[] => {
     const order = allOrders[ticket.tableId]
     if (order) {
       return order.rounds
@@ -71,72 +46,69 @@ export function KdsBoard() {
         .flatMap((r) => r.items.filter((item) => item.status !== 'unsent'))
     }
     return getDemoOrderItems(ticket)
-  }
+  }, [allOrders])
 
   const visibleTickets = useMemo(() => {
     return Object.values(tickets)
       .filter((t) => {
-        if (t.station !== activeStation) return false
         const items = getOrderItems(t)
-        return items.some((item) => item.status !== 'voided')
+        return items.some((item) => item.status !== 'voided' && !t.sentLineIds.has(item.lineId))
       })
       .sort((a, b) => a.addedAt - b.addedAt)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickets, allOrders, activeStation])
+  }, [tickets, getOrderItems])
+
+  const hasTickets = visibleTickets.length > 0
 
   return (
-    <>
-      {/* ── Station tabs ── */}
-      <div className="bg-muted h-9 rounded-lg p-[3px] flex shrink-0">
-        {STATIONS.map(({ key, label, icon: Icon }) => {
-          const isActive = activeStation === key
-          const count = stationCounts[key]
-          return (
-            <button
-              key={key}
-              onClick={() => setActiveStation(key)}
-              className={cn(
-                'flex flex-1 items-center justify-center gap-2 px-2 py-1 rounded-md text-sm font-medium transition-all',
-                isActive
-                  ? 'bg-background border border-border text-foreground'
-                  : 'text-foreground hover:text-foreground/80',
-              )}
-              style={isActive ? { boxShadow: 'var(--shadow-card)' } : undefined}
-            >
-              <Icon size={16} />
-              <span>{label}</span>
-              {count > 0 && (
-                <span className="bg-primary text-primary-foreground text-xs font-semibold leading-none h-5 min-w-5 flex items-center justify-center px-1 rounded-full">
-                  {count}
-                </span>
-              )}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* ── Ticket grid ── */}
-      <div className="flex-1 min-h-0 bg-muted border border-border rounded-none overflow-hidden">
-        <div className="h-full overflow-x-auto p-3">
-          {visibleTickets.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border p-8 text-center">
-              <CheckCheck size={32} className="text-muted-foreground/50" />
-              <p className="text-base font-bold text-foreground">ครัวพร้อม</p>
-              <p className="text-sm text-muted-foreground">ออร์เดอร์ใหม่จะปรากฏที่นี่โดยอัตโนมัติ</p>
+    <div className="flex flex-1 min-h-0 flex-col gap-4">
+      {/* Main content area: tickets + summary sidebar */}
+      <div className="flex flex-1 min-h-0 gap-4">
+        {/* Left: Ticket cards area */}
+        <div className="flex-1 min-w-0 bg-muted border border-border rounded-md overflow-hidden">
+          {hasTickets ? (
+            <div className="h-full overflow-x-auto p-3">
+              <div className="flex flex-nowrap gap-2.5 items-start h-full">
+                {visibleTickets.flatMap((ticket) => {
+                  const nonVoided = getOrderItems(ticket).filter((i) => i.status !== 'voided')
+                  const unsent = nonVoided.filter((i) => !ticket.sentLineIds.has(i.lineId))
+                  return unsent.map((item) => (
+                    <KdsTicketCard
+                      key={`${ticket.ticketId}-${item.lineId}`}
+                      ticket={ticket}
+                      item={item}
+                      totalNonVoidedCount={nonVoided.length}
+                    />
+                  ))
+                })}
+              </div>
             </div>
           ) : (
-            <div className="flex flex-nowrap gap-2 items-start h-full">
-              {visibleTickets.map((ticket) => (
-                <KdsTicketCard
-                  key={ticket.ticketId}
-                  ticket={ticket}
-                  orderItems={getOrderItems(ticket)}
-                />
-              ))}
+            /* Empty state */
+            <div className="flex flex-col items-center justify-center gap-6 h-full p-6">
+              <div
+                className="bg-card border border-border flex items-center justify-center p-2 rounded-md size-12"
+                style={{ boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.05)' }}
+              >
+                <Inbox size={24} className="text-foreground" />
+              </div>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <p className="text-xl font-semibold text-foreground">
+                  ยังไม่มีออร์เดอร์
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  ออร์เดอร์ใหม่จะปรากฏที่นี่โดยอัตโนมัติ
+                </p>
+              </div>
             </div>
           )}
         </div>
+
+        {/* Right: Summary sidebar */}
+        <KdsSummaryPanel tickets={visibleTickets} getOrderItems={getOrderItems} />
       </div>
-    </>
+
+      {/* Bottom: Table bar */}
+      <KdsTableBar tickets={visibleTickets} getOrderItems={getOrderItems} />
+    </div>
   )
 }

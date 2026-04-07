@@ -4,14 +4,15 @@ import { useNowTimer } from '@/lib/hooks/useNowTimer'
 /**
  * Ticking MM:SS elapsed timer for KDS tickets.
  *
- * Color thresholds for caller use (not enforced in hook):
- *   elapsedSeconds < 600  → green
- *   elapsedSeconds 600–899 → amber
- *   elapsedSeconds ≥ 900  → red
+ * Color thresholds:
+ *   elapsedSeconds < 30   → green  (just arrived)
+ *   elapsedSeconds 30–59  → amber  (aging)
+ *   elapsedSeconds ≥ 60   → red    (overdue)
  */
 export function useKdsTimer(addedAt: number): {
   display: string
   elapsedSeconds: number
+  urgency: 'green' | 'amber' | 'red'
 } {
   const now = useNowTimer(1000)
 
@@ -20,5 +21,8 @@ export function useKdsTimer(addedAt: number): {
   const seconds = elapsedSeconds % 60
   const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 
-  return { display, elapsedSeconds }
+  const urgency: 'green' | 'amber' | 'red' =
+    elapsedSeconds >= 60 ? 'red' : elapsedSeconds >= 30 ? 'amber' : 'green'
+
+  return { display, elapsedSeconds, urgency }
 }

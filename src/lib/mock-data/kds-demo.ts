@@ -127,6 +127,7 @@ export function buildMockDemoTicket(): KdsTicket {
     addedAt: Date.now(),
     stage: 'New',
     checkedItems: new Set(),
+    sentLineIds: new Set(),
     station,
     senderName,
     orderType,

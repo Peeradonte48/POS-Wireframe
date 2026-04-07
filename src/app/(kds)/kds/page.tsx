@@ -1,49 +1,31 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSessionStore } from '@/stores/session.store'
 import { useKdsStore } from '@/stores/kds.store'
 import { KdsBoard } from '@/components/kds/KdsBoard'
-import { KdsRecallTray } from '@/components/kds/KdsRecallTray'
+import { KdsKpiBar } from '@/components/kds/KdsKpiBar'
 import { buildMockDemoTicket } from '@/lib/mock-data/kds-demo'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
-import {
-  Package2,
-  Home,
-  ShoppingCart,
-  Package,
-  Settings,
-  PanelLeft,
-  EllipsisVertical,
-  LogOut,
-  ChevronsUpDown,
-  User,
-} from 'lucide-react'
-
-const TOP_NAV_ITEMS = [
-  { icon: Home,         href: '/table-map' },
-  { icon: ShoppingCart, href: '/orders'    },
-  { icon: Package,      href: '/kds'       },
-] as const
+import { LogOut } from 'lucide-react'
 
 export default function KdsPage() {
   const router = useRouter()
-  const { role, staffName, branchName, logout } = useSessionStore()
+  const { role, staffName, logout } = useSessionStore()
   const { demoActive, toggleDemoActive, injectDemoTicket } = useKdsStore()
-  const [staffMenuOpen, setStaffMenuOpen] = useState(false)
-  const staffMenuRef = useRef<HTMLDivElement>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const settingsRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown on outside click
+  // Close settings dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (staffMenuRef.current && !staffMenuRef.current.contains(e.target as Node)) {
-        setStaffMenuOpen(false)
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false)
       }
     }
-    if (staffMenuOpen) document.addEventListener('mousedown', handleClickOutside)
+    if (settingsOpen) document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [staffMenuOpen])
+  }, [settingsOpen])
 
   // Auth guard: Kitchen and Manager only
   useEffect(() => {
@@ -71,165 +53,70 @@ export default function KdsPage() {
 
   if (role === null || (role !== 'Kitchen' && role !== 'Manager')) return null
 
-  const roleLabel = role === 'Kitchen' ? 'พ่อครัว' : 'ผู้จัดการ'
-  const displayBranch = branchName ?? 'A Ramen — Ekkamai'
-
   function handleLogout() {
     logout()
     router.replace('/login')
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-muted">
-      {/* ── Sidebar (55px icon-only nav) ── */}
-      <nav className="w-12 h-full shrink-0 flex flex-col items-center justify-between py-5 px-2">
-        {/* Top: brand + nav */}
-        <div className="flex flex-col items-center gap-4 w-full">
-          {/* Brand icon — KDS active state */}
-          <button className="bg-primary flex items-center justify-center rounded-full size-10 shrink-0">
-            <Package2 size={18} className="text-primary-foreground" />
-          </button>
-
-          {TOP_NAV_ITEMS.map(({ icon: Icon, href }) => {
-            const isActive = href === '/kds'
-            const canNavigate = role === 'Manager' && !isActive
-            return canNavigate ? (
-              <button
-                key={href}
-                onClick={() => router.push(href)}
-                title={href.replace('/', '')}
-                className="flex items-center justify-center rounded-lg size-11 text-muted-foreground hover:bg-accent transition-colors"
-              >
-                <Icon size={20} />
-              </button>
-            ) : (
-              <button
-                key={href}
-                className={`flex items-center justify-center rounded-lg size-11 transition-colors ${
-                  isActive
-                    ? 'bg-accent text-foreground'
-                    : 'text-muted-foreground/30 cursor-not-allowed'
-                }`}
-              >
-                <Icon size={20} />
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Bottom: settings — Manager only */}
-        {role === 'Manager' ? (
-          <button
-            onClick={() => router.push('/manager')}
-            title="manager"
-            className="flex items-center justify-center rounded-lg size-11 text-muted-foreground hover:bg-accent transition-colors"
-          >
-            <Settings size={20} />
-          </button>
-        ) : (
-          <button className="flex items-center justify-center rounded-lg size-11 text-muted-foreground/30 cursor-not-allowed">
-            <Settings size={20} />
-          </button>
-        )}
-      </nav>
-
-      {/* ── Main wrapper ── */}
-      <div className="flex flex-1 min-w-0 flex-col pr-2 py-2">
+    <div className="flex h-screen w-screen overflow-hidden bg-sidebar">
+      {/* ── Main wrapper — no sidebar ── */}
+      <div className="flex flex-1 min-w-0 flex-col p-2">
         <div
           className="flex-1 min-h-0 bg-background rounded-xl overflow-hidden flex flex-col"
-          style={{ boxShadow: 'var(--shadow-card)' }}
+          style={{ boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.1), 0px 1px 2px -1px rgba(0,0,0,0.1)' }}
         >
-          {/* ── Header ── */}
-          <header className="border-b border-border px-6 py-3 flex items-center justify-between shrink-0">
-            {/* Left: panel toggle + separator + breadcrumb */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button className="flex items-center justify-center rounded-md size-9 hover:bg-accent transition-colors">
-                <PanelLeft size={16} className="text-foreground" />
-              </button>
-              <div className="w-px h-[15px] bg-border mx-1" />
-              <span className="text-sm text-foreground">{displayBranch}</span>
-            </div>
-
-            {/* Right: actions */}
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Demo mode toggle */}
-              <button
-                onClick={toggleDemoActive}
-                className={`flex items-center gap-1.5 h-9 px-3 rounded-md border text-xs font-semibold transition-colors ${
-                  demoActive
-                    ? 'bg-primary border-primary text-primary-foreground'
-                    : 'bg-background border-input text-muted-foreground hover:bg-accent'
-                }`}
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              >
-                {demoActive && (
-                  <span className="size-1.5 rounded-full bg-primary-foreground shrink-0 animate-pulse" />
-                )}
-                Demo
-              </button>
-
-              {/* Ellipsis button */}
-              <button
-                className="flex items-center justify-center size-9 border border-input rounded-md bg-background hover:bg-accent transition-colors"
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              >
-                <EllipsisVertical size={16} className="text-foreground" />
-              </button>
-
-              {/* Staff dropdown */}
-              <div ref={staffMenuRef} className="relative">
-                <button
-                  onClick={() => setStaffMenuOpen((v) => !v)}
-                  className="flex items-center gap-2 h-9 px-3 border border-input rounded-md bg-background text-sm font-medium hover:bg-accent transition-colors"
-                  style={{ boxShadow: 'var(--shadow-card)' }}
-                >
-                  <div className="size-5 rounded-full bg-muted shrink-0 flex items-center justify-center overflow-hidden">
-                    <User size={12} className="text-muted-foreground" />
-                  </div>
-                  <span className="max-w-[180px] truncate">
-                    {staffName ?? 'Staff'}{' '}
-                    <span className="font-medium">({roleLabel})</span>
-                  </span>
-                  <ChevronsUpDown size={16} className="text-muted-foreground/50 shrink-0" />
-                </button>
-
-                {staffMenuOpen && (
-                  <div
-                    className="absolute right-0 top-full mt-1 w-48 bg-popover border border-border rounded-lg overflow-hidden z-50"
-                    style={{ boxShadow: 'var(--shadow-panel)' }}
-                  >
-                    <div className="px-3 py-2 border-b border-border">
-                      <p className="text-xs text-muted-foreground">{roleLabel}</p>
-                      <p className="text-sm font-medium text-foreground truncate">{staffName ?? 'Staff'}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                    >
-                      <LogOut size={14} className="text-muted-foreground" />
-                      ออกจากระบบ
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Theme toggle */}
-              <div
-                className="size-9 flex items-center justify-center rounded-md bg-secondary"
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              >
-                <ThemeToggle />
-              </div>
-            </div>
-          </header>
-
-          {/* ── Board content ── */}
+          {/* ── Content area ── */}
           <div className="flex flex-1 min-h-0 flex-col overflow-hidden p-6 gap-4">
+            {/* KPI Bar + Settings */}
+            <div className="relative" ref={settingsRef}>
+              <KdsKpiBar
+                avgCookingTime="10 นาที"
+                onTimePercent={55}
+                onSettingsClick={() => setSettingsOpen((v) => !v)}
+              />
+
+              {/* Settings dropdown */}
+              {settingsOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1 w-48 bg-popover border border-border rounded-lg overflow-hidden z-50"
+                  style={{ boxShadow: 'var(--shadow-panel)' }}
+                >
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-xs text-muted-foreground">
+                      {role === 'Kitchen' ? 'พ่อครัว' : 'ผู้จัดการ'}
+                    </p>
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {staffName ?? 'Staff'}
+                    </p>
+                  </div>
+
+                  {/* Demo mode toggle */}
+                  <button
+                    onClick={toggleDemoActive}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                  >
+                    {demoActive && (
+                      <span className="size-1.5 rounded-full bg-green-500 shrink-0 animate-pulse" />
+                    )}
+                    {demoActive ? 'ปิด Demo Mode' : 'เปิด Demo Mode'}
+                  </button>
+
+                  {/* Logout */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors border-t border-border"
+                  >
+                    <LogOut size={14} className="text-muted-foreground" />
+                    ออกจากระบบ
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Board */}
             <KdsBoard />
           </div>
-
-          {/* ── Recall tray ── */}
-          <KdsRecallTray />
         </div>
       </div>
     </div>

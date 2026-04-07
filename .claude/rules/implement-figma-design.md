@@ -42,7 +42,14 @@ Use skill that suit for user's request including:
 
 ### Use MCP
 
-Use skill that suit for user's request including:
+Use MCP that suit for user's request including:
 
 - shadcn
+- figma
+
+### Use plugin
+
+Use plugin that suit for user's request including:
+
+- superpower
 - figma
