@@ -20,7 +20,8 @@ const DEMO_TABLE_SLOTS = [
   { tableId: 'demo-t05', tableLabel: 'T05' },
 ]
 
-const FOOD_ITEMS  = MENU_ITEMS.filter((m) => m.categoryId !== 'drinks')
+const NON_KITCHEN_CATS = new Set(['drinks', 'desserts', 'sides'])
+const FOOD_ITEMS  = MENU_ITEMS.filter((m) => !NON_KITCHEN_CATS.has(m.categoryId))
 const DRINK_ITEMS = MENU_ITEMS.filter((m) => m.categoryId === 'drinks')
 
 const DEMO_SENDERS = MOCK_STAFF.filter((s) => s.name === 'Somchai' || s.name === 'Nida')
