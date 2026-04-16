@@ -70,7 +70,7 @@ function ModifierSlider({
   const fillPercent = max > 0 ? (currentIndex / max) * 100 : 0
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       {/* Labels row — evenly distributed above the slider */}
       <div className="flex justify-between px-0">
         {options.map((option, i) => (
@@ -158,7 +158,7 @@ function ModifierChips({
             className={cn(
               'inline-flex items-center justify-center rounded-lg border px-3 py-3 text-sm font-medium transition-all min-h-[44px] min-w-[80px] max-w-[224px]',
               isSelected
-                ? 'border-primary bg-primary/10 text-foreground'
+                ? 'border-primary text-foreground'
                 : 'border-border bg-background text-foreground hover:border-primary/40',
             )}
           >
@@ -206,7 +206,7 @@ export function SliderModifiersPanel({
             ref={(el) => {
               if (groupRefs) groupRefs.current[group.id] = el
             }}
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-3"
           >
             {/* Group header — icon + label + required tag */}
             <div className="flex items-center gap-1.5">

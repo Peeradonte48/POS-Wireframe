@@ -172,8 +172,8 @@ function ModifierSheetContent({
 
           {/* Special request textarea — Design B only */}
           {variant === 'B' && (
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="special-request" className="text-sm font-medium text-card-foreground">หมายเหตุ</label>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="special-request" className="text-base font-semibold text-card-foreground">หมายเหตุ</label>
               <textarea
                 id="special-request"
                 value={specialRequest}
