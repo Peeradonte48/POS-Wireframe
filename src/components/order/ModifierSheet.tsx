@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Minus, Plus } from 'lucide-react'
+import { ArrowLeftRight, Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ import type { MenuItem } from '@/lib/mock-data/menu'
 import { useOrderStore } from '@/stores/order.store'
 import type { OrderLineItem } from '@/stores/order.store'
 import { ForcedModifiersPanel } from '@/components/order/ForcedModifiersPanel'
+import { SliderModifiersPanel } from '@/components/order/SliderModifiersPanel'
 
 export interface ModifierSheetProps {
   open: boolean
@@ -35,6 +36,8 @@ function ModifierSheetContent({
   onClose,
   onItemAdded,
 }: Omit<ModifierSheetProps, 'open'> & { menuItem: MenuItem }) {
+  const [variant, setVariant] = useState<'A' | 'B'>('A')
+  const [specialRequest, setSpecialRequest] = useState(() => editingLineItem?.specialRequest ?? '')
   const [quantity, setQuantity] = useState(() => editingLineItem?.quantity ?? 1)
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     if (editingLineItem) {
@@ -99,7 +102,7 @@ function ModifierSheetContent({
       basePrice: menuItem.basePrice,
       modifiers,
       spiceLevel,
-      specialRequest: editingLineItem?.specialRequest ?? '',
+      specialRequest,
       quantity,
       status: editingLineId ? (editingLineItem?.status ?? 'unsent') : 'unsent',
     }
@@ -114,9 +117,16 @@ function ModifierSheetContent({
 
   return (
     <>
-      {/* Title */}
-      <div className="px-4 pt-4 pb-4 shrink-0">
+      {/* Title + variant toggle */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-4 shrink-0">
         <h2 className="text-lg font-semibold leading-none text-foreground">{menuItem.name}</h2>
+        <button
+          onClick={() => setVariant((v) => (v === 'A' ? 'B' : 'A'))}
+          className="flex items-center gap-1.5 h-7 px-2 rounded-md border border-border bg-card text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+        >
+          <ArrowLeftRight size={12} />
+          Design {variant}
+        </button>
       </div>
 
       {/* Quantity row */}
@@ -139,16 +149,40 @@ function ModifierSheetContent({
 
       <div className="h-px bg-border shrink-0 mx-4" />
 
-      {/* Scrollable modifier groups */}
+      {/* Scrollable modifier groups — conditional on variant */}
       <div className="flex-1 overflow-y-auto pb-32">
         <div className="flex flex-col gap-4 px-4 pt-4">
-          <ForcedModifiersPanel
-            modifierGroups={menuItem.modifierGroups}
-            selections={selections}
-            onSelect={handleSelect}
-            errors={validationErrors}
-            groupRefs={groupRefs}
-          />
+          {variant === 'A' ? (
+            <ForcedModifiersPanel
+              modifierGroups={menuItem.modifierGroups}
+              selections={selections}
+              onSelect={handleSelect}
+              errors={validationErrors}
+              groupRefs={groupRefs}
+            />
+          ) : (
+            <SliderModifiersPanel
+              modifierGroups={menuItem.modifierGroups}
+              selections={selections}
+              onSelect={handleSelect}
+              errors={validationErrors}
+              groupRefs={groupRefs}
+            />
+          )}
+
+          {/* Special request textarea — Design B only */}
+          {variant === 'B' && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-card-foreground">หมายเหตุ</label>
+              <textarea
+                value={specialRequest}
+                onChange={(e) => setSpecialRequest(e.target.value)}
+                placeholder="Placeholder"
+                rows={3}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              />
+            </div>
+          )}
         </div>
       </div>
 
