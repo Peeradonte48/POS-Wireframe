@@ -36,6 +36,79 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
 }
 
 // ---------------------------------------------------------------------------
+// SegmentedControl — single group with sliding highlight indicator
+// ---------------------------------------------------------------------------
+
+function SegmentedControl({
+  group,
+  selected,
+  onSelect,
+  hasError,
+  onTouchMove,
+  onTouchEnd,
+}: {
+  group: MenuModifierGroup
+  selected: string[]
+  onSelect: (groupId: string, optionId: string, type: 'single' | 'multi') => void
+  hasError: boolean
+  onTouchMove: (e: React.TouchEvent, group: MenuModifierGroup) => void
+  onTouchEnd: () => void
+}) {
+  const count = group.options.length
+  const selectedIdx = group.options.findIndex((o) => selected.includes(o.id))
+  const isSingle = group.type === 'single'
+
+  return (
+    <div
+      className={cn(
+        'relative inline-flex w-full items-center rounded-lg p-[3px] bg-muted',
+        isSingle && 'touch-none',
+        hasError && 'ring-1 ring-destructive/50',
+      )}
+      onTouchMove={(e) => onTouchMove(e, group)}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Sliding highlight — only for single-select with a selection */}
+      {isSingle && selectedIdx >= 0 && (
+        <div
+          className="absolute top-[3px] bottom-[3px] rounded-md bg-background transition-[left] duration-200 ease-out"
+          style={{
+            width: `calc((100% - 6px) / ${count})`,
+            left: `calc(3px + ${selectedIdx} * (100% - 6px) / ${count})`,
+            boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)',
+          }}
+        />
+      )}
+
+      {group.options.map((option) => {
+        const isSelected = selected.includes(option.id)
+        return (
+          <button
+            key={option.id}
+            type="button"
+            data-option-id={option.id}
+            onClick={() => onSelect(group.id, option.id, group.type)}
+            className={cn(
+              'relative z-[1] flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-150 min-h-[44px]',
+              isSelected
+                ? 'text-foreground'
+                : 'text-foreground/60 hover:text-foreground',
+              // Multi-select still uses per-button bg since there's no single indicator
+              !isSingle && isSelected && 'bg-background shadow-sm',
+            )}
+          >
+            {option.label}
+            {option.priceAdj > 0 && (
+              <span className="ml-1 text-xs opacity-60">+฿{option.priceAdj}</span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // ForcedModifiersPanel — Tab-style segmented controls per Figma design
 // ---------------------------------------------------------------------------
 
@@ -56,7 +129,6 @@ export function ForcedModifiersPanel({
       if (!touch) return
       const el = document.elementFromPoint(touch.clientX, touch.clientY)
       if (!el) return
-      // Walk up to find the button with data-option-id
       const btn = el.closest<HTMLElement>('[data-option-id]')
       if (!btn) return
       const optionId = btn.dataset.optionId
@@ -123,38 +195,14 @@ export function ForcedModifiersPanel({
               </span>
             </div>
 
-            {/* Tab-style segmented control — drag-to-select on single-select groups */}
-            <div
-              className={cn(
-                'inline-flex w-full items-center rounded-lg p-[3px] bg-muted touch-none',
-                hasError && 'ring-1 ring-destructive/50',
-              )}
-              onTouchMove={(e) => handleTouchMove(e, group)}
+            <SegmentedControl
+              group={group}
+              selected={selected}
+              onSelect={onSelect}
+              hasError={hasError}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-            >
-              {group.options.map((option) => {
-                const isSelected = selected.includes(option.id)
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    data-option-id={option.id}
-                    onClick={() => onSelect(group.id, option.id, group.type)}
-                    className={cn(
-                      'relative flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-sm font-medium whitespace-nowrap transition-all min-h-[44px]',
-                      isSelected
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-foreground/60 hover:text-foreground',
-                    )}
-                  >
-                    {option.label}
-                    {option.priceAdj > 0 && (
-                      <span className="ml-1 text-xs opacity-60">+฿{option.priceAdj}</span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+            />
           </div>
         )
       })}
