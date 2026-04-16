@@ -71,31 +71,36 @@ function ModifierSlider({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Labels row — grid ensures each label aligns with its slider stop */}
-      <div
-        className="grid"
-        style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}
-      >
-        {options.map((option, i) => (
-          <span
-            key={option.id}
-            className={cn(
-              'text-sm leading-tight select-none',
-              i === currentIndex
-                ? 'font-semibold text-foreground'
-                : 'font-normal text-muted-foreground',
-            )}
-            style={{
-              textAlign:
-                i === 0 ? 'left' : i === max ? 'right' : 'center',
-            }}
-          >
-            {option.label}
-            {option.priceAdj > 0 && (
-              <span className="ml-0.5 text-xs opacity-60">+฿{option.priceAdj}</span>
-            )}
-          </span>
-        ))}
+      {/* Labels — each positioned at the exact % the slider thumb sits at */}
+      <div className="relative h-5">
+        {options.map((option, i) => {
+          const pct = max > 0 ? (i / max) * 100 : 0
+          return (
+            <span
+              key={option.id}
+              className={cn(
+                'absolute text-sm leading-tight select-none whitespace-nowrap',
+                i === currentIndex
+                  ? 'font-semibold text-foreground'
+                  : 'font-normal text-muted-foreground',
+              )}
+              style={{
+                left: `${pct}%`,
+                transform:
+                  i === 0
+                    ? 'translateX(0)'        // first label: left-aligned at 0%
+                    : i === max
+                      ? 'translateX(-100%)'  // last label: right-aligned at 100%
+                      : 'translateX(-50%)',  // middle labels: centered on position
+              }}
+            >
+              {option.label}
+              {option.priceAdj > 0 && (
+                <span className="ml-0.5 text-xs opacity-60">+฿{option.priceAdj}</span>
+              )}
+            </span>
+          )
+        })}
       </div>
 
       {/* Native range input styled via CSS */}
@@ -117,7 +122,6 @@ function ModifierSlider({
           hasError && 'modifier-slider--error',
         )}
         style={{
-          // CSS custom property to drive the filled-track gradient
           '--slider-fill': `${fillPercent}%`,
         } as React.CSSProperties}
         aria-label={group.label}
