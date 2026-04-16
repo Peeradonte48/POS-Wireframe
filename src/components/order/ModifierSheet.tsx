@@ -170,20 +170,18 @@ function ModifierSheetContent({
             />
           )}
 
-          {/* Special request textarea — Design B only */}
-          {variant === 'B' && (
-            <div className="flex flex-col gap-2">
-              <label htmlFor="special-request" className="text-base font-semibold text-card-foreground">หมายเหตุ</label>
-              <textarea
-                id="special-request"
-                value={specialRequest}
-                onChange={(e) => setSpecialRequest(e.target.value)}
-                placeholder="Placeholder"
-                rows={3}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              />
-            </div>
-          )}
+          {/* Special request textarea */}
+          <div className="flex flex-col gap-2 mb-4">
+            <label htmlFor="special-request" className="text-base font-semibold text-card-foreground">หมายเหตุ</label>
+            <textarea
+              id="special-request"
+              value={specialRequest}
+              onChange={(e) => setSpecialRequest(e.target.value)}
+              placeholder="Placeholder"
+              rows={3}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+            />
+          </div>
         </div>
       </div>
 
