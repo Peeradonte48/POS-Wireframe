@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback, useRef } from 'react'
 import {
   Shell, Soup, Ham, Salad, Flame, Droplets,
   type LucideIcon,
@@ -45,6 +46,31 @@ export function ForcedModifiersPanel({
   errors,
   groupRefs,
 }: ForcedModifiersPanelProps) {
+  // Track which group is being dragged to avoid re-firing the same selection
+  const lastDragOptionRef = useRef<string | null>(null)
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent, group: MenuModifierGroup) => {
+      if (group.type !== 'single') return
+      const touch = e.touches[0]
+      if (!touch) return
+      const el = document.elementFromPoint(touch.clientX, touch.clientY)
+      if (!el) return
+      // Walk up to find the button with data-option-id
+      const btn = el.closest<HTMLElement>('[data-option-id]')
+      if (!btn) return
+      const optionId = btn.dataset.optionId
+      if (!optionId || optionId === lastDragOptionRef.current) return
+      lastDragOptionRef.current = optionId
+      onSelect(group.id, optionId, 'single')
+    },
+    [onSelect],
+  )
+
+  const handleTouchEnd = useCallback(() => {
+    lastDragOptionRef.current = null
+  }, [])
+
   if (modifierGroups.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
@@ -97,12 +123,14 @@ export function ForcedModifiersPanel({
               </span>
             </div>
 
-            {/* Tab-style segmented control */}
+            {/* Tab-style segmented control — drag-to-select on single-select groups */}
             <div
               className={cn(
-                'inline-flex w-full items-center rounded-lg p-[3px] bg-muted',
+                'inline-flex w-full items-center rounded-lg p-[3px] bg-muted touch-none',
                 hasError && 'ring-1 ring-destructive/50',
               )}
+              onTouchMove={(e) => handleTouchMove(e, group)}
+              onTouchEnd={handleTouchEnd}
             >
               {group.options.map((option) => {
                 const isSelected = selected.includes(option.id)
@@ -110,6 +138,7 @@ export function ForcedModifiersPanel({
                   <button
                     key={option.id}
                     type="button"
+                    data-option-id={option.id}
                     onClick={() => onSelect(group.id, option.id, group.type)}
                     className={cn(
                       'relative flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-sm font-medium whitespace-nowrap transition-all min-h-[44px]',
