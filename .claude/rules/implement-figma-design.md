@@ -39,6 +39,7 @@ Use skill that suit for user's request including:
 - frontend-design
 - ui-ux-pro-max
 - shadcn
+- playwright CLI
 
 ### Use MCP
 
@@ -46,6 +47,7 @@ Use MCP that suit for user's request including:
 
 - shadcn
 - figma
+- playwright
 
 ### Use plugin
 

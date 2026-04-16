@@ -90,7 +90,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['fatty'],
     options: [
-      { id: 'no-pork',    label: 'ไม่ใส่หู (ได้เส้นเพิ่ม)', priceAdj: 0 },
+      { id: 'no-pork',    label: 'ไม่ใส่หมู',                priceAdj: 0 },
       { id: 'fatty',      label: 'หมูติดมัน',               priceAdj: 0 },
       { id: 'lean',       label: 'หมูไม่ติดมัน',            priceAdj: 0 },
     ],
@@ -121,7 +121,10 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
       { id: 'x1',       label: 'x1',          priceAdj: 0 },
       { id: 'x2',       label: 'x2',          priceAdj: 0 },
       { id: 'x3',       label: 'x3',          priceAdj: 0 },
-      { id: 'xmax',     label: 'x....',       priceAdj: 0 },
+      { id: 'x4',       label: 'x4',          priceAdj: 0 },
+      { id: 'x5',       label: 'x5',          priceAdj: 0 },
+      { id: 'x6',       label: 'x6',          priceAdj: 0 },
+      { id: 'x7',       label: 'x7',          priceAdj: 0 },
     ],
   },
   {
@@ -135,7 +138,9 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
       { id: 'none',  label: 'ไม่ใส่เลย',  priceAdj: 0 },
       { id: '1tsp',  label: '1 ช้อนชา',   priceAdj: 0 },
       { id: '2tsp',  label: '2 ช้อนชา',   priceAdj: 0 },
-      { id: 'more',  label: '...ช้อนชา',  priceAdj: 0 },
+      { id: '3tsp',  label: '3 ช้อนชา',   priceAdj: 0 },
+      { id: '4tsp',  label: '4 ช้อนชา',   priceAdj: 0 },
+      { id: '5tsp',  label: '5 ช้อนชา',   priceAdj: 0 },
     ],
   },
   {
@@ -144,12 +149,11 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🫙',
     type: 'single',
     required: true,
-    defaultOptionIds: ['normal'],
+    defaultOptionIds: ['medium'],
     options: [
-      { id: 'none',    label: 'ไม่ใส่',  priceAdj: 0 },
-      { id: 'light',   label: 'น้อย',    priceAdj: 0 },
-      { id: 'normal',  label: 'ปกติ',    priceAdj: 0 },
-      { id: 'rich',    label: 'เยอะ',    priceAdj: 0 },
+      { id: 'light',   label: 'มันนิดหน่อย',  priceAdj: 0 },
+      { id: 'medium',  label: 'ปานกลาง',       priceAdj: 0 },
+      { id: 'rich',    label: 'มันมาก',        priceAdj: 0 },
     ],
   },
 ]

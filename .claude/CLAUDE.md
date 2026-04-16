@@ -4,8 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Rules
 
-@rules/design-principle.md
-@rules/implement-figma-design.md 
+@rules/design-principle.md - Rule for design dicision.
+@rules/implement-figma-design.md - Rule for implement figma design.
 
 ## Commands
 

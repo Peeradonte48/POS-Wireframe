@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Minus, Plus, NotebookPen, Pill } from 'lucide-react'
+import { Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
@@ -9,7 +9,6 @@ import type { MenuItem } from '@/lib/mock-data/menu'
 import { useOrderStore } from '@/stores/order.store'
 import type { OrderLineItem } from '@/stores/order.store'
 import { ForcedModifiersPanel } from '@/components/order/ForcedModifiersPanel'
-import { SpiceLevelPicker } from '@/components/order/SpiceLevelPicker'
 
 export interface ModifierSheetProps {
   open: boolean
@@ -36,9 +35,7 @@ function ModifierSheetContent({
   onClose,
   onItemAdded,
 }: Omit<ModifierSheetProps, 'open'> & { menuItem: MenuItem }) {
-  const [activeTab, setActiveTab] = useState<'customize' | 'allergy'>('customize')
   const [quantity, setQuantity] = useState(() => editingLineItem?.quantity ?? 1)
-  const [specialRequest, setSpecialRequest] = useState(() => editingLineItem?.specialRequest ?? '')
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
     if (editingLineItem) {
       const map: Record<string, string[]> = {}
@@ -55,7 +52,6 @@ function ModifierSheetContent({
     })
     return defaults
   })
-  const [spiceLevel, setSpiceLevel] = useState<number | null>(() => editingLineItem?.spiceLevel ?? 2)
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set())
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -78,6 +74,16 @@ function ModifierSheetContent({
       if (first) groupRefs.current[first.id]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
+
+    // Derive spiceLevel from spice-level modifier group selection
+    const spiceSelection = selections['spice-level']?.[0] ?? null
+    let spiceLevel: number | null = null
+    if (spiceSelection === 'no-spice') spiceLevel = 0
+    else if (spiceSelection?.startsWith('x')) {
+      const num = parseInt(spiceSelection.slice(1), 10)
+      if (!isNaN(num)) spiceLevel = num
+    }
+
     const modifiers = menuItem.modifierGroups.flatMap((group) =>
       (selections[group.id] ?? []).map((optionId) => ({
         groupId: group.id,
@@ -93,7 +99,7 @@ function ModifierSheetContent({
       basePrice: menuItem.basePrice,
       modifiers,
       spiceLevel,
-      specialRequest,
+      specialRequest: editingLineItem?.specialRequest ?? '',
       quantity,
       status: editingLineId ? (editingLineItem?.status ?? 'unsent') : 'unsent',
     }
@@ -108,6 +114,7 @@ function ModifierSheetContent({
 
   return (
     <>
+      {/* Title */}
       <div className="px-4 pt-4 pb-4 shrink-0">
         <h2 className="text-lg font-semibold leading-none text-foreground">{menuItem.name}</h2>
       </div>
@@ -132,57 +139,25 @@ function ModifierSheetContent({
 
       <div className="h-px bg-border shrink-0 mx-4" />
 
-      {/* Segmented tab control */}
-      <div className="px-4 pt-4 pb-0 shrink-0">
-        <div className="flex h-9 items-center bg-muted rounded-lg p-[3px] gap-0">
-          {(['customize', 'allergy'] as const).map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              className={cn(
-                'flex flex-1 items-center justify-center gap-2 h-full rounded-md text-sm font-medium transition-all',
-                activeTab === tab ? 'bg-background text-foreground shadow-sm' : 'text-foreground hover:text-foreground',
-              )}
-            >
-              {tab === 'customize' ? <><NotebookPen size={14} /> ปรับแต่ง</> : <><Pill size={14} /> แพ้อาหาร</>}
-            </button>
-          ))}
+      {/* Scrollable modifier groups */}
+      <div className="flex-1 overflow-y-auto pb-32">
+        <div className="flex flex-col gap-4 px-4 pt-4">
+          <ForcedModifiersPanel
+            modifierGroups={menuItem.modifierGroups}
+            selections={selections}
+            onSelect={handleSelect}
+            errors={validationErrors}
+            groupRefs={groupRefs}
+          />
         </div>
       </div>
 
-      {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-32">
-        {activeTab === 'customize' ? (
-          <div className="flex flex-col gap-4 px-4 pt-4">
-            <ForcedModifiersPanel
-              modifierGroups={menuItem.modifierGroups}
-              selections={selections}
-              onSelect={handleSelect}
-              errors={validationErrors}
-              groupRefs={groupRefs}
-            />
-            <SpiceLevelPicker value={spiceLevel} onChange={setSpiceLevel} />
-            <div className="flex flex-col gap-2 pb-2">
-              <span className="text-base font-semibold leading-none text-card-foreground">หมายเหตุ</span>
-              <textarea value={specialRequest} onChange={(e) => setSpecialRequest(e.target.value)}
-                placeholder="Placeholder" rows={3}
-                className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring min-h-[60px]"
-                style={{ boxShadow: 'var(--shadow-card)' }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2 px-4 mt-4">
-            <Pill size={32} className="opacity-30" />
-            <p className="text-sm text-center">ระบุอาหารที่แพ้ — ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้</p>
-          </div>
-        )}
-      </div>
-
-      {/* Sticky footer */}
+      {/* Sticky footer — red primary + outline cancel */}
       <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-4 flex flex-col gap-2 shrink-0">
-        <Button className="w-full h-9" onClick={handleConfirm}>
+        <Button className="w-full h-12" onClick={handleConfirm}>
           {editingLineId ? 'อัปเดตคำสั่งซื้อ' : 'เพิ่มลงในคำสั่งซื้อ'}
         </Button>
-        <Button variant="outline" className="w-full h-9" onClick={onClose}>ยกเลิก</Button>
+        <Button variant="outline" className="w-full h-12" onClick={onClose}>ยกเลิก</Button>
       </div>
     </>
   )

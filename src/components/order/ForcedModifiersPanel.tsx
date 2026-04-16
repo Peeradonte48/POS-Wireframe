@@ -1,9 +1,10 @@
 'use client'
 
 import {
-  Shell, Soup, Ham, Salad, Flame, Leaf, Droplets,
+  Shell, Soup, Ham, Salad, Flame, Droplets,
   type LucideIcon,
 } from 'lucide-react'
+import { Clover } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { MenuModifierGroup } from '@/lib/mock-data/menu'
 
@@ -20,7 +21,7 @@ export interface ForcedModifiersPanelProps {
 }
 
 // ---------------------------------------------------------------------------
-// Icon map
+// Icon map — matches Figma design icons per modifier group
 // ---------------------------------------------------------------------------
 
 const GROUP_ICONS: Record<string, LucideIcon> = {
@@ -29,12 +30,12 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
   'chashu': Ham,
   'onion': Salad,
   'spice-level': Flame,
-  'garlic': Leaf,
+  'garlic': Clover,
   'broth-oil': Droplets,
 }
 
 // ---------------------------------------------------------------------------
-// ForcedModifiersPanel
+// ForcedModifiersPanel — Tab-style segmented controls per Figma design
 // ---------------------------------------------------------------------------
 
 export function ForcedModifiersPanel({
@@ -67,7 +68,7 @@ export function ForcedModifiersPanel({
             }}
             className="flex flex-col gap-2"
           >
-            {/* Group header */}
+            {/* Group header — icon + label + required tag */}
             <div className="flex items-center gap-1.5">
               {IconComp && (
                 <IconComp
@@ -96,21 +97,25 @@ export function ForcedModifiersPanel({
               </span>
             </div>
 
-            {/* Option pills */}
-            <div className="flex flex-wrap gap-2">
+            {/* Tab-style segmented control */}
+            <div
+              className={cn(
+                'inline-flex w-full items-center rounded-lg p-[3px] bg-muted',
+                hasError && 'ring-1 ring-destructive/50',
+              )}
+            >
               {group.options.map((option) => {
                 const isSelected = selected.includes(option.id)
                 return (
                   <button
                     key={option.id}
+                    type="button"
                     onClick={() => onSelect(group.id, option.id, group.type)}
                     className={cn(
-                      'px-3 py-3 rounded-lg text-sm font-medium border transition-colors leading-none',
+                      'relative flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-sm font-medium whitespace-nowrap transition-all min-h-[44px]',
                       isSelected
-                        ? 'border-primary bg-primary/10 text-foreground'
-                        : hasError
-                          ? 'border-destructive/50 bg-background text-foreground'
-                          : 'border-border bg-background text-foreground hover:border-primary/50',
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-foreground/60 hover:text-foreground',
                     )}
                   >
                     {option.label}
