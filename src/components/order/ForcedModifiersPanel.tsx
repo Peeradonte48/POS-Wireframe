@@ -127,10 +127,19 @@ export function ForcedModifiersPanel({
       if (group.type !== 'single') return
       const touch = e.touches[0]
       if (!touch) return
+      // Verify the finger is still within this tab bar container
+      const container = e.currentTarget as HTMLElement
+      const rect = container.getBoundingClientRect()
+      if (
+        touch.clientX < rect.left ||
+        touch.clientX > rect.right ||
+        touch.clientY < rect.top ||
+        touch.clientY > rect.bottom
+      ) return
       const el = document.elementFromPoint(touch.clientX, touch.clientY)
       if (!el) return
       const btn = el.closest<HTMLElement>('[data-option-id]')
-      if (!btn) return
+      if (!btn || !container.contains(btn)) return
       const optionId = btn.dataset.optionId
       if (!optionId || optionId === lastDragOptionRef.current) return
       lastDragOptionRef.current = optionId
