@@ -173,8 +173,9 @@ function ModifierSheetContent({
           {/* Special request textarea — Design B only */}
           {variant === 'B' && (
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-card-foreground">หมายเหตุ</label>
+              <label htmlFor="special-request" className="text-sm font-medium text-card-foreground">หมายเหตุ</label>
               <textarea
+                id="special-request"
                 value={specialRequest}
                 onChange={(e) => setSpecialRequest(e.target.value)}
                 placeholder="Placeholder"
