@@ -186,7 +186,7 @@ function ModifierSheetContent({
       </div>
 
       {/* Sticky footer — red primary + outline cancel */}
-      <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-4 flex flex-col gap-2 shrink-0">
+      <div className="absolute bottom-0 left-0 right-0 z-10 bg-background border-t border-border px-4 py-4 flex flex-col gap-2 shrink-0">
         <Button className="w-full h-12" onClick={handleConfirm}>
           {editingLineId ? 'อัปเดตคำสั่งซื้อ' : 'เพิ่มลงในคำสั่งซื้อ'}
         </Button>
