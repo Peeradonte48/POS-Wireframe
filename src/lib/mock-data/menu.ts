@@ -99,7 +99,7 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     id: 'onion',
     label: 'ต้นหอม, ต้นหอมขาวญี่ปุ่น',
     icon: '🌿',
-    type: 'multi',
+    type: 'single',
     required: true,
     defaultOptionIds: ['both'],
     options: [
