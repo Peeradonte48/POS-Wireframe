@@ -1,0 +1,260 @@
+'use client'
+
+import {
+  Shell, Soup, Ham, Salad, Flame, Droplets,
+  type LucideIcon,
+} from 'lucide-react'
+import { Clover } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { MenuModifierGroup } from '@/lib/mock-data/menu'
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface SliderModifiersPanelProps {
+  modifierGroups: MenuModifierGroup[]
+  selections: Record<string, string[]>
+  onSelect: (groupId: string, optionId: string, type: 'single' | 'multi') => void
+  errors: Set<string>
+  groupRefs?: React.MutableRefObject<Record<string, HTMLDivElement | null>>
+}
+
+// ---------------------------------------------------------------------------
+// Icon map — matches Figma design icons per modifier group
+// ---------------------------------------------------------------------------
+
+const GROUP_ICONS: Record<string, LucideIcon> = {
+  'noodle-firmness': Shell,
+  'broth-richness': Soup,
+  'chashu': Ham,
+  'onion': Salad,
+  'spice-level': Flame,
+  'garlic': Clover,
+  'broth-oil': Droplets,
+}
+
+// ---------------------------------------------------------------------------
+// Slider group IDs — groups rendered as stepped slider controls
+// ---------------------------------------------------------------------------
+
+const SLIDER_GROUP_IDS = new Set([
+  'noodle-firmness',
+  'broth-richness',
+  'spice-level',
+  'garlic',
+  'broth-oil',
+])
+
+// ---------------------------------------------------------------------------
+// ModifierSlider — stepped range input with red filled track per Figma
+// ---------------------------------------------------------------------------
+
+function ModifierSlider({
+  group,
+  selected,
+  onSelect,
+  hasError,
+}: {
+  group: MenuModifierGroup
+  selected: string[]
+  onSelect: (groupId: string, optionId: string, type: 'single' | 'multi') => void
+  hasError: boolean
+}) {
+  const options = group.options
+  const max = options.length - 1
+  const selectedIndex = options.findIndex((o) => selected.includes(o.id))
+  const currentIndex = selectedIndex >= 0 ? selectedIndex : 0
+
+  // Calculate fill percentage for the CSS gradient
+  const fillPercent = max > 0 ? (currentIndex / max) * 100 : 0
+
+  return (
+    <div className="flex flex-col gap-1">
+      {/* Labels row — evenly distributed above the slider */}
+      <div className="flex justify-between px-0">
+        {options.map((option, i) => (
+          <span
+            key={option.id}
+            className={cn(
+              'text-sm leading-tight select-none',
+              i === currentIndex
+                ? 'font-semibold text-foreground'
+                : 'font-normal text-muted-foreground',
+            )}
+            style={{
+              textAlign:
+                i === 0 ? 'left' : i === max ? 'right' : 'center',
+              minWidth: 0,
+              flex: i === 0 || i === max ? 'none' : '1',
+            }}
+          >
+            {option.label}
+            {option.priceAdj > 0 && (
+              <span className="ml-0.5 text-xs opacity-60">+฿{option.priceAdj}</span>
+            )}
+          </span>
+        ))}
+      </div>
+
+      {/* Native range input styled via CSS */}
+      <input
+        type="range"
+        min={0}
+        max={max}
+        step={1}
+        value={currentIndex}
+        onChange={(e) => {
+          const idx = Number(e.target.value)
+          const option = options[idx]
+          if (option) {
+            onSelect(group.id, option.id, group.type)
+          }
+        }}
+        className={cn(
+          'modifier-slider w-full',
+          hasError && 'modifier-slider--error',
+        )}
+        style={{
+          // CSS custom property to drive the filled-track gradient
+          '--slider-fill': `${fillPercent}%`,
+        } as React.CSSProperties}
+        aria-label={group.label}
+      />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// ModifierChips — rounded pill buttons for discrete choice groups
+// ---------------------------------------------------------------------------
+
+function ModifierChips({
+  group,
+  selected,
+  onSelect,
+  hasError,
+}: {
+  group: MenuModifierGroup
+  selected: string[]
+  onSelect: (groupId: string, optionId: string, type: 'single' | 'multi') => void
+  hasError: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        'flex flex-wrap gap-2',
+        hasError && 'ring-1 ring-destructive/50 rounded-lg p-1',
+      )}
+    >
+      {group.options.map((option) => {
+        const isSelected = selected.includes(option.id)
+        return (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onSelect(group.id, option.id, group.type)}
+            className={cn(
+              'inline-flex items-center justify-center rounded-lg border px-3 py-3 text-sm font-medium transition-all min-h-[44px] min-w-[80px] max-w-[224px]',
+              isSelected
+                ? 'border-primary bg-primary/10 text-foreground'
+                : 'border-border bg-background text-foreground hover:border-primary/40',
+            )}
+          >
+            {option.label}
+            {option.priceAdj > 0 && (
+              <span className="ml-1 text-xs opacity-60">+฿{option.priceAdj}</span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// SliderModifiersPanel — renders slider or chips per group type
+// ---------------------------------------------------------------------------
+
+export function SliderModifiersPanel({
+  modifierGroups,
+  selections,
+  onSelect,
+  errors,
+  groupRefs,
+}: SliderModifiersPanelProps) {
+  if (modifierGroups.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
+        <p className="text-sm">ไม่มีตัวเลือกปรับแต่ง</p>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {modifierGroups.map((group) => {
+        const hasError = errors.has(group.id)
+        const selected = selections[group.id] ?? []
+        const IconComp = GROUP_ICONS[group.id]
+        const isSlider = SLIDER_GROUP_IDS.has(group.id)
+
+        return (
+          <div
+            key={group.id}
+            ref={(el) => {
+              if (groupRefs) groupRefs.current[group.id] = el
+            }}
+            className="flex flex-col gap-2"
+          >
+            {/* Group header — icon + label + required tag */}
+            <div className="flex items-center gap-1.5">
+              {IconComp && (
+                <IconComp
+                  size={16}
+                  className={cn(
+                    'shrink-0',
+                    hasError ? 'text-destructive' : 'text-foreground',
+                  )}
+                />
+              )}
+              <span
+                className={cn(
+                  'text-base font-semibold leading-none',
+                  hasError ? 'text-destructive' : 'text-card-foreground',
+                )}
+              >
+                {group.label}
+              </span>
+              <span
+                className={cn(
+                  'text-sm font-normal leading-snug',
+                  hasError ? 'text-destructive' : 'text-muted-foreground',
+                )}
+              >
+                {group.required ? '(required)' : '(optional)'}
+              </span>
+            </div>
+
+            {/* Render slider or chips based on group classification */}
+            {isSlider ? (
+              <ModifierSlider
+                group={group}
+                selected={selected}
+                onSelect={onSelect}
+                hasError={hasError}
+              />
+            ) : (
+              <ModifierChips
+                group={group}
+                selected={selected}
+                onSelect={onSelect}
+                hasError={hasError}
+              />
+            )}
+          </div>
+        )
+      })}
+    </>
+  )
+}
