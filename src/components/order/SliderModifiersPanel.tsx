@@ -1,10 +1,9 @@
 'use client'
 
 import {
-  Shell, Soup, Ham, Salad, Flame, Droplets,
+  Shell, Soup, Ham, Salad, Flame, Droplets, Clover,
   type LucideIcon,
 } from 'lucide-react'
-import { Clover } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { MenuModifierGroup } from '@/lib/mock-data/menu'
 
@@ -36,6 +35,7 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
 
 // ---------------------------------------------------------------------------
 // Slider group IDs — groups rendered as stepped slider controls
+// Keep in sync with modifier group IDs in src/lib/mock-data/menu.ts
 // ---------------------------------------------------------------------------
 
 const SLIDER_GROUP_IDS = new Set([
@@ -120,6 +120,7 @@ function ModifierSlider({
           '--slider-fill': `${fillPercent}%`,
         } as React.CSSProperties}
         aria-label={group.label}
+        aria-valuetext={options[currentIndex]?.label}
       />
     </div>
   )
@@ -144,7 +145,7 @@ function ModifierChips({
     <div
       className={cn(
         'flex flex-wrap gap-2',
-        hasError && 'ring-1 ring-destructive/50 rounded-lg p-1',
+        hasError && 'outline outline-1 outline-destructive/50 outline-offset-2 rounded-lg',
       )}
     >
       {group.options.map((option) => {
