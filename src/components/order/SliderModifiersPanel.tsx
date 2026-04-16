@@ -71,8 +71,11 @@ function ModifierSlider({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Labels row — evenly distributed above the slider */}
-      <div className="flex justify-between px-0">
+      {/* Labels row — grid ensures each label aligns with its slider stop */}
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}
+      >
         {options.map((option, i) => (
           <span
             key={option.id}
@@ -85,8 +88,6 @@ function ModifierSlider({
             style={{
               textAlign:
                 i === 0 ? 'left' : i === max ? 'right' : 'center',
-              minWidth: 0,
-              flex: i === 0 || i === max ? 'none' : '1',
             }}
           >
             {option.label}
