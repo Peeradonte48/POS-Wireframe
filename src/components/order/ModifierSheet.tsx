@@ -150,7 +150,7 @@ function ModifierSheetContent({
       <div className="h-px bg-border shrink-0 mx-4" />
 
       {/* Scrollable modifier groups — conditional on variant */}
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto pb-40">
         <div className="flex flex-col gap-4 px-4 pt-4">
           {variant === 'A' ? (
             <ForcedModifiersPanel
