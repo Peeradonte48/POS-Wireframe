@@ -174,7 +174,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 240,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862126338.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-single-b',
@@ -184,7 +184,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 240,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862146982.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-single-c',
@@ -194,7 +194,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 240,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862167426.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-pair-a',
@@ -204,7 +204,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 520,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862090264.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-pair-b',
@@ -214,7 +214,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 540,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862106489.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-duo',
@@ -224,7 +224,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 520,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_01_Mar_2024_1709274138922.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-gomasaru',
@@ -244,7 +244,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 740,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_01_Mar_2024_1709267678770.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-family-b',
@@ -254,7 +254,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 950,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_01_Mar_2024_1709268286029.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-yuzu-saru-ramen',
@@ -294,7 +294,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 320,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_09_May_2025_1746770209971.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'set-a-plus-double-sauce',
@@ -304,7 +304,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 340,
     thumbnailPlaceholder: '🍱',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_09_May_2025_1746770173267.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
 
   // ── ราเมนร้อน (A RAMEN HOT) ───────────────────────────────────────────────
@@ -316,7 +316,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 160,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862381304.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'ramen-custom',
@@ -336,7 +336,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 220,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_09_May_2025_1746768992404.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'ramen-a-plus-double-pork',
@@ -346,7 +346,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 240,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_09_May_2025_1746768967269.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
 
   // ── ราเมนเย็น (A RAMEN COLD) ──────────────────────────────────────────────
@@ -358,7 +358,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 130,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862307573.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'cold-udon-thin',
@@ -368,7 +368,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 130,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862539697.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'cold-soba',
@@ -378,7 +378,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 130,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_24_Aug_2023_1692862185700.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'goma-saru-ramen',
@@ -388,7 +388,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 130,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_17_Jan_2024_1705497000539.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'yuzu-saru-ramen',
@@ -398,7 +398,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 140,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_31_Jul_2024_1722414177013.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'yuzu-saru-soba',
@@ -408,7 +408,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 140,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_31_Jul_2024_1722414059836.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
   {
     id: 'yuzu-saru-udon',
@@ -418,7 +418,7 @@ export const MENU_ITEMS: MenuItem[] = [
     basePrice: 140,
     thumbnailPlaceholder: '🍜',
     imagePath: 'https://cdn.a-ramen.com/website/static/menu/menu_img_0_31_Jul_2024_1722413988546.png',
-    modifierGroups: RAMEN_MODIFIER_GROUPS,
+    modifierGroups: [],
   },
 
   // ── ข้าวหน้า (A DON) ──────────────────────────────────────────────────────
