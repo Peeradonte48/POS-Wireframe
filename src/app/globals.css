@@ -394,6 +394,22 @@
   background: transparent;
 }
 
+/* Unselected — hide thumb so the slider reads as "no choice made" until first interaction */
+.modifier-slider--unselected::-webkit-slider-thumb {
+  width: 0;
+  height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.modifier-slider--unselected::-moz-range-thumb {
+  width: 0;
+  height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 /* Error state — destructive ring */
 .modifier-slider--error {
   outline: 1px solid var(--destructive);

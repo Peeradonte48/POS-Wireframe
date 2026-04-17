@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowLeftRight, Minus, Plus } from 'lucide-react'
+import { Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useFocusTrap } from '@/lib/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
@@ -10,6 +10,10 @@ import { useOrderStore } from '@/stores/order.store'
 import type { OrderLineItem } from '@/stores/order.store'
 import { ForcedModifiersPanel } from '@/components/order/ForcedModifiersPanel'
 import { SliderModifiersPanel } from '@/components/order/SliderModifiersPanel'
+import { RadioModifiersPanel } from '@/components/order/RadioModifiersPanel'
+
+type DesignVariant = 'A' | 'B' | 'C'
+const VARIANT_OPTIONS: DesignVariant[] = ['A', 'B', 'C']
 
 export interface ModifierSheetProps {
   open: boolean
@@ -36,24 +40,17 @@ function ModifierSheetContent({
   onClose,
   onItemAdded,
 }: Omit<ModifierSheetProps, 'open'> & { menuItem: MenuItem }) {
-  const [variant, setVariant] = useState<'A' | 'B'>('A')
+  const [variant, setVariant] = useState<DesignVariant>('A')
   const [specialRequest, setSpecialRequest] = useState(() => editingLineItem?.specialRequest ?? '')
   const [quantity, setQuantity] = useState(() => editingLineItem?.quantity ?? 1)
   const [selections, setSelections] = useState<Record<string, string[]>>(() => {
-    if (editingLineItem) {
-      const map: Record<string, string[]> = {}
-      editingLineItem.modifiers.forEach((m) => {
-        if (!map[m.groupId]) map[m.groupId] = []
-        map[m.groupId].push(m.optionId)
-      })
-      return map
-    }
-    // Pre-populate with base defaults for new orders
-    const defaults: Record<string, string[]> = {}
-    menuItem.modifierGroups.forEach((g) => {
-      if (g.defaultOptionIds?.length) defaults[g.id] = [...g.defaultOptionIds]
+    if (!editingLineItem) return {}
+    const map: Record<string, string[]> = {}
+    editingLineItem.modifiers.forEach((m) => {
+      if (!map[m.groupId]) map[m.groupId] = []
+      map[m.groupId].push(m.optionId)
     })
-    return defaults
+    return map
   })
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set())
   const groupRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -117,16 +114,35 @@ function ModifierSheetContent({
 
   return (
     <>
-      {/* Title + variant toggle */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-4 shrink-0">
-        <h2 className="text-lg font-semibold leading-none text-foreground">{menuItem.name}</h2>
-        <button
-          onClick={() => setVariant((v) => (v === 'A' ? 'B' : 'A'))}
-          className="flex items-center gap-1.5 h-7 px-2 rounded-md border border-border bg-card text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+      {/* Title + variant toggle (3-segment switch for A/B/C) */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-4 shrink-0 gap-2">
+        <h2 className="text-lg font-semibold leading-none text-foreground truncate">{menuItem.name}</h2>
+        <div
+          role="radiogroup"
+          aria-label="Design variant"
+          className="flex items-center gap-0.5 h-7 p-0.5 rounded-md border border-border bg-muted shrink-0"
         >
-          <ArrowLeftRight size={12} />
-          Design {variant}
-        </button>
+          {VARIANT_OPTIONS.map((v) => {
+            const active = variant === v
+            return (
+              <button
+                key={v}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setVariant(v)}
+                className={cn(
+                  'min-w-[28px] h-6 px-2 rounded text-xs font-medium transition-colors',
+                  active
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {v}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* Quantity row */}
@@ -152,7 +168,7 @@ function ModifierSheetContent({
       {/* Scrollable modifier groups — conditional on variant */}
       <div className="flex-1 overflow-y-auto pb-32">
         <div className="flex flex-col gap-4 px-4 pt-4">
-          {variant === 'A' ? (
+          {variant === 'A' && (
             <ForcedModifiersPanel
               modifierGroups={menuItem.modifierGroups}
               selections={selections}
@@ -160,8 +176,18 @@ function ModifierSheetContent({
               errors={validationErrors}
               groupRefs={groupRefs}
             />
-          ) : (
+          )}
+          {variant === 'B' && (
             <SliderModifiersPanel
+              modifierGroups={menuItem.modifierGroups}
+              selections={selections}
+              onSelect={handleSelect}
+              errors={validationErrors}
+              groupRefs={groupRefs}
+            />
+          )}
+          {variant === 'C' && (
+            <RadioModifiersPanel
               modifierGroups={menuItem.modifierGroups}
               selections={selections}
               onSelect={handleSelect}

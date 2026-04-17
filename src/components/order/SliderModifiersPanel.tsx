@@ -64,10 +64,11 @@ function ModifierSlider({
   const options = group.options
   const max = options.length - 1
   const selectedIndex = options.findIndex((o) => selected.includes(o.id))
-  const currentIndex = selectedIndex >= 0 ? selectedIndex : 0
+  const hasSelection = selectedIndex >= 0
+  const currentIndex = hasSelection ? selectedIndex : 0
 
   // Calculate fill percentage for the CSS gradient
-  const fillPercent = max > 0 ? (currentIndex / max) * 100 : 0
+  const fillPercent = hasSelection && max > 0 ? (currentIndex / max) * 100 : 0
 
   return (
     <div className="flex flex-col gap-2">
@@ -80,7 +81,7 @@ function ModifierSlider({
               key={option.id}
               className={cn(
                 'absolute text-sm leading-tight select-none whitespace-nowrap',
-                i === currentIndex
+                hasSelection && i === selectedIndex
                   ? 'font-semibold text-foreground'
                   : 'font-normal text-muted-foreground',
               )}
@@ -119,6 +120,7 @@ function ModifierSlider({
         }}
         className={cn(
           'modifier-slider w-full',
+          !hasSelection && 'modifier-slider--unselected',
           hasError && 'modifier-slider--error',
         )}
         style={{

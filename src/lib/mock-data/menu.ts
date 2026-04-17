@@ -1,6 +1,8 @@
 export interface MenuModifierOption {
   id: string
   label: string
+  /** English label shown in bilingual variants (e.g. ModifierSheet Design C) */
+  labelEn?: string
   priceAdj: number
 }
 
@@ -62,11 +64,11 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['normal'],
     options: [
-      { id: 'very-soft',   label: 'นุ่มมาก',  priceAdj: 0 },
-      { id: 'soft',        label: 'นุ่ม',      priceAdj: 0 },
-      { id: 'normal',      label: 'ปกติ',      priceAdj: 0 },
-      { id: 'firm',        label: 'แข็ง',      priceAdj: 0 },
-      { id: 'very-firm',   label: 'แข็งมาก',  priceAdj: 0 },
+      { id: 'very-soft',   label: 'นุ่มมาก',  labelEn: 'EXTRA SOFT',  priceAdj: 0 },
+      { id: 'soft',        label: 'นุ่ม',      labelEn: 'SOFT',        priceAdj: 0 },
+      { id: 'normal',      label: 'ปกติ',      labelEn: 'MEDIUM',      priceAdj: 0 },
+      { id: 'firm',        label: 'แข็ง',      labelEn: 'FIRM',        priceAdj: 0 },
+      { id: 'very-firm',   label: 'แข็งมาก',  labelEn: 'EXTRA FIRM',  priceAdj: 0 },
     ],
   },
   {
@@ -77,9 +79,9 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['medium'],
     options: [
-      { id: 'light',    label: 'เข้มข้นน้อย',  priceAdj: 0 },
-      { id: 'medium',   label: 'ปานกลาง',       priceAdj: 0 },
-      { id: 'rich',     label: 'เข้มข้นมาก',   priceAdj: 0 },
+      { id: 'light',    label: 'เข้มข้นน้อย',  labelEn: 'WEAK',    priceAdj: 0 },
+      { id: 'medium',   label: 'ปานกลาง',       labelEn: 'MEDIUM',  priceAdj: 0 },
+      { id: 'rich',     label: 'เข้มข้นมาก',   labelEn: 'STRONG',  priceAdj: 0 },
     ],
   },
   {
@@ -90,9 +92,9 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['fatty'],
     options: [
-      { id: 'no-pork',    label: 'ไม่ใส่หมู',                priceAdj: 0 },
-      { id: 'fatty',      label: 'หมูติดมัน',               priceAdj: 0 },
-      { id: 'lean',       label: 'หมูไม่ติดมัน',            priceAdj: 0 },
+      { id: 'no-pork',    label: 'ไม่ใส่หมู (ได้เส้นเพิ่ม)', labelEn: 'NONE (GET EXTRA NOODLES)',  priceAdj: 0 },
+      { id: 'fatty',      label: 'หมูติดมัน',                  labelEn: 'CHASHU PORK',               priceAdj: 0 },
+      { id: 'lean',       label: 'หมูไม่ติดมัน',               labelEn: 'CHASHU PORK (LESS-FAT)',    priceAdj: 0 },
     ],
   },
   {
@@ -103,10 +105,10 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['both'],
     options: [
-      { id: 'none',      label: 'ไม่ใส่เลย',           priceAdj: 0 },
-      { id: 'white',     label: 'ต้นหอมขาวญี่ปุ่น',    priceAdj: 0 },
-      { id: 'green',     label: 'ต้นหอมเขียว',          priceAdj: 0 },
-      { id: 'both',      label: 'ใส่ทั้ง 2 แบบ',        priceAdj: 0 },
+      { id: 'none',      label: 'ไม่ใส่เลย',           labelEn: 'NONE',                  priceAdj: 0 },
+      { id: 'white',     label: 'ต้นหอมขาวญี่ปุ่น',    labelEn: 'JAPANESE WHITE ONION',  priceAdj: 0 },
+      { id: 'green',     label: 'ต้นหอมเขียว',          labelEn: 'GREEN ONION',           priceAdj: 0 },
+      { id: 'both',      label: 'ใส่ทั้ง 2 แบบ',        labelEn: 'BOTH',                  priceAdj: 0 },
     ],
   },
   {
@@ -117,14 +119,14 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['no-spice'],
     options: [
-      { id: 'no-spice', label: 'ไม่เผ็ดเลย', priceAdj: 0 },
-      { id: 'x1',       label: 'x1',          priceAdj: 0 },
-      { id: 'x2',       label: 'x2',          priceAdj: 0 },
-      { id: 'x3',       label: 'x3',          priceAdj: 0 },
-      { id: 'x4',       label: 'x4',          priceAdj: 0 },
-      { id: 'x5',       label: 'x5',          priceAdj: 0 },
-      { id: 'x6',       label: 'x6',          priceAdj: 0 },
-      { id: 'x7',       label: 'x7',          priceAdj: 0 },
+      { id: 'no-spice', label: 'ไม่เผ็ดเลย', labelEn: 'NONE', priceAdj: 0 },
+      { id: 'x1',       label: 'x1',          labelEn: 'X 1',  priceAdj: 0 },
+      { id: 'x2',       label: 'x2',          labelEn: 'X 2',  priceAdj: 0 },
+      { id: 'x3',       label: 'x3',          labelEn: 'X 3',  priceAdj: 0 },
+      { id: 'x4',       label: 'x4',          labelEn: 'X 4',  priceAdj: 0 },
+      { id: 'x5',       label: 'x5',          labelEn: 'X 5',  priceAdj: 0 },
+      { id: 'x6',       label: 'x6',          labelEn: 'X 6',  priceAdj: 0 },
+      { id: 'x7',       label: 'x7',          labelEn: 'X 7',  priceAdj: 0 },
     ],
   },
   {
@@ -135,12 +137,12 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['1tsp'],
     options: [
-      { id: 'none',  label: 'ไม่ใส่เลย',  priceAdj: 0 },
-      { id: '1tsp',  label: '1 ช้อนชา',   priceAdj: 0 },
-      { id: '2tsp',  label: '2 ช้อนชา',   priceAdj: 0 },
-      { id: '3tsp',  label: '3 ช้อนชา',   priceAdj: 0 },
-      { id: '4tsp',  label: '4 ช้อนชา',   priceAdj: 0 },
-      { id: '5tsp',  label: '5 ช้อนชา',   priceAdj: 0 },
+      { id: 'none',  label: 'ไม่ใส่เลย',  labelEn: 'NONE',         priceAdj: 0 },
+      { id: '1tsp',  label: '1 ช้อนชา',   labelEn: '1 TEASPOON',   priceAdj: 0 },
+      { id: '2tsp',  label: '2 ช้อนชา',   labelEn: '2 TEASPOONS',  priceAdj: 0 },
+      { id: '3tsp',  label: '3 ช้อนชา',   labelEn: '3 TEASPOONS',  priceAdj: 0 },
+      { id: '4tsp',  label: '4 ช้อนชา',   labelEn: '4 TEASPOONS',  priceAdj: 0 },
+      { id: '5tsp',  label: '5 ช้อนชา',   labelEn: '5 TEASPOONS',  priceAdj: 0 },
     ],
   },
   {
@@ -151,9 +153,9 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     required: true,
     defaultOptionIds: ['medium'],
     options: [
-      { id: 'light',   label: 'มันนิดหน่อย',  priceAdj: 0 },
-      { id: 'medium',  label: 'ปานกลาง',       priceAdj: 0 },
-      { id: 'rich',    label: 'มันมาก',        priceAdj: 0 },
+      { id: 'light',   label: 'มันนิดหน่อย',  labelEn: 'A LITTLE',    priceAdj: 0 },
+      { id: 'medium',  label: 'ปานกลาง',       labelEn: 'RICH',        priceAdj: 0 },
+      { id: 'rich',    label: 'มันมาก',        labelEn: 'EXTRA RICH',  priceAdj: 0 },
     ],
   },
 ]
