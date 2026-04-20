@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Delete } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -43,22 +43,23 @@ function CashDialogContent({
 }: Omit<CashDialogProps, 'open' | 'onClose'>) {
   const [inputStr, setInputStr] = useState(() => formatInitial(initialAmount))
 
-  useEffect(() => {
-    onAmountChange?.(parseFloat(inputStr) || 0)
-  }, [inputStr, onAmountChange])
+  function updateInput(next: string) {
+    setInputStr(next)
+    onAmountChange?.(parseFloat(next) || 0)
+  }
 
   function handleKey(key: string) {
     if (key === 'del') {
-      setInputStr((prev) => prev.slice(0, -1))
+      updateInput(inputStr.slice(0, -1))
       return
     }
     if (key === '.') {
       if (inputStr.includes('.')) return
-      setInputStr((prev) => (prev === '' ? '0.' : prev + '.'))
+      updateInput(inputStr === '' ? '0.' : inputStr + '.')
       return
     }
     if (inputStr.length >= 10) return
-    setInputStr((prev) => (prev === '0' ? key : prev + key))
+    updateInput(inputStr === '0' ? key : inputStr + key)
   }
 
   const cashReceived = parseFloat(inputStr) || 0
