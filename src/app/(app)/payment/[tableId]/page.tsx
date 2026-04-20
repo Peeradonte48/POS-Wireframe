@@ -459,14 +459,15 @@ export default function PaymentPage() {
                     <div className="flex flex-col gap-2">
                       <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setSplitConfirmDialogOpen(true)} disabled={isMerged}><Coins size={16} />แบ่งจ่าย</Button>
                       <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setItemSplitSheetOpen(true)} disabled={itemSplitDisabled}><ScissorsLineDashed size={16} />แยกบิล</Button>
-                      <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setMergeSheetOpen(true)} disabled={isMerged || !hasEligibleMergeTarget}><Link size={16} />รวมบิล</Button>
-                      {isMerged && (
+                      {!isMerged ? (
+                        <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setMergeSheetOpen(true)} disabled={!hasEligibleMergeTarget}><Link size={16} />รวมบิล</Button>
+                      ) : (
                         <Button
                           variant="outline"
                           className="w-full h-14 gap-2 text-destructive hover:text-destructive"
                           onClick={() => setDissolveMergePinOpen(true)}
                         >
-                          <Unlink size={16} />ยกเลิกการรวมบิล
+                          <Unlink size={16} />ยกเลิกรวมบิล
                         </Button>
                       )}
                     </div>
