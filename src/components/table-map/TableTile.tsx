@@ -1,6 +1,6 @@
 'use client'
 import { useMemo } from 'react'
-import { Armchair, Scissors, Link } from 'lucide-react'
+import { Armchair, Scissors, Link, Pause } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import type { TableRecord, TableStatus, OrderStage } from '@/stores/table.store'
@@ -46,6 +46,10 @@ export function TableTile({ table, onTap }: TableTileProps) {
   const splits = useBillStore((s) => s.splits)
   const split = useMemo(() => splits?.[table.id], [splits, table.id])
   const paidCount = split ? Object.keys(split.payments).length : 0
+  const paymentSessions = useBillStore((s) => s.paymentSessions)
+  const hasActiveSession = Boolean(paymentSessions[table.id])
+  const isSplitPaused = split !== undefined && paidCount > 0 && paidCount < split.seatCount
+  const isPaused = hasActiveSession || isSplitPaused
   const merges = useBillStore((s) => s.merges)
   const isMergedSecondary = table.id in merges
   const primaryTableId = merges[table.id] ?? null
@@ -86,12 +90,21 @@ export function TableTile({ table, onTap }: TableTileProps) {
         }
         onTap(table)
       }}
-      aria-label={`โต๊ะ ${table.label}, ${table.status}, ${guestCount} ที่นั่ง`}
+      aria-label={
+        isPaused
+          ? `โต๊ะ ${table.label} — รอชำระ, แตะเพื่อกลับไปทำต่อ`
+          : `โต๊ะ ${table.label}, ${table.status}, ${guestCount} ที่นั่ง`
+      }
       className={`relative flex flex-col items-center justify-center gap-3 rounded-xl p-6 w-[104px] h-[132px] touch-manipulation active:scale-[0.97] transition-transform text-center ${cardClass}`}
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
       {/* Corner badge: split / merge / order stage */}
-      {showSplitBadge ? (
+      {isPaused ? (
+        <Badge variant="paused" className="absolute top-2 right-2 text-sm py-0">
+          <Pause size={10} className="mr-0.5" />
+          รอชำระ
+        </Badge>
+      ) : showSplitBadge ? (
         <Badge className="absolute top-2 right-2 text-sm py-0 bg-status-split-bg text-status-split border-0">
           <Scissors size={10} className="mr-0.5" />
           {paidCount}/{split!.seatCount} paid
