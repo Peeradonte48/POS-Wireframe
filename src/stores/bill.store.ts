@@ -42,6 +42,28 @@ export interface PromotionDiscount {
   selectedLineIds: string[]
 }
 
+export interface PaymentSession {
+  tableId: string
+  context: 'normal' | 'per-seat'
+  seatIndex?: number
+  method: 'Cash' | 'QR PromptPay' | 'Card'
+  activeSheet: 'cash' | 'qr' | 'card'
+  cashAmount?: number
+  startedAt: number
+}
+
+export interface PaymentLogEntry {
+  id: string
+  tableId: string
+  type: 'completed' | 'voided'
+  reason?: 'normal-cancel' | 'split-cancel'
+  method?: 'Cash' | 'QR PromptPay' | 'Card'
+  amount: number
+  authorizedBy?: { staffId: string; role: 'Manager' }
+  seatIndex?: number
+  at: number
+}
+
 interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
@@ -68,6 +90,15 @@ interface BillStore {
   isMergedSecondary: (tableId: string) => boolean
   getPrimaryTable: (tableId: string) => string | undefined
   getMergedSecondaries: (primaryTableId: string) => string[]
+  paymentSessions: Record<string, PaymentSession>
+  paymentLog: PaymentLogEntry[]
+
+  setPaymentSession: (tableId: string, session: PaymentSession) => void
+  updatePaymentSession: (tableId: string, patch: Partial<Omit<PaymentSession, 'tableId'>>) => void
+  clearPaymentSession: (tableId: string) => void
+  getPaymentSession: (tableId: string) => PaymentSession | undefined
+
+  appendPaymentLog: (entry: Omit<PaymentLogEntry, 'id'>) => void
 }
 
 export const useBillStore = create<BillStore>()(
@@ -77,6 +108,8 @@ export const useBillStore = create<BillStore>()(
       merges: {},
       crmMembers: {},
       promotionDiscounts: {},
+      paymentSessions: {},
+      paymentLog: [],
 
       addPromotionDiscount: (tableId, data) =>
         set((state) => {
@@ -285,7 +318,43 @@ export const useBillStore = create<BillStore>()(
 
       getMergedSecondaries: (primaryTableId) =>
         Object.keys(get().merges).filter((k) => get().merges[k] === primaryTableId),
+
+      setPaymentSession: (tableId, session) =>
+        set((state) => ({
+          paymentSessions: { ...state.paymentSessions, [tableId]: session },
+        })),
+
+      updatePaymentSession: (tableId, patch) =>
+        set((state) => {
+          const existing = state.paymentSessions[tableId]
+          if (!existing) return state
+          return {
+            paymentSessions: {
+              ...state.paymentSessions,
+              [tableId]: { ...existing, ...patch },
+            },
+          }
+        }),
+
+      clearPaymentSession: (tableId) =>
+        set((state) => {
+          const { [tableId]: _void, ...rest } = state.paymentSessions
+          return { paymentSessions: rest }
+        }),
+
+      getPaymentSession: (tableId) => get().paymentSessions[tableId],
+
+      appendPaymentLog: (entry) =>
+        set((state) => ({
+          paymentLog: [
+            ...state.paymentLog,
+            {
+              ...entry,
+              id: `plog_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            },
+          ],
+        })),
     }),
-    { name: 'bill-store', version: 3, migrate: () => ({}) },
+    { name: 'bill-store', version: 4, migrate: () => ({}) },
   ),
 )
