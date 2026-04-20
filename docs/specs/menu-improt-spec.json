@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "id": "a-ramen",
+    "name": "A Ramen",
+    "nameTh": "เอราเมง",
+    "currency": "THB",
+    "locale": "th-TH"
+  },
+  "categories": [
+    { "id": "ramen-hot", "label": "ราเมนร้อน", "labelTh": "ราเมนร้อน" }
+  ],
+  "modifierGroups": [
+    {
+      "id": "noodle-firmness",
+      "label": "ระดับความนุ่มของเส้น",
+      "icon": "🍜",
+      "type": "single",
+      "required": true,
+      "defaultOptionIds": ["normal"],
+      "options": [
+        { "id": "soft",   "label": "นุ่ม",   "labelEn": "SOFT",   "priceAdj": 0 },
+        { "id": "normal", "label": "ปกติ",   "labelEn": "MEDIUM", "priceAdj": 0 },
+        { "id": "firm",   "label": "แข็ง",   "labelEn": "FIRM",   "priceAdj": 0 }
+      ]
+    }
+  ],
+  "menuItems": [
+    {
+      "id": "ramen-custom",
+      "categoryId": "ramen-hot",
+      "name": "Custom Ramen",
+      "nameTh": "ราเมงข้อสอบ",
+      "basePrice": 160,
+      "thumbnailPlaceholder": "🍜",
+      "imagePath": "https://cdn.a-ramen.com/.../menu_img.png",
+      "modifierGroupIds": ["noodle-firmness"]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
-import { MENU_ITEMS } from '@/lib/mock-data/menu'
+import { useMenuStore } from '@/stores/menu.store'
 import { useManagerStore } from '@/stores/manager.store'
 import { useOrderStore } from '@/stores/order.store'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +28,7 @@ function MenuCardSkeleton() {
 }
 
 export function MenuPanel({ onItemTap, activeCategory, tableId }: MenuPanelProps) {
+  const menuItems = useMenuStore((s) => s.menuItems)
   const eightySixedIds = useManagerStore((s) => s.eightySixedIds)
 
   const orderRounds = useOrderStore((s) => tableId ? s.orders[tableId]?.rounds : undefined)
@@ -51,8 +52,8 @@ export function MenuPanel({ onItemTap, activeCategory, tableId }: MenuPanelProps
   }, [])
 
   const filteredItems = useMemo(
-    () => activeCategory === 'all' ? MENU_ITEMS : MENU_ITEMS.filter((item) => item.categoryId === activeCategory),
-    [activeCategory]
+    () => activeCategory === 'all' ? menuItems : menuItems.filter((item) => item.categoryId === activeCategory),
+    [activeCategory, menuItems]
   )
 
   if (isLoading) {

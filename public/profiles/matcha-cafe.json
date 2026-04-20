@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "id": "matcha-cafe",
+    "name": "Matcha Café",
+    "nameTh": "คาเฟ่มัทฉะ",
+    "currency": "THB",
+    "locale": "th-TH"
+  },
+  "categories": [
+    { "id": "drinks", "label": "Drinks", "labelTh": "เครื่องดื่ม" },
+    { "id": "desserts", "label": "Desserts", "labelTh": "ของหวาน" }
+  ],
+  "modifierGroups": [
+    {
+      "id": "sweetness",
+      "label": "ระดับความหวาน",
+      "icon": "🍯",
+      "type": "single",
+      "required": true,
+      "defaultOptionIds": ["100"],
+      "options": [
+        { "id": "0",   "label": "ไม่หวาน",       "labelEn": "NO SUGAR",   "priceAdj": 0 },
+        { "id": "50",  "label": "หวานน้อย",      "labelEn": "LESS SWEET", "priceAdj": 0 },
+        { "id": "100", "label": "ปกติ",           "labelEn": "NORMAL",     "priceAdj": 0 },
+        { "id": "150", "label": "หวานมาก",       "labelEn": "EXTRA SWEET","priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "milk",
+      "label": "ชนิดนม",
+      "icon": "🥛",
+      "type": "single",
+      "required": true,
+      "defaultOptionIds": ["whole"],
+      "options": [
+        { "id": "whole",  "label": "นมสด",        "labelEn": "WHOLE MILK", "priceAdj": 0 },
+        { "id": "oat",    "label": "นมโอ๊ต",      "labelEn": "OAT MILK",   "priceAdj": 20 },
+        { "id": "almond", "label": "นมอัลมอนด์", "labelEn": "ALMOND MILK","priceAdj": 20 }
+      ]
+    }
+  ],
+  "menuItems": [
+    {
+      "id": "matcha-latte",
+      "categoryId": "drinks",
+      "name": "Matcha Latte",
+      "nameTh": "มัทฉะลาเต้",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🍵",
+      "modifierGroupIds": ["sweetness", "milk"]
+    },
+    {
+      "id": "hojicha-latte",
+      "categoryId": "drinks",
+      "name": "Hojicha Latte",
+      "nameTh": "โฮจิฉะลาเต้",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🍂",
+      "modifierGroupIds": ["sweetness", "milk"]
+    },
+    {
+      "id": "yuzu-soda",
+      "categoryId": "drinks",
+      "name": "Yuzu Soda",
+      "nameTh": "ยูซุโซดา",
+      "basePrice": 95,
+      "thumbnailPlaceholder": "🍋",
+      "modifierGroupIds": ["sweetness"]
+    },
+    {
+      "id": "matcha-tiramisu",
+      "categoryId": "desserts",
+      "name": "Matcha Tiramisu",
+      "nameTh": "ทีรามิสุมัทฉะ",
+      "basePrice": 160,
+      "thumbnailPlaceholder": "🍰"
+    },
+    {
+      "id": "warabi-mochi",
+      "categoryId": "desserts",
+      "name": "Warabi Mochi",
+      "nameTh": "วาราบิโมจิ",
+      "basePrice": 130,
+      "thumbnailPlaceholder": "🍡"
+    }
+  ]
+}

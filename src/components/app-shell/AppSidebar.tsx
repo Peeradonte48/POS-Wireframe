@@ -13,6 +13,7 @@ import {
   Users,
   LineChart,
   Settings,
+  Store,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -32,7 +33,8 @@ const TOP_NAV_ITEMS: NavItem[] = [
 ]
 
 const BOTTOM_NAV_ITEMS: NavItem[] = [
-  { slug: 'manager', label: 'Manager', href: '/manager', icon: Settings },
+  { slug: 'settings', label: 'Profile',  href: '/settings/profile', icon: Store },
+  { slug: 'manager',  label: 'Manager',  href: '/manager',          icon: Settings },
 ]
 
 export function AppSidebar() {

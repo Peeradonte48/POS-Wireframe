@@ -19,14 +19,9 @@ import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EditCustomerModal } from '@/components/queue/EditCustomerModal'
 import { ConfirmCancelDialog } from '@/components/queue/ConfirmCancelDialog'
-import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/mock-data/menu'
+import { useMenuStore } from '@/stores/menu.store'
 
 const ALL_CATEGORY_ID = 'all'
-
-const CATEGORY_NAV = [
-  { id: ALL_CATEGORY_ID, label: 'รายการทั้งหมด' },
-  ...MENU_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
-]
 
 function queueStatusLabel(status: QueueOrderStatus | undefined): string {
   switch (status) {
@@ -57,6 +52,16 @@ export default function OrderPage() {
 
   const table = useTableStore((s) => s.tables[tableId])
 
+  const menuItems = useMenuStore((s) => s.menuItems)
+  const menuCategories = useMenuStore((s) => s.categories)
+  const categoryNav = useMemo(
+    () => [
+      { id: ALL_CATEGORY_ID, label: 'รายการทั้งหมด' },
+      ...menuCategories.map((c) => ({ id: c.id, label: c.label })),
+    ],
+    [menuCategories],
+  )
+
   const orderRounds = useOrderStore((s) => s.orders[tableId]?.rounds)
   const allItems = useMemo(
     () => orderRounds?.flatMap((r) => r.items).filter((i) => i.status !== 'voided') ?? [],
@@ -83,7 +88,7 @@ export default function OrderPage() {
   const [checkBillConfirmOpen, setCheckBillConfirmOpen] = useState(false)
 
   const selectedMenuItem = selectedMenuItemId
-    ? (MENU_ITEMS.find((i) => i.id === selectedMenuItemId) ?? null)
+    ? (menuItems.find((i) => i.id === selectedMenuItemId) ?? null)
     : null
 
   const editingLineItem = editingLineId
@@ -215,7 +220,7 @@ export default function OrderPage() {
           <div className="px-4 pt-4 pb-0 shrink-0">
             <Tabs value={activeCategory} onValueChange={setActiveCategory}>
               <TabsList className="w-full">
-                {CATEGORY_NAV.map((cat) => (
+                {categoryNav.map((cat) => (
                   <TabsTrigger key={cat.id} value={cat.id} className="flex-1">
                     {cat.label}
                   </TabsTrigger>
@@ -229,7 +234,7 @@ export default function OrderPage() {
             <div className={isTakeaway && !isTakingStatus ? 'pointer-events-none opacity-50' : ''}>
               <MenuPanel
                 onItemTap={(itemId) => {
-                  const item = MENU_ITEMS.find((i) => i.id === itemId)
+                  const item = menuItems.find((i) => i.id === itemId)
                   if (item && item.modifierGroups.length === 0) {
                     setSimpleItemId(itemId)
                   } else {
@@ -247,9 +252,9 @@ export default function OrderPage() {
         <SimpleItemDialog
           open={simpleItemId !== null}
           onClose={() => setSimpleItemId(null)}
-          itemName={MENU_ITEMS.find((i) => i.id === simpleItemId)?.name}
+          itemName={menuItems.find((i) => i.id === simpleItemId)?.name}
           onConfirm={(qty) => {
-            const item = MENU_ITEMS.find((i) => i.id === simpleItemId)
+            const item = menuItems.find((i) => i.id === simpleItemId)
             if (item) {
               useOrderStore.getState().addItem(tableId, {
                 lineId: typeof crypto !== 'undefined' ? crypto.randomUUID() : Math.random().toString(36).slice(2),
