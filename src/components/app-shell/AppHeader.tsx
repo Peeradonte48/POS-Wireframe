@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSessionStore } from '@/stores/session.store'
+import { useMenuStore } from '@/stores/menu.store'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { ChevronsUpDown, User, LogOut } from 'lucide-react'
 
@@ -14,7 +15,8 @@ const ROLE_LABEL_TH: Record<string, string> = {
 }
 
 export function AppHeader() {
-  const { role, staffName, branchName, logout } = useSessionStore()
+  const { role, staffName, logout } = useSessionStore()
+  const profileName = useMenuStore((s) => s.profile.name)
   const router = useRouter()
   const [staffMenuOpen, setStaffMenuOpen] = useState(false)
   const staffMenuRef = useRef<HTMLDivElement>(null)
@@ -35,13 +37,12 @@ export function AppHeader() {
   }
 
   const roleLabel = role ? (ROLE_LABEL_TH[role] ?? role) : ''
-  const displayBranch = branchName ?? 'A Ramen'
 
   return (
     <header className="border-b border-border px-6 py-3 flex items-center justify-between shrink-0">
       {/* Left: breadcrumb */}
       <div className="flex items-center shrink-0">
-        <span className="text-sm text-foreground">{displayBranch}</span>
+        <span className="text-sm text-foreground">{profileName}</span>
       </div>
 
       {/* Right: staff combobox + theme toggle */}
