@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRightFromLine, ShieldAlert } from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -60,18 +60,17 @@ export function PauseConfirmDialog({
 
           <div className="flex flex-col gap-2">
             <Button
+              className="w-full h-14 text-base font-medium"
+              onClick={onResumeLater}
+            >
+              ออกจากหน้านี้
+            </Button>
+            <Button
               variant="outline"
               className="w-full h-14 text-base font-medium"
               onClick={() => onOpenChange(false)}
             >
               อยู่ต่อ
-            </Button>
-            <Button
-              className="w-full h-14 text-base font-medium gap-2"
-              onClick={onResumeLater}
-            >
-              <ArrowRightFromLine size={16} />
-              ออกจากหน้านี้
             </Button>
 
             <div className="pt-2">
