@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useTableStore } from '@/stores/table.store'
@@ -37,8 +37,7 @@ export default function SplitSummaryPage() {
   const table = useTableStore((s) => s.tables[tableId])
   const tableLabel = table?.label ?? tableId
 
-  const { setCrmMember, clearCrmMember } = useBillStore()
-  const { cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
+  const { setCrmMember, clearCrmMember, cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
   const paidCount = split ? Object.keys(split.payments).length : 0
   const totalSeats = split?.seatCount ?? 0
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
@@ -57,6 +56,16 @@ export default function SplitSummaryPage() {
       payerLabel: tableLabel,
     })
   }
+
+  // ---- Back handler for both payment panels ----
+  const handleBack = useCallback(() => {
+    const session = useBillStore.getState().paymentSessions[tableId]
+    if (paidCount > 0 || session) {
+      setPauseDialogOpen(true)
+      return
+    }
+    router.back()
+  }, [tableId, paidCount, router])
 
   // ---- Fallback if no split data ----
   if (!split || splitAmounts.length === 0) {
@@ -97,14 +106,7 @@ export default function SplitSummaryPage() {
           crmMember={crmMember}
           onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
-          onBack={() => {
-            const session = useBillStore.getState().paymentSessions[tableId]
-            if (paidCount > 0 || session) {
-              setPauseDialogOpen(true)
-              return
-            }
-            router.back()
-          }}
+          onBack={handleBack}
         />
       )}
 
@@ -123,14 +125,7 @@ export default function SplitSummaryPage() {
           crmMember={crmMember}
           onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
-          onBack={() => {
-            const session = useBillStore.getState().paymentSessions[tableId]
-            if (paidCount > 0 || session) {
-              setPauseDialogOpen(true)
-              return
-            }
-            router.back()
-          }}
+          onBack={handleBack}
         />
       )}
 
