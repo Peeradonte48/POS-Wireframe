@@ -10,6 +10,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
 import { useBillStore } from '@/stores/bill.store'
+import { tableHasActiveItems, useOrderStore } from '@/stores/order.store'
 import { canDoAction } from '@/lib/role-permissions'
 import { useDwellTimer } from '@/components/table-map/useDwellTimer'
 import type { TableRecord } from '@/stores/table.store'
@@ -39,11 +40,13 @@ function TableBottomSheetContent({
   const { markReserved, undoReserved, requestCheck, markClean, markServed, updateTable } = useTableStore()
   const tables = useTableStore((s) => s.tables)
   const merges = useBillStore((s) => s.merges)
+  const orders = useOrderStore((s) => s.orders)
   const hasEligibleMergeTarget = Object.values(tables).some(
     (t) =>
       (t.status === 'Occupied' || t.status === 'CheckRequested') &&
       t.id !== table.id &&
-      !(t.id in merges)
+      !(t.id in merges) &&
+      tableHasActiveItems(orders, t.id)
   )
 
   const [localWaiter, setLocalWaiter] = useState(table.waiterName ?? '')

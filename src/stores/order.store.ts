@@ -55,6 +55,16 @@ const newUUID = (): string =>
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2)
 
+/** True if the table has at least one non-voided item across any round. */
+export function tableHasActiveItems(
+  orders: Record<string, ActiveOrder>,
+  tableId: string,
+): boolean {
+  const order = orders[tableId]
+  if (!order) return false
+  return order.rounds.some((r) => r.items.some((i) => i.status !== 'voided'))
+}
+
 export const useOrderStore = create<OrderStore>()(
   persist(
     (set, get) => ({

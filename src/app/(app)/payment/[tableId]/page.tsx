@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronDown, ChevronUp, Crown, ScissorsLineDashed, Link, Unlink, HandPlatter, Coins } from 'lucide-react'
 import { toast } from 'sonner'
-import { useOrderStore } from '@/stores/order.store'
+import { tableHasActiveItems, useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
 import { useSessionStore } from '@/stores/session.store'
 import { canDoAction } from '@/lib/role-permissions'
@@ -98,8 +98,13 @@ export default function PaymentPage() {
   // Eligibility
   const totalBillUnits = billItems.reduce((sum, item) => sum + item.quantity, 0)
   const itemSplitDisabled = isMerged || totalBillUnits <= 1
+  const orders = useOrderStore((s) => s.orders)
   const hasEligibleMergeTarget = Object.values(tables).some(
-    (t) => (t.status === 'Occupied' || t.status === 'CheckRequested') && t.id !== tableId && !(t.id in merges),
+    (t) =>
+      (t.status === 'Occupied' || t.status === 'CheckRequested') &&
+      t.id !== tableId &&
+      !(t.id in merges) &&
+      tableHasActiveItems(orders, t.id),
   )
   const queueOrder = isTakeaway ? useQueueStore.getState().orders[tableId] : undefined
 

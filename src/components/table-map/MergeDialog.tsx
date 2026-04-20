@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { useBillStore } from '@/stores/bill.store'
 import { useTableStore } from '@/stores/table.store'
+import { tableHasActiveItems, useOrderStore } from '@/stores/order.store'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,6 +34,7 @@ export function MergeDialog({ open, onClose, primaryTableId, onMergeConfirmed }:
   const [prevOpen, setPrevOpen] = useState(open)
 
   const tables = useTableStore((s) => s.tables)
+  const orders = useOrderStore((s) => s.orders)
   const { initMerge, isMergedSecondary } = useBillStore()
 
   const primaryLabel = tables[primaryTableId]?.label ?? primaryTableId
@@ -43,12 +45,14 @@ export function MergeDialog({ open, onClose, primaryTableId, onMergeConfirmed }:
     if (open) setSelectedIds(new Set())
   }
 
-  // Eligible tables: Occupied or CheckRequested, not the primary, not already a secondary
+  // Eligible tables: Occupied or CheckRequested, not the primary, not already a
+  // secondary, and must have at least one non-voided ordered item.
   const eligibleTables = Object.values(tables).filter(
     (t) =>
       (t.status === 'Occupied' || t.status === 'CheckRequested') &&
       t.id !== primaryTableId &&
-      !isMergedSecondary(t.id),
+      !isMergedSecondary(t.id) &&
+      tableHasActiveItems(orders, t.id),
   )
 
   function handleConfirm() {
