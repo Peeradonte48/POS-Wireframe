@@ -150,71 +150,101 @@ export default function PaymentPage() {
 
   // Shared modals (hoisted above view split — rendered once for all views)
   const modals = (
-    <PaymentModals
-      tableId={tableId} grandTotal={grandTotal} isTakeaway={isTakeaway} isMerged={isMerged}
-      mergedSecondaryIds={mergedSecondaryIds} billItems={billItems} crmMember={crmMember}
-      crmDialogOpen={crmDialogOpen} setCrmDialogOpen={setCrmDialogOpen}
-      qrSheetOpen={qrSheetOpen}
-      cashDialogOpen={cashDialogOpen} setCashDialogOpen={setCashDialogOpen}
-      splitSheetOpen={splitSheetOpen} setSplitSheetOpen={setSplitSheetOpen}
-      mergeSheetOpen={mergeSheetOpen} setMergeSheetOpen={setMergeSheetOpen}
-      splitConfirmDialogOpen={splitConfirmDialogOpen} setSplitConfirmDialogOpen={setSplitConfirmDialogOpen}
-      valueSplitSheetOpen={valueSplitSheetOpen} setValueSplitSheetOpen={setValueSplitSheetOpen}
-      itemSplitSheetOpen={itemSplitSheetOpen} setItemSplitSheetOpen={setItemSplitSheetOpen}
-      paymentMethodDialogOpen={paymentMethodDialogOpen} setPaymentMethodDialogOpen={setPaymentMethodDialogOpen}
-      onCrmMemberFound={() => {}}
-      onConfirmPayment={handleConfirmPayment}
-      onAllPaid={() => { setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember }); setViewState('receipt') }}
-      setQrSheetOpen={(v) => {
-        setQrSheetOpen(v)
-        if (!v) {
-          clearPaymentSession(tableId)
+    <>
+      <PaymentModals
+        tableId={tableId} grandTotal={grandTotal} isTakeaway={isTakeaway} isMerged={isMerged}
+        mergedSecondaryIds={mergedSecondaryIds} billItems={billItems} crmMember={crmMember}
+        crmDialogOpen={crmDialogOpen} setCrmDialogOpen={setCrmDialogOpen}
+        qrSheetOpen={qrSheetOpen}
+        cashDialogOpen={cashDialogOpen} setCashDialogOpen={setCashDialogOpen}
+        splitSheetOpen={splitSheetOpen} setSplitSheetOpen={setSplitSheetOpen}
+        mergeSheetOpen={mergeSheetOpen} setMergeSheetOpen={setMergeSheetOpen}
+        splitConfirmDialogOpen={splitConfirmDialogOpen} setSplitConfirmDialogOpen={setSplitConfirmDialogOpen}
+        valueSplitSheetOpen={valueSplitSheetOpen} setValueSplitSheetOpen={setValueSplitSheetOpen}
+        itemSplitSheetOpen={itemSplitSheetOpen} setItemSplitSheetOpen={setItemSplitSheetOpen}
+        paymentMethodDialogOpen={paymentMethodDialogOpen} setPaymentMethodDialogOpen={setPaymentMethodDialogOpen}
+        onCrmMemberFound={() => {}}
+        onConfirmPayment={handleConfirmPayment}
+        onAllPaid={() => { setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember }); setViewState('receipt') }}
+        setQrSheetOpen={(v) => {
+          setQrSheetOpen(v)
+          if (!v) {
+            clearPaymentSession(tableId)
+            setPaymentMethod(null)
+          }
+        }}
+        onPaymentMethodSelect={(m) => {
+          setPaymentMethod(m)
+          if (m === 'Cash') {
+            setCashDialogOpen(true)
+            setPaymentSession(tableId, {
+              tableId,
+              context: 'normal',
+              method: 'Cash',
+              activeSheet: 'cash',
+              cashAmount: 0,
+              startedAt: Date.now(),
+            })
+          } else if (m === 'QR PromptPay') {
+            setQrSheetOpen(true)
+            setPaymentSession(tableId, {
+              tableId,
+              context: 'normal',
+              method: 'QR PromptPay',
+              activeSheet: 'qr',
+              startedAt: Date.now(),
+            })
+          } else {
+            setViewState('checkout')
+            setPaymentSession(tableId, {
+              tableId,
+              context: 'normal',
+              method: 'Card',
+              activeSheet: 'card',
+              startedAt: Date.now(),
+            })
+          }
+        }}
+        onCashClose={() => {
+          setCashDialogOpen(false)
           setPaymentMethod(null)
-        }
-      }}
-      onPaymentMethodSelect={(m) => {
-        setPaymentMethod(m)
-        if (m === 'Cash') {
-          setCashDialogOpen(true)
-          setPaymentSession(tableId, {
+          clearPaymentSession(tableId)
+        }}
+        initialCashAmount={pausedCashAmount}
+        onCashAmountChange={(amount) => {
+          const existing = useBillStore.getState().paymentSessions[tableId]
+          if (existing) updatePaymentSession(tableId, { cashAmount: amount })
+        }}
+      />
+      <PauseConfirmDialog
+        open={pauseDialogOpen}
+        onOpenChange={setPauseDialogOpen}
+        scenario="normal"
+        tableLabel={tableLabel}
+        onResumeLater={() => {
+          setPauseDialogOpen(false)
+          router.push('/table-map')
+        }}
+        onCancelAuthorized={() => {
+          setPauseDialogOpen(false)
+          clearPaymentSession(tableId)
+          appendPaymentLog({
             tableId,
-            context: 'normal',
-            method: 'Cash',
-            activeSheet: 'cash',
-            cashAmount: 0,
-            startedAt: Date.now(),
+            type: 'voided',
+            reason: 'normal-cancel',
+            method: paymentMethod ?? undefined,
+            amount: grandTotal,
+            authorizedBy: { staffId: 'manager', role: 'Manager' },
+            at: Date.now(),
           })
-        } else if (m === 'QR PromptPay') {
-          setQrSheetOpen(true)
-          setPaymentSession(tableId, {
-            tableId,
-            context: 'normal',
-            method: 'QR PromptPay',
-            activeSheet: 'qr',
-            startedAt: Date.now(),
-          })
-        } else {
-          setViewState('checkout')
-          setPaymentSession(tableId, {
-            tableId,
-            context: 'normal',
-            method: 'Card',
-            activeSheet: 'card',
-            startedAt: Date.now(),
-          })
-        }
-      }}
-      onCashClose={() => {
-        setCashDialogOpen(false)
-        setPaymentMethod(null)
-        clearPaymentSession(tableId)
-      }}
-      initialCashAmount={pausedCashAmount}
-      onCashAmountChange={(amount) => {
-        const existing = useBillStore.getState().paymentSessions[tableId]
-        if (existing) updatePaymentSession(tableId, { cashAmount: amount })
-      }}
-    />
+          setPaymentMethod(null)
+          setCashDialogOpen(false)
+          setQrSheetOpen(false)
+          setViewState('checkBill')
+          toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
+        }}
+      />
+    </>
   )
 
   // Empty order guard
@@ -269,33 +299,6 @@ export default function PaymentPage() {
           </div>
         </div>
         {modals}
-        <PauseConfirmDialog
-          open={pauseDialogOpen}
-          onOpenChange={setPauseDialogOpen}
-          scenario="normal"
-          tableLabel={tableLabel}
-          onResumeLater={() => {
-            setPauseDialogOpen(false)
-            router.push('/table-map')
-          }}
-          onCancelAuthorized={() => {
-            clearPaymentSession(tableId)
-            appendPaymentLog({
-              tableId,
-              type: 'voided',
-              reason: 'normal-cancel',
-              method: paymentMethod ?? undefined,
-              amount: grandTotal,
-              authorizedBy: { staffId: 'manager', role: 'Manager' },
-              at: Date.now(),
-            })
-            setPaymentMethod(null)
-            setCashDialogOpen(false)
-            setQrSheetOpen(false)
-            setViewState('checkBill')
-            toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
-          }}
-        />
       </>
     )
   }
@@ -462,33 +465,6 @@ export default function PaymentPage() {
         </div>
       </div>
       {modals}
-      <PauseConfirmDialog
-        open={pauseDialogOpen}
-        onOpenChange={setPauseDialogOpen}
-        scenario="normal"
-        tableLabel={tableLabel}
-        onResumeLater={() => {
-          setPauseDialogOpen(false)
-          router.push('/table-map')
-        }}
-        onCancelAuthorized={() => {
-          clearPaymentSession(tableId)
-          appendPaymentLog({
-            tableId,
-            type: 'voided',
-            reason: 'normal-cancel',
-            method: paymentMethod ?? undefined,
-            amount: grandTotal,
-            authorizedBy: { staffId: 'manager', role: 'Manager' },
-            at: Date.now(),
-          })
-          setPaymentMethod(null)
-          setCashDialogOpen(false)
-          setQrSheetOpen(false)
-          setViewState('checkBill')
-          toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
-        }}
-      />
     </>
   )
 }
