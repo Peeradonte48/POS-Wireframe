@@ -48,6 +48,7 @@ interface CustomSplitPaymentPanelProps {
   crmMember: CrmMember | null
   onCrmChange: () => void
   onAllPaid: () => void
+  onBack: () => void
 }
 
 // ---------------------------------------------------------------------------
@@ -67,6 +68,7 @@ export function CustomSplitPaymentPanel({
   crmMember,
   onCrmChange,
   onAllPaid,
+  onBack,
 }: CustomSplitPaymentPanelProps) {
   const router = useRouter()
   const { setCrmMember, recordPayment } = useBillStore()
@@ -121,7 +123,7 @@ export function CustomSplitPaymentPanel({
     return (
       <div className="flex flex-col h-full">
         <header className="h-[52px] border-b flex items-center gap-2 px-6 shrink-0">
-          <Button variant="outline" size="icon" className="size-9" onClick={() => setCheckoutMethod(null)} aria-label="Back">
+          <Button variant="outline" size="icon" className="size-9" onClick={() => { setCheckoutMethod(null); useBillStore.getState().clearPaymentSession(tableId) }} aria-label="Back">
             <ChevronLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none">
@@ -135,7 +137,7 @@ export function CustomSplitPaymentPanel({
         </div>
         <div className="sticky bottom-0 bg-background border-t p-4">
           <div className="max-w-2xl mx-auto">
-            <Button size="cta" className="w-full text-base" onClick={() => handleConfirmPayment('Card')}>
+            <Button size="cta" className="w-full text-base" onClick={() => { useBillStore.getState().clearPaymentSession(tableId); handleConfirmPayment('Card') }}>
               ยืนยันการชำระเงิน — ฿{selectedAmount.toLocaleString()}
             </Button>
           </div>
@@ -148,7 +150,7 @@ export function CustomSplitPaymentPanel({
     <div className="flex flex-col h-full">
       {/* Header */}
       <header className="border-b flex items-center gap-2 px-6 py-2 shrink-0">
-        <Button variant="outline" size="icon" className="size-9" onClick={() => router.back()} aria-label="Back">
+        <Button variant="outline" size="icon" className="size-9" onClick={onBack} aria-label="Back">
           <ChevronLeft size={16} />
         </Button>
         <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
@@ -347,12 +349,34 @@ export function CustomSplitPaymentPanel({
                 className="h-14 w-full gap-2 text-sm font-medium"
                 onClick={() => {
                   setPaymentMethodDialogOpen(false)
+                  const base = {
+                    tableId,
+                    context: 'per-seat' as const,
+                    seatIndex: selectedTabIndex,
+                    startedAt: Date.now(),
+                  }
                   if (method === 'Cash') {
                     setCashDialogOpen(true)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'Cash',
+                      activeSheet: 'cash',
+                      cashAmount: 0,
+                    })
                   } else if (method === 'QR PromptPay') {
                     setQrSheetOpen(true)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'QR PromptPay',
+                      activeSheet: 'qr',
+                    })
                   } else {
                     setCheckoutMethod(method)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'Card',
+                      activeSheet: 'card',
+                    })
                   }
                 }}
               >
@@ -375,20 +399,28 @@ export function CustomSplitPaymentPanel({
 
       <QrSheet
         open={qrSheetOpen}
-        onClose={() => setQrSheetOpen(false)}
+        onClose={() => {
+          setQrSheetOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
+        }}
         grandTotal={selectedAmount}
         onConfirm={() => {
           setQrSheetOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
           handleConfirmPayment('QR PromptPay')
         }}
       />
 
       <CashDialog
         open={cashDialogOpen}
-        onClose={() => setCashDialogOpen(false)}
+        onClose={() => {
+          setCashDialogOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
+        }}
         grandTotal={selectedAmount}
         onConfirm={() => {
           setCashDialogOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
           handleConfirmPayment('Cash')
         }}
       />

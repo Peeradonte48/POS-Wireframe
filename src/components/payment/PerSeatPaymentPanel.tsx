@@ -44,6 +44,7 @@ interface PerSeatPaymentPanelProps {
   crmMember: CrmMember | null
   onCrmChange: () => void
   onAllPaid: () => void
+  onBack: () => void
 }
 
 // ---------------------------------------------------------------------------
@@ -59,6 +60,7 @@ export function PerSeatPaymentPanel({
   crmMember,
   onCrmChange,
   onAllPaid,
+  onBack,
 }: PerSeatPaymentPanelProps) {
   const router = useRouter()
   const { setCrmMember, recordPayment } = useBillStore()
@@ -123,7 +125,10 @@ export function PerSeatPaymentPanel({
             variant="outline"
             size="icon"
             className="size-9"
-            onClick={() => setCheckoutMethod(null)}
+            onClick={() => {
+              setCheckoutMethod(null)
+              useBillStore.getState().clearPaymentSession(tableId)
+            }}
             aria-label="Back"
           >
             <ChevronLeft size={16} />
@@ -144,7 +149,10 @@ export function PerSeatPaymentPanel({
             <Button
               size="cta"
               className="w-full text-base"
-              onClick={() => handleConfirmPayment('Card')}
+              onClick={() => {
+                useBillStore.getState().clearPaymentSession(tableId)
+                handleConfirmPayment('Card')
+              }}
             >
               ยืนยันการชำระเงิน — ฿{selectedAmount.toLocaleString()}
             </Button>
@@ -158,7 +166,7 @@ export function PerSeatPaymentPanel({
     <div className="flex flex-col h-full">
       {/* Header */}
       <header className="border-b flex items-center justify-between px-6 py-2 shrink-0">
-        <Button variant="ghost" size="icon" className="size-9" onClick={() => router.back()} aria-label="Back">
+        <Button variant="ghost" size="icon" className="size-9" onClick={onBack} aria-label="Back">
           <ChevronLeft size={16} />
         </Button>
         <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
@@ -312,12 +320,34 @@ export function PerSeatPaymentPanel({
                 className="h-14 w-full gap-2 text-sm font-medium"
                 onClick={() => {
                   setPaymentMethodDialogOpen(false)
+                  const base = {
+                    tableId,
+                    context: 'per-seat' as const,
+                    seatIndex: selectedTabIndex,
+                    startedAt: Date.now(),
+                  }
                   if (method === 'Cash') {
                     setCashDialogOpen(true)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'Cash',
+                      activeSheet: 'cash',
+                      cashAmount: 0,
+                    })
                   } else if (method === 'QR PromptPay') {
                     setQrSheetOpen(true)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'QR PromptPay',
+                      activeSheet: 'qr',
+                    })
                   } else {
                     setCheckoutMethod(method)
+                    useBillStore.getState().setPaymentSession(tableId, {
+                      ...base,
+                      method: 'Card',
+                      activeSheet: 'card',
+                    })
                   }
                 }}
               >
@@ -340,20 +370,28 @@ export function PerSeatPaymentPanel({
 
       <QrSheet
         open={qrSheetOpen}
-        onClose={() => setQrSheetOpen(false)}
+        onClose={() => {
+          setQrSheetOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
+        }}
         grandTotal={selectedAmount}
         onConfirm={() => {
           setQrSheetOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
           handleConfirmPayment('QR PromptPay')
         }}
       />
 
       <CashDialog
         open={cashDialogOpen}
-        onClose={() => setCashDialogOpen(false)}
+        onClose={() => {
+          setCashDialogOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
+        }}
         grandTotal={selectedAmount}
         onConfirm={() => {
           setCashDialogOpen(false)
+          useBillStore.getState().clearPaymentSession(tableId)
           handleConfirmPayment('Cash')
         }}
       />

@@ -10,6 +10,7 @@ import { CrmLookupDialog } from '@/components/payment/CrmLookupDialog'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 import { PerSeatPaymentPanel } from '@/components/payment/PerSeatPaymentPanel'
 import { CustomSplitPaymentPanel } from '@/components/payment/CustomSplitPaymentPanel'
+import { PauseConfirmDialog } from '@/components/payment/PauseConfirmDialog'
 import { useSplitSummary } from '@/components/payment/useSplitSummary'
 
 // ---------------------------------------------------------------------------
@@ -37,6 +38,10 @@ export default function SplitSummaryPage() {
   const tableLabel = table?.label ?? tableId
 
   const { setCrmMember, clearCrmMember } = useBillStore()
+  const { cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
+  const paidCount = split ? Object.keys(split.payments).length : 0
+  const totalSeats = split?.seatCount ?? 0
+  const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
@@ -92,6 +97,14 @@ export default function SplitSummaryPage() {
           crmMember={crmMember}
           onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
+          onBack={() => {
+            const session = useBillStore.getState().paymentSessions[tableId]
+            if (paidCount > 0 || session) {
+              setPauseDialogOpen(true)
+              return
+            }
+            router.back()
+          }}
         />
       )}
 
@@ -110,6 +123,14 @@ export default function SplitSummaryPage() {
           crmMember={crmMember}
           onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
+          onBack={() => {
+            const session = useBillStore.getState().paymentSessions[tableId]
+            if (paidCount > 0 || session) {
+              setPauseDialogOpen(true)
+              return
+            }
+            router.back()
+          }}
         />
       )}
 
@@ -120,6 +141,56 @@ export default function SplitSummaryPage() {
         onMemberFound={(member) => {
           setCrmMember(tableId, member)
           setCrmDialogOpen(false)
+        }}
+      />
+
+      <PauseConfirmDialog
+        open={pauseDialogOpen}
+        onOpenChange={setPauseDialogOpen}
+        scenario={paidCount > 0 ? 'split-partial' : 'normal'}
+        tableLabel={tableLabel}
+        paidSeats={paidCount}
+        totalSeats={totalSeats}
+        onResumeLater={() => {
+          setPauseDialogOpen(false)
+          router.push('/table-map')
+        }}
+        onCancelAuthorized={() => {
+          setPauseDialogOpen(false)
+          if (paidCount > 0 && split) {
+            Object.entries(split.payments).forEach(([idxStr, record]) => {
+              appendPaymentLog({
+                tableId,
+                type: 'voided',
+                reason: 'split-cancel',
+                method: record.method,
+                amount: record.amount,
+                authorizedBy: { staffId: 'manager', role: 'Manager' },
+                seatIndex: Number(idxStr),
+                at: Date.now(),
+              })
+            })
+            cancelSplit(tableId)
+            clearPaymentSession(tableId)
+            toast.success('ยกเลิกการแบ่งจ่ายแล้วโดยผู้จัดการ')
+            router.replace(`/payment/${tableId}`)
+          } else {
+            const session = useBillStore.getState().paymentSessions[tableId]
+            if (session) {
+              appendPaymentLog({
+                tableId,
+                type: 'voided',
+                reason: 'normal-cancel',
+                method: session.method,
+                amount: 0,
+                authorizedBy: { staffId: 'manager', role: 'Manager' },
+                seatIndex: session.seatIndex,
+                at: Date.now(),
+              })
+            }
+            clearPaymentSession(tableId)
+            toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
+          }
         }}
       />
     </>
