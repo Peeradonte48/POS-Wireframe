@@ -60,6 +60,8 @@ interface PaymentModalsProps {
   onAllPaid: () => void
   onPaymentMethodSelect: (method: PaymentMethod) => void
   onCashClose: () => void
+  initialCashAmount?: number
+  onCashAmountChange?: (amount: number) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -97,6 +99,8 @@ export function PaymentModals({
   onAllPaid,
   onPaymentMethodSelect,
   onCashClose,
+  initialCashAmount,
+  onCashAmountChange,
 }: PaymentModalsProps) {
   const router = useRouter()
   const { setCrmMember, dissolveAll } = useBillStore()
@@ -219,6 +223,8 @@ export function PaymentModals({
           setCashDialogOpen(false)
           onConfirmPayment()
         }}
+        initialAmount={initialCashAmount}
+        onAmountChange={onCashAmountChange}
       />
 
       {/* Payment method selection dialog */}

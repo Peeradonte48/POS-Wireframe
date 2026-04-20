@@ -23,6 +23,7 @@ import { useBillCalculation } from '@/components/payment/useBillCalculation'
 import { useCameraScanner } from '@/components/payment/useCameraScanner'
 import { PromotionSummary } from '@/components/payment/PromotionSummary'
 import { PaymentModals, type PaymentMethod } from '@/components/payment/PaymentModals'
+import { PauseConfirmDialog } from '@/components/payment/PauseConfirmDialog'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
 type ViewState = 'checkBill' | 'checkout' | 'receipt'
@@ -40,7 +41,15 @@ export default function PaymentPage() {
   const order = useOrderStore((s) => s.getOrder(tableId))
   const role = useSessionStore((s) => s.role)!
   const crmMember = useBillStore((s) => s.crmMembers[tableId] ?? null)
-  const { clearCrmMember, dissolveAll, clearPromotionDiscounts } = useBillStore()
+  const {
+    clearCrmMember,
+    dissolveAll,
+    clearPromotionDiscounts,
+    setPaymentSession,
+    updatePaymentSession,
+    clearPaymentSession,
+    appendPaymentLog,
+  } = useBillStore()
   const merges = useBillStore((s) => s.merges)
   const tables = useTableStore((s) => s.tables)
 
@@ -54,7 +63,24 @@ export default function PaymentPage() {
   const [splitSheetOpen, setSplitSheetOpen] = useState(false); const [mergeSheetOpen, setMergeSheetOpen] = useState(false); const [splitConfirmDialogOpen, setSplitConfirmDialogOpen] = useState(false)
   const [valueSplitSheetOpen, setValueSplitSheetOpen] = useState(false); const [itemSplitSheetOpen, setItemSplitSheetOpen] = useState(false); const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
   const [discountExpanded, setDiscountExpanded] = useState(true)
+  const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
+  const table = useTableStore((s) => s.tables[tableId])
+  const tableLabel = table?.label ?? tableId
+  const pausedCashAmount = useBillStore((s) => s.paymentSessions[tableId]?.cashAmount)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+
+  // Auto-restore payment session on mount
+  useEffect(() => {
+    const session = useBillStore.getState().paymentSessions[tableId]
+    if (!session || session.context !== 'normal') return
+    setPaymentMethod(session.method)
+    setViewState('checkout')
+    if (session.activeSheet === 'cash') {
+      setCashDialogOpen(true)
+    } else if (session.activeSheet === 'qr') {
+      setQrSheetOpen(true)
+    }
+  }, [tableId])
 
   // Promo toast on redirect back from promotions page
   const searchParams = useSearchParams()
@@ -84,6 +110,14 @@ export default function PaymentPage() {
       const nextStatus = queueOrder.channel === 'takeaway' ? 'Collected' : 'Billed'
       useQueueStore.getState().setStatus(tableId, nextStatus)
       clearPromotionDiscounts(tableId)
+      clearPaymentSession(tableId)
+      appendPaymentLog({
+        tableId,
+        type: 'completed',
+        method: paymentMethod,
+        amount: grandTotal,
+        at: Date.now(),
+      })
       toast.success('Payment confirmed')
       setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
       setViewState('receipt')
@@ -94,8 +128,16 @@ export default function PaymentPage() {
     mergedSecondaryIds.forEach((id) => markCleaning(id))
     dissolveAll(tableId)
     clearPromotionDiscounts(tableId)
+    clearPaymentSession(tableId)
     updateTable(tableId, { orderStage: 'Billed' })
     updateTable(tableId, { paidAmount: grandTotal, paymentMethod, discountApplied: discountAmount })
+    appendPaymentLog({
+      tableId,
+      type: 'completed',
+      method: paymentMethod,
+      amount: grandTotal,
+      at: Date.now(),
+    })
     toast.success('Payment confirmed')
     setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
     setViewState('receipt')
@@ -112,7 +154,7 @@ export default function PaymentPage() {
       tableId={tableId} grandTotal={grandTotal} isTakeaway={isTakeaway} isMerged={isMerged}
       mergedSecondaryIds={mergedSecondaryIds} billItems={billItems} crmMember={crmMember}
       crmDialogOpen={crmDialogOpen} setCrmDialogOpen={setCrmDialogOpen}
-      qrSheetOpen={qrSheetOpen} setQrSheetOpen={setQrSheetOpen}
+      qrSheetOpen={qrSheetOpen}
       cashDialogOpen={cashDialogOpen} setCashDialogOpen={setCashDialogOpen}
       splitSheetOpen={splitSheetOpen} setSplitSheetOpen={setSplitSheetOpen}
       mergeSheetOpen={mergeSheetOpen} setMergeSheetOpen={setMergeSheetOpen}
@@ -123,8 +165,55 @@ export default function PaymentPage() {
       onCrmMemberFound={() => {}}
       onConfirmPayment={handleConfirmPayment}
       onAllPaid={() => { setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember }); setViewState('receipt') }}
-      onPaymentMethodSelect={(m) => { setPaymentMethod(m); if (m === 'Cash') setCashDialogOpen(true); else if (m === 'QR PromptPay') setQrSheetOpen(true); else setViewState('checkout') }}
-      onCashClose={() => { setCashDialogOpen(false); setPaymentMethod(null) }}
+      setQrSheetOpen={(v) => {
+        setQrSheetOpen(v)
+        if (!v) {
+          clearPaymentSession(tableId)
+          setPaymentMethod(null)
+        }
+      }}
+      onPaymentMethodSelect={(m) => {
+        setPaymentMethod(m)
+        if (m === 'Cash') {
+          setCashDialogOpen(true)
+          setPaymentSession(tableId, {
+            tableId,
+            context: 'normal',
+            method: 'Cash',
+            activeSheet: 'cash',
+            cashAmount: 0,
+            startedAt: Date.now(),
+          })
+        } else if (m === 'QR PromptPay') {
+          setQrSheetOpen(true)
+          setPaymentSession(tableId, {
+            tableId,
+            context: 'normal',
+            method: 'QR PromptPay',
+            activeSheet: 'qr',
+            startedAt: Date.now(),
+          })
+        } else {
+          setViewState('checkout')
+          setPaymentSession(tableId, {
+            tableId,
+            context: 'normal',
+            method: 'Card',
+            activeSheet: 'card',
+            startedAt: Date.now(),
+          })
+        }
+      }}
+      onCashClose={() => {
+        setCashDialogOpen(false)
+        setPaymentMethod(null)
+        clearPaymentSession(tableId)
+      }}
+      initialCashAmount={pausedCashAmount}
+      onCashAmountChange={(amount) => {
+        const existing = useBillStore.getState().paymentSessions[tableId]
+        if (existing) updatePaymentSession(tableId, { cashAmount: amount })
+      }}
     />
   )
 
@@ -180,6 +269,33 @@ export default function PaymentPage() {
           </div>
         </div>
         {modals}
+        <PauseConfirmDialog
+          open={pauseDialogOpen}
+          onOpenChange={setPauseDialogOpen}
+          scenario="normal"
+          tableLabel={tableLabel}
+          onResumeLater={() => {
+            setPauseDialogOpen(false)
+            router.push('/table-map')
+          }}
+          onCancelAuthorized={() => {
+            clearPaymentSession(tableId)
+            appendPaymentLog({
+              tableId,
+              type: 'voided',
+              reason: 'normal-cancel',
+              method: paymentMethod ?? undefined,
+              amount: grandTotal,
+              authorizedBy: { staffId: 'manager', role: 'Manager' },
+              at: Date.now(),
+            })
+            setPaymentMethod(null)
+            setCashDialogOpen(false)
+            setQrSheetOpen(false)
+            setViewState('checkBill')
+            toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
+          }}
+        />
       </>
     )
   }
@@ -189,7 +305,20 @@ export default function PaymentPage() {
     <>
       <div className="flex flex-col h-full">
         <header className="border-b flex items-center gap-2 px-6 py-2 shrink-0">
-          <Button variant="outline" size="icon" className="size-9" onClick={() => router.push('/table-map')} aria-label="Back to floor plan">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9"
+            onClick={() => {
+              const session = useBillStore.getState().paymentSessions[tableId]
+              if (session) {
+                setPauseDialogOpen(true)
+                return
+              }
+              router.push('/table-map')
+            }}
+            aria-label="Back to floor plan"
+          >
             <ChevronLeft size={16} />
           </Button>
           <span className="font-medium text-base leading-none">สรุปรายการชำระ</span>
@@ -333,6 +462,33 @@ export default function PaymentPage() {
         </div>
       </div>
       {modals}
+      <PauseConfirmDialog
+        open={pauseDialogOpen}
+        onOpenChange={setPauseDialogOpen}
+        scenario="normal"
+        tableLabel={tableLabel}
+        onResumeLater={() => {
+          setPauseDialogOpen(false)
+          router.push('/table-map')
+        }}
+        onCancelAuthorized={() => {
+          clearPaymentSession(tableId)
+          appendPaymentLog({
+            tableId,
+            type: 'voided',
+            reason: 'normal-cancel',
+            method: paymentMethod ?? undefined,
+            amount: grandTotal,
+            authorizedBy: { staffId: 'manager', role: 'Manager' },
+            at: Date.now(),
+          })
+          setPaymentMethod(null)
+          setCashDialogOpen(false)
+          setQrSheetOpen(false)
+          setViewState('checkBill')
+          toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
+        }}
+      />
     </>
   )
 }
