@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Dialog,
@@ -25,12 +25,22 @@ interface NewDeliveryModalProps {
   onClose: () => void
 }
 
-// Inner component — remounted via key when modal opens, resetting state naturally
-function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'>) {
+export function NewDeliveryModal({ open, onClose }: NewDeliveryModalProps) {
   const [platform, setPlatform] = useState('')
   const [externalId, setExternalId] = useState('')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+
+  // Reset form state each time the modal opens — avoids keying the popup,
+  // which would interrupt Base UI's close animation and cause a blink.
+  useEffect(() => {
+    if (open) {
+      setPlatform('')
+      setExternalId('')
+      setCustomerName('')
+      setCustomerPhone('')
+    }
+  }, [open])
 
   const createDeliveryOrder = useQueueStore((s) => s.createDeliveryOrder)
   const router = useRouter()
@@ -50,8 +60,9 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
   }
 
   return (
-    <DialogContent className="sm:max-w-[425px] p-6 gap-4">
-      <DialogHeader>
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }} disablePointerDismissal>
+      <DialogContent className="sm:max-w-[425px] p-6 gap-4">
+        <DialogHeader>
         <DialogTitle className="text-lg font-semibold text-center w-full">
           New Delivery Order
         </DialogTitle>
@@ -147,17 +158,7 @@ function NewDeliveryModalContent({ onClose }: Omit<NewDeliveryModalProps, 'open'
           ยกเลิก
         </Button>
       </div>
-    </DialogContent>
-  )
-}
-
-export function NewDeliveryModal({ open, onClose }: NewDeliveryModalProps) {
-  return (
-    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }} disablePointerDismissal>
-      <NewDeliveryModalContent
-        key={String(open)}
-        onClose={onClose}
-      />
+      </DialogContent>
     </Dialog>
   )
 }
