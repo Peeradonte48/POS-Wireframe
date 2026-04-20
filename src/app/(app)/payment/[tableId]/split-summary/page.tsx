@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import { useTableStore } from '@/stores/table.store'
 import { useBillStore } from '@/stores/bill.store'
 import { Button } from '@/components/ui/button'
-import { CrmLookupDialog } from '@/components/payment/CrmLookupDialog'
 import { ReceiptScreen } from '@/components/payment/ReceiptScreen'
 import { PerSeatPaymentPanel } from '@/components/payment/PerSeatPaymentPanel'
 import { CustomSplitPaymentPanel } from '@/components/payment/CustomSplitPaymentPanel'
@@ -37,11 +36,10 @@ export default function SplitSummaryPage() {
   const table = useTableStore((s) => s.tables[tableId])
   const tableLabel = table?.label ?? tableId
 
-  const { setCrmMember, clearCrmMember, cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
+  const { clearCrmMember, cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
   const paidCount = split ? Object.keys(split.payments).length : 0
   const totalSeats = split?.seatCount ?? 0
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
-  const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
 
@@ -103,8 +101,6 @@ export default function SplitSummaryPage() {
           splitAmounts={splitAmounts}
           billItems={billItems}
           itemBills={split.itemBills}
-          crmMember={crmMember}
-          onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
           onBack={handleBack}
         />
@@ -122,22 +118,10 @@ export default function SplitSummaryPage() {
           promotions={promotions}
           discountTotal={discountTotal}
           guestCount={table?.guestCount ?? null}
-          crmMember={crmMember}
-          onCrmChange={() => setCrmDialogOpen(true)}
           onAllPaid={handleAllPaid}
           onBack={handleBack}
         />
       )}
-
-      {/* CRM member lookup dialog */}
-      <CrmLookupDialog
-        open={crmDialogOpen}
-        onClose={() => setCrmDialogOpen(false)}
-        onMemberFound={(member) => {
-          setCrmMember(tableId, member)
-          setCrmDialogOpen(false)
-        }}
-      />
 
       <PauseConfirmDialog
         open={pauseDialogOpen}

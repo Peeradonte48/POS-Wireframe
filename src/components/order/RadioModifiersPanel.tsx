@@ -49,7 +49,7 @@ function RadioItem({
       aria-checked={isSelected}
       onClick={onSelect}
       className={cn(
-        'inline-flex items-center gap-2 rounded-md border px-3 py-2.5 text-base whitespace-nowrap min-h-[41px] cursor-pointer transition-colors',
+        'inline-flex items-center gap-2 rounded-md border px-3 py-2.5 text-base whitespace-nowrap min-h-[48px] cursor-pointer transition-colors',
         isSelected
           ? 'border-primary bg-primary/5 font-semibold text-primary'
           : 'border-input bg-background font-normal text-foreground hover:border-primary/40',

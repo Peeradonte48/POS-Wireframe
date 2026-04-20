@@ -25,7 +25,6 @@ import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { CashDialog } from '@/components/payment/CashDialog'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { useBillStore } from '@/stores/bill.store'
-import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 import type { OrderLineItem } from '@/stores/order.store'
 import type { ItemBillEntry } from '@/stores/bill.store'
 
@@ -41,8 +40,6 @@ interface PerSeatPaymentPanelProps {
   splitAmounts: number[]
   billItems: OrderLineItem[]
   itemBills: ItemBillEntry[][] | undefined
-  crmMember: CrmMember | null
-  onCrmChange: () => void
   onAllPaid: () => void
   onBack: () => void
 }
@@ -57,14 +54,14 @@ export function PerSeatPaymentPanel({
   splitAmounts,
   billItems,
   itemBills,
-  crmMember,
-  onCrmChange,
   onAllPaid,
   onBack,
 }: PerSeatPaymentPanelProps) {
   const router = useRouter()
-  const { setCrmMember, recordPayment } = useBillStore()
+  const { setSeatCrmMember, clearSeatCrmMember, recordPayment } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
+  const seatCrmMapRaw = useBillStore((s) => s.seatCrmMembers[tableId])
+  const seatCrmMap = useMemo(() => seatCrmMapRaw ?? {}, [seatCrmMapRaw])
 
   const persistedPayments = useBillStore((s) => s.splits[tableId]?.payments ?? {})
   const [paidIndexes, setPaidIndexes] = useState<Set<number>>(
@@ -265,12 +262,18 @@ export function PerSeatPaymentPanel({
             </div>
 
             <div className="bg-background border border-border rounded-[14px] overflow-hidden">
-              {crmMember ? (
-                <CrmMemberCard member={crmMember} onChangeMember={onCrmChange} />
+              {seatCrmMap[selectedTabIndex] ? (
+                <CrmMemberCard
+                  member={seatCrmMap[selectedTabIndex]}
+                  onChangeMember={() => {
+                    clearSeatCrmMember(tableId, selectedTabIndex)
+                    setCrmDialogOpen(true)
+                  }}
+                />
               ) : (
                 <button
                   className="flex items-center justify-center gap-2 h-10 w-full px-8"
-                  onClick={onCrmChange}
+                  onClick={() => setCrmDialogOpen(true)}
                 >
                   <Crown size={16} className="text-primary shrink-0" />
                   <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
@@ -363,7 +366,7 @@ export function PerSeatPaymentPanel({
         open={crmDialogOpen}
         onClose={() => setCrmDialogOpen(false)}
         onMemberFound={(member) => {
-          setCrmMember(tableId, member)
+          setSeatCrmMember(tableId, selectedTabIndex, member)
           setCrmDialogOpen(false)
         }}
       />

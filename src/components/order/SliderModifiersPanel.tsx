@@ -290,7 +290,7 @@ function ModifierChips({
             type="button"
             onClick={() => onSelect(group.id, option.id, group.type)}
             className={cn(
-              'inline-flex items-center justify-center rounded-lg border px-3 py-3 text-base font-medium transition-all min-h-[44px] min-w-[80px] max-w-[224px]',
+              'inline-flex items-center justify-center rounded-lg border px-3 py-3 text-base font-medium transition-all min-h-[48px] min-w-[80px] max-w-[224px]',
               isSelected
                 ? 'border-primary bg-primary/5 text-primary font-semibold'
                 : 'border-border bg-background text-foreground hover:border-primary/40',

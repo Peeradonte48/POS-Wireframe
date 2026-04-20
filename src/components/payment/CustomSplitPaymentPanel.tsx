@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Banknote,
   ChevronDown,
@@ -25,7 +25,6 @@ import { CrmMemberCard } from '@/components/payment/CrmMemberCard'
 import { CashDialog } from '@/components/payment/CashDialog'
 import { CardPanel } from '@/components/payment/CardPanel'
 import { useBillStore } from '@/stores/bill.store'
-import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 import type { OrderLineItem } from '@/stores/order.store'
 import type { PromotionDiscount } from '@/stores/bill.store'
 
@@ -45,8 +44,6 @@ interface CustomSplitPaymentPanelProps {
   promotions: PromotionDiscount[]
   discountTotal: number
   guestCount: number | null
-  crmMember: CrmMember | null
-  onCrmChange: () => void
   onAllPaid: () => void
   onBack: () => void
 }
@@ -65,14 +62,14 @@ export function CustomSplitPaymentPanel({
   promotions,
   discountTotal,
   guestCount,
-  crmMember,
-  onCrmChange,
   onAllPaid,
   onBack,
 }: CustomSplitPaymentPanelProps) {
   const router = useRouter()
-  const { setCrmMember, recordPayment } = useBillStore()
+  const { setSeatCrmMember, clearSeatCrmMember, recordPayment } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
+  const seatCrmMapRaw = useBillStore((s) => s.seatCrmMembers[tableId])
+  const seatCrmMap = useMemo(() => seatCrmMapRaw ?? {}, [seatCrmMapRaw])
 
   const persistedPayments = useBillStore((s) => s.splits[tableId]?.payments ?? {})
   const [paidIndexes, setPaidIndexes] = useState<Set<number>>(
@@ -295,12 +292,18 @@ export function CustomSplitPaymentPanel({
           </div>
 
           <div className="bg-background border border-border rounded-[14px] overflow-hidden p-4">
-            {crmMember ? (
-              <CrmMemberCard member={crmMember} onChangeMember={onCrmChange} />
+            {seatCrmMap[selectedTabIndex] ? (
+              <CrmMemberCard
+                member={seatCrmMap[selectedTabIndex]}
+                onChangeMember={() => {
+                  clearSeatCrmMember(tableId, selectedTabIndex)
+                  setCrmDialogOpen(true)
+                }}
+              />
             ) : (
               <button
                 className="flex items-center justify-center gap-2 h-10 w-full"
-                onClick={onCrmChange}
+                onClick={() => setCrmDialogOpen(true)}
               >
                 <Crown size={16} className="text-primary shrink-0" />
                 <span className="font-medium text-sm text-primary leading-5">เพิ่มเบอร์สมาชิกลูกค้า</span>
@@ -392,7 +395,7 @@ export function CustomSplitPaymentPanel({
         open={crmDialogOpen}
         onClose={() => setCrmDialogOpen(false)}
         onMemberFound={(member) => {
-          setCrmMember(tableId, member)
+          setSeatCrmMember(tableId, selectedTabIndex, member)
           setCrmDialogOpen(false)
         }}
       />

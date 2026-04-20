@@ -67,7 +67,8 @@ export interface PaymentLogEntry {
 interface BillStore {
   splits: Record<string, BillSplit>
   merges: Record<string, string>  // key = secondaryTableId, value = primaryTableId
-  crmMembers: Record<string, CrmMember>  // key = tableId
+  crmMembers: Record<string, CrmMember>  // key = tableId — used by non-split payment
+  seatCrmMembers: Record<string, Record<number, CrmMember>>  // key = tableId, inner key = seatIndex — per-split CRM
   promotionDiscounts: Record<string, PromotionDiscount[]>  // key = tableId
   addPromotionDiscount: (tableId: string, data: PromotionDiscount) => void
   removePromotionDiscount: (tableId: string, couponCode: string) => void
@@ -85,6 +86,9 @@ interface BillStore {
   getSplit: (tableId: string) => BillSplit | undefined
   setCrmMember: (tableId: string, member: CrmMember) => void
   clearCrmMember: (tableId: string) => void
+  setSeatCrmMember: (tableId: string, seatIndex: number, member: CrmMember) => void
+  clearSeatCrmMember: (tableId: string, seatIndex: number) => void
+  clearAllSeatCrmMembers: (tableId: string) => void
   initMerge: (primaryTableId: string, secondaryTableIds: string[]) => void
   dissolveAll: (primaryTableId: string) => void
   isMergedSecondary: (tableId: string) => boolean
@@ -107,6 +111,7 @@ export const useBillStore = create<BillStore>()(
       splits: {},
       merges: {},
       crmMembers: {},
+      seatCrmMembers: {},
       promotionDiscounts: {},
       paymentSessions: {},
       paymentLog: [],
@@ -278,8 +283,9 @@ export const useBillStore = create<BillStore>()(
 
       cancelSplit: (tableId) =>
         set((state) => {
-          const { [tableId]: _void, ...rest } = state.splits
-          return { splits: rest }
+          const { [tableId]: _voidSplits, ...restSplits } = state.splits
+          const { [tableId]: _voidSeats, ...restSeatCrm } = state.seatCrmMembers
+          return { splits: restSplits, seatCrmMembers: restSeatCrm }
         }),
 
       getSplit: (tableId) => get().splits[tableId],
@@ -290,7 +296,38 @@ export const useBillStore = create<BillStore>()(
       clearCrmMember: (tableId) =>
         set((state) => {
           const { [tableId]: _void, ...rest } = state.crmMembers
-          return { crmMembers: rest }
+          const { [tableId]: _voidSeats, ...restSeats } = state.seatCrmMembers
+          return { crmMembers: rest, seatCrmMembers: restSeats }
+        }),
+
+      setSeatCrmMember: (tableId, seatIndex, member) =>
+        set((state) => {
+          const existing = state.seatCrmMembers[tableId] ?? {}
+          return {
+            seatCrmMembers: {
+              ...state.seatCrmMembers,
+              [tableId]: { ...existing, [seatIndex]: member },
+            },
+          }
+        }),
+
+      clearSeatCrmMember: (tableId, seatIndex) =>
+        set((state) => {
+          const existing = state.seatCrmMembers[tableId]
+          if (!existing) return state
+          const { [seatIndex]: _void, ...rest } = existing
+          return {
+            seatCrmMembers: {
+              ...state.seatCrmMembers,
+              [tableId]: rest,
+            },
+          }
+        }),
+
+      clearAllSeatCrmMembers: (tableId) =>
+        set((state) => {
+          const { [tableId]: _void, ...rest } = state.seatCrmMembers
+          return { seatCrmMembers: rest }
         }),
 
       initMerge: (primaryTableId, secondaryTableIds) =>
