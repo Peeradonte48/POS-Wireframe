@@ -213,10 +213,10 @@ function ModifierSheetContent({
 
       {/* Sticky footer — red primary + outline cancel */}
       <div className="absolute bottom-0 left-0 right-0 z-10 bg-background border-t border-border px-4 py-4 flex flex-col gap-2 shrink-0">
-        <Button className="w-full h-12" onClick={handleConfirm}>
+        <Button className="w-full h-12 text-base" onClick={handleConfirm}>
           {editingLineId ? 'อัปเดตคำสั่งซื้อ' : 'เพิ่มลงในคำสั่งซื้อ'}
         </Button>
-        <Button variant="outline" className="w-full h-12" onClick={onClose}>ยกเลิก</Button>
+        <Button variant="outline" className="w-full h-12 text-base" onClick={onClose}>ยกเลิก</Button>
       </div>
     </>
   )

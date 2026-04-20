@@ -48,38 +48,27 @@ function RadioItem({
       role="radio"
       aria-checked={isSelected}
       onClick={onSelect}
-      className="flex flex-1 gap-3 items-start max-w-[224px] min-w-[80px] min-h-[44px] text-left cursor-pointer"
+      className={cn(
+        'inline-flex items-center gap-2 rounded-md border px-3 py-2.5 text-base whitespace-nowrap min-h-[41px] cursor-pointer transition-colors',
+        isSelected
+          ? 'border-primary bg-primary/5 font-semibold text-primary'
+          : 'border-input bg-background font-normal text-foreground hover:border-primary/40',
+      )}
     >
-      {/* Radio circle — selected: white bg + primary border + red dot; unselected: hollow on card */}
+      {/* Radio circle — selected: primary border + filled dot; unselected: hollow */}
       <span
         className={cn(
-          'shrink-0 size-4 mt-px rounded-full border flex items-center justify-center transition-colors',
-          isSelected
-            ? 'border-primary bg-background'
-            : 'border-input bg-transparent',
+          'shrink-0 size-4 rounded-full border flex items-center justify-center transition-colors',
+          isSelected ? 'border-primary bg-background' : 'border-input bg-background',
         )}
-        style={isSelected ? { boxShadow: '0 1px 2px 0 rgba(0,0,0,0.05)' } : undefined}
       >
         {isSelected && <span className="size-2 rounded-full bg-primary" />}
       </span>
 
-      {/* Label wrapper — Thai on top, English UPPERCASE below */}
-      <span className="flex flex-col gap-1.5 flex-1 min-w-0 pt-px">
-        <span
-          className={cn(
-            'text-sm leading-none truncate',
-            isSelected ? 'font-semibold text-foreground' : 'font-normal text-foreground',
-          )}
-        >
-          {option.label}
-          {option.priceAdj > 0 && (
-            <span className="ml-1 text-xs opacity-60">+฿{option.priceAdj}</span>
-          )}
-        </span>
-        {option.labelEn && (
-          <span className="text-sm leading-5 text-muted-foreground truncate">
-            {option.labelEn}
-          </span>
+      <span className="leading-none">
+        {option.label}
+        {option.priceAdj > 0 && (
+          <span className="ml-1 text-xs opacity-60">+฿{option.priceAdj}</span>
         )}
       </span>
     </button>
@@ -107,7 +96,7 @@ export function RadioModifiersPanel({
 
   return (
     <>
-      {modifierGroups.map((group) => {
+      {modifierGroups.map((group, idx) => {
         const hasError = errors.has(group.id)
         const selected = selections[group.id] ?? []
         const IconComp = GROUP_ICONS[group.id]
@@ -125,7 +114,7 @@ export function RadioModifiersPanel({
               hasError && 'ring-1 ring-destructive/50',
             )}
           >
-            {/* Header — icon + label + required tag */}
+            {/* Header — icon + numbered label + required tag */}
             <div className="flex items-center gap-1.5">
               {IconComp && (
                 <IconComp
@@ -139,7 +128,7 @@ export function RadioModifiersPanel({
                   hasError ? 'text-destructive' : 'text-card-foreground',
                 )}
               >
-                {group.label}
+                {idx + 1}.{group.label}
               </span>
               <span
                 className={cn(
@@ -147,12 +136,12 @@ export function RadioModifiersPanel({
                   hasError ? 'text-destructive' : 'text-muted-foreground',
                 )}
               >
-                {group.required ? '(required)' : '(optional)'}
+                {group.required ? '(บังคับ)' : '(ไม่บังคับ)'}
               </span>
             </div>
 
-            {/* Options row — flex grid, one column per option */}
-            <div className="flex gap-2 items-start w-full">
+            {/* Options — wrapping pill row */}
+            <div className="flex flex-wrap gap-2 items-start w-full">
               {group.options.map((option) => (
                 <RadioItem
                   key={option.id}

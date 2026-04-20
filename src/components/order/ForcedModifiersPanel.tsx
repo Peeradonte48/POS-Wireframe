@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   Shell, Soup, Ham, Salad, Flame, Droplets,
   type LucideIcon,
@@ -55,6 +55,8 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
   const containerRef = useRef<HTMLDivElement>(null)
   const highlightRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+  const activeIdx = dragIdx ?? selectedIdx
 
   // Convert finger clientX to a clamped continuous index (0 to count-1)
   const fingerToIndex = useCallback(
@@ -98,6 +100,7 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
         const contIdx = fingerToIndex(touch.clientX)
         const stepWidth = `(100% - ${PAD * 2}px) / ${count}`
         highlight.style.left = `calc(${PAD}px + ${contIdx} * ${stepWidth})`
+        setDragIdx(Math.round(Math.max(0, Math.min(count - 1, contIdx))))
       }
     },
     [isSingle, fingerToIndex, count],
@@ -128,6 +131,9 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
       highlight.style.left = `calc(${PAD}px + ${contIdx} * ${stepWidth})`
       // No transition on left during drag — follow finger instantly
       highlight.style.transition = 'transform 0.15s ease-out, box-shadow 0.15s ease-out'
+      // Track which discrete option is under the finger for text color
+      const rounded = Math.round(Math.max(0, Math.min(count - 1, contIdx)))
+      setDragIdx((prev) => (prev === rounded ? prev : rounded))
     },
     [isSingle, fingerToIndex, count],
   )
@@ -160,6 +166,7 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
           }
         }
       }
+      setDragIdx(null)
     },
     [isSingle, fingerToIndex, count, group, onSelect],
   )
@@ -190,8 +197,9 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
         />
       )}
 
-      {group.options.map((option) => {
+      {group.options.map((option, i) => {
         const isSelected = selected.includes(option.id)
+        const isActive = isSingle ? activeIdx === i : isSelected
         return (
           <button
             key={option.id}
@@ -199,10 +207,11 @@ function SegmentedControl({ group, selected, onSelect, hasError }: {
             data-option-id={option.id}
             onClick={() => onSelect(group.id, option.id, group.type)}
             className={cn(
-              'relative z-[1] flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-150 min-h-[44px]',
-              isSelected
-                ? 'text-foreground'
-                : 'text-foreground/60 hover:text-foreground',
+              'relative z-[1] flex-1 inline-flex items-center justify-center rounded-md px-2 py-2.5 text-base whitespace-nowrap min-h-[44px]',
+              'transition-[color,border-color,background-color,font-weight] duration-150 ease-out',
+              isActive
+                ? 'font-semibold text-primary border border-primary/40'
+                : 'font-medium text-foreground/60 hover:text-foreground border border-transparent',
               !isSingle && isSelected && 'bg-background shadow-sm',
             )}
           >
@@ -238,7 +247,7 @@ export function ForcedModifiersPanel({
 
   return (
     <>
-      {modifierGroups.map((group) => {
+      {modifierGroups.map((group, idx) => {
         const hasError = errors.has(group.id)
         const selected = selections[group.id] ?? []
         const IconComp = GROUP_ICONS[group.id]
@@ -251,7 +260,7 @@ export function ForcedModifiersPanel({
             }}
             className="flex flex-col gap-2"
           >
-            {/* Group header — icon + label + required tag */}
+            {/* Group header — icon + numbered label + required tag */}
             <div className="flex items-center gap-1.5">
               {IconComp && (
                 <IconComp
@@ -268,7 +277,7 @@ export function ForcedModifiersPanel({
                   hasError ? 'text-destructive' : 'text-card-foreground',
                 )}
               >
-                {group.label}
+                {idx + 1}.{group.label}
               </span>
               <span
                 className={cn(
@@ -276,7 +285,7 @@ export function ForcedModifiersPanel({
                   hasError ? 'text-destructive' : 'text-muted-foreground',
                 )}
               >
-                {group.required ? '(required)' : '(optional)'}
+                {group.required ? '(บังคับ)' : '(ไม่บังคับ)'}
               </span>
             </div>
 
