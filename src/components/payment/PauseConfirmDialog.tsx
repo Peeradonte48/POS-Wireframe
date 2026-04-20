@@ -39,16 +39,14 @@ export function PauseConfirmDialog({
   const [pinOpen, setPinOpen] = useState(false)
 
   const isSplit = scenario === 'split-partial'
-  const title = isSplit ? 'ชำระบางส่วนแล้ว' : 'กำลังชำระเงิน'
-  const description = isSplit
-    ? `${tableLabel} ชำระแล้ว ${paidSeats ?? 0}/${totalSeats ?? 0} ที่นั่ง`
-    : `การชำระเงินสำหรับ ${tableLabel} ยังไม่เสร็จสิ้น`
+  const title = 'ยืนยันออกจากหน้าชำระเงิน'
+  const description = 'คุณสามารถกลับดำเนินการต่อได้ภายหลัง'
   const cancelLabel = isSplit ? 'ยกเลิกการชำระทั้งหมด' : 'ยกเลิกการชำระ'
   const authorizeLabel = isSplit
     ? 'Authorize: Cancel Split Payment'
     : 'Authorize: Cancel Payment'
   const cancelSubtext = isSplit
-    ? 'ธุรกรรมที่ชำระแล้วจะถูกยกเลิกโดยผู้จัดการ'
+    ? `ธุรกรรมที่ชำระแล้วจะถูกยกเลิกโดยผู้จัดการ (${tableLabel} ชำระแล้ว ${paidSeats ?? 0}/${totalSeats ?? 0} ที่นั่ง)`
     : undefined
 
   return (
@@ -73,7 +71,7 @@ export function PauseConfirmDialog({
               onClick={onResumeLater}
             >
               <ArrowRightFromLine size={16} />
-              กลับมาทำต่อ
+              ออกจากหน้านี้
             </Button>
 
             <div className="pt-2">
