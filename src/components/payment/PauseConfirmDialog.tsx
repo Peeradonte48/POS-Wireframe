@@ -40,7 +40,7 @@ export function PauseConfirmDialog({
 
   const isSplit = scenario === 'split-partial'
   const title = 'ยืนยันออกจากหน้าชำระเงิน'
-  const description = 'คุณสามารถกลับดำเนินการต่อได้ภายหลัง'
+  const description = 'คุณสามารถกลับมาดำเนินการต่อได้ภายหลัง'
   const cancelLabel = isSplit ? 'ยกเลิกการชำระทั้งหมด' : 'ยกเลิกการชำระ'
   const authorizeLabel = isSplit
     ? 'Authorize: Cancel Split Payment'
