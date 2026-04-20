@@ -64,8 +64,15 @@ export function PerSeatPaymentPanel({
   const { setCrmMember, recordPayment } = useBillStore()
   const [crmDialogOpen, setCrmDialogOpen] = useState(false)
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-  const [paidIndexes, setPaidIndexes] = useState<Set<number>>(new Set())
+  const persistedPayments = useBillStore((s) => s.splits[tableId]?.payments ?? {})
+  const [paidIndexes, setPaidIndexes] = useState<Set<number>>(
+    () => new Set(Object.keys(persistedPayments).map(Number))
+  )
+  const [selectedTabIndex, setSelectedTabIndex] = useState<number>(() => {
+    const paid = new Set(Object.keys(persistedPayments).map(Number))
+    const firstUnpaid = splitAmounts.findIndex((_, i) => !paid.has(i))
+    return firstUnpaid === -1 ? 0 : firstUnpaid
+  })
   const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
   const [checkoutMethod, setCheckoutMethod] = useState<PaymentMethod | null>(null)
   const [cashDialogOpen, setCashDialogOpen] = useState(false)
