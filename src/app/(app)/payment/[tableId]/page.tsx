@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronDown, ChevronUp, Crown, ScissorsLineDashed, Link, Unlink, HandPlatter, Coins } from 'lucide-react'
 import { toast } from 'sonner'
@@ -145,6 +145,11 @@ export default function PaymentPage() {
     setViewState('receipt')
   }
 
+  const handleDissolveMergeAuthorized = useCallback(() => {
+    dissolveAll(tableId)
+    toast.success('ยกเลิกการรวมบิลแล้วโดยผู้จัดการ')
+  }, [dissolveAll, tableId])
+
   const confirmDisabled = (!isTakeaway && !canDoAction(role, 'confirm-payment')) || paymentMethod === null || paymentMethod === 'Cash'
   const confirmHint = !isTakeaway && !canDoAction(role, 'confirm-payment')
     ? `Role "${role}" cannot confirm payment — switch to Cashier or Manager`
@@ -250,10 +255,7 @@ export default function PaymentPage() {
         open={dissolveMergePinOpen}
         onOpenChange={setDissolveMergePinOpen}
         actionLabel="Authorize: Dissolve Merge"
-        onAuthorize={() => {
-          dissolveAll(tableId)
-          toast.success('ยกเลิกการรวมบิลแล้วโดยผู้จัดการ')
-        }}
+        onAuthorize={handleDissolveMergeAuthorized}
       />
     </>
   )
