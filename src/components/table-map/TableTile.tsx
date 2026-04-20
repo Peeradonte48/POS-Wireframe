@@ -93,9 +93,13 @@ export function TableTile({ table, onTap }: TableTileProps) {
           router.push(`/payment/${table.id}/split-summary`)
           return
         }
-        // Merged secondary tables defer to their primary's payment page
+        // Merged tables (primary or secondary) → go directly to primary's payment page
         if (isMergedSecondary && primaryTableId) {
           router.push(`/payment/${primaryTableId}`)
+          return
+        }
+        if (isMergedPrimary) {
+          router.push(`/payment/${table.id}`)
           return
         }
         onTap(table)
