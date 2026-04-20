@@ -84,6 +84,16 @@ export function TableTile({ table, onTap }: TableTileProps) {
   return (
     <button
       onClick={() => {
+        // Paused payment → direct resume, bypass bottom sheet
+        if (hasActiveSession) {
+          router.push(`/payment/${table.id}`)
+          return
+        }
+        if (isSplitPaused) {
+          router.push(`/payment/${table.id}/split-summary`)
+          return
+        }
+        // Merged secondary tables defer to their primary's payment page
         if (isMergedSecondary && primaryTableId) {
           router.push(`/payment/${primaryTableId}`)
           return
