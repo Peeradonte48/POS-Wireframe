@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ChevronLeft, ChevronDown, ChevronUp, Crown, ScissorsLineDashed, Link, HandPlatter, Coins } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp, Crown, ScissorsLineDashed, Link, Unlink, HandPlatter, Coins } from 'lucide-react'
 import { toast } from 'sonner'
 import { useOrderStore } from '@/stores/order.store'
 import { useTableStore } from '@/stores/table.store'
@@ -24,6 +24,7 @@ import { useCameraScanner } from '@/components/payment/useCameraScanner'
 import { PromotionSummary } from '@/components/payment/PromotionSummary'
 import { PaymentModals, type PaymentMethod } from '@/components/payment/PaymentModals'
 import { PauseConfirmDialog } from '@/components/payment/PauseConfirmDialog'
+import { ManagerPinModal } from '@/components/auth/ManagerPinModal'
 import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
 type ViewState = 'checkBill' | 'checkout' | 'receipt'
@@ -64,6 +65,7 @@ export default function PaymentPage() {
   const [valueSplitSheetOpen, setValueSplitSheetOpen] = useState(false); const [itemSplitSheetOpen, setItemSplitSheetOpen] = useState(false); const [paymentMethodDialogOpen, setPaymentMethodDialogOpen] = useState(false)
   const [discountExpanded, setDiscountExpanded] = useState(true)
   const [pauseDialogOpen, setPauseDialogOpen] = useState(false)
+  const [dissolveMergePinOpen, setDissolveMergePinOpen] = useState(false)
   const table = useTableStore((s) => s.tables[tableId])
   const tableLabel = table?.label ?? tableId
   const pausedCashAmount = useBillStore((s) => s.paymentSessions[tableId]?.cashAmount)
@@ -242,6 +244,15 @@ export default function PaymentPage() {
           setQrSheetOpen(false)
           setViewState('checkBill')
           toast.success('ยกเลิกการชำระแล้วโดยผู้จัดการ')
+        }}
+      />
+      <ManagerPinModal
+        open={dissolveMergePinOpen}
+        onOpenChange={setDissolveMergePinOpen}
+        actionLabel="Authorize: Dissolve Merge"
+        onAuthorize={() => {
+          dissolveAll(tableId)
+          toast.success('ยกเลิกการรวมบิลแล้วโดยผู้จัดการ')
         }}
       />
     </>
@@ -449,6 +460,15 @@ export default function PaymentPage() {
                       <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setSplitConfirmDialogOpen(true)} disabled={isMerged}><Coins size={16} />แบ่งจ่าย</Button>
                       <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setItemSplitSheetOpen(true)} disabled={itemSplitDisabled}><ScissorsLineDashed size={16} />แยกบิล</Button>
                       <Button variant="outline" className="w-full h-14 gap-2" onClick={() => setMergeSheetOpen(true)} disabled={isMerged || !hasEligibleMergeTarget}><Link size={16} />รวมบิล</Button>
+                      {isMerged && (
+                        <Button
+                          variant="outline"
+                          className="w-full h-14 gap-2 text-destructive hover:text-destructive"
+                          onClick={() => setDissolveMergePinOpen(true)}
+                        >
+                          <Unlink size={16} />ยกเลิกการรวมบิล
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )}
