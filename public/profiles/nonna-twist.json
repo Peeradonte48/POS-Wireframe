@@ -1,0 +1,795 @@
+{
+  "schemaVersion": 1,
+  "profile": {
+    "id": "nonna-twist",
+    "name": "Nonna Twist",
+    "nameTh": "นอนน่า ทวิสต์",
+    "currency": "THB",
+    "locale": "th-TH"
+  },
+  "categories": [
+    {
+      "id": "starters",
+      "label": "Starters",
+      "labelTh": "ออร์เดิร์ฟ"
+    },
+    {
+      "id": "pasta",
+      "label": "Pasta",
+      "labelTh": "พาสต้า"
+    },
+    {
+      "id": "mains",
+      "label": "Mains",
+      "labelTh": "จานหลัก"
+    },
+    {
+      "id": "steaks",
+      "label": "Steaks",
+      "labelTh": "สเต๊ก"
+    },
+    {
+      "id": "sandwiches",
+      "label": "Sandwiches",
+      "labelTh": "แซนด์วิช"
+    },
+    {
+      "id": "thai",
+      "label": "Khun Yai's Thai Taste",
+      "labelTh": "คุณยาย"
+    },
+    {
+      "id": "desserts",
+      "label": "Desserts",
+      "labelTh": "ของหวาน"
+    },
+    {
+      "id": "coffee",
+      "label": "Coffee",
+      "labelTh": "กาแฟ"
+    },
+    {
+      "id": "drinks",
+      "label": "Drinks",
+      "labelTh": "เครื่องดื่ม"
+    },
+    {
+      "id": "cocktails",
+      "label": "Signature Cocktails",
+      "labelTh": "ค็อกเทล"
+    }
+  ],
+  "modifierGroups": [
+    {
+      "id": "fries-style",
+      "label": "เลือกชนิดเฟรนช์ฟรายส์",
+      "icon": "🍟",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "classic", "label": "คลาสสิก", "labelEn": "CLASSIC", "priceAdj": 0 },
+        { "id": "twist",   "label": "ทวิสต์",   "labelEn": "TWIST",   "priceAdj": 0 },
+        { "id": "waffle",  "label": "วาฟเฟิล", "labelEn": "WAFFLE",  "priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "special-fries-style",
+      "label": "เลือกชนิดเฟรนช์ฟรายส์พิเศษ",
+      "icon": "🍟",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "truffle",     "label": "ทรัฟเฟิล", "labelEn": "TRUFFLE",     "priceAdj": 0 },
+        { "id": "blue-cheese", "label": "บลูชีส",    "labelEn": "BLUE CHEESE", "priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "mussels-sauce",
+      "label": "ซอสหอยแมลงภู่",
+      "icon": "🦪",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "white-wine", "label": "ไวน์ขาว",   "labelEn": "WHITE WINE", "priceAdj": 0 },
+        { "id": "tomato",     "label": "มะเขือเทศ", "labelEn": "TOMATO",     "priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "water-style",
+      "label": "ชนิดน้ำ",
+      "icon": "💧",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "still",     "label": "น้ำเปล่า", "labelEn": "STILL",     "priceAdj": 0 },
+        { "id": "sparkling", "label": "น้ำโซดา",  "labelEn": "SPARKLING", "priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "juice-flavor",
+      "label": "รสน้ำผลไม้",
+      "icon": "🧃",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "orange", "label": "ส้ม",      "labelEn": "ORANGE", "priceAdj": 0 },
+        { "id": "lime",   "label": "มะนาว",    "labelEn": "LIME",   "priceAdj": 0 },
+        { "id": "lychee", "label": "ลิ้นจี่",   "labelEn": "LYCHEE", "priceAdj": 0 },
+        { "id": "guava",  "label": "ฝรั่ง",     "labelEn": "GUAVA",  "priceAdj": 0 }
+      ]
+    },
+    {
+      "id": "soft-drink-choice",
+      "label": "ชนิดน้ำอัดลม",
+      "icon": "🥤",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "coke",      "label": "โค้ก",       "labelEn": "COKE",      "priceAdj": 0 },
+        { "id": "coke-zero", "label": "โค้กซีโร่", "labelEn": "COKE ZERO", "priceAdj": 0 },
+        { "id": "sprite",    "label": "สไปรท์",    "labelEn": "SPRITE",    "priceAdj": 0 },
+        { "id": "fanta",     "label": "แฟนต้า",    "labelEn": "FANTA",     "priceAdj": 0 },
+        { "id": "soda",      "label": "โซดา",       "labelEn": "SODA",      "priceAdj": 0 }
+      ]
+    }
+  ],
+  "menuItems": [
+    {
+      "id": "garlic-foccaccia-basket",
+      "categoryId": "starters",
+      "name": "Garlic Foccaccia Basket",
+      "nameTh": "โฟกาเซียกระเทียม",
+      "basePrice": 160,
+      "thumbnailPlaceholder": "🥖",
+      "imagePath": "/profiles/nonna-twist-images/b416db6146fbb6cf5c4945d64984dcf0.jpg"
+    },
+    {
+      "id": "fries-classic",
+      "categoryId": "starters",
+      "name": "Fries",
+      "nameTh": "เฟรนช์ฟรายส์",
+      "basePrice": 180,
+      "thumbnailPlaceholder": "🍟",
+      "imagePath": "/profiles/nonna-twist-images/1e0a8c4144c78bb31735a7a33a4cc340.jpg",
+      "modifierGroupIds": ["fries-style"]
+    },
+    {
+      "id": "special-fries",
+      "categoryId": "starters",
+      "name": "Special Fries",
+      "nameTh": "เฟรนช์ฟรายส์พิเศษ",
+      "basePrice": 280,
+      "thumbnailPlaceholder": "🍟",
+      "imagePath": "/profiles/nonna-twist-images/75930ebab6d78125315419980c7d4ae3.jpg",
+      "modifierGroupIds": ["special-fries-style"]
+    },
+    {
+      "id": "liver-pate",
+      "categoryId": "starters",
+      "name": "Nonna's Liver Pâté with Crackers",
+      "nameTh": "ตับบดกับแครกเกอร์",
+      "basePrice": 180,
+      "thumbnailPlaceholder": "🧈",
+      "imagePath": "/profiles/nonna-twist-images/0a35184136bbc6648e6a4164efd79abc.jpg"
+    },
+    {
+      "id": "cauliflower-puree",
+      "categoryId": "starters",
+      "name": "Nonna's Cauliflower Puree",
+      "nameTh": "ดอกกะหล่ำบด",
+      "basePrice": 180,
+      "thumbnailPlaceholder": "🥦",
+      "imagePath": "/profiles/nonna-twist-images/a6c702c625e6e66d65aab68ed8abd7a3.jpg"
+    },
+    {
+      "id": "calamari",
+      "categoryId": "starters",
+      "name": "Nonna's Calamari",
+      "nameTh": "ปลาหมึกทอดกรอบ",
+      "basePrice": 220,
+      "thumbnailPlaceholder": "🦑",
+      "imagePath": "/profiles/nonna-twist-images/f7f9fbb3b7cac17d5b5bceee204cc25f.jpg"
+    },
+    {
+      "id": "garlic-bread",
+      "categoryId": "starters",
+      "name": "Nonna's Garlic Bread",
+      "nameTh": "ขนมปังกระเทียม",
+      "basePrice": 250,
+      "thumbnailPlaceholder": "🥖",
+      "imagePath": "/profiles/nonna-twist-images/06118d63f5cd175342cd1c128ee1feb8.jpg"
+    },
+    {
+      "id": "tuna-salad",
+      "categoryId": "starters",
+      "name": "Nonna's Tuna Salad",
+      "nameTh": "สลัดทูน่า",
+      "basePrice": 290,
+      "thumbnailPlaceholder": "🥗",
+      "imagePath": "/profiles/nonna-twist-images/6428c9d2afa7c5655aa2c603166e34ca.jpg"
+    },
+    {
+      "id": "caesar-salad",
+      "categoryId": "starters",
+      "name": "Classic Caesar Salad",
+      "nameTh": "ซีซาร์สลัด",
+      "basePrice": 250,
+      "thumbnailPlaceholder": "🥗",
+      "imagePath": "/profiles/nonna-twist-images/38fe9d755bb79a1b8fc8dbab5d9c239b.jpg"
+    },
+    {
+      "id": "smoked-duck-salad",
+      "categoryId": "starters",
+      "name": "Mixed Salad with Smoked Duck & Orange",
+      "nameTh": "สลัดเป็ดรมควันกับส้ม",
+      "basePrice": 350,
+      "thumbnailPlaceholder": "🥗",
+      "imagePath": "/profiles/nonna-twist-images/a0675340687c131ac1e4eaeee357a93d.jpg"
+    },
+    {
+      "id": "clear-chicken-soup",
+      "categoryId": "starters",
+      "name": "Nonna's Clear Chicken Soup",
+      "nameTh": "ซุปไก่ใส",
+      "basePrice": 190,
+      "thumbnailPlaceholder": "🍲",
+      "imagePath": "/profiles/nonna-twist-images/3a8320523004a493a990e0305cec1d19.jpg"
+    },
+    {
+      "id": "french-onion-soup",
+      "categoryId": "starters",
+      "name": "Old-Fashioned French Onion Soup",
+      "nameTh": "ซุปหอมใหญ่ฝรั่งเศส",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🧅",
+      "imagePath": "/profiles/nonna-twist-images/5a3c1fba34a0810f3adf2247a25bb72b.jpg"
+    },
+    {
+      "id": "clam-chowder",
+      "categoryId": "starters",
+      "name": "New England Clam Chowder",
+      "nameTh": "ซุปหอยครีม",
+      "basePrice": 280,
+      "thumbnailPlaceholder": "🦪",
+      "imagePath": "/profiles/nonna-twist-images/f082df193242ba07be4a229228463014.jpg"
+    },
+    {
+      "id": "mac-and-cheese",
+      "categoryId": "starters",
+      "name": "Golden Baked Mac & Cheese",
+      "nameTh": "มักกะโรนีอบชีส",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🧀",
+      "imagePath": "/profiles/nonna-twist-images/fa35f77cab89f100ac4c0ea7d571da29.jpg"
+    },
+    {
+      "id": "mini-wagyu-burger",
+      "categoryId": "starters",
+      "name": "Mini Wagyu Burger",
+      "nameTh": "มินิเบอร์เกอร์วากิว",
+      "basePrice": 340,
+      "thumbnailPlaceholder": "🍔",
+      "imagePath": "/profiles/nonna-twist-images/1a2915f8d94ea53b58e33f6dbb036622.jpg"
+    },
+    {
+      "id": "black-mussels",
+      "categoryId": "starters",
+      "name": "Black Mussels",
+      "nameTh": "หอยแมลงภู่ดำ",
+      "basePrice": 390,
+      "thumbnailPlaceholder": "🦪",
+      "imagePath": "/profiles/nonna-twist-images/0066d3da9077a01976b9d9ddf1a20c1b.jpg",
+      "modifierGroupIds": ["mussels-sauce"]
+    },
+    {
+      "id": "macaroni-smoked-cheese-salad",
+      "categoryId": "starters",
+      "name": "Nonna's Macaroni & Smoked Cheese Salad",
+      "nameTh": "สลัดมักกะโรนีชีสรมควัน",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🧀"
+    },
+    {
+      "id": "spag-sri-esarn",
+      "categoryId": "pasta",
+      "name": "Spaghetti Sri E-Sarn",
+      "nameTh": "สปาเกตตีศรีอีสาน",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🍝",
+      "imagePath": "/profiles/nonna-twist-images/2cc234dba87665d6585fb823af4b6e2b.jpg"
+    },
+    {
+      "id": "spag-creamy-pesto",
+      "categoryId": "pasta",
+      "name": "Spaghetti Creamy Pesto",
+      "nameTh": "สปาเกตตีเพสโต้ครีม",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🍝",
+      "imagePath": "/profiles/nonna-twist-images/a979c7875946a0d54d2489f988f3d1d6.jpg"
+    },
+    {
+      "id": "spag-carbonara",
+      "categoryId": "pasta",
+      "name": "Spaghetti Carbonara",
+      "nameTh": "สปาเกตตีคาร์โบนาร่า",
+      "basePrice": 320,
+      "thumbnailPlaceholder": "🍝",
+      "imagePath": "/profiles/nonna-twist-images/af4bc5cd6c66beb238e4e598dd973f5c.jpg"
+    },
+    {
+      "id": "spag-shrimp-roe",
+      "categoryId": "pasta",
+      "name": "Spaghetti Shrimp Roe Cream with Shrimp",
+      "nameTh": "สปาเกตตีซอสครีมไข่กุ้ง",
+      "basePrice": 360,
+      "thumbnailPlaceholder": "🍤",
+      "imagePath": "/profiles/nonna-twist-images/3d9386f442b0d8ced7799fe0d21a0720.jpg"
+    },
+    {
+      "id": "spag-wagyu-meatball",
+      "categoryId": "pasta",
+      "name": "Spaghetti Wagyu Meatball",
+      "nameTh": "สปาเกตตีมีตบอลวากิว",
+      "basePrice": 390,
+      "thumbnailPlaceholder": "🍝",
+      "imagePath": "/profiles/nonna-twist-images/19d58b84d6e04f5af0011313e39f891c.jpg"
+    },
+    {
+      "id": "chicken-divan",
+      "categoryId": "mains",
+      "name": "Nonna's Chicken Divan (Regular)",
+      "nameTh": "ไก่อบซอสครีม (ปกติ)",
+      "basePrice": 450,
+      "thumbnailPlaceholder": "🍗",
+      "imagePath": "/profiles/nonna-twist-images/cbb4d0c81a47617b54bfc52120e62837.jpg"
+    },
+    {
+      "id": "pork-chop",
+      "categoryId": "mains",
+      "name": "Nonna's Pork Chop",
+      "nameTh": "พอร์กช็อป",
+      "basePrice": 490,
+      "thumbnailPlaceholder": "🥩",
+      "imagePath": "/profiles/nonna-twist-images/bef98f10e2714879ad6c30459029ad12.jpg"
+    },
+    {
+      "id": "schnitzel-chicken",
+      "categoryId": "mains",
+      "name": "Schnitzel (Chicken)",
+      "nameTh": "ชนิตเซล (ไก่)",
+      "basePrice": 350,
+      "thumbnailPlaceholder": "🍗",
+      "imagePath": "/profiles/nonna-twist-images/88d662cb0382ae91e5ab4fc5e0abb9df.jpg"
+    },
+    {
+      "id": "schnitzel-pork",
+      "categoryId": "mains",
+      "name": "Schnitzel (Pork)",
+      "nameTh": "ชนิตเซล (หมู)",
+      "basePrice": 380,
+      "thumbnailPlaceholder": "🥩"
+    },
+    {
+      "id": "fish-and-chips",
+      "categoryId": "mains",
+      "name": "Crispy-Battered Fish & Chips (Regular)",
+      "nameTh": "ฟิชแอนด์ชิปส์ (ปกติ)",
+      "basePrice": 380,
+      "thumbnailPlaceholder": "🐟",
+      "imagePath": "/profiles/nonna-twist-images/10903eca48c8e5866318c50980a9fa54.jpg"
+    },
+    {
+      "id": "seabass-butter-caper",
+      "categoryId": "mains",
+      "name": "Seabass Fillet in Butter Caper Cream",
+      "nameTh": "ปลากะพงซอสเนยเคเปอร์",
+      "basePrice": 480,
+      "thumbnailPlaceholder": "🐟",
+      "imagePath": "/profiles/nonna-twist-images/52e52c24180072a4c0dc2deff90a95f6.jpg"
+    },
+    {
+      "id": "duck-brandy-sausages",
+      "categoryId": "mains",
+      "name": "Nonna's Duck & Brandy Sausages",
+      "nameTh": "ไส้กรอกเป็ดบรั่นดี",
+      "basePrice": 580,
+      "thumbnailPlaceholder": "🦆"
+    },
+    {
+      "id": "pork-stew",
+      "categoryId": "mains",
+      "name": "Nonna's Pork Stew with Toasted Bread",
+      "nameTh": "สตูว์หมูกับขนมปังปิ้ง",
+      "basePrice": 320,
+      "thumbnailPlaceholder": "🥘",
+      "imagePath": "/profiles/nonna-twist-images/37588c0ffc0de6415784510f4184eecf.jpg"
+    },
+    {
+      "id": "sliced-picanha",
+      "categoryId": "steaks",
+      "name": "Sliced Picanha Steak (250g)",
+      "nameTh": "พิคาน่าสไลซ์ (250 ก.)",
+      "basePrice": 990,
+      "thumbnailPlaceholder": "🥩",
+      "imagePath": "/profiles/nonna-twist-images/14423fd4591dd1da2632227aad210b38.jpg"
+    },
+    {
+      "id": "lamb-rack",
+      "categoryId": "steaks",
+      "name": "Lamb Rack (2 Racks)",
+      "nameTh": "แร็กแกะ (2 ชิ้น)",
+      "basePrice": 990,
+      "thumbnailPlaceholder": "🍖",
+      "imagePath": "/profiles/nonna-twist-images/8264f6d2c0d892802dcde94070b3ca4f.jpg"
+    },
+    {
+      "id": "wagyu-striploin",
+      "categoryId": "steaks",
+      "name": "Wagyu Striploin (320g)",
+      "nameTh": "วากิวสตริปลอยน์ (320 ก.)",
+      "basePrice": 1600,
+      "thumbnailPlaceholder": "🥩",
+      "imagePath": "/profiles/nonna-twist-images/39c5777007cc2817c519a0bc56e056d2.jpg"
+    },
+    {
+      "id": "wagyu-ribeye",
+      "categoryId": "steaks",
+      "name": "Wagyu Ribeye (320g)",
+      "nameTh": "วากิวริบอาย (320 ก.)",
+      "basePrice": 1850,
+      "thumbnailPlaceholder": "🥩",
+      "imagePath": "/profiles/nonna-twist-images/c18f9b13165a85df1f2d18373537219d.jpg"
+    },
+    {
+      "id": "wagyu-tenderloin",
+      "categoryId": "steaks",
+      "name": "Wagyu Tenderloin MB 8-9 (200g)",
+      "nameTh": "วากิวเทนเดอร์ลอยน์ (200 ก.)",
+      "basePrice": 2250,
+      "thumbnailPlaceholder": "🥩",
+      "imagePath": "/profiles/nonna-twist-images/e932dcde943e990bbb2c4bc146378994.jpg"
+    },
+    {
+      "id": "open-sandwich",
+      "categoryId": "sandwiches",
+      "name": "Nonna's Open Sandwich",
+      "nameTh": "โอเพ่นแซนด์วิช",
+      "basePrice": 280,
+      "thumbnailPlaceholder": "🍳"
+    },
+    {
+      "id": "grilled-mushroom-sandwich",
+      "categoryId": "sandwiches",
+      "name": "Grilled Mushroom Sandwich",
+      "nameTh": "แซนด์วิชเห็ดย่าง",
+      "basePrice": 250,
+      "thumbnailPlaceholder": "🥪",
+      "imagePath": "/profiles/nonna-twist-images/318787eae08c1d21b1e5330a2ac41ae3.jpg"
+    },
+    {
+      "id": "sourdough-tuna-pesto",
+      "categoryId": "sandwiches",
+      "name": "Grilled Sourdough Tuna & Pesto Sandwich",
+      "nameTh": "แซนด์วิชทูน่าเพสโต้",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🥪",
+      "imagePath": "/profiles/nonna-twist-images/9b1238d4495233abb2253e6423e0a4c7.jpg"
+    },
+    {
+      "id": "sourdough-ham-cheese",
+      "categoryId": "sandwiches",
+      "name": "Grilled Sourdough Ham & Cheese Sandwich",
+      "nameTh": "แซนด์วิชแฮมชีส",
+      "basePrice": 260,
+      "thumbnailPlaceholder": "🥪",
+      "imagePath": "/profiles/nonna-twist-images/2fe0f46f403e7652a60d138f8199eb40.jpg"
+    },
+    {
+      "id": "breakfast-pan",
+      "categoryId": "sandwiches",
+      "name": "Nonna's Breakfast Pan",
+      "nameTh": "จานอาหารเช้าสไตล์นอนน่า",
+      "basePrice": 280,
+      "thumbnailPlaceholder": "🍳",
+      "imagePath": "/profiles/nonna-twist-images/6c8ee321411e6e13e7c7b78c1a89b6eb.jpg"
+    },
+    {
+      "id": "stir-fried-macaroni",
+      "categoryId": "thai",
+      "name": "Old-fashioned Stir-fried Macaroni",
+      "nameTh": "มักกะโรนีผัดโบราณ",
+      "basePrice": 240,
+      "thumbnailPlaceholder": "🍝"
+    },
+    {
+      "id": "pad-ka-prao-chicken",
+      "categoryId": "thai",
+      "name": "Pad Ka Prao Chicken with Rice",
+      "nameTh": "ข้าวกะเพราไก่",
+      "basePrice": 150,
+      "thumbnailPlaceholder": "🍚"
+    },
+    {
+      "id": "pad-ka-prao-wagyu",
+      "categoryId": "thai",
+      "name": "Pad Ka Prao Minced Wagyu with Rice",
+      "nameTh": "ข้าวกะเพราวากิวสับ",
+      "basePrice": 190,
+      "thumbnailPlaceholder": "🍚",
+      "imagePath": "/profiles/nonna-twist-images/a917e0233b1bf87520e54a0cc2398d78.jpg"
+    },
+    {
+      "id": "stir-fried-chicken-mushroom",
+      "categoryId": "thai",
+      "name": "Stir-Fried Chicken with Champignon",
+      "nameTh": "ข้าวไก่ผัดเห็ดน้ำมันหอย",
+      "basePrice": 160,
+      "thumbnailPlaceholder": "🍚",
+      "imagePath": "/profiles/nonna-twist-images/f5fd67d4fb0e7201441a6652d7fb1b3b.jpg"
+    },
+    {
+      "id": "american-fried-rice",
+      "categoryId": "thai",
+      "name": "American Fried Rice",
+      "nameTh": "ข้าวผัดอเมริกัน",
+      "basePrice": 280,
+      "thumbnailPlaceholder": "🍚",
+      "imagePath": "/profiles/nonna-twist-images/7c4a5aefd9afad23c8da2baf6216d621.jpg"
+    },
+    {
+      "id": "smoked-duck-pomelo",
+      "categoryId": "thai",
+      "name": "Smoked Duck with Pomelo Spicy Salad",
+      "nameTh": "ยำเป็ดรมควันส้มโอ",
+      "basePrice": 340,
+      "thumbnailPlaceholder": "🦆",
+      "imagePath": "/profiles/nonna-twist-images/f6986fffb94757b838c4d3b2b25b86be.jpg"
+    },
+    {
+      "id": "picanha-spicy-salad",
+      "categoryId": "thai",
+      "name": "Grilled Picanha Spicy Salad",
+      "nameTh": "ยำเนื้อพิคาน่า",
+      "basePrice": 350,
+      "thumbnailPlaceholder": "🌶️",
+      "imagePath": "/profiles/nonna-twist-images/647e92bb38cf007095b7d59ba8668a7a.jpg"
+    },
+    {
+      "id": "caramel-custard",
+      "categoryId": "desserts",
+      "name": "Caramel Custard",
+      "nameTh": "คาราเมลคัสตาร์ด",
+      "basePrice": 110,
+      "thumbnailPlaceholder": "🍮"
+    },
+    {
+      "id": "raspberry-panacotta",
+      "categoryId": "desserts",
+      "name": "Raspberry Panacotta",
+      "nameTh": "พานาค็อตต้าราสเบอร์รี่",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🍨",
+      "imagePath": "/profiles/nonna-twist-images/d8dfed9e12b55db0c86ab913128db11d.jpg"
+    },
+    {
+      "id": "salted-caramel-cheesecake",
+      "categoryId": "desserts",
+      "name": "Salted Caramel Cheesecake",
+      "nameTh": "ชีสเค้กเกลือคาราเมล",
+      "basePrice": 140,
+      "thumbnailPlaceholder": "🍰",
+      "imagePath": "/profiles/nonna-twist-images/640186d2912c36a44ac970e4d6ebe659.jpg"
+    },
+    {
+      "id": "blueberry-cheese-pie",
+      "categoryId": "desserts",
+      "name": "Nonna's Blueberry Cheese Pie",
+      "nameTh": "บลูเบอร์รี่ชีสพาย",
+      "basePrice": 220,
+      "thumbnailPlaceholder": "🥧",
+      "imagePath": "/profiles/nonna-twist-images/6eb57f4e185ba0c28385e9f63ff1ec71.jpg"
+    },
+    {
+      "id": "americano-hot",
+      "categoryId": "coffee",
+      "name": "Americano (Hot)",
+      "nameTh": "อเมริกาโน่ (ร้อน)",
+      "basePrice": 90,
+      "thumbnailPlaceholder": "☕"
+    },
+    {
+      "id": "americano-iced",
+      "categoryId": "coffee",
+      "name": "Americano (Iced)",
+      "nameTh": "อเมริกาโน่ (เย็น)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🥤"
+    },
+    {
+      "id": "americano-orange",
+      "categoryId": "coffee",
+      "name": "Americano (Orange)",
+      "nameTh": "อเมริกาโน่ส้ม",
+      "basePrice": 130,
+      "thumbnailPlaceholder": "🍊"
+    },
+    {
+      "id": "latte-hot",
+      "categoryId": "coffee",
+      "name": "Latte (Hot)",
+      "nameTh": "ลาเต้ (ร้อน)",
+      "basePrice": 90,
+      "thumbnailPlaceholder": "☕"
+    },
+    {
+      "id": "latte-iced",
+      "categoryId": "coffee",
+      "name": "Latte (Iced)",
+      "nameTh": "ลาเต้ (เย็น)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🥤"
+    },
+    {
+      "id": "caramel-macchiato-iced",
+      "categoryId": "coffee",
+      "name": "Caramel Macchiato (Iced)",
+      "nameTh": "คาราเมลมัคคิอาโต้ (เย็น)",
+      "basePrice": 140,
+      "thumbnailPlaceholder": "🥤"
+    },
+    {
+      "id": "espresso-single",
+      "categoryId": "coffee",
+      "name": "Espresso (Single)",
+      "nameTh": "เอสเปรสโซ่ (ช็อตเดี่ยว)",
+      "basePrice": 80,
+      "thumbnailPlaceholder": "☕",
+      "imagePath": "/profiles/nonna-twist-images/1df5bcf9003fe3d3bd187edbf5c4aa95.jpg"
+    },
+    {
+      "id": "espresso-double",
+      "categoryId": "coffee",
+      "name": "Espresso (Double)",
+      "nameTh": "เอสเปรสโซ่ (ดับเบิ้ล)",
+      "basePrice": 95,
+      "thumbnailPlaceholder": "☕"
+    },
+    {
+      "id": "espresso-iced",
+      "categoryId": "coffee",
+      "name": "Espresso (Iced)",
+      "nameTh": "เอสเปรสโซ่ (เย็น)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🥤"
+    },
+    {
+      "id": "dirty-not-guilty",
+      "categoryId": "coffee",
+      "name": "Dirty (Not Guilty)",
+      "nameTh": "เดอร์ตี้ (ไร้กังวล)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🥥"
+    },
+    {
+      "id": "cappuccino-hot",
+      "categoryId": "coffee",
+      "name": "Cappuccino (Hot)",
+      "nameTh": "คาปูชิโน่ (ร้อน)",
+      "basePrice": 90,
+      "thumbnailPlaceholder": "☕",
+      "imagePath": "/profiles/nonna-twist-images/54caf1b8dbca62c9bb42673983f81b8e.jpg"
+    },
+    {
+      "id": "cappuccino-iced",
+      "categoryId": "coffee",
+      "name": "Cappuccino (Iced)",
+      "nameTh": "คาปูชิโน่ (เย็น)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🥤"
+    },
+    {
+      "id": "mocha-hot",
+      "categoryId": "coffee",
+      "name": "Mocha (Hot)",
+      "nameTh": "มอคค่า (ร้อน)",
+      "basePrice": 90,
+      "thumbnailPlaceholder": "🍫"
+    },
+    {
+      "id": "mocha-iced",
+      "categoryId": "coffee",
+      "name": "Mocha (Iced)",
+      "nameTh": "มอคค่า (เย็น)",
+      "basePrice": 120,
+      "thumbnailPlaceholder": "🍫"
+    },
+    {
+      "id": "nonnas-water",
+      "categoryId": "drinks",
+      "name": "Nonna's Water",
+      "nameTh": "น้ำนอนน่า",
+      "basePrice": 50,
+      "thumbnailPlaceholder": "💧",
+      "modifierGroupIds": ["water-style"]
+    },
+    {
+      "id": "juice",
+      "categoryId": "drinks",
+      "name": "Juice",
+      "nameTh": "น้ำผลไม้",
+      "basePrice": 70,
+      "thumbnailPlaceholder": "🧃",
+      "modifierGroupIds": ["juice-flavor"]
+    },
+    {
+      "id": "soft-drink",
+      "categoryId": "drinks",
+      "name": "Soft Drink",
+      "nameTh": "น้ำอัดลม",
+      "basePrice": 50,
+      "thumbnailPlaceholder": "🥤",
+      "modifierGroupIds": ["soft-drink-choice"]
+    },
+    {
+      "id": "ice-bucket",
+      "categoryId": "drinks",
+      "name": "Ice Bucket",
+      "nameTh": "ถังน้ำแข็ง",
+      "basePrice": 60,
+      "thumbnailPlaceholder": "🧊"
+    },
+    {
+      "id": "backyard-garden",
+      "categoryId": "cocktails",
+      "name": "Nonna's Backyard Garden",
+      "nameTh": "สวนหลังบ้านนอนน่า",
+      "basePrice": 320,
+      "thumbnailPlaceholder": "🌿"
+    },
+    {
+      "id": "ume-fruit-jar",
+      "categoryId": "cocktails",
+      "name": "Nonna's Ume Fruit Jar",
+      "nameTh": "โถอุเมะนอนน่า",
+      "basePrice": 330,
+      "thumbnailPlaceholder": "🍶",
+      "imagePath": "/profiles/nonna-twist-images/a23ff394c910893e65d39472f7986555.jpg"
+    },
+    {
+      "id": "warm-hug",
+      "categoryId": "cocktails",
+      "name": "Warm Hug",
+      "nameTh": "วอร์มฮัก",
+      "basePrice": 360,
+      "thumbnailPlaceholder": "🫖",
+      "imagePath": "/profiles/nonna-twist-images/a802066132c3cd8c4b9dfb426a2b8878.jpg"
+    },
+    {
+      "id": "hibiscus-jasmine-kiss",
+      "categoryId": "cocktails",
+      "name": "Hibiscus Jasmine Kiss",
+      "nameTh": "ฮิบิสคัสจัสมินคิส",
+      "basePrice": 390,
+      "thumbnailPlaceholder": "🌺",
+      "imagePath": "/profiles/nonna-twist-images/bbce6cd924aa9ac4c682f2fef60e97b7.jpg"
+    },
+    {
+      "id": "three-amigos-margarita",
+      "categoryId": "cocktails",
+      "name": "Three Amigos Margarita",
+      "nameTh": "ทรีอามิโกส์ มาการิต้า",
+      "basePrice": 390,
+      "thumbnailPlaceholder": "🍸",
+      "imagePath": "/profiles/nonna-twist-images/16c0be8e723d00f516b72311f8820533.jpg"
+    },
+    {
+      "id": "winter-by-the-fire",
+      "categoryId": "cocktails",
+      "name": "Nonna's Winter by the Fire",
+      "nameTh": "ฤดูหนาวริมเตาผิง",
+      "basePrice": 420,
+      "thumbnailPlaceholder": "🔥",
+      "imagePath": "/profiles/nonna-twist-images/4e9d28e0fac7869ea0f9be1a43dbba5c.jpg"
+    }
+  ]
+}

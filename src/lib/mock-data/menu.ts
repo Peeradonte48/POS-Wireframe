@@ -62,7 +62,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🍜',
     type: 'single',
     required: true,
-    defaultOptionIds: ['normal'],
     options: [
       { id: 'very-soft',   label: 'นุ่มมาก',  labelEn: 'EXTRA SOFT',  priceAdj: 0 },
       { id: 'soft',        label: 'นุ่ม',      labelEn: 'SOFT',        priceAdj: 0 },
@@ -77,7 +76,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🥣',
     type: 'single',
     required: true,
-    defaultOptionIds: ['medium'],
     options: [
       { id: 'light',    label: 'เข้มข้นน้อย',  labelEn: 'WEAK',    priceAdj: 0 },
       { id: 'medium',   label: 'ปานกลาง',       labelEn: 'MEDIUM',  priceAdj: 0 },
@@ -90,7 +88,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🥩',
     type: 'single',
     required: true,
-    defaultOptionIds: ['fatty'],
     options: [
       { id: 'no-pork',    label: 'ไม่ใส่หมู (ได้เส้นเพิ่ม)', labelEn: 'NONE (GET EXTRA NOODLES)',  priceAdj: 0 },
       { id: 'fatty',      label: 'หมูติดมัน',                  labelEn: 'CHASHU PORK',               priceAdj: 0 },
@@ -103,7 +100,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🌿',
     type: 'single',
     required: true,
-    defaultOptionIds: ['both'],
     options: [
       { id: 'none',      label: 'ไม่ใส่เลย',           labelEn: 'NONE',                  priceAdj: 0 },
       { id: 'white',     label: 'ต้นหอมขาวญี่ปุ่น',    labelEn: 'JAPANESE WHITE ONION',  priceAdj: 0 },
@@ -117,7 +113,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🌶️',
     type: 'single',
     required: true,
-    defaultOptionIds: ['no-spice'],
     options: [
       { id: 'no-spice', label: 'ไม่เผ็ดเลย', labelEn: 'NONE', priceAdj: 0 },
       { id: 'x1',       label: 'x1',          labelEn: 'X 1',  priceAdj: 0 },
@@ -135,7 +130,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🧄',
     type: 'single',
     required: true,
-    defaultOptionIds: ['1tsp'],
     options: [
       { id: 'none',  label: 'ไม่ใส่เลย',  labelEn: 'NONE',         priceAdj: 0 },
       { id: '1tsp',  label: '1 ช้อนชา',   labelEn: '1 TEASPOON',   priceAdj: 0 },
@@ -151,7 +145,6 @@ const RAMEN_MODIFIER_GROUPS: MenuModifierGroup[] = [
     icon: '🫙',
     type: 'single',
     required: true,
-    defaultOptionIds: ['medium'],
     options: [
       { id: 'light',   label: 'มันนิดหน่อย',  labelEn: 'A LITTLE',    priceAdj: 0 },
       { id: 'medium',  label: 'ปานกลาง',       labelEn: 'RICH',        priceAdj: 0 },
