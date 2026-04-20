@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Delete } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,20 +12,16 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
-
 interface CashDialogProps {
   open: boolean
   onClose: () => void
   grandTotal: number
   onConfirm: () => void
+  /** Pre-fill amount when the dialog opens (used to restore a paused session) */
+  initialAmount?: number
+  /** Fires on every keypad interaction so the parent can persist to a session */
+  onAmountChange?: (amount: number) => void
 }
-
-// ---------------------------------------------------------------------------
-// Numpad layout
-// ---------------------------------------------------------------------------
 
 const ROWS = [
   ['1', '2', '3'],
@@ -34,16 +30,22 @@ const ROWS = [
   ['.', '0', 'del'],
 ]
 
-// ---------------------------------------------------------------------------
-// Inner component — remounted via key when dialog opens, resetting state naturally
-// ---------------------------------------------------------------------------
+function formatInitial(amount: number | undefined): string {
+  if (!amount || amount <= 0) return ''
+  return Number.isInteger(amount) ? String(amount) : amount.toFixed(2).replace(/\.?0+$/, '')
+}
 
 function CashDialogContent({
-  onClose,
   grandTotal,
   onConfirm,
-}: Omit<CashDialogProps, 'open'>) {
-  const [inputStr, setInputStr] = useState('')
+  initialAmount,
+  onAmountChange,
+}: Omit<CashDialogProps, 'open' | 'onClose'>) {
+  const [inputStr, setInputStr] = useState(() => formatInitial(initialAmount))
+
+  useEffect(() => {
+    onAmountChange?.(parseFloat(inputStr) || 0)
+  }, [inputStr, onAmountChange])
 
   function handleKey(key: string) {
     if (key === 'del') {
@@ -55,7 +57,6 @@ function CashDialogContent({
       setInputStr((prev) => (prev === '' ? '0.' : prev + '.'))
       return
     }
-    // Digit
     if (inputStr.length >= 10) return
     setInputStr((prev) => (prev === '0' ? key : prev + key))
   }
@@ -63,12 +64,10 @@ function CashDialogContent({
   const cashReceived = parseFloat(inputStr) || 0
   const change = Math.max(0, cashReceived - grandTotal)
   const isValid = cashReceived >= grandTotal && cashReceived > 0
-
   const displayValue = inputStr === '' ? '0.00' : inputStr
 
   return (
     <DialogContent className="max-w-sm gap-0 p-6" showCloseButton>
-      {/* Header */}
       <DialogHeader className="mb-6">
         <DialogTitle className="text-lg font-semibold leading-none">
           ชำระด้วยเงินสด
@@ -78,7 +77,6 @@ function CashDialogContent({
         </DialogDescription>
       </DialogHeader>
 
-      {/* Amount display */}
       <div className="flex flex-col gap-2 mb-4">
         <p className="text-base font-semibold text-muted-foreground leading-6">
           ยอดเงินที่รับมา
@@ -91,7 +89,6 @@ function CashDialogContent({
         </div>
       </div>
 
-      {/* Numpad */}
       <div className="flex flex-col gap-[4px] mb-6">
         {ROWS.map((row, ri) => (
           <div key={ri} className="flex gap-[5px]">
@@ -108,7 +105,6 @@ function CashDialogContent({
         ))}
       </div>
 
-      {/* Totals */}
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <span className="text-2xl text-muted-foreground">ยอดสุทธิ</span>
@@ -124,7 +120,6 @@ function CashDialogContent({
         </div>
       </div>
 
-      {/* Action buttons */}
       <div className="flex flex-col gap-2">
         <Button
           className="w-full h-14 text-sm font-medium"
@@ -135,10 +130,7 @@ function CashDialogContent({
         </Button>
         <DialogClose
           render={
-            <Button
-              variant="outline"
-              className="w-full h-14 text-sm font-medium"
-            />
+            <Button variant="outline" className="w-full h-14 text-sm font-medium" />
           }
         >
           ยกเลิก
@@ -148,18 +140,22 @@ function CashDialogContent({
   )
 }
 
-// ---------------------------------------------------------------------------
-// CashDialog
-// ---------------------------------------------------------------------------
-
-export function CashDialog({ open, onClose, grandTotal, onConfirm }: CashDialogProps) {
+export function CashDialog({
+  open,
+  onClose,
+  grandTotal,
+  onConfirm,
+  initialAmount,
+  onAmountChange,
+}: CashDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
       {open && (
         <CashDialogContent
-          onClose={onClose}
           grandTotal={grandTotal}
           onConfirm={onConfirm}
+          initialAmount={initialAmount}
+          onAmountChange={onAmountChange}
         />
       )}
     </Dialog>
