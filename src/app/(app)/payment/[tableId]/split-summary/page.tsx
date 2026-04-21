@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useTableStore } from '@/stores/table.store'
@@ -35,6 +35,15 @@ export default function SplitSummaryPage() {
 
   const table = useTableStore((s) => s.tables[tableId])
   const tableLabel = table?.label ?? tableId
+  const tables = useTableStore((s) => s.tables)
+  const merges = useBillStore((s) => s.merges)
+  const mergedTableLabels = useMemo(
+    () =>
+      Object.keys(merges)
+        .filter((k) => merges[k] === tableId)
+        .map((id) => tables[id]?.label ?? id),
+    [merges, tableId, tables],
+  )
 
   const { clearCrmMember, cancelSplit, clearPaymentSession, appendPaymentLog } = useBillStore()
   const paidCount = split ? Object.keys(split.payments).length : 0
@@ -80,6 +89,7 @@ export default function SplitSummaryPage() {
     return (
       <ReceiptScreen
         tableId={receiptData.payerLabel}
+        mergedTableLabels={mergedTableLabels}
         grandTotal={receiptData.amount}
         paymentMethod={receiptData.method}
         paidAt={receiptData.paidAt}

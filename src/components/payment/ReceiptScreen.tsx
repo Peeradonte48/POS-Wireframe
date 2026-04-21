@@ -14,6 +14,7 @@ import type { CrmMember } from '@/components/payment/CrmLookupDialog'
 
 interface ReceiptScreenProps {
   tableId: string
+  mergedTableLabels?: string[]
   grandTotal: number
   paymentMethod: 'Cash' | 'QR PromptPay' | 'Card'
   paidAt: Date
@@ -29,6 +30,7 @@ interface ReceiptScreenProps {
 
 export function ReceiptScreen({
   tableId,
+  mergedTableLabels,
   grandTotal,
   paymentMethod,
   paidAt,
@@ -37,6 +39,8 @@ export function ReceiptScreen({
   ctaLabel = 'เสร็จสิ้น',
   crmMember,
 }: ReceiptScreenProps) {
+  const hasMerged = !!mergedTableLabels && mergedTableLabels.length > 0
+  const tableDisplay = hasMerged ? [tableId, ...mergedTableLabels!].join(' + ') : tableId
   const [tip, setTip] = useState('')
   const [fullTaxInvoice, setFullTaxInvoice] = useState(false)
 
@@ -72,9 +76,9 @@ export function ReceiptScreen({
           <div className="bg-background border border-border rounded-[14px] flex flex-col gap-5 items-start p-6 w-full">
 
             {/* Row: โต๊ะ */}
-            <div className="flex items-center justify-between w-full h-5 text-base leading-6">
-              <p className="font-medium text-muted-foreground">โต๊ะ</p>
-              <p className="font-semibold text-foreground">{tableId}</p>
+            <div className="flex items-start justify-between w-full gap-4 text-base leading-6">
+              <p className="font-medium text-muted-foreground shrink-0">โต๊ะ</p>
+              <p className="font-semibold text-foreground text-right break-words min-w-0 flex-1">{tableDisplay}</p>
             </div>
 
             {/* Row: Receipt No */}

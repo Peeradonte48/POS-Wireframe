@@ -57,7 +57,7 @@ export default function PaymentPage() {
   // View state
   const [viewState, setViewState] = useState<ViewState>('checkBill')
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
-  const [receiptData, setReceiptData] = useState<{ grandTotal: number; paymentMethod: PaymentMethod; paidAt: Date; crmMember: CrmMember | null } | null>(null)
+  const [receiptData, setReceiptData] = useState<{ grandTotal: number; paymentMethod: PaymentMethod; paidAt: Date; crmMember: CrmMember | null; mergedTableLabels: string[] } | null>(null)
 
   // UI state
   const [crmDialogOpen, setCrmDialogOpen] = useState(false); const [qrSheetOpen, setQrSheetOpen] = useState(false); const [cashDialogOpen, setCashDialogOpen] = useState(false)
@@ -126,7 +126,7 @@ export default function PaymentPage() {
         at: Date.now(),
       })
       toast.success('Payment confirmed')
-      setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
+      setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember, mergedTableLabels: mergedSecondaryIds.map((id) => tables[id]?.label ?? id) })
       setViewState('receipt')
       return
     }
@@ -146,7 +146,7 @@ export default function PaymentPage() {
       at: Date.now(),
     })
     toast.success('Payment confirmed')
-    setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember })
+    setReceiptData({ grandTotal, paymentMethod, paidAt: new Date(), crmMember, mergedTableLabels: mergedSecondaryIds.map((id) => tables[id]?.label ?? id) })
     setViewState('receipt')
   }
 
@@ -177,7 +177,7 @@ export default function PaymentPage() {
         paymentMethodDialogOpen={paymentMethodDialogOpen} setPaymentMethodDialogOpen={setPaymentMethodDialogOpen}
         onCrmMemberFound={() => {}}
         onConfirmPayment={handleConfirmPayment}
-        onAllPaid={() => { setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember }); setViewState('receipt') }}
+        onAllPaid={() => { setReceiptData({ grandTotal, paymentMethod: 'Cash', paidAt: new Date(), crmMember, mergedTableLabels: mergedSecondaryIds.map((id) => tables[id]?.label ?? id) }); setViewState('receipt') }}
         setQrSheetOpen={(v) => {
           setQrSheetOpen(v)
           if (!v) {
@@ -279,7 +279,9 @@ export default function PaymentPage() {
   if (viewState === 'receipt' && receiptData) {
     return (
       <ReceiptScreen
-        tableId={tableId} grandTotal={receiptData.grandTotal} paymentMethod={receiptData.paymentMethod}
+        tableId={tableLabel}
+        mergedTableLabels={receiptData.mergedTableLabels}
+        grandTotal={receiptData.grandTotal} paymentMethod={receiptData.paymentMethod}
         paidAt={receiptData.paidAt} onReprint={() => toast('Receipt sent to printer')}
         onBackToFloor={() => { clearCrmMember(tableId); router.push('/table-map') }}
         crmMember={receiptData.crmMember}
