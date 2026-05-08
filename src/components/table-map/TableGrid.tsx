@@ -16,6 +16,7 @@ const LEGEND = [
   { label: 'ว่าง',         dotClass: 'bg-card border border-border' },
   { label: 'มีลูกค้า',     dotClass: 'bg-status-occupied' },
   { label: 'รออาหาร',      dotClass: 'bg-status-check-requested' },
+  { label: 'เสิร์ฟครบ',     dotClass: 'bg-status-ready' },
   { label: 'ต้องเก็บโต๊ะ', dotClass: 'bg-status-cleaning' },
 ]
 

@@ -3,10 +3,10 @@ import type { Role } from '@/stores/session.store'
 export type NavSlug = 'table-map' | 'orders' | 'kds' | 'payment' | 'manager' | 'dashboard' | 'loyalty' | 'settings'
 
 export const ROLE_NAV_ACCESS: Record<Role, NavSlug[]> = {
-  Waiter:  ['table-map', 'orders'],
-  Cashier: ['table-map', 'orders', 'payment'],
+  Waiter:  ['table-map', 'orders', 'settings'],
+  Cashier: ['table-map', 'orders', 'payment', 'settings'],
   Manager: ['table-map', 'orders', 'kds', 'payment', 'manager', 'dashboard', 'loyalty', 'settings'],
-  Kitchen: ['kds'],
+  Kitchen: ['kds', 'settings'],
 }
 
 export function canAccess(role: Role, slug: NavSlug): boolean {

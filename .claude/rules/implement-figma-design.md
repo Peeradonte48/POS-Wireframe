@@ -14,7 +14,8 @@ This rule guides for implementation work with Figma design. The objective is mak
 - Pixel perfect is required including color hex, width, height, spacing, border-radius, icon, image, etc.
 - Review design to make sure the design is follow Figma design exactly 100% match. If not, you need to fix it until it match 100%.
 - If design is not follow Figma design exactly 100% match, you need to fix it until it match 100%.
-- If design has element that you don't understan or that might break functionality, Ask user for clarification.
+- If design has element that you don't understand or that might break functionality, Ask user for clarification.
+- If design has responsive break point. Make sure the design is follow responsive break point exactly 100% match. If not, you need to fix it until it match 100%.
 
 ## When you use apply rule
 
